@@ -1,0 +1,187 @@
+<mxGraphModel dx="3157" dy="1785" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="boundary" parent="1" style="swimlane;whiteSpace=wrap;html=1;horizontal=0;startSize=36;fillColor=#ffffff;strokeColor=#000000;fontStyle=1;" value="CUCI.IN — USE CASE" vertex="1">
+      <mxGeometry height="1050" width="1500" x="280" y="80" as="geometry" />
+    </mxCell>
+    <mxCell id="login" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Login" vertex="1">
+      <mxGeometry height="60" width="150" x="700" y="30" as="geometry" />
+    </mxCell>
+    <mxCell id="forgot_password" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Lupa Password" vertex="1">
+      <mxGeometry height="60" width="190" x="685" y="200" as="geometry" />
+    </mxCell>
+    <mxCell id="dashboard" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Lihat Dashboard" vertex="1">
+      <mxGeometry height="60" width="180" x="700" y="280" as="geometry" />
+    </mxCell>
+    <mxCell id="report" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Lihat Laporan" vertex="1">
+      <mxGeometry height="60" width="170" x="705" y="370" as="geometry" />
+    </mxCell>
+    <mxCell id="customer_admin" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Kelola Data Pelanggan" vertex="1">
+      <mxGeometry height="60" width="190" x="690" y="620" as="geometry" />
+    </mxCell>
+    <mxCell id="transaction" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Kelola Transaksi" vertex="1">
+      <mxGeometry height="60" width="190" x="695" y="710" as="geometry" />
+    </mxCell>
+    <mxCell id="user" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Kelola Data Pengguna" vertex="1">
+      <mxGeometry height="60" width="200" x="690" y="120" as="geometry" />
+    </mxCell>
+    <mxCell id="monitoring" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Monitoring Sistem" vertex="1">
+      <mxGeometry height="60" width="180" x="700" y="450" as="geometry" />
+    </mxCell>
+    <mxCell id="service" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Kelola Layanan &amp; Harga" vertex="1">
+      <mxGeometry height="60" width="200" x="685" y="530" as="geometry" />
+    </mxCell>
+    <mxCell id="complaint_manage" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Kelola Pengaduan" vertex="1">
+      <mxGeometry height="60" width="190" x="470" y="720" as="geometry" />
+    </mxCell>
+    <mxCell id="services_staff" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Lihat Layanan" vertex="1">
+      <mxGeometry height="60" width="170" x="490" y="800" as="geometry" />
+    </mxCell>
+    <mxCell id="status" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Kelola Status Cucian" vertex="1">
+      <mxGeometry height="60" width="190" x="250" y="950" as="geometry" />
+    </mxCell>
+    <mxCell id="receipt" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Cetak Bukti Transaksi" vertex="1">
+      <mxGeometry height="60" width="190" x="420" y="880" as="geometry" />
+    </mxCell>
+    <mxCell id="verification" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Verifikasi Pembayaran" vertex="1">
+      <mxGeometry height="60" width="200" x="690" y="840" as="geometry" />
+    </mxCell>
+    <mxCell id="check" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Cek Transaksi" vertex="1">
+      <mxGeometry height="60" width="170" x="980" y="260" as="geometry" />
+    </mxCell>
+    <mxCell id="history" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Lihat Riwayat Transaksi" vertex="1">
+      <mxGeometry height="60" width="210" x="1230" y="280" as="geometry" />
+    </mxCell>
+    <mxCell id="register" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Registrasi" vertex="1">
+      <mxGeometry height="60" width="150" x="1250" y="770" as="geometry" />
+    </mxCell>
+    <mxCell id="view_status" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Lihat Status Cucian" vertex="1">
+      <mxGeometry height="60" width="190" x="900" y="430" as="geometry" />
+    </mxCell>
+    <mxCell id="detail" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Lihat Detail Transaksi" vertex="1">
+      <mxGeometry height="60" width="200" x="1070" y="390" as="geometry" />
+    </mxCell>
+    <mxCell id="submit_complaint" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Ajukan Pengaduan" vertex="1">
+      <mxGeometry height="60" width="200" x="1110" y="660" as="geometry" />
+    </mxCell>
+    <mxCell id="view_complaint" parent="boundary" style="ellipse;whiteSpace=wrap;html=1;shapeInside=1;" value="Lihat Status Pengaduan" vertex="1">
+      <mxGeometry height="60" width="210" x="1010" y="560" as="geometry" />
+    </mxCell>
+    <mxCell id="i1" edge="1" parent="boundary" source="check" style="dashed=1;endArrow=open;endFill=0;html=1;rounded=0;" target="view_status" value="&amp;lt;include&amp;gt;">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1250" y="330" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="i2" edge="1" parent="boundary" source="check" style="dashed=1;endArrow=open;endFill=0;html=1;rounded=0;" target="detail" value="&amp;lt;include&amp;gt;">
+      <mxGeometry relative="1" as="geometry">
+        <mxPoint x="1350" y="330" as="targetPoint" />
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="i3" edge="1" parent="boundary" source="transaction" style="dashed=1;endArrow=open;endFill=0;html=1;rounded=0;" target="verification" value="&amp;lt;include&amp;gt;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="admin" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="ADMIN" vertex="1">
+      <mxGeometry height="120" width="90" x="70" y="250" as="geometry" />
+    </mxCell>
+    <mxCell id="staff" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="STAFF" vertex="1">
+      <mxGeometry height="120" width="90" x="70" y="740" as="geometry" />
+    </mxCell>
+    <mxCell id="registered" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="PELANGGAN&lt;br&gt;(Registered)" vertex="1">
+      <mxGeometry height="120" width="90" x="1840" y="250" as="geometry" />
+    </mxCell>
+    <mxCell id="guest" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="PELANGGAN&lt;br&gt;(Guest)" vertex="1">
+      <mxGeometry height="120" width="90" x="1840" y="580" as="geometry" />
+    </mxCell>
+    <mxCell id="a1" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="login">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a2" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="forgot_password">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a3" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="dashboard">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a4" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="monitoring">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a5" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="user">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a6" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="service">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a7" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="customer_admin">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a8" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="transaction">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a9" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="report">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="a10" edge="1" parent="1" source="admin" style="endArrow=none;html=1;rounded=0;" target="complaint_manage">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s1" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="login">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s2" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="forgot_password">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s3" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="dashboard">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s4" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="customer_admin">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s5" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="services_staff">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s6" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="transaction">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s7" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="status">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s8" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="receipt">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s9" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="report">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="s10" edge="1" parent="1" source="staff" style="endArrow=none;html=1;rounded=0;" target="complaint_manage">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="r1" edge="1" parent="1" source="registered" style="endArrow=none;html=1;rounded=0;" target="login">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="r2" edge="1" parent="1" source="registered" style="endArrow=none;html=1;rounded=0;" target="forgot_password">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="r3" edge="1" parent="1" source="registered" style="endArrow=none;html=1;rounded=0;" target="check">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="r4" edge="1" parent="1" source="registered" style="endArrow=none;html=1;rounded=0;" target="history">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="r5" edge="1" parent="1" source="registered" style="endArrow=none;html=1;rounded=0;" target="submit_complaint">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="r6" edge="1" parent="1" source="registered" style="endArrow=none;html=1;rounded=0;" target="view_complaint">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="g1" edge="1" parent="1" source="guest" style="endArrow=none;html=1;rounded=0;" target="check">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="g2" edge="1" parent="1" source="guest" style="endArrow=none;html=1;rounded=0;" target="register">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="g3" edge="1" parent="1" source="guest" style="endArrow=none;html=1;rounded=0;" target="submit_complaint">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="g4" edge="1" parent="1" source="guest" style="endArrow=none;html=1;rounded=0;" target="view_complaint">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+  </root>
+</mxGraphModel>

@@ -1,0 +1,121 @@
+<mxGraphModel dx="3055" dy="1260" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="title" parent="1" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=20;fontStyle=1;" value="ERD CUCI.IN — Sistem Manajemen Operasional Laundry (Final)" vertex="1">
+      <mxGeometry height="30" width="1400" x="60" y="20" as="geometry" />
+    </mxCell>
+    <mxCell id="services" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;rounded=0;strokeWidth=1;shadow=0;" value="&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; width=&quot;100%&quot;&gt;       &lt;tr&gt;&lt;td colspan=&quot;2&quot; bgcolor=&quot;#1B6B3A&quot;&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&lt;b&gt;services&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, PK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;name&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(100), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;price&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;DECIMAL(12,2), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;estimated_duration&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;INTEGER, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;description&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TEXT, NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;is_active&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BOOLEAN, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;created_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;updated_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;/table&gt;" vertex="1">
+      <mxGeometry height="270" width="440" x="-470" y="250" as="geometry" />
+    </mxCell>
+    <mxCell id="users" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;rounded=0;strokeWidth=1;shadow=0;" value="&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; width=&quot;100%&quot;&gt;       &lt;tr&gt;&lt;td colspan=&quot;2&quot; bgcolor=&quot;#1B6B3A&quot;&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&lt;b&gt;users&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, PK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;name&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(100), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;email&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(150), UNIQUE, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;password&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(255), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;role&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;ENUM(admin, staff, customer), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;is_active&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BOOLEAN, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;created_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;updated_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;/table&gt;" vertex="1">
+      <mxGeometry height="290" width="420" x="1550" y="80" as="geometry" />
+    </mxCell>
+    <mxCell id="customers" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;rounded=0;strokeWidth=1;shadow=0;" value="&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; width=&quot;100%&quot;&gt;       &lt;tr&gt;&lt;td colspan=&quot;2&quot; bgcolor=&quot;#1B6B3A&quot;&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&lt;b&gt;customers&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, PK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;user_id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, UNIQUE, NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;name&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(100), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;phone&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(20), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;address&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TEXT, NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;created_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;updated_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;/table&gt;" vertex="1">
+      <mxGeometry height="260" width="400" x="470" y="400" as="geometry" />
+    </mxCell>
+    <mxCell id="transactions" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;rounded=0;strokeWidth=1;shadow=0;" value="&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; width=&quot;100%&quot;&gt;       &lt;tr&gt;&lt;td colspan=&quot;2&quot; bgcolor=&quot;#1B6B3A&quot;&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&lt;b&gt;transactions&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, PK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;customer_id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;transaction_code&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(20), UNIQUE, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;total_amount&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;DECIMAL(12,2), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;status&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;ENUM(Diterima, Diproses, Selesai, Diambil, Dibatalkan), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;estimated_completed_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP, NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;created_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;updated_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;/table&gt;" vertex="1">
+      <mxGeometry height="300" width="480" x="1330" y="370" as="geometry" />
+    </mxCell>
+    <mxCell id="complaints" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;rounded=0;strokeWidth=1;shadow=0;" value="&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; width=&quot;100%&quot;&gt;       &lt;tr&gt;&lt;td colspan=&quot;2&quot; bgcolor=&quot;#1B6B3A&quot;&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&lt;b&gt;complaints&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, PK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;complaint_code&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(20), UNIQUE, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;transaction_id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;subject&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(150), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;description&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TEXT, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;status&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;ENUM(Menunggu, Diproses, Selesai), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;response&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TEXT, NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;deadline_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;handled_by&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NULL, (Staff/Admin)&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;handled_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP, NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;created_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;updated_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;/table&gt;" vertex="1">
+      <mxGeometry height="390" width="500" x="3100" y="470" as="geometry" />
+    </mxCell>
+    <mxCell id="laundry_status_histories" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;rounded=0;strokeWidth=1;shadow=0;" value="&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; width=&quot;100%&quot;&gt;       &lt;tr&gt;&lt;td colspan=&quot;2&quot; bgcolor=&quot;#1B6B3A&quot;&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&lt;b&gt;laundry_status_histories&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, PK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;transaction_id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;status&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;ENUM(Diterima, Diproses, Selesai, Diambil, Dibatalkan), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;changed_by&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;changed_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;/table&gt;" vertex="1">
+      <mxGeometry height="240" width="470" x="640" y="1020" as="geometry" />
+    </mxCell>
+    <mxCell id="transaction_details" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;rounded=0;strokeWidth=1;shadow=0;" value="&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; width=&quot;100%&quot;&gt;       &lt;tr&gt;&lt;td colspan=&quot;2&quot; bgcolor=&quot;#1B6B3A&quot;&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&lt;b&gt;transaction_details&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, PK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;transaction_id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;service_id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;weight&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;DECIMAL(8,2), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;unit_price&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;DECIMAL(12,2), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;subtotal&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;DECIMAL(12,2), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;/table&gt;" vertex="1">
+      <mxGeometry height="220" width="420" x="1280" y="1060" as="geometry" />
+    </mxCell>
+    <mxCell id="payments" parent="1" style="shape=table;startSize=0;container=1;collapsible=0;recursiveResize=0;html=1;whiteSpace=wrap;rounded=0;strokeWidth=1;shadow=0;" value="&lt;table border=&quot;1&quot; cellspacing=&quot;0&quot; cellpadding=&quot;6&quot; width=&quot;100%&quot;&gt;       &lt;tr&gt;&lt;td colspan=&quot;2&quot; bgcolor=&quot;#1B6B3A&quot;&gt;&lt;font color=&quot;#FFFFFF&quot;&gt;&lt;b&gt;payments&lt;/b&gt;&lt;/font&gt;&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, PK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;transaction_id&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;amount&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;DECIMAL(12,2), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;payment_type&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;ENUM(Pembayaran Penuh, DP, Pelunasan), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;method&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;ENUM(Tunai, Transfer, QRIS), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;proof_file&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;VARCHAR(255), NULL, (Transfer/QRIS)&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;verification_status&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;ENUM(Tidak Diperlukan, Menunggu Verifikasi, Terverifikasi, Ditolak), NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;paid_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP, NOT NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;created_by&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NOT NULL, (Admin/Staff)&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;verified_by&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;BIGINT, FK, NULL, (Admin/Staff)&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;verified_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP, NULL&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;created_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;tr&gt;&lt;td align=&quot;left&quot;&gt;&lt;b&gt;updated_at&lt;/b&gt;&lt;/td&gt;&lt;td align=&quot;left&quot;&gt;TIMESTAMP&lt;/td&gt;&lt;/tr&gt;       &lt;/table&gt;" vertex="1">
+      <mxGeometry height="420" width="570" x="2100" y="1050" as="geometry" />
+    </mxCell>
+    <mxCell id="e1" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToOne;endArrow=ERzeroToOne;startFill=0;endFill=0;strokeWidth=1.5;" target="customers" value="0..1 : 0..1">
+      <mxGeometry relative="1" x="0.6922" as="geometry">
+        <Array as="points">
+          <mxPoint x="670" y="260" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e2" edge="1" parent="1" source="customers" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERmandOne;startFill=0;endFill=0;strokeWidth=1.5;" target="transactions" value="0..N : 1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="490" y="640" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e3" edge="1" parent="1" source="transactions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERoneToMany;endArrow=ERmandOne;startFill=0;endFill=0;strokeWidth=1.5;exitX=0.75;exitY=1;exitDx=0;exitDy=0;" target="transaction_details" value="1..N : 1">
+      <mxGeometry relative="1" x="-0.2727" as="geometry">
+        <Array as="points">
+          <mxPoint x="1560" y="650" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e4" edge="1" parent="1" source="services" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERmandOne;startFill=0;endFill=0;strokeWidth=1.5;" target="transaction_details" value="0..N : 1">
+      <mxGeometry relative="1" x="-0.008" as="geometry">
+        <Array as="points">
+          <mxPoint x="200" y="390" />
+          <mxPoint x="200" y="1290" />
+          <mxPoint x="1200" y="1290" />
+          <mxPoint x="1200" y="1250" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e5" edge="1" parent="1" source="transactions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERmandOne;startFill=0;endFill=0;strokeWidth=1.5;" target="payments" value="0..N : 1">
+      <mxGeometry relative="1" x="-0.0769" as="geometry">
+        <Array as="points">
+          <mxPoint x="1760" y="920" />
+          <mxPoint x="1950" y="920" />
+          <mxPoint x="1950" y="1180" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e6" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERmandOne;startFill=0;endFill=0;strokeWidth=1.5;" target="payments" value="mencatat: 0..N : 1">
+      <mxGeometry relative="1" x="0.4012" as="geometry">
+        <Array as="points">
+          <mxPoint x="1760" y="360" />
+          <mxPoint x="2270" y="360" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e7" edge="1" parent="1" source="transactions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERmandOne;startFill=0;endFill=0;strokeWidth=1.5;" target="laundry_status_histories" value="0..N : 1">
+      <mxGeometry relative="1" x="0.1753" as="geometry">
+        <Array as="points">
+          <mxPoint x="1360" y="830" />
+          <mxPoint x="1040" y="830" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e8" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERmandOne;startFill=0;endFill=0;strokeWidth=1.5;" target="laundry_status_histories" value="0..N : 1">
+      <mxGeometry relative="1" x="-0.0286" as="geometry">
+        <Array as="points">
+          <mxPoint x="430" y="150" />
+          <mxPoint x="430" y="1130" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e9" edge="1" parent="1" source="transactions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERmandOne;startFill=0;endFill=0;strokeWidth=1.5;" target="complaints" value="0..N : 1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="2940" y="590" />
+          <mxPoint x="2940" y="590" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e10" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERzeroToOne;startFill=0;endFill=0;strokeWidth=1.5;" target="complaints" value="menangani: 0..N : 0..1">
+      <mxGeometry relative="1" x="0.0231" as="geometry">
+        <Array as="points">
+          <mxPoint x="2700" y="120" />
+          <mxPoint x="2700" y="450" />
+          <mxPoint x="3350" y="450" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="e11" edge="1" parent="1" source="users" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=ERzeroToMany;endArrow=ERzeroToOne;startFill=0;endFill=0;strokeWidth=1.5;" target="payments" value="memverifikasi: 0..N : 0..1">
+      <mxGeometry relative="1" x="0.1789" as="geometry">
+        <Array as="points">
+          <mxPoint x="2450" y="300" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>
