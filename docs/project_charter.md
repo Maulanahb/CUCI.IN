@@ -1,399 +1,509 @@
 # PROJECT CHARTER
 
-## 1. Pendekatan Proyek
+## CUCI.IN — Sistem Manajemen Operasional Laundry Berbasis Web
+
+### 1. Pendekatan Proyek
 
 **Pendekatan: Hybrid**
 
-Proyek CUCI.IN menggunakan pendekatan **Hybrid**, yaitu menggabungkan pendekatan predictive pada bagian proyek yang kebutuhan dan ruang lingkup utamanya telah ditetapkan sejak awal dengan pendekatan adaptive pada bagian pengembangan yang dapat disempurnakan berdasarkan hasil implementasi, integrasi, dan pengujian.
+Proyek menggunakan pendekatan **Hybrid**, yaitu menggabungkan pendekatan predictive pada bagian yang kebutuhan dan ruang lingkupnya telah ditetapkan sejak awal dengan pendekatan adaptive pada bagian pengembangan, integrasi, pengujian, dan penyempurnaan sistem.
 
 Pendekatan predictive digunakan untuk:
 
 * Penetapan masalah dan tujuan sistem.
-* Penetapan ruang lingkup utama.
+* Penetapan scope proyek.
 * Penetapan aktor dan hak akses.
-* Penyusunan kebutuhan utama.
-* Perancangan Use Case, ERD, dan desain sistem.
-* Penetapan milestone proyek.
+* Penetapan kebutuhan fungsional dan nonfungsional.
+* Penyusunan Project Charter dan PRD.
+* Penyusunan Use Case.
+* Penyusunan ERD dan struktur data.
+* Penyusunan WBS.
+* Penyusunan jadwal dan pembagian pekerjaan.
 
 Pendekatan adaptive digunakan untuk:
 
-* Penyempurnaan implementasi fitur.
-* Integrasi frontend, backend, dan database.
-* Penyesuaian UI berdasarkan hasil implementasi.
-* Perbaikan berdasarkan hasil pengujian.
-* Penyelesaian bug dan ketidaksesuaian implementasi.
+* Pengembangan fitur.
+* Integrasi antarfitur.
+* Penyesuaian implementasi terhadap kondisi teknis.
+* Penyempurnaan UI/UX.
+* Pengujian fitur.
+* Perbaikan bug.
+* Validasi hasil implementasi terhadap kebutuhan yang telah ditetapkan.
 
 ---
 
-# 2. Tujuan Proyek
+### 2. Latar Belakang
 
-CUCI.IN bertujuan membangun sistem manajemen operasional laundry berbasis web yang mengintegrasikan pengelolaan pelanggan, layanan, transaksi, pembayaran, status cucian, pengaduan, dashboard, dan laporan dalam satu sistem.
+Proses operasional laundry yang masih dilakukan secara manual dapat menyebabkan pencatatan transaksi dan pembayaran menjadi kurang terstruktur, pencarian data menjadi lambat, terjadinya duplikasi atau kesalahan pencatatan, serta informasi status cucian sulit diperoleh secara cepat.
 
-Sistem menyediakan akses pelanggan secara hybrid, yaitu pelanggan dapat mengecek transaksi menggunakan kode transaksi tanpa login serta dapat menggunakan akun untuk mengakses transaksi dan riwayat yang terhubung dengan akunnya.
+CUCI.IN dikembangkan sebagai sistem manajemen operasional laundry berbasis web yang mengintegrasikan pengelolaan pelanggan, transaksi, pembayaran, proses cucian, pengaduan, dashboard, dan laporan dalam satu sistem.
 
 ---
 
-# 3. Ruang Lingkup Proyek
+### 3. Tujuan Proyek
 
-## 3.1 In Scope
+Membangun sistem manajemen operasional laundry berbasis web yang dapat:
 
-### A. Autentikasi dan Hak Akses
+1. Mengelola data pelanggan dan pengguna secara terstruktur.
+2. Memproses transaksi laundry secara terintegrasi.
+3. Mencatat pembayaran dan status pembayaran.
+4. Memantau proses dan status cucian.
+5. Memungkinkan pelanggan atau guest melakukan pengecekan transaksi.
+6. Menangani pengaduan pelanggan.
+7. Menyediakan dashboard operasional dan keuangan.
+8. Menyediakan laporan yang mendukung monitoring dan pengambilan keputusan.
 
-* Login Admin.
-* Login Staff.
-* Registrasi pelanggan secara opsional.
-* Login pelanggan yang telah memiliki akun.
-* Penerapan hak akses berdasarkan role.
-* Admin memiliki fungsi **Manage + Monitor**.
-* Staff memiliki fungsi **Operate**.
-* Customer memiliki akses terhadap transaksi dan pengaduan miliknya.
+---
 
-### B. Administrasi
+### 4. Ruang Lingkup Proyek
 
-Admin dapat:
+#### A. Authentication dan Access Control
 
-* Mengelola pengguna.
-* Mengelola data pelanggan.
-* Mengelola layanan laundry.
-* Mengelola harga layanan.
-* Mengelola estimasi durasi layanan.
+* Login pengguna.
+* Logout.
+* Registrasi customer.
+* Lupa password.
+* Validasi autentikasi.
+* Pengaturan hak akses berdasarkan role.
+* Aktivasi/nonaktifkan akun pengguna.
 
-Staff dapat:
+#### B. Administrasi
 
-* Mengelola data pelanggan.
-* Melihat layanan dan harga yang telah ditetapkan Admin.
+* Pengelolaan data pengguna.
+* Pengelolaan data pelanggan.
+* Pengelolaan layanan laundry.
+* Pengelolaan harga layanan.
+* Pengelolaan estimasi durasi layanan.
+* Monitoring transaksi dan operasional.
 
-### C. Transaksi / POS
+#### C. Transaksi/POS
 
-Sistem menyediakan:
-
-* Pembuatan transaksi oleh Admin atau Staff.
+* Pembuatan transaksi.
 * Pemilihan pelanggan.
-* Penambahan satu atau lebih layanan dalam transaksi.
-* Input berat untuk layanan yang menggunakan berat.
+* Pemilihan beberapa layanan.
+* Pencatatan berat.
 * Perhitungan subtotal.
 * Perhitungan total transaksi.
-* Pembuatan kode transaksi unik.
-* Penyimpanan detail layanan pada transaksi.
-* Pencetakan bukti transaksi.
+* Pengelolaan detail transaksi.
+* Pencarian transaksi berdasarkan kode transaksi.
 
-### D. Pembayaran
+#### D. Pembayaran
 
-Sistem mendukung:
+* Pencatatan pembayaran.
+* Metode pembayaran:
 
-* Pembayaran Tunai.
-* Pembayaran Transfer.
-* Pembayaran QRIS.
-* Pembayaran sebagian/DP.
-* Pelunasan pembayaran.
-* Perhitungan total pembayaran secara otomatis.
-* Perhitungan sisa pembayaran secara otomatis.
-* Status pembayaran:
+  * Tunai
+  * Transfer
+  * QRIS
+* Pembayaran penuh.
+* Pembayaran DP.
+* Pelunasan.
+* Perhitungan total pembayaran.
+* Perhitungan sisa pembayaran.
+* Status pembayaran.
+* Pengelolaan bukti pembayaran.
+* Verifikasi pembayaran untuk metode yang memerlukannya.
 
-  * Belum Bayar.
-  * DP.
-  * Lunas.
-* Pencatatan beberapa pembayaran dalam satu transaksi.
-* Upload bukti pembayaran untuk pembayaran Transfer/QRIS.
-* Verifikasi pembayaran oleh Admin atau Staff.
+#### E. Operasional Laundry
 
-### E. Operasional Laundry
-
-Sistem menyediakan:
-
-* Daftar dan detail cucian.
 * Pengelolaan status cucian.
-* Penyimpanan riwayat perubahan status.
-* Status:
+* Status utama transaksi:
 
-  * Diterima.
-  * Diproses.
-  * Selesai.
-  * Diambil.
-* Status dapat disesuaikan kembali apabila terjadi kebutuhan operasional.
-* Perhitungan estimasi waktu selesai secara otomatis.
-* Monitoring cucian yang belum diambil.
+  * Diterima
+  * Diproses
+  * Selesai
+  * Diambil
+  * Dibatalkan
+* Pencatatan riwayat perubahan status.
+* Informasi estimasi selesai.
+* Monitoring proses cucian.
 
-Staff menjadi pelaksana utama proses operasional, sedangkan Admin dapat melakukan monitoring dan perubahan apabila diperlukan.
+**Catatan aturan pembatalan:** transaksi dapat dibatalkan hanya pada kondisi operasional awal, yaitu saat masih berada pada tahap Antrean, Baru Diterima, atau Baru Selesai Ditimbang. Ketiga kondisi tersebut merupakan **aturan bisnis**, bukan status yang disimpan sebagai status utama transaksi.
 
-### F. Akses Pelanggan
+#### F. Customer dan Guest
 
-#### Guest / tanpa login
+* Customer terdaftar dapat login.
+* Customer dapat melihat transaksi miliknya.
+* Customer dapat melihat riwayat transaksi.
+* Guest dapat melakukan pengecekan transaksi tanpa login menggunakan kode transaksi.
+* Guest dapat melakukan registrasi menjadi customer.
 
-Pelanggan dapat:
+#### G. Pengaduan
 
-* Mengecek transaksi menggunakan kode transaksi.
-* Melihat detail transaksi.
-* Melihat layanan yang digunakan.
-* Melihat status cucian.
-* Melihat perkembangan/riwayat status cucian.
-* Melihat estimasi waktu selesai.
-* Mengirim pengaduan yang berkaitan dengan transaksi.
-
-#### Pelanggan dengan akun
-
-Pelanggan dapat:
-
-* Melakukan registrasi secara opsional.
-* Login.
-* Melihat transaksi yang terhubung dengan akunnya.
-* Melihat riwayat transaksi.
-* Melihat detail transaksi.
-* Melihat status cucian.
-* Melihat estimasi waktu selesai.
-* Mengirim pengaduan.
-* Melihat status dan hasil pengaduan.
-
-### G. Pengaduan
-
-Sistem menyediakan pengaduan yang berkaitan dengan layanan atau transaksi.
-
-Ketentuan utama:
-
+* Customer terdaftar dapat mengajukan pengaduan.
+* Guest dapat mengajukan pengaduan terkait transaksi.
 * Pengaduan harus terkait dengan transaksi.
-* Pengaduan dapat dibuat oleh Guest maupun pelanggan yang memiliki akun.
-* Pengaduan memiliki kode pengaduan.
-* Sistem mencatat waktu pengaduan dibuat.
-* Batas penyelesaian pengaduan maksimal **2 hari sejak pengaduan dibuat**.
+* Pengelolaan pengaduan oleh Staff/Admin.
 * Status pengaduan:
 
-  * Menunggu.
-  * Diproses.
-  * Selesai.
-* Staff dapat melihat dan menangani pengaduan.
-* Admin dapat memonitor dan menangani pengaduan.
-* Sistem menyimpan pihak yang menangani pengaduan.
-* Sistem menyimpan waktu penanganan.
-* Sistem menyimpan respons atau hasil penanganan.
-* Pelanggan dapat melihat status dan hasil pengaduan.
+  * Menunggu
+  * Diproses
+  * Selesai
+* Pencatatan respons pengaduan.
+* Pencatatan handler pengaduan.
+* Batas waktu penanganan maksimal 2 hari.
 
-### H. Dashboard
+#### H. Dashboard
 
-#### Dashboard Admin
-
-Menyediakan informasi:
-
-* Total transaksi.
-* Jumlah transaksi berdasarkan status cucian.
-* Cucian yang belum diambil.
+* Dashboard Admin.
+* Dashboard Staff.
+* Dashboard Customer.
+* Informasi transaksi.
+* Informasi status cucian.
+* Informasi pembayaran.
 * Informasi pengaduan.
-* Total pembayaran/pendapatan berdasarkan transaksi yang tercatat.
-* Transaksi belum lunas.
-* Penggunaan layanan.
-* Tren pendapatan berdasarkan periode.
+* Ringkasan operasional dan keuangan.
 
-#### Dashboard Staff
-
-Menyediakan informasi operasional:
-
-* Total transaksi hari ini.
-* Cucian Diterima.
-* Cucian Diproses.
-* Cucian Selesai.
-* Cucian belum diambil.
-* Pengaduan yang perlu ditangani.
-
-### I. Laporan
-
-Sistem menyediakan laporan:
+#### I. Laporan
 
 * Laporan transaksi.
 * Laporan pembayaran.
-* Laporan pendapatan berdasarkan transaksi yang tercatat.
-* Laporan penggunaan layanan.
-* Filter berdasarkan periode.
-* Export laporan ke PDF.
-* Export laporan ke Excel.
+* Laporan pendapatan.
+* Laporan operasional laundry.
 
----
+#### J. Dokumentasi dan Pengujian
 
-## 3.2 Out of Scope
-
-Fitur berikut tidak termasuk dalam ruang lingkup proyek:
-
-* Multi-tenant.
-* Pengelolaan beberapa bisnis laundry dalam satu sistem.
-* Multi-cabang.
-* Akuntansi lengkap seperti jurnal umum, buku besar, neraca, dan laporan keuangan lengkap.
-* Payment gateway seperti Midtrans atau Xendit.
-* Layanan kurir atau delivery.
-* Membership.
-* Poin atau loyalty program.
-* Promosi digital.
-* Komunikasi real-time antara pelanggan dan Staff.
-* Fitur lain di luar kebutuhan utama yang telah disepakati.
-
----
-
-# 4. Pengguna dan Hak Akses
-
-## 4.1 Admin — Manage + Monitor
-
-Admin bertanggung jawab terhadap pengelolaan dan pemantauan sistem.
-
-Admin dapat:
-
-* Mengelola pengguna.
-* Mengelola pelanggan.
-* Mengelola layanan.
-* Mengelola harga layanan.
-* Mengelola estimasi durasi layanan.
-* Membuat dan mengelola transaksi.
-* Mengelola dan memverifikasi pembayaran.
-* Memantau dan mengubah status cucian apabila diperlukan.
-* Memantau pengaduan dan melakukan penanganan.
-* Melihat dashboard.
-* Melihat laporan.
-* Melakukan export laporan.
-
-## 4.2 Staff — Operate
-
-Staff bertanggung jawab terhadap pelaksanaan operasional laundry sehari-hari.
-
-Staff dapat:
-
-* Mengelola pelanggan.
-* Melihat layanan dan harga.
-* Membuat dan mengelola transaksi.
-* Mencatat pembayaran.
-* Mengupload dan memverifikasi bukti pembayaran.
-* Mengelola status cucian.
-* Melihat riwayat status cucian.
-* Mencetak bukti transaksi.
-* Menangani pengaduan.
-* Melihat dashboard operasional.
-* Melihat dan melakukan export laporan.
-
-Staff tidak memiliki kewenangan untuk mengelola pengguna serta mengubah data master seperti harga dan estimasi durasi layanan.
-
-## 4.3 Customer / Guest — Access Own Transaction & Complaint
-
-Customer atau Guest dapat:
-
-* Mengecek transaksi.
-* Melihat detail transaksi.
-* Melihat status cucian.
-* Melihat riwayat transaksi jika memiliki akun.
-* Membuat pengaduan terkait transaksi.
-* Melihat status dan hasil pengaduan miliknya.
-
-Customer tidak memiliki akses untuk mengelola data sistem.
-
----
-
-# 5. Susunan Tim dan Peran
-
-| Nama                          | NIM          | Peran                                |
-| ----------------------------- | ------------ | ------------------------------------ |
-| Maulana Ahmad Bukhori         | 244107060133 | Project Manager & PIC Transaksi/POS  |
-| Daysyani Sophi Masayu         | 244107060153 | PIC Administrasi & Dashboard/Laporan |
-| Gargarina Nanda Iswati        | 244107060100 | PIC Operasional Laundry              |
-| Muh. Zaky Dawamul Busro       | 244107060092 | PIC Akses Pelanggan & Cek Status     |
-| Nayla Annora Nobel Widyonarko | 244107060148 | PIC Akses Pelanggan, Akun & Riwayat  |
-
-PIC bertanggung jawab terhadap koordinasi pengembangan area masing-masing, tetapi implementasi, integrasi, pengujian, dan dokumentasi tetap dilakukan secara kolaboratif oleh seluruh anggota tim.
-
-Project Manager bertanggung jawab terhadap koordinasi keseluruhan proyek, integrasi pekerjaan antaranggota, pemantauan progres, serta pengambilan keputusan yang berkaitan dengan ruang lingkup dan prioritas proyek.
-
----
-
-# 6. Milestone Utama
-
-## Milestone 1 — Analysis & Design
-
-**Target: Minggu ke-8**
-
-Output:
-
-* Project Charter.
-* Ruang lingkup dan kebutuhan fungsional/nonfungsional.
-* WBS dan jadwal proyek.
-* Use Case Diagram dan Use Case Description.
-* ERD dan rancangan database.
-* Activity Diagram / Sequence Diagram untuk proses utama.
-* Rancangan UI awal.
-* Validasi dan evaluasi desain.
-
-## Milestone 2 — Implementation & Integration
-
-**Target: Minggu ke-12**
-
-Output:
-
-* Implementasi fitur utama.
-* Integrasi frontend, backend, dan database.
-* Alur utama sistem dapat dijalankan.
-* Test case.
-* Hasil pengujian awal.
-* Bug log.
-* Perbaikan bug prioritas.
-
-## Milestone 3 — Finalization & Evaluation
-
-**Target: Minggu ke-16**
-
-Output:
-
-* Seluruh fitur dalam scope telah diimplementasikan.
-* Integrasi sistem selesai.
-* Pengujian final.
-* Perbaikan bug prioritas.
+* Penyusunan test case.
+* Pengujian fitur.
+* Pencatatan bug.
+* Perbaikan bug.
 * Dokumentasi sistem.
+* Dokumentasi penggunaan sistem.
+
+---
+
+### 5. Aktor dan Hak Akses
+
+| Aktor        | Hak Akses                          |
+| ------------ | ---------------------------------- |
+| **Admin**    | Manage + Monitor                   |
+| **Staff**    | Operate                            |
+| **Customer** | Access Own Transaction & Complaint |
+| **Guest**    | Akses terbatas tanpa login         |
+
+#### Admin
+
+Admin berfungsi untuk mengelola master data, pengguna, pelanggan, layanan, monitoring transaksi dan operasional, dashboard, serta laporan.
+
+#### Staff
+
+Staff berfungsi menjalankan operasional harian seperti pelanggan, transaksi/POS, pembayaran, status cucian, dan pengaduan.
+
+#### Customer
+
+Customer dapat mengakses transaksi miliknya, riwayat transaksi, status cucian, serta pengaduan miliknya.
+
+#### Guest
+
+Guest tidak memiliki akun atau role yang disimpan sebagai data pengguna. Guest hanya memperoleh akses terbatas seperti pengecekan transaksi dan pengajuan pengaduan berdasarkan transaksi.
+
+---
+
+### 6. Arsitektur dan Teknologi
+
+#### Arsitektur
+
+**Full Laravel MPA (Multi-Page Application)**
+
+Sistem menggunakan Laravel sebagai aplikasi utama dengan pola Multi-Page Application.
+
+#### Frontend
+
+* **Blade** sebagai server-side templating.
+* **Tailwind CSS** sebagai framework styling.
+* **Livewire** untuk interaksi halaman.
+* **Alpine.js** untuk interaksi UI ringan di sisi client.
+
+#### Backend
+
+* **Laravel**
+* Routing
+* Controller
+* Business logic
+* Authentication
+* Authorization
+* Validation
+* Session
+* Database interaction
+
+#### ORM
+
+* **Eloquent ORM**
+
+#### Database
+
+* **PostgreSQL**
+
+#### Version Control
+
+* Git
+* GitHub
+
+#### Ketentuan Arsitektur
+
+* Tidak menggunakan React sebagai frontend utama.
+* Tidak menggunakan Vue sebagai frontend utama.
+* Tidak menggunakan SPA sebagai arsitektur utama.
+* Tidak membangun REST API sebagai arsitektur utama.
+
+---
+
+### 7. Tim dan Pembagian Peran
+
+| Anggota                           | Peran/PIC Utama                                       |
+| --------------------------------- | ----------------------------------------------------- |
+| **Maulana Ahmad Bukhori**         | Project Manager, Authentication, Integration & Review |
+| **Daysyani Sophi Masayu**         | System Analyst, Customer & Transaction Lookup         |
+| **Gargarina Nanda Iswati**        | System Analyst, Service & Transaction Detail          |
+| **Muh. Zaky Dawamul Busro**       | ERD/AD-SD, Transaction & Calculation                  |
+| **Nayla Annora Nobel Widyonarko** | AD-SD Customer, Payment & Laundry Status              |
+
+Pembagian menggunakan sistem **PIC per feature**, namun pengerjaan tetap bersifat kolaboratif. Anggota dapat membantu PIC lain apabila terdapat kendala teknis atau kebutuhan integrasi.
+
+---
+
+### 8. Milestone
+
+#### M1 — Week 8: Validation Design
+
+Target:
+
+* Finalisasi kebutuhan.
+* Project Charter.
+* PRD.
+* WBS.
+* Use Case.
+* ERD.
+* Prototype.
+* Pembagian pekerjaan.
+* Jadwal pengembangan.
+* MVP siap untuk dikembangkan/divalidasi.
+
+Dokumen analisis seperti AD/SD dapat disempurnakan setelah implementasi agar mampu mendokumentasikan dan memvalidasi alur sistem yang benar-benar diterapkan.
+
+#### M2 — Week 12: Functional Product
+
+Target:
+
+* Fitur utama dapat berjalan.
+* Authentication dan authorization.
+* Customer management.
+* Service management.
+* POS/transaksi.
+* Payment.
+* Laundry operation.
+* Customer access.
+* Complaint.
+* Integrasi antarfitur.
+* AD/SD berdasarkan implementasi.
+* Test case.
+* Initial testing.
+* Bug log.
+
+#### M3 — Week 16: Final Product
+
+Target:
+
+* Final testing.
+* Bug fixing.
+* Validasi akhir.
+* Penyempurnaan UI/UX.
+* Final documentation.
+* Final AD/SD.
 * User guide.
 * Final demo.
 * Final report.
 
 ---
 
-# 7. Asumsi dan Risiko Awal
+### 9. MVP
 
-## 7.1 Asumsi
+MVP difokuskan pada alur operasional utama dari pembuatan transaksi sampai pelanggan dapat melakukan pengecekan transaksi.
 
-* Kebutuhan sistem dapat disepakati oleh seluruh anggota tim.
-* Data yang diperlukan untuk pengembangan dan pengujian tersedia.
-* Setiap anggota tim dapat menjalankan tanggung jawab yang telah disepakati.
-* Teknologi yang digunakan tersedia dan dapat digunakan oleh seluruh anggota.
-* Perubahan kebutuhan tetap berada dalam ruang lingkup proyek dan disepakati oleh tim.
-* Integrasi frontend, backend, dan database dapat dilakukan sesuai rancangan.
+Fitur MVP:
 
-## 7.2 Risiko
+1. Staff Login.
+2. Customer Management.
+3. Service Management.
+4. Create Transaction.
+5. Transaction Detail.
+6. Total Calculation.
+7. Basic Payment.
+8. Laundry Status.
+9. Transaction Code Lookup.
 
-| Risiko                     | Mitigasi                                                                    |
-| -------------------------- | --------------------------------------------------------------------------- |
-| Perubahan kebutuhan        | Perubahan dicatat dan disepakati sebelum diterapkan.                        |
-| Keterlambatan anggota      | Progress dipantau secara berkala dan pekerjaan disesuaikan bila diperlukan. |
-| Ketidakkonsistenan desain  | Perubahan desain direview dan disepakati bersama.                           |
-| Kendala teknis             | Dilakukan troubleshooting dan pembagian tugas untuk penyelesaian masalah.   |
-| Konflik integrasi          | Struktur data dan kontrak antarbagian disepakati sebelum integrasi.         |
-| Banyak error saat testing  | Pengujian dilakukan bertahap dan bug dicatat dalam bug log.                 |
-| Keterbatasan waktu anggota | Prioritas diberikan pada fitur yang termasuk scope utama.                   |
+Alur utama MVP:
 
----
+**Staff Login → Customer → Service → Transaction → Calculation → Payment → Diterima → Diproses → Selesai → Diambil → Customer/Guest Lookup**
 
-# 8. Kesepakatan Kerja Tim
-
-* Setiap anggota bertanggung jawab terhadap area pekerjaan yang telah disepakati.
-* PIC bertugas mengoordinasikan area masing-masing.
-* Pekerjaan dapat dilakukan secara kolaboratif dan tidak terbatas hanya pada PIC.
-* Perubahan scope harus didiskusikan dan disepakati oleh tim.
-* Perubahan pada fitur utama harus mempertimbangkan dampaknya terhadap Use Case, ERD, desain sistem, implementasi, dan pengujian.
-* Integrasi dilakukan secara bertahap untuk mengurangi konflik antarbagian.
-* Setiap anggota wajib menyampaikan progres dan kendala yang ditemukan.
-* Hasil implementasi akan direview dan diuji sebelum dianggap selesai.
-* Keputusan penting proyek dicatat agar menjadi acuan bersama.
+Fitur di luar alur inti tetap berada dalam scope proyek, tetapi memiliki prioritas pengembangan setelah MVP selesai.
 
 ---
 
-# 9. Kriteria Keberhasilan
+### 10. Aturan Pembayaran
 
-Proyek CUCI.IN dianggap berhasil apabila:
+Metode pembayaran:
 
-1. Kebutuhan utama pengguna telah terpenuhi.
-2. Fitur utama untuk Admin, Staff, dan Customer telah diimplementasikan sesuai scope.
-3. Hak akses Admin, Staff, dan Customer berjalan sesuai rancangan.
-4. Frontend, backend, dan database telah terintegrasi.
-5. Proses utama transaksi, pembayaran, operasional laundry, dan pengaduan dapat berjalan.
-6. Sistem telah melalui pengujian dan bug prioritas telah diperbaiki.
-7. Implementasi sesuai dengan Use Case, ERD, rancangan proses, dan UI yang telah disepakati.
-8. Dokumentasi dan user guide tersedia.
-9. Sistem siap digunakan untuk demonstrasi dan evaluasi akhir.
+* Tunai
+* Transfer
+* QRIS
+
+Jenis pembayaran:
+
+* Pembayaran penuh
+* DP
+* Pelunasan
+
+Satu transaksi dapat memiliki lebih dari satu record pembayaran.
+
+Pembayaran yang valid akan diperhitungkan dalam total pembayaran. Pembayaran yang ditolak tidak diperhitungkan.
+
+Status verifikasi pembayaran:
+
+* Tidak Diperlukan
+* Menunggu Verifikasi
+* Terverifikasi
+* Ditolak
+
+Aturan umum:
+
+* Cash tidak memerlukan verifikasi.
+* Transfer dan QRIS dapat membutuhkan bukti pembayaran dan verifikasi.
+* Nilai pembayaran tidak boleh melebihi sisa tagihan.
+* Tidak menggunakan payment gateway seperti Midtrans atau Xendit pada scope saat ini.
+
+---
+
+### 11. Aturan Data dan Penghapusan
+
+Data operasional dan historis harus dipertahankan.
+
+* `users` menggunakan `is_active` untuk mengaktifkan/nonaktifkan akun.
+* `services` menggunakan `is_active`.
+* Data customer tetap dipertahankan untuk kebutuhan histori transaksi.
+* Transaksi dan data turunannya tidak dihapus secara operasional.
+* Pembatalan transaksi bukan merupakan penghapusan data.
+* Tidak menggunakan Laravel `SoftDeletes` atau kolom `deleted_at` untuk kebutuhan operasional utama.
+* Hard delete hanya diperbolehkan untuk kebutuhan maintenance/admin tertentu terhadap data yang tidak memiliki ketergantungan historis.
+
+---
+
+### 12. Development Agreement
+
+1. Setiap feature memiliki PIC utama.
+2. Pengerjaan tetap dapat dilakukan secara kolaboratif.
+3. Pengembangan menggunakan Full Laravel MPA.
+4. View menggunakan Blade.
+5. Styling menggunakan Tailwind CSS.
+6. Livewire digunakan untuk interaksi halaman.
+7. Alpine.js digunakan untuk interaksi UI ringan.
+8. Database diakses melalui Eloquent.
+9. Setiap fitur harus memiliki validation dan testing.
+10. Perubahan scope, waktu, atau fitur utama harus dibahas dan disepakati.
+11. Artefak analisis harus disinkronkan dengan implementasi.
+12. AD/SD dapat dibuat atau disesuaikan berdasarkan implementasi untuk mendokumentasikan alur aktual.
+13. Bug dicatat dalam bug log.
+14. Fitur yang belum masuk prioritas tidak dikerjakan pada iterasi berjalan tanpa kesepakatan tim.
+15. Setiap fitur harus siap diintegrasikan ke branch `develop`.
+
+---
+
+### 13. Definition of Done
+
+Sebuah feature dinyatakan selesai apabila:
+
+* Logic Laravel telah diimplementasikan.
+* Route dan proses backend berjalan.
+* Blade view telah tersedia.
+* Tailwind CSS telah diterapkan.
+* Livewire digunakan apabila diperlukan.
+* Alpine.js digunakan apabila diperlukan.
+* Validation telah diterapkan.
+* Relasi dan data Eloquent telah sesuai.
+* Feature telah diuji.
+* Tidak terdapat critical bug.
+* Feature siap diintegrasikan.
+* Dokumentasi terkait tersedia apabila diperlukan.
+
+---
+
+### 14. Branch Strategy
+
+```text
+main
+└── Branch stabil
+
+develop
+└── Branch integrasi
+
+feature/*
+├── feature/auth
+├── feature/customer
+├── feature/service
+├── feature/transaction
+└── feature/payment
+```
+
+Alur pengembangan:
+
+**feature → develop → testing/integration → main**
+
+`main` hanya digunakan untuk versi yang telah stabil.
+
+---
+
+### 15. Kanban Development
+
+Status pekerjaan:
+
+1. **TODO**
+2. **IN PROGRESS**
+3. **READY FOR INTEGRATION**
+4. **INTEGRATING**
+5. **DONE**
+
+Setiap task minimal mencantumkan:
+
+* Task
+* PIC
+* Progress
+* Laravel Logic/Controller
+* Blade View
+* Tailwind CSS
+* Livewire jika diperlukan
+* Alpine.js jika diperlukan
+* Validation
+* Database/Eloquent
+* Testing
+* Branch
+* Route
+* Dependency
+* Notes
+
+---
+
+### 16. Risiko dan Mitigasi
+
+| Risiko                                    | Mitigasi                                                                                   |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Integrasi antarfitur terlambat            | Setiap feature menggunakan branch terpisah dan diintegrasikan melalui `develop`            |
+| Perbedaan implementasi antaranggota       | Mengacu pada Charter, PRD, Use Case, dan ERD yang telah disepakati                         |
+| Bug saat integrasi                        | Testing dilakukan sebelum feature masuk tahap integrasi                                    |
+| Scope creep                               | Perubahan scope harus dibahas dan disepakati tim                                           |
+| Ketidaksesuaian dokumentasi dengan sistem | AD/SD diperiksa kembali berdasarkan implementasi aktual                                    |
+| Kendala teknis                            | PIC dapat meminta bantuan anggota lain dan dilakukan penyesuaian teknis secara kolaboratif |
+
+---
+
+### 17. Kriteria Keberhasilan
+
+Proyek dinyatakan berhasil apabila:
+
+1. Alur utama transaksi laundry dapat berjalan dari login Staff sampai transaksi dapat dicek oleh Customer/Guest.
+2. Data pelanggan, layanan, transaksi, pembayaran, dan status cucian tersimpan secara terstruktur.
+3. Hak akses Admin, Staff, Customer, dan Guest berjalan sesuai ketentuan.
+4. Sistem mampu mempertahankan histori transaksi dan operasional.
+5. Fitur utama telah melalui pengujian.
+6. Tidak terdapat critical bug pada fitur utama.
+7. Sistem dapat diintegrasikan pada environment yang ditentukan.
+8. Dokumentasi dan artefak proyek sesuai dengan implementasi sistem.
