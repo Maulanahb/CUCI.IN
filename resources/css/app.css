@@ -1,9 +1,27 @@
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../vendor/livewire/livewire/src/**/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Warna brand CUCI.IN (biru air). Gunakan bg-brand-600, text-brand-700, dst. */
+    --color-brand-50: oklch(0.97 0.02 230);
+    --color-brand-100: oklch(0.93 0.04 230);
+    --color-brand-200: oklch(0.87 0.07 230);
+    --color-brand-300: oklch(0.79 0.11 230);
+    --color-brand-400: oklch(0.7 0.14 235);
+    --color-brand-500: oklch(0.62 0.16 240);
+    --color-brand-600: oklch(0.54 0.17 245);
+    --color-brand-700: oklch(0.47 0.15 248);
+    --color-brand-800: oklch(0.39 0.12 250);
+    --color-brand-900: oklch(0.32 0.09 252);
+    --color-brand-950: oklch(0.22 0.06 255);
+}
+
+[x-cloak] {
+    display: none !important;
 }
