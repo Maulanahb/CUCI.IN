@@ -4,33 +4,25 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Seed akun default untuk development. Semua password: "password".
      */
     public function run(): void
     {
-        User::updateOrCreate(
-            ['email' => 'admin@cuci-in.test'],
-            [
-                'name' => 'Admin CUCI.IN',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'is_active' => true,
-            ]
-        );
+        $users = [
+            ['name' => 'Admin CUCI.IN', 'email' => 'admin@cuci.in', 'role' => 'admin', 'is_active' => true],
+            ['name' => 'Staff CUCI.IN', 'email' => 'staff@cuci.in', 'role' => 'staff', 'is_active' => true],
+            ['name' => 'Staff Nonaktif', 'email' => 'nonaktif@cuci.in', 'role' => 'staff', 'is_active' => false],
+        ];
 
-        User::updateOrCreate(
-            ['email' => 'staff@cuci-in.test'],
-            [
-                'name' => 'Staff CUCI.IN',
-                'password' => Hash::make('password'),
-                'role' => 'staff',
-                'is_active' => true,
-            ]
-        );
+        foreach ($users as $user) {
+            User::updateOrCreate(
+                ['email' => $user['email']],
+                [...$user, 'password' => 'password'],
+            );
+        }
     }
 }
