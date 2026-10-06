@@ -1,672 +1,853 @@
 # PRODUCT REQUIREMENTS DOCUMENT (PRD)
 
-## 1. Informasi Dokumen
-
-| Item            | Detail                               |
-| --------------- | ------------------------------------ |
-| Nama Produk     | CUCI.IN                              |
-| Jenis Produk    | Sistem Manajemen Operasional Laundry |
-| Platform        | Web Application                      |
-| Pendekatan      | Hybrid                               |
-| Arsitektur      | SPA + REST API                       |
-| Backend         | Laravel                              |
-| Frontend        | React                                |
-| ORM             | Eloquent ORM                         |
-| Database        | PostgreSQL                           |
-| Target Pengguna | Admin, Staff, Customer               |
+## CUCI.IN — Sistem Manajemen Operasional Laundry Berbasis Web
 
 ---
 
-# 2. Ringkasan Produk
+## 1. Informasi Produk
 
-**CUCI.IN** adalah sistem manajemen operasional laundry berbasis web yang digunakan untuk mengelola data pelanggan, layanan, transaksi, pembayaran, proses cucian, serta pengaduan pelanggan dalam satu sistem terintegrasi.
-
-Sistem menyediakan akses berdasarkan peran:
-
-* **Admin** sebagai pihak yang mengelola dan memonitor sistem.
-* **Staff** sebagai pihak yang menjalankan operasional laundry.
-* **Customer** sebagai pihak yang mengakses transaksi dan pengaduannya sendiri.
-* **Guest** dapat melakukan pengecekan transaksi dan pengaduan tanpa harus memiliki akun.
-
----
-
-# 3. Problem Statement
-
-Proses operasional laundry yang masih dilakukan secara manual dapat menyebabkan:
-
-1. Pencatatan transaksi dan pembayaran membutuhkan waktu lebih lama.
-2. Data transaksi berpotensi mengalami kesalahan atau duplikasi.
-3. Pencarian transaksi dan status cucian kurang efisien.
-4. Perubahan harga layanan dapat menyebabkan ketidaksesuaian nilai transaksi lama apabila harga tidak disimpan sebagai snapshot.
-5. Pelanggan harus menghubungi laundry untuk mengetahui status cucian.
-6. Pengelolaan pengaduan pelanggan belum terdokumentasi secara terstruktur.
-7. Pengelola kesulitan memantau aktivitas operasional dan pembayaran secara terpusat.
+| Item                  | Keterangan                           |
+| --------------------- | ------------------------------------ |
+| Nama Sistem           | CUCI.IN                              |
+| Jenis Sistem          | Sistem Manajemen Operasional Laundry |
+| Platform              | Web                                  |
+| Arsitektur            | Full Laravel MPA                     |
+| Backend               | Laravel                              |
+| View                  | Blade                                |
+| Styling               | Tailwind CSS                         |
+| Interaktivitas Server | Livewire                             |
+| Interaktivitas Client | Alpine.js                            |
+| ORM                   | Eloquent                             |
+| Database              | PostgreSQL                           |
+| Version Control       | Git & GitHub                         |
 
 ---
 
-# 4. Tujuan Produk
+## 2. Deskripsi Produk
 
-CUCI.IN bertujuan untuk:
+CUCI.IN adalah sistem manajemen operasional laundry berbasis web yang digunakan untuk mengelola aktivitas operasional laundry secara terintegrasi, mulai dari pengelolaan pengguna, pelanggan, layanan, transaksi, pembayaran, proses cucian, hingga pengaduan pelanggan.
 
-1. Mengintegrasikan proses pengelolaan pelanggan, layanan, transaksi, pembayaran, dan operasional laundry.
-2. Mempermudah Staff dalam menjalankan proses transaksi dan pengelolaan cucian.
-3. Mempermudah Admin dalam mengelola master data dan memonitor sistem.
-4. Memberikan akses kepada pelanggan untuk mengetahui detail dan status transaksi.
-5. Menyediakan mekanisme pengaduan pelanggan yang terstruktur.
-6. Menyediakan pencatatan pembayaran dan verifikasi pembayaran.
-7. Menyediakan dashboard dan laporan untuk membantu monitoring operasional dan keuangan.
-8. Menjaga konsistensi data historis transaksi meskipun terjadi perubahan harga layanan.
+Sistem menyediakan akses berdasarkan peran pengguna, yaitu Admin, Staff, dan Customer. Selain pengguna terdaftar, Guest dapat mengakses fungsi tertentu tanpa melakukan login.
+
+Sistem dirancang dengan pendekatan **Full Laravel MPA**, dengan Blade sebagai templating, Tailwind CSS sebagai styling, Livewire untuk interaksi halaman yang membutuhkan komunikasi dengan server, dan Alpine.js untuk interaksi UI ringan.
 
 ---
 
-# 5. Pengguna dan Aktor
+## 3. Tujuan Produk
 
-## 5.1 Admin
+CUCI.IN dikembangkan untuk:
+
+1. Mempermudah pengelolaan operasional laundry.
+2. Mengurangi kesalahan pencatatan transaksi.
+3. Mempermudah pencarian dan pemantauan transaksi.
+4. Mencatat pembayaran secara terstruktur.
+5. Memantau status proses cucian.
+6. Memungkinkan customer dan guest mengetahui status transaksi.
+7. Menyediakan mekanisme pengaduan.
+8. Menyediakan informasi operasional dan keuangan.
+
+---
+
+## 4. Pengguna Sistem
+
+### 4.1 Admin
 
 Admin memiliki hak akses **Manage + Monitor**.
 
 Admin dapat:
 
+* Login.
+* Melihat dashboard.
 * Mengelola pengguna.
 * Mengelola pelanggan.
 * Mengelola layanan dan harga.
-* Mengelola transaksi.
+* Memantau transaksi.
+* Memantau operasional laundry.
+* Memverifikasi pembayaran yang memerlukan verifikasi.
 * Mengelola pengaduan.
-* Memonitor sistem.
-* Melihat dashboard.
 * Melihat laporan.
-* Mengelola status akun pengguna.
 
-## 5.2 Staff
+### 4.2 Staff
 
 Staff memiliki hak akses **Operate**.
 
 Staff dapat:
 
+* Login.
 * Mengelola pelanggan.
-* Melihat layanan dan harga.
-* Mengelola transaksi.
+* Melihat layanan.
+* Membuat dan mengelola transaksi.
 * Mencatat pembayaran.
-* Memverifikasi pembayaran.
 * Mengelola status cucian.
 * Mencetak bukti transaksi.
 * Menangani pengaduan.
-* Melihat dashboard operasional.
+* Melihat dashboard.
 * Melihat laporan.
 
-## 5.3 Customer Terdaftar
+### 4.3 Customer
 
-Customer terdaftar dapat:
+Customer memiliki hak akses **Access Own Transaction & Complaint**.
 
+Customer dapat:
+
+* Registrasi.
 * Login.
 * Melihat transaksi miliknya.
 * Melihat riwayat transaksi.
 * Melihat detail transaksi.
 * Melihat status cucian.
-* Melihat status pengaduan.
 * Mengajukan pengaduan.
+* Melihat status pengaduan.
 
-## 5.4 Guest
+### 4.4 Guest
+
+Guest merupakan pengguna yang belum login dan tidak memiliki role pada tabel `users`.
 
 Guest dapat:
 
 * Mengecek transaksi menggunakan kode transaksi.
-* Melihat detail transaksi.
+* Melihat detail transaksi yang diizinkan.
 * Melihat status cucian.
+* Mengajukan pengaduan terkait transaksi.
 * Melakukan registrasi.
-* Mengajukan pengaduan berdasarkan transaksi.
-* Melihat status pengaduan.
-
-Guest tidak memiliki akun pada tabel `users`.
 
 ---
 
-# 6. Ruang Lingkup
+# 5. Functional Requirements
 
-## 6.1 Authentication dan Access Control
+## FR-01 — Authentication dan Access Control
 
-Sistem mencakup:
+### FR-01.1 Login
 
-* Login Admin dan Staff.
-* Login Customer terdaftar.
-* Lupa password.
-* Registrasi Customer.
-* Pembatasan akses berdasarkan role.
-* Aktivasi dan deaktivasi akun pengguna oleh Admin.
+Sistem harus menyediakan halaman login untuk pengguna terdaftar.
 
-## 6.2 Administrasi
+Input:
+
+* Email.
+* Password.
+
+Ketentuan:
+
+* Sistem memvalidasi kredensial.
+* Sistem memeriksa status aktif akun.
+* Pengguna diarahkan ke halaman sesuai role.
+* Akun tidak aktif tidak dapat login.
+
+### FR-01.2 Logout
+
+Sistem harus menyediakan fungsi logout.
+
+Ketentuan:
+
+* Session autentikasi diakhiri.
+* Pengguna diarahkan ke halaman yang sesuai setelah logout.
+
+### FR-01.3 Registrasi Customer
+
+Customer dapat membuat akun melalui halaman registrasi.
+
+Data minimal:
+
+* Nama.
+* Email.
+* Password.
+* Konfirmasi password.
+* Nomor telepon.
+
+Ketentuan:
+
+* Email harus unik.
+* Data harus tervalidasi.
+* Akun customer dibuat setelah registrasi berhasil.
+
+### FR-01.4 Lupa Password
+
+Sistem menyediakan mekanisme lupa password untuk pengguna yang kehilangan akses akun.
+
+### FR-01.5 Access Control
+
+Sistem harus membatasi akses berdasarkan role:
+
+* Admin.
+* Staff.
+* Customer.
+
+Guest hanya dapat mengakses fungsi yang tidak membutuhkan autentikasi.
+
+---
+
+# 6. Administration Requirements
+
+## FR-02 — Pengelolaan Pengguna
 
 Admin dapat:
 
-* Mengelola data pengguna.
-* Mengaktifkan atau menonaktifkan pengguna.
-* Mengelola data pelanggan.
-* Mengelola layanan.
-* Mengelola harga layanan.
-* Mengelola estimasi durasi layanan.
+* Melihat daftar pengguna.
+* Mencari pengguna.
+* Melihat detail pengguna.
+* Mengubah data pengguna.
+* Mengaktifkan pengguna.
+* Menonaktifkan pengguna.
 
-Staff dapat:
+Data pengguna mencakup:
 
-* Mengelola data pelanggan.
-* Melihat layanan dan harga.
+* Nama.
+* Email.
+* Password.
+* Role.
+* Status aktif.
 
-## 6.3 Transaksi / POS
+## FR-03 — Pengelolaan Pelanggan
 
-Sistem mencakup:
+Admin/Staff dapat:
 
-* Pembuatan transaksi.
-* Pemilihan pelanggan.
-* Pemilihan satu atau beberapa layanan.
-* Pencatatan berat cucian.
-* Perhitungan subtotal.
-* Perhitungan total transaksi.
-* Pembuatan kode transaksi unik.
-* Penyimpanan harga layanan sebagai snapshot transaksi.
-* Perhitungan estimasi selesai.
-* Pencetakan bukti transaksi.
-* Pembatalan transaksi sesuai aturan bisnis.
+* Melihat pelanggan.
+* Mencari pelanggan.
+* Menambah pelanggan.
+* Mengubah data pelanggan.
+* Melihat detail pelanggan.
 
-## 6.4 Pembayaran
+Data pelanggan minimal:
 
-Sistem mencakup:
+* Nama.
+* Nomor telepon.
+* Alamat.
+* Relasi akun customer apabila tersedia.
 
-* Pembayaran Tunai.
-* Pembayaran Transfer.
-* Pembayaran QRIS.
-* Pembayaran penuh.
-* Pembayaran DP.
-* Pelunasan.
-* Pencatatan beberapa pembayaran dalam satu transaksi.
-* Perhitungan total pembayaran.
-* Perhitungan sisa pembayaran.
-* Status pembayaran:
+Guest tetap dapat disimpan sebagai data customer tanpa akun.
 
-  * Belum Bayar
-  * DP
-  * Lunas
-* Upload bukti pembayaran untuk metode yang membutuhkan bukti.
-* Verifikasi pembayaran.
+## FR-04 — Pengelolaan Layanan
 
-Sistem tidak menggunakan payment gateway.
+Admin dapat mengelola:
 
-## 6.5 Operasional Laundry
+* Nama layanan.
+* Harga.
+* Estimasi durasi.
+* Deskripsi.
+* Status layanan.
 
-Sistem mencakup pengelolaan status:
+Layanan yang tidak aktif tidak dapat dipilih untuk transaksi baru.
 
-* `Diterima`
-* `Diproses`
-* `Selesai`
-* `Diambil`
-* `Dibatalkan`
+---
 
-Setiap perubahan status dicatat dalam riwayat status.
+# 7. Transaction/POS Requirements
 
-Tahapan seperti **Antrean**, **Baru Diterima**, dan **Baru Selesai Ditimbang** digunakan sebagai tahapan/proses operasional dan **bukan sebagai nilai status yang disimpan pada database**.
+## FR-05 — Pembuatan Transaksi
 
-## 6.6 Customer Access
+Staff dapat membuat transaksi baru.
 
-Customer dapat:
+Data transaksi:
 
-* Mengecek transaksi menggunakan kode transaksi.
-* Melihat detail layanan.
-* Melihat status cucian.
-* Melihat progress transaksi.
-* Melihat estimasi selesai.
-* Melihat riwayat transaksi apabila telah memiliki akun.
-* Mengajukan pengaduan terkait transaksi.
-* Melihat status dan hasil penanganan pengaduan.
+* Customer.
+* Kode transaksi.
+* Layanan.
+* Berat.
+* Harga satuan.
+* Subtotal.
+* Total transaksi.
 
-## 6.7 Pengaduan
+Satu transaksi dapat memiliki beberapa layanan.
 
-Sistem mencakup:
+## FR-06 — Perhitungan Transaksi
 
-* Pengajuan pengaduan oleh Guest maupun Customer terdaftar.
-* Pengaduan harus berkaitan dengan transaksi.
-* Pembuatan kode pengaduan.
-* Pencatatan subjek dan deskripsi pengaduan.
-* Batas waktu penanganan maksimal 2 hari sejak pengaduan dibuat.
-* Status:
+Sistem menghitung subtotal berdasarkan:
 
-  * Menunggu
-  * Diproses
-  * Selesai
-* Penanganan oleh Staff atau Admin.
-* Pencatatan pihak yang menangani.
-* Pencatatan waktu penanganan.
-* Pencatatan respons atau hasil penanganan.
-* Customer dapat melihat status dan hasil pengaduan.
+**Berat × Harga Satuan**
 
-## 6.8 Dashboard
+Total transaksi merupakan akumulasi seluruh subtotal detail transaksi.
 
-### Dashboard Admin
+Harga pada transaksi menggunakan nilai harga pada saat transaksi dibuat sehingga perubahan harga layanan tidak mengubah transaksi lama.
 
-Menampilkan informasi yang berkaitan dengan:
+## FR-07 — Kode Transaksi
 
-* Aktivitas transaksi.
+Setiap transaksi harus memiliki kode transaksi yang unik.
+
+Kode transaksi digunakan untuk:
+
+* Pencarian transaksi.
+* Akses customer.
+* Akses guest.
+* Identifikasi transaksi.
+
+## FR-08 — Detail Transaksi
+
+Sistem harus menampilkan:
+
+* Informasi customer.
+* Kode transaksi.
+* Daftar layanan.
+* Berat.
+* Harga satuan.
+* Subtotal.
+* Total transaksi.
+* Status pembayaran.
 * Status cucian.
-* Pembayaran.
-* Pendapatan berdasarkan transaksi yang tercatat.
+* Estimasi selesai.
+
+---
+
+# 8. Payment Requirements
+
+## FR-09 — Pencatatan Pembayaran
+
+Staff dapat mencatat pembayaran transaksi.
+
+Metode pembayaran:
+
+* Tunai.
+* Transfer.
+* QRIS.
+
+Satu transaksi dapat memiliki beberapa pembayaran untuk mendukung DP dan pelunasan.
+
+## FR-10 — Jenis Pembayaran
+
+Sistem mendukung:
+
+* Pembayaran penuh.
+* DP.
+* Pelunasan.
+
+## FR-11 — Perhitungan Pembayaran
+
+Sistem menghitung:
+
+* Total transaksi.
+* Total pembayaran yang valid.
+* Sisa pembayaran.
+
+Status pembayaran ditentukan berdasarkan akumulasi pembayaran terhadap total transaksi.
+
+Status:
+
+* Belum Bayar.
+* DP.
+* Lunas.
+
+Field `paid_amount`, `remaining_amount`, dan `dp_amount` tidak disimpan sebagai field terpisah pada tabel transaksi. Nilainya diperoleh dari data pembayaran.
+
+## FR-12 — Bukti Pembayaran
+
+Transfer dan QRIS dapat menggunakan bukti pembayaran.
+
+Bukti pembayaran dapat digunakan untuk proses verifikasi.
+
+## FR-13 — Verifikasi Pembayaran
+
+Pembayaran yang memerlukan verifikasi memiliki status:
+
+* Menunggu Verifikasi.
+* Terverifikasi.
+* Ditolak.
+
+Tunai tidak memerlukan verifikasi.
+
+Pembayaran yang ditolak tidak diperhitungkan sebagai pembayaran valid.
+
+---
+
+# 9. Laundry Operation Requirements
+
+## FR-14 — Status Cucian
+
+Status utama transaksi:
+
+1. Diterima.
+2. Diproses.
+3. Selesai.
+4. Diambil.
+5. Dibatalkan.
+
+## FR-15 — Perubahan Status
+
+Staff dapat memperbarui status cucian sesuai alur operasional.
+
+Setiap perubahan status harus dicatat ke dalam riwayat status.
+
+## FR-16 — Status History
+
+Sistem menyimpan:
+
+* Transaksi.
+* Status.
+* User yang melakukan perubahan.
+* Waktu perubahan.
+
+Status terkini disimpan pada transaksi, sedangkan riwayat perubahan disimpan pada `laundry_status_histories`.
+
+## FR-17 — Pembatalan Transaksi
+
+Transaksi dapat dibatalkan hanya pada kondisi operasional awal:
+
+* Antrean.
+* Baru Diterima.
+* Baru Selesai Ditimbang.
+
+Ketiga kondisi tersebut merupakan kondisi bisnis dan bukan status utama yang disimpan pada database.
+
+Pembatalan tidak menghapus data transaksi.
+
+---
+
+# 10. Customer and Guest Requirements
+
+## FR-18 — Cek Transaksi
+
+Customer dan Guest dapat melakukan pengecekan transaksi berdasarkan kode transaksi.
+
+Informasi yang dapat ditampilkan:
+
+* Kode transaksi.
+* Detail layanan.
+* Total transaksi.
+* Status pembayaran.
+* Status cucian.
+* Estimasi selesai.
+
+## FR-19 — Riwayat Customer
+
+Customer yang telah login dapat melihat transaksi yang terkait dengan akunnya.
+
+## FR-20 — Registrasi dari Guest
+
+Guest dapat berpindah menjadi Customer melalui proses registrasi.
+
+Data customer yang sebelumnya tersimpan dapat dikaitkan dengan akun customer.
+
+---
+
+# 11. Complaint Requirements
+
+## FR-21 — Pengajuan Pengaduan
+
+Customer terdaftar dan Guest dapat mengajukan pengaduan.
+
+Setiap pengaduan harus terkait dengan satu transaksi.
+
+Data pengaduan:
+
+* Transaksi.
+* Subject.
+* Description.
+* Status.
+* Response.
+* Handler.
+* Waktu penanganan.
+
+Struktur pengaduan menggunakan relasi langsung ke transaksi, sehingga customer dapat ditelusuri melalui data transaksi.
+
+## FR-22 — Status Pengaduan
+
+Status pengaduan:
+
+* Menunggu.
+* Diproses.
+* Selesai.
+
+## FR-23 — Penanganan Pengaduan
+
+Staff/Admin dapat:
+
+* Melihat pengaduan.
+* Mengambil pengaduan untuk ditangani.
+* Memberikan respons.
+* Mengubah status pengaduan.
+
+## FR-24 — Batas Penanganan
+
+Pengaduan harus ditangani dengan batas waktu maksimal **2 hari**.
+
+---
+
+# 12. Dashboard Requirements
+
+## FR-25 — Dashboard Admin
+
+Dashboard Admin menampilkan informasi seperti:
+
+* Total transaksi.
+* Informasi pembayaran.
+* Informasi pendapatan.
+* Status operasional.
 * Pengaduan.
-* Monitoring sistem.
+* Ringkasan aktivitas.
 
-### Dashboard Staff
+## FR-26 — Dashboard Staff
 
-Menampilkan informasi operasional seperti:
+Dashboard Staff menampilkan:
 
 * Total transaksi hari ini.
-* Cucian Diterima.
-* Cucian Diproses.
-* Cucian Selesai.
+* Transaksi Diterima.
+* Transaksi Diproses.
+* Transaksi Selesai.
 * Cucian belum diambil.
 * Pengaduan.
 
-## 6.9 Laporan
+Dashboard menyediakan akses cepat ke:
 
-Sistem menyediakan:
+* Buat Transaksi.
+* Kelola Cucian.
+* Pengaduan.
 
-* Laporan transaksi.
-* Laporan pembayaran.
-* Laporan pendapatan berdasarkan transaksi yang tercatat.
-* Laporan penggunaan layanan.
-* Filter berdasarkan periode.
-* Export PDF/Excel.
+## FR-27 — Dashboard Customer
 
----
+Dashboard Customer menampilkan:
 
-# 7. Functional Requirements
-
-## 7.1 User & Authentication
-
-| ID         | Requirement                                                     |
-| ---------- | --------------------------------------------------------------- |
-| FR-USER-01 | Sistem harus menyediakan login berdasarkan kredensial pengguna. |
-| FR-USER-02 | Admin dapat mengaktifkan atau menonaktifkan akun pengguna.      |
-| FR-USER-03 | Pengguna yang tidak aktif tidak dapat melakukan login.          |
-| FR-USER-04 | Sistem menyediakan fitur lupa password.                         |
-| FR-USER-05 | Customer dapat melakukan registrasi akun.                       |
-| FR-USER-06 | Sistem menerapkan hak akses berdasarkan role.                   |
-
-## 7.2 Customer
-
-| ID         | Requirement                                                |
-| ---------- | ---------------------------------------------------------- |
-| FR-CUST-01 | Admin dan Staff dapat mengelola data pelanggan.            |
-| FR-CUST-02 | Guest dapat mengecek transaksi menggunakan kode transaksi. |
-| FR-CUST-03 | Customer terdaftar dapat melihat transaksi miliknya.       |
-| FR-CUST-04 | Customer terdaftar dapat melihat riwayat transaksi.        |
-
-## 7.3 Service
-
-| ID        | Requirement                                                          |
-| --------- | -------------------------------------------------------------------- |
-| FR-SVC-01 | Admin dapat mengelola layanan.                                       |
-| FR-SVC-02 | Admin dapat menentukan harga layanan.                                |
-| FR-SVC-03 | Admin dapat menentukan estimasi durasi layanan.                      |
-| FR-SVC-04 | Staff dapat melihat layanan dan harga yang aktif.                    |
-| FR-SVC-05 | Layanan yang tidak aktif tidak dapat digunakan untuk transaksi baru. |
-
-## 7.4 Transaction
-
-| ID        | Requirement                                                              |
-| --------- | ------------------------------------------------------------------------ |
-| FR-TRX-01 | Admin dan Staff dapat membuat transaksi.                                 |
-| FR-TRX-02 | Satu transaksi dapat memiliki beberapa detail layanan.                   |
-| FR-TRX-03 | Sistem menghitung subtotal berdasarkan berat, harga satuan, dan layanan. |
-| FR-TRX-04 | Sistem menghitung total transaksi secara otomatis.                       |
-| FR-TRX-05 | Sistem menghasilkan kode transaksi unik.                                 |
-| FR-TRX-06 | Sistem menyimpan harga layanan pada detail transaksi sebagai snapshot.   |
-| FR-TRX-07 | Sistem menghitung estimasi waktu selesai.                                |
-| FR-TRX-08 | Admin dan Staff dapat membatalkan transaksi sesuai aturan pembatalan.    |
-| FR-TRX-09 | Pembatalan transaksi dicatat dalam riwayat perubahan status.             |
-
-## 7.5 Payment
-
-| ID        | Requirement                                                         |
-| --------- | ------------------------------------------------------------------- |
-| FR-PAY-01 | Admin dan Staff dapat mencatat pembayaran.                          |
-| FR-PAY-02 | Sistem mendukung pembayaran DP dan pelunasan.                       |
-| FR-PAY-03 | Sistem mendukung beberapa pembayaran dalam satu transaksi.          |
-| FR-PAY-04 | Sistem menghitung total pembayaran yang valid.                      |
-| FR-PAY-05 | Sistem menghitung sisa pembayaran secara otomatis.                  |
-| FR-PAY-06 | Sistem menyediakan status Belum Bayar, DP, dan Lunas.               |
-| FR-PAY-07 | Sistem dapat menyimpan bukti pembayaran.                            |
-| FR-PAY-08 | Admin dan Staff dapat melakukan verifikasi pembayaran.              |
-| FR-PAY-09 | Sistem mencatat pengguna yang membuat dan memverifikasi pembayaran. |
-
-## 7.6 Laundry Operation
-
-| ID         | Requirement                                                                             |
-| ---------- | --------------------------------------------------------------------------------------- |
-| FR-LDRY-01 | Staff dapat mengelola status cucian.                                                    |
-| FR-LDRY-02 | Sistem menyimpan riwayat perubahan status cucian.                                       |
-| FR-LDRY-03 | Sistem mencatat pengguna yang mengubah status.                                          |
-| FR-LDRY-04 | Customer dapat melihat status cucian.                                                   |
-| FR-LDRY-05 | Sistem menampilkan estimasi selesai.                                                    |
-| FR-LDRY-06 | Sistem dapat memonitor transaksi yang belum diambil.                                    |
-| FR-LDRY-07 | Status Dibatalkan merupakan status akhir dan tidak dapat kembali ke status operasional. |
-
-## 7.7 Complaint
-
-| ID        | Requirement                                                                   |
-| --------- | ----------------------------------------------------------------------------- |
-| FR-CMP-01 | Guest dan Customer terdaftar dapat mengajukan pengaduan terkait transaksi.    |
-| FR-CMP-02 | Sistem menghasilkan kode pengaduan unik.                                      |
-| FR-CMP-03 | Sistem mencatat subjek dan deskripsi pengaduan.                               |
-| FR-CMP-04 | Sistem menentukan deadline penanganan maksimal 2 hari sejak pengaduan dibuat. |
-| FR-CMP-05 | Staff dan Admin dapat melihat dan menangani pengaduan.                        |
-| FR-CMP-06 | Sistem mencatat pihak yang menangani pengaduan.                               |
-| FR-CMP-07 | Sistem mencatat waktu penanganan.                                             |
-| FR-CMP-08 | Sistem menyimpan respons atau hasil penanganan.                               |
-| FR-CMP-09 | Customer dapat melihat status dan hasil pengaduan.                            |
+* Transaksi aktif.
+* Status cucian.
+* Riwayat transaksi.
+* Pengaduan.
 
 ---
 
-# 8. Use Case
+# 13. Report Requirements
 
-Use case utama sistem meliputi:
+## FR-28 — Laporan Transaksi
 
-### Admin
+Sistem menyediakan laporan transaksi berdasarkan data transaksi.
 
-* Login
-* Lupa Password
-* Lihat Dashboard
-* Monitoring Sistem
-* Kelola Data Pengguna
-* Kelola Data Pelanggan
-* Kelola Layanan & Harga
-* Kelola Transaksi
-* Lihat Laporan
-* Kelola Pengaduan
+## FR-29 — Laporan Pembayaran
 
-### Staff
+Sistem menyediakan laporan pembayaran berdasarkan:
 
-* Login
-* Lupa Password
-* Lihat Dashboard
-* Kelola Data Pelanggan
-* Lihat Layanan
-* Kelola Transaksi
-* Verifikasi Pembayaran
-* Kelola Status Cucian
-* Cetak Bukti Transaksi
-* Lihat Laporan
-* Kelola Pengaduan
+* Transaksi.
+* Metode pembayaran.
+* Waktu pembayaran.
+* Status verifikasi.
 
-### Customer Terdaftar
+## FR-30 — Laporan Pendapatan
 
-* Login
-* Lupa Password
-* Cek Transaksi
-* Lihat Riwayat Transaksi
-* Ajukan Pengaduan
-* Lihat Status Pengaduan
+Sistem menyediakan informasi pendapatan berdasarkan pembayaran yang valid.
 
-### Guest
+## FR-31 — Laporan Operasional
 
-* Cek Transaksi
-* Registrasi
-* Ajukan Pengaduan
-* Lihat Status Pengaduan
-
-Pada proses `Cek Transaksi`, sistem mencakup:
-
-* Lihat Status Cucian.
-* Lihat Detail Transaksi.
-
-Pada proses `Kelola Transaksi`, proses verifikasi pembayaran dapat dilakukan sesuai kebutuhan transaksi.
+Sistem menyediakan informasi terkait status dan aktivitas operasional laundry.
 
 ---
 
-# 9. Business Rules
+# 14. Non-Functional Requirements
 
-| ID    | Business Rule                                                                                                                                                                                                           |
-| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BR-01 | Setiap pengguna memiliki satu role: Admin, Staff, atau Customer.                                                                                                                                                        |
-| BR-02 | Pengguna yang berstatus tidak aktif tidak dapat login.                                                                                                                                                                  |
-| BR-03 | Guest bukan merupakan data pada tabel users.                                                                                                                                                                            |
-| BR-04 | Satu Customer dapat memiliki atau tidak memiliki akun users.                                                                                                                                                            |
-| BR-05 | Satu transaksi harus memiliki satu Customer.                                                                                                                                                                            |
-| BR-06 | Satu transaksi dapat memiliki satu atau lebih detail layanan.                                                                                                                                                           |
-| BR-07 | Harga pada detail transaksi disimpan sebagai snapshot dan tidak mengikuti perubahan harga layanan setelah transaksi dibuat.                                                                                             |
-| BR-08 | Layanan tidak aktif tidak dapat dipilih untuk transaksi baru.                                                                                                                                                           |
-| BR-09 | Satu transaksi dapat memiliki beberapa pembayaran.                                                                                                                                                                      |
-| BR-10 | Total pembayaran tidak boleh melebihi total transaksi.                                                                                                                                                                  |
-| BR-11 | Sisa pembayaran dihitung dari total transaksi dikurangi pembayaran yang valid.                                                                                                                                          |
-| BR-12 | Pembayaran transfer atau QRIS dapat membutuhkan bukti pembayaran dan verifikasi.                                                                                                                                        |
-| BR-13 | Pembayaran yang ditolak tidak dihitung sebagai pembayaran valid.                                                                                                                                                        |
-| BR-14 | Setiap perubahan status cucian dicatat pada riwayat status.                                                                                                                                                             |
-| BR-15 | Perubahan status mencatat pengguna dan waktu perubahan.                                                                                                                                                                 |
-| BR-16 | Pengguna dapat dinonaktifkan tanpa menghapus riwayat aktivitasnya.                                                                                                                                                      |
-| BR-17 | `Dibatalkan` merupakan status akhir transaksi.                                                                                                                                                                          |
-| BR-18 | Transaksi berstatus `Dibatalkan` tidak dapat kembali ke status operasional.                                                                                                                                             |
-| BR-19 | Transaksi berstatus `Diambil` tidak dapat dibatalkan.                                                                                                                                                                   |
-| BR-20 | Pembatalan transaksi harus dicatat dalam riwayat status beserta pengguna dan waktu pembatalan.                                                                                                                          |
-| BR-21 | Pembatalan hanya dapat dilakukan ketika transaksi masih berada pada tahap operasional awal, yaitu Antrean, Baru Diterima, atau Baru Selesai Ditimbang. Tahapan tersebut bukan nilai status yang disimpan pada database. |
-| BR-22 | Transaksi yang telah memasuki proses pencucian tidak dapat dibatalkan.                                                                                                                                                  |
-| BR-23 | Deadline pengaduan adalah maksimal 2 hari sejak pengaduan dibuat.                                                                                                                                                       |
-| BR-24 | Pengaduan harus berkaitan dengan transaksi.                                                                                                                                                                             |
-| BR-25 | Penanganan pengaduan dicatat melalui status, pihak yang menangani, waktu penanganan, dan respons/hasil penanganan.                                                                                                      |
-| BR-26 | Perubahan harga layanan tidak mengubah nilai transaksi yang telah dibuat sebelumnya.                                                                                                                                    |
+## NFR-01 — Usability
 
----
+Antarmuka harus:
 
-# 10. Non-Functional Requirements
+* Sederhana.
+* Konsisten.
+* Mudah dipahami.
+* Tidak berlebihan secara visual.
+* Responsif pada perangkat yang digunakan.
 
-## 10.1 Security
+## NFR-02 — Security
 
-* Sistem menerapkan autentikasi pengguna.
-* Sistem menerapkan authorization berdasarkan role.
-* Password disimpan dalam bentuk hash.
-* Pengguna tidak aktif tidak dapat login.
-* Data transaksi hanya dapat diakses sesuai hak akses.
+Sistem harus:
 
-## 10.2 Performance
+* Melindungi password dengan hashing.
+* Menerapkan authentication.
+* Menerapkan authorization berdasarkan role.
+* Melakukan validation terhadap input.
+* Membatasi akses data customer berdasarkan kepemilikan.
 
-* Sistem harus memberikan respons yang wajar pada proses transaksi dan pencarian.
-* Pencarian transaksi berdasarkan kode harus dapat dilakukan secara efisien.
-* Dashboard harus menampilkan data berdasarkan data transaksi yang tersimpan.
+## NFR-03 — Performance
 
-## 10.3 Usability
+Sistem harus mampu memberikan respons yang wajar pada proses:
 
-* Antarmuka harus sederhana dan konsisten.
-* Informasi status transaksi harus mudah dipahami.
-* Form transaksi harus meminimalkan input yang tidak diperlukan.
-* Sistem harus memberikan informasi validasi ketika terjadi kesalahan input.
+* Login.
+* Pencarian data.
+* Pembuatan transaksi.
+* Pencatatan pembayaran.
+* Pengecekan transaksi.
 
-## 10.4 Maintainability
+## NFR-04 — Data Integrity
 
-* Backend dan frontend menggunakan struktur yang terorganisasi.
-* Database menggunakan relasi yang konsisten.
-* Perubahan fitur tidak boleh menghilangkan data historis.
-* Pengembangan mengikuti struktur repository dan branch yang disepakati tim.
+Sistem harus menjaga:
 
-## 10.5 Data Integrity
+* Keunikan kode transaksi.
+* Keunikan email.
+* Konsistensi foreign key.
+* Konsistensi total transaksi.
+* Konsistensi pembayaran.
+* Konsistensi status transaksi.
 
-* Kode transaksi harus unik.
-* Kode pengaduan harus unik.
-* Harga transaksi lama harus tetap tersimpan.
-* Riwayat status harus tetap tersedia.
-* Data pengguna yang dinonaktifkan tidak dihapus hanya untuk mengubah status akses.
+## NFR-05 — Maintainability
+
+Source code harus:
+
+* Mengikuti struktur Laravel.
+* Menggunakan Eloquent untuk ORM.
+* Memisahkan logic sesuai tanggung jawabnya.
+* Menggunakan component Livewire ketika diperlukan.
+* Menggunakan Alpine.js untuk interaksi UI ringan.
+* Menggunakan Git untuk version control.
 
 ---
 
-# 11. Data Utama Sistem
+# 15. Architecture Requirements
 
-Sistem menggunakan 8 tabel utama:
+## AR-01 — Full Laravel MPA
 
-1. `users`
-2. `customers`
-3. `services`
-4. `transactions`
-5. `transaction_details`
-6. `payments`
-7. `laundry_status_histories`
-8. `complaints`
+CUCI.IN menggunakan **Full Laravel MPA (Multi-Page Application)**.
 
-### Data penting
+Laravel menjadi aplikasi utama untuk:
 
-**users**
+* Routing.
+* Authentication.
+* Authorization.
+* Validation.
+* Business logic.
+* Session.
+* Database interaction.
 
-* identitas pengguna
-* role
-* status aktif/nonaktif
+## AR-02 — Blade
 
-**customers**
+Blade digunakan sebagai template/rendering halaman.
 
-* identitas pelanggan
-* hubungan opsional dengan akun pengguna
+## AR-03 — Tailwind CSS
 
-**services**
+Tailwind CSS digunakan untuk membangun antarmuka dan styling.
 
-* nama layanan
-* harga
-* estimasi durasi
-* status aktif
+## AR-04 — Livewire
 
-**transactions**
+Livewire digunakan untuk fitur interaktif yang membutuhkan komunikasi antara halaman dan server Laravel tanpa membangun frontend SPA terpisah.
 
-* pelanggan
-* kode transaksi
-* total transaksi
-* status
-* estimasi selesai
+Contoh penggunaan:
 
-**transaction_details**
+* Pencarian data.
+* Filter.
+* Form dinamis.
+* Update data.
+* Interaksi transaksi.
+* Pagination.
 
-* layanan
-* berat
-* harga snapshot
-* subtotal
+## AR-05 — Alpine.js
 
-**payments**
+Alpine.js digunakan untuk interaksi ringan di sisi client.
 
-* jumlah pembayaran
-* jenis pembayaran
-* metode pembayaran
-* bukti pembayaran
-* status verifikasi
-* pencatat pembayaran
-* pihak yang memverifikasi
+Contoh:
 
-**laundry_status_histories**
+* Modal.
+* Dropdown.
+* Toggle.
+* Sidebar.
+* Show/hide.
+* Interaksi UI sederhana.
 
-* status
-* transaksi
-* pengguna yang mengubah status
-* waktu perubahan
+## AR-06 — Eloquent
 
-**complaints**
+Eloquent digunakan sebagai ORM untuk mengakses dan mengelola data PostgreSQL.
 
-* kode pengaduan
-* transaksi
-* subjek
-* deskripsi
-* status
-* deadline
-* respons
-* pihak yang menangani
-* waktu penanganan
+## AR-07 — PostgreSQL
+
+PostgreSQL digunakan sebagai database sistem.
+
+## AR-08 — API
+
+REST API tidak digunakan sebagai arsitektur utama sistem.
+
+React, Vue, dan SPA juga tidak digunakan sebagai frontend utama.
 
 ---
 
-# 12. Acceptance Criteria
+# 16. Data Requirements
 
-## Authentication
+Sistem menggunakan entitas utama:
 
-* Admin, Staff, dan Customer terdaftar dapat login sesuai hak akses.
-* Pengguna yang dinonaktifkan tidak dapat login.
-* Fitur lupa password tersedia.
+1. Users.
+2. Customers.
+3. Services.
+4. Transactions.
+5. Transaction Details.
+6. Payments.
+7. Laundry Status Histories.
+8. Complaints.
 
-## Transaction
+Relasi dan struktur data mengikuti ERD serta Kamus Data CUCI.IN yang telah ditetapkan.
 
-* Staff/Admin dapat membuat transaksi dengan satu atau beberapa layanan.
-* Sistem menghitung subtotal dan total secara otomatis.
-* Kode transaksi unik.
-* Harga historis transaksi tetap sama meskipun harga layanan berubah.
-* Transaksi dapat dibatalkan hanya pada tahap operasional yang diizinkan.
-* Transaksi yang telah memasuki proses pencucian tidak dapat dibatalkan.
-* Transaksi yang dibatalkan tercatat pada riwayat status.
+Prinsip utama data:
 
-## Payment
-
-* Sistem dapat mencatat pembayaran penuh, DP, dan pelunasan.
+* Customer Guest dapat memiliki `user_id = NULL`.
+* Satu transaksi memiliki satu atau lebih detail transaksi.
 * Satu transaksi dapat memiliki beberapa pembayaran.
-* Total pembayaran dan sisa pembayaran dihitung otomatis.
-* Pembayaran tidak dapat melebihi total transaksi.
-* Pembayaran yang membutuhkan verifikasi memiliki status verifikasi.
-
-## Laundry
-
-* Staff dapat mengubah status cucian.
-* Sistem menyimpan histori perubahan status.
-* Customer dapat melihat status cucian.
-* Transaksi yang telah `Dibatalkan` tidak dapat kembali ke status operasional.
-
-## Complaint
-
-* Guest maupun Customer terdaftar dapat mengajukan pengaduan.
-* Pengaduan harus memiliki transaksi terkait.
-* Sistem memberikan kode pengaduan.
-* Sistem menetapkan deadline maksimal 2 hari.
-* Staff/Admin dapat menangani pengaduan.
-* Customer dapat melihat status dan hasil penanganan.
-
-## Reporting
-
-* Admin dan Staff dapat melihat laporan sesuai hak akses.
-* Laporan dapat difilter berdasarkan periode.
-* Laporan dapat diekspor.
+* Riwayat status disimpan terpisah dari status transaksi saat ini.
+* Pengaduan selalu terkait dengan transaksi.
+* Data historis operasional dipertahankan.
 
 ---
 
-# 13. Traceability
+# 17. Business Rules
 
-| Area            | Use Case                                                   | Data Utama                        |
-| --------------- | ---------------------------------------------------------- | --------------------------------- |
-| Authentication  | Login, Lupa Password, Registrasi                           | users                             |
-| User Management | Kelola Data Pengguna                                       | users                             |
-| Customer        | Kelola Data Pelanggan                                      | customers                         |
-| Service         | Kelola Layanan & Harga, Lihat Layanan                      | services                          |
-| Transaction     | Kelola Transaksi, Cek Transaksi                            | transactions, transaction_details |
-| Payment         | Kelola Transaksi, Verifikasi Pembayaran                    | payments                          |
-| Laundry         | Kelola Status Cucian, Lihat Status Cucian                  | laundry_status_histories          |
-| Complaint       | Ajukan Pengaduan, Kelola Pengaduan, Lihat Status Pengaduan | complaints                        |
-| Reporting       | Lihat Laporan                                              | transactions, payments, services  |
+## BR-01 — Customer Guest
+
+Customer Guest tidak memiliki akun user.
+
+## BR-02 — Harga Transaksi
+
+Harga layanan pada detail transaksi merupakan snapshot harga ketika transaksi dibuat.
+
+## BR-03 — Pembayaran
+
+Satu transaksi dapat memiliki lebih dari satu pembayaran.
+
+## BR-04 — Pembayaran Valid
+
+Hanya pembayaran yang valid/terverifikasi yang diperhitungkan dalam total pembayaran.
+
+## BR-05 — Batas Pembayaran
+
+Nominal pembayaran tidak boleh melebihi sisa tagihan.
+
+## BR-06 — Status Transaksi
+
+Status utama transaksi terdiri dari:
+
+**Diterima → Diproses → Selesai → Diambil**
+
+Status **Dibatalkan** hanya dapat digunakan sesuai aturan pembatalan.
+
+## BR-07 — Riwayat Status
+
+Setiap perubahan status harus memiliki record histori.
+
+## BR-08 — Pengaduan
+
+Setiap pengaduan wajib terkait dengan transaksi.
+
+## BR-09 — Batas Pengaduan
+
+Pengaduan harus ditangani maksimal dalam 2 hari.
+
+## BR-10 — Penghapusan Data
+
+Penghapusan tidak digunakan untuk menghilangkan histori transaksi dan operasional.
 
 ---
 
-# 14. Batasan dan Asumsi
+# 18. MVP Requirements
 
-## 14.1 Batasan
+MVP difokuskan pada alur inti operasional laundry:
 
-Sistem tidak mencakup:
+### MVP-01
+
+Staff dapat login.
+
+### MVP-02
+
+Staff dapat mengelola customer.
+
+### MVP-03
+
+Staff dapat melihat dan memilih layanan.
+
+### MVP-04
+
+Staff dapat membuat transaksi.
+
+### MVP-05
+
+Transaksi dapat memiliki beberapa detail layanan.
+
+### MVP-06
+
+Sistem menghitung total transaksi.
+
+### MVP-07
+
+Staff dapat mencatat pembayaran dasar.
+
+### MVP-08
+
+Staff dapat mengubah status cucian.
+
+### MVP-09
+
+Customer/Guest dapat melakukan lookup transaksi menggunakan kode transaksi.
+
+### Alur MVP
+
+**Staff Login → Customer → Service → Create Transaction → Transaction Detail → Calculation → Payment → Diterima → Diproses → Selesai → Diambil → Customer/Guest Lookup**
+
+---
+
+# 19. Priority Feature
+
+| Prioritas | Fitur                          |
+| --------- | ------------------------------ |
+| **MVP**   | Login Staff                    |
+| **MVP**   | Customer                       |
+| **MVP**   | Service                        |
+| **MVP**   | Create Transaction             |
+| **MVP**   | Transaction Detail             |
+| **MVP**   | Calculation                    |
+| **MVP**   | Basic Payment                  |
+| **MVP**   | Laundry Status                 |
+| **MVP**   | Transaction Lookup             |
+| **P1**    | Dashboard sederhana            |
+| **P1**    | Cetak bukti transaksi          |
+| **P1**    | Monitoring Admin               |
+| **P2**    | Pengaduan                      |
+| **P2**    | Verifikasi pembayaran lanjutan |
+| **P2**    | Laporan                        |
+| **P2**    | Forgot Password                |
+| **P2**    | Master data Admin              |
+
+---
+
+# 20. Acceptance Criteria
+
+| Fitur          | Acceptance Criteria                                        |
+| -------------- | ---------------------------------------------------------- |
+| Login          | User dengan kredensial valid dapat login sesuai role       |
+| Customer       | Data customer dapat dibuat, dilihat, dan dicari            |
+| Service        | Service aktif dapat dipilih dalam transaksi                |
+| Transaction    | Transaksi berhasil dibuat dengan kode unik                 |
+| Calculation    | Subtotal dan total dihitung sesuai detail transaksi        |
+| Payment        | Pembayaran tercatat dan status pembayaran sesuai akumulasi |
+| Laundry Status | Status transaksi dapat diperbarui dan histori tersimpan    |
+| Lookup         | Guest/Customer dapat mencari transaksi menggunakan kode    |
+| Complaint      | Pengaduan dapat dibuat dan ditangani sesuai status         |
+| Dashboard      | Data ringkasan tampil sesuai hak akses                     |
+| Report         | Data laporan berasal dari data transaksi/pembayaran aktual |
+
+---
+
+# 21. Out of Scope
+
+Fitur berikut tidak termasuk dalam scope saat ini:
 
 * Multi-tenant.
 * Multi-cabang.
-* Akuntansi penuh.
+* Accounting system penuh.
 * Payment gateway.
-* Layanan kurir.
-* Membership atau loyalty point.
-* Sistem promosi digital.
-* Komunikasi real-time antara customer dan Staff.
-* Fitur lain di luar ruang lingkup yang telah disepakati.
+* Integrasi kurir.
+* Loyalty program.
+* Digital promotion.
+* Real-time chat.
+* Fitur eksternal yang tidak dibutuhkan untuk operasional utama laundry.
 
-## 14.2 Asumsi
+---
 
-* Sistem digunakan oleh satu bisnis laundry.
-* Admin bertanggung jawab terhadap pengelolaan master data dan pengguna.
-* Staff menjalankan operasional transaksi dan cucian.
-* Customer dapat menggunakan akses Guest maupun akun terdaftar.
-* Data transaksi yang telah dibuat harus tetap dapat dipertanggungjawabkan secara historis.
-* Perubahan harga layanan tidak mengubah transaksi yang telah dibuat.
-* Tahapan operasional seperti Antrean, Baru Diterima, dan Baru Selesai Ditimbang digunakan untuk menentukan proses operasional, tetapi tidak menjadi enum/status baru pada database.
-* Pembatalan transaksi hanya diperbolehkan pada tahap operasional awal sesuai aturan bisnis yang telah ditetapkan.
+# 22. Traceability
 
-#15 Data Deletion & Deactivation
+Setiap requirement harus dapat ditelusuri ke:
 
-1. Data **pengguna** dan **layanan** tidak dihapus secara permanen melalui fungsi operasional sistem apabila masih memiliki keterkaitan dengan data historis.
-2. Pengguna yang tidak lagi digunakan dinonaktifkan melalui atribut `users.is_active = false` sehingga pengguna tidak dapat melakukan login, tetapi data dan relasi historisnya tetap dipertahankan.
-3. Layanan yang tidak lagi tersedia dinonaktifkan melalui atribut `services.is_active = false` sehingga layanan tidak dapat digunakan pada transaksi baru, tetapi tetap dapat direferensikan oleh transaksi historis.
-4. Data **transaksi, detail transaksi, pembayaran, riwayat status cucian, dan pengaduan** tidak dapat dihapus melalui fungsi operasional sistem karena merupakan data historis.
-5. Pembatalan transaksi tidak dilakukan dengan menghapus data transaksi, tetapi menggunakan status `Dibatalkan` dan tetap dicatat pada `laundry_status_histories`.
-6. **Hard delete** hanya diperbolehkan untuk kebutuhan administratif/maintenance pada data yang tidak memiliki keterkaitan dengan data historis dan tidak dilakukan melalui fungsi operasional utama sistem.
+**PRD → Use Case → ERD/Data Model → Implementasi → Test Case**
+
+Perubahan terhadap requirement harus disinkronkan dengan artefak terkait agar tidak terjadi ketidaksesuaian antara analisis dan implementasi.
+
+---
+
+# 23. Definition of Done
+
+Feature dinyatakan selesai apabila:
+
+* Requirement sudah terpenuhi.
+* Logic Laravel berjalan.
+* Route berjalan.
+* Blade view tersedia.
+* Tailwind CSS diterapkan.
+* Livewire digunakan apabila dibutuhkan.
+* Alpine.js digunakan apabila dibutuhkan.
+* Validation tersedia.
+* Eloquent dan relasi data sesuai.
+* Feature telah diuji.
+* Tidak terdapat critical bug.
+* Feature siap diintegrasikan ke `develop`.
