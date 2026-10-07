@@ -11,19 +11,16 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
-        <div class="flex min-h-screen flex-col items-center justify-center gap-8 px-4 py-12">
-            <a href="{{ url('/') }}" class="flex items-center gap-2 text-2xl font-semibold tracking-tight text-brand-700">
-                <x-app-logo class="size-9" />
-                <span>CUCI<span class="text-brand-400">.IN</span></span>
-            </a>
+    <body class="min-h-screen bg-[#f8fafc] font-sans text-slate-800 antialiased flex flex-col justify-between py-10 px-4">
+        <div></div>
 
-            <main class="w-full max-w-md">
-                {{ $slot }}
-            </main>
+        <main class="w-full max-w-[440px] mx-auto">
+            {{ $slot }}
+        </main>
 
-            <p class="text-xs text-slate-400">&copy; {{ date('Y') }} CUCI.IN — Sistem Manajemen Operasional Laundry</p>
-        </div>
+        <footer class="text-center text-xs text-slate-400 mt-8">
+            &copy; {{ date('Y') }} CUCI.IN
+        </footer>
 
         @livewireScripts
     </body>

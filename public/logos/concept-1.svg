@@ -1,16 +1,16 @@
-<svg {{ $attributes }} viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
   <defs>
-    <linearGradient id="cuciin-logo-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="c1-bg" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#186337"/>
       <stop offset="100%" stop-color="#0f3e22"/>
     </linearGradient>
-    <linearGradient id="cuciin-logo-drum" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="c1-drum" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#34d399"/>
       <stop offset="100%" stop-color="#059669"/>
     </linearGradient>
   </defs>
   <!-- Background Squircle -->
-  <rect width="120" height="120" rx="30" fill="url(#cuciin-logo-bg)"/>
+  <rect width="120" height="120" rx="30" fill="url(#c1-bg)"/>
   
   <!-- Machine Chassis -->
   <rect x="25" y="22" width="70" height="76" rx="14" fill="#FFFFFF"/>
@@ -27,7 +27,7 @@
   <circle cx="60" cy="65" r="22" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2.5"/>
   
   <!-- Inner Glass -->
-  <circle cx="60" cy="65" r="16.5" fill="url(#cuciin-logo-drum)" fill-opacity="0.15"/>
+  <circle cx="60" cy="65" r="16.5" fill="url(#c1-drum)" fill-opacity="0.15"/>
   <circle cx="60" cy="65" r="16.5" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="75 30"/>
   
   <!-- Clean Swirl / Water Wave -->
