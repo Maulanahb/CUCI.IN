@@ -4,7 +4,7 @@
         <div class="flex flex-col items-center text-center">
             <div class="flex items-center gap-2.5">
                 <x-app-logo class="size-9 drop-shadow-sm" />
-                <span class="text-xl font-bold tracking-tight text-[#186337]">CUCI.IN</span>
+                <span class="text-xl font-bold tracking-tight text-brand-700">CUCI<span class="text-brand-500">.IN</span></span>
             </div>
 
             <p class="mt-2 text-xs font-medium text-slate-500">
@@ -21,7 +21,7 @@
 
         {{-- Status Notification --}}
         @if (session('status'))
-            <div class="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-800" role="status">
+            <div class="mt-5 rounded-xl border border-brand-200 bg-brand-50 px-4 py-3 text-xs text-brand-800" role="status">
                 {{ session('status') }}
             </div>
         @endif
@@ -49,7 +49,7 @@
                         placeholder="Masukkan email"
                         @class([
                             'w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
-                            'border-slate-300 focus:border-[#186337] focus:ring-[#186337]/20' => ! $errors->has('email'),
+                            'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('email'),
                             'border-red-400 bg-red-50/30 text-red-900 focus:border-red-500 focus:ring-red-500/20' => $errors->has('email'),
                         ])
                     />
@@ -76,7 +76,7 @@
                         placeholder="Masukkan password"
                         @class([
                             'w-full rounded-xl border py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
-                            'border-slate-300 focus:border-[#186337] focus:ring-[#186337]/20' => ! $errors->has('password'),
+                            'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('password'),
                             'border-red-400 bg-red-50/30 text-red-900 focus:border-red-500 focus:ring-red-500/20' => $errors->has('password'),
                         ])
                     />
@@ -103,11 +103,11 @@
             {{-- Link Lupa Password & Remember Me --}}
             <div class="flex items-center justify-between pt-1 text-xs">
                 <label class="inline-flex items-center gap-2 cursor-pointer select-none text-slate-600">
-                    <input type="checkbox" name="remember" class="size-4 rounded border-slate-300 text-[#186337] focus:ring-[#186337]" />
+                    <input type="checkbox" name="remember" class="size-4 rounded border-slate-300 text-brand-600 focus:ring-brand-600" />
                     <span>Ingat saya</span>
                 </label>
 
-                <a href="#" class="font-medium text-[#186337] hover:underline">
+                <a href="#" class="font-medium text-brand-700 hover:text-brand-800 hover:underline">
                     Lupa Password?
                 </a>
             </div>
@@ -116,7 +116,7 @@
             <button
                 type="submit"
                 id="login-submit-button"
-                class="mt-2 w-full rounded-xl bg-[#186337] py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-[#14532d] focus:outline-none focus:ring-2 focus:ring-[#186337]/30 active:scale-[0.99]"
+                class="mt-2 w-full rounded-xl bg-brand-600 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 active:scale-[0.99]"
             >
                 Masuk
             </button>
@@ -126,8 +126,8 @@
     {{-- Link Registrasi Bawah Card --}}
     <div class="mt-6 text-center text-xs text-slate-600">
         Belum memiliki akun?
-        <a href="#" class="font-semibold text-[#186337] hover:underline">
-            Daftar
+        <a href="{{ route('register') }}" class="font-semibold text-brand-700 hover:text-brand-800 hover:underline">
+            Daftar Pelanggan
         </a>
     </div>
 </x-layouts::guest>

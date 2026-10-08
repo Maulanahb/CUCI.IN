@@ -56,7 +56,7 @@ class LoginController extends Controller
         return match ($user->role) {
             'admin' => redirect()->intended(route('admin.dashboard')),
             'staff' => redirect()->intended(route('staff.dashboard')),
-            'customer' => redirect()->intended(route('home')),
+            'customer' => redirect()->intended(route('customer.dashboard')),
             default => redirect()->intended(route('home')),
         };
     }

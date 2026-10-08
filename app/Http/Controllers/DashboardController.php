@@ -38,4 +38,17 @@ class DashboardController extends Controller
 
         return view('staff.dashboard', compact('stats'));
     }
+
+    /**
+     * Tampilkan halaman dashboard untuk Pelanggan (Customer).
+     */
+    public function customer(): View
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $customer = $user->customer;
+        $recentTransactions = $customer ? $customer->transactions()->latest()->take(5)->get() : collect();
+
+        return view('customer.dashboard', compact('customer', 'recentTransactions'));
+    }
 }

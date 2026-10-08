@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,9 @@ Route::get('/', function () {
         if ($user->role === 'staff') {
             return redirect()->route('staff.dashboard');
         }
+        if ($user->role === 'customer') {
+            return redirect()->route('customer.dashboard');
+        }
     }
 
     return redirect()->route('login');
@@ -24,6 +28,9 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'create'])->name('login');
     Route::post('/login', [LoginController::class, 'store'])->name('login.store');
+
+    Route::get('/register', [RegisterController::class, 'create'])->name('register');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 });
 
 // Rute Khusus Pengguna Terautentikasi & Aktif
@@ -32,11 +39,12 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     // Shortcut dashboard umum sesuai role
     Route::get('/dashboard', function () {
-        if (Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return redirect()->route('staff.dashboard');
+        return match (Auth::user()->role) {
+            'admin' => redirect()->route('admin.dashboard'),
+            'staff' => redirect()->route('staff.dashboard'),
+            'customer' => redirect()->route('customer.dashboard'),
+            default => redirect()->route('login'),
+        };
     })->name('dashboard');
 
     // Area Administrator
@@ -47,5 +55,10 @@ Route::middleware(['auth', 'active'])->group(function () {
     // Area Staff Operasional
     Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
+    });
+
+    // Area Pelanggan (Customer)
+    Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'customer'])->name('dashboard');
     });
 });
