@@ -56,6 +56,23 @@ class LoginTest extends TestCase
         $response->assertRedirect(route('staff.dashboard'));
     }
 
+    public function test_customer_can_authenticate_and_redirects_to_customer_dashboard(): void
+    {
+        $customer = User::factory()->customer()->create([
+            'email' => 'customer@cuci.in',
+            'password' => 'password',
+            'is_active' => true,
+        ]);
+
+        $response = $this->post('/login', [
+            'email' => 'customer@cuci.in',
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticatedAs($customer);
+        $response->assertRedirect(route('customer.dashboard'));
+    }
+
     public function test_inactive_user_cannot_authenticate(): void
     {
         $inactive = User::factory()->inactive()->create([
