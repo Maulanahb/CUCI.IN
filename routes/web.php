@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -60,5 +61,6 @@ Route::middleware(['auth', 'active'])->group(function () {
     // Area Pelanggan (Customer)
     Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'customer'])->name('dashboard');
+        Route::get('/transactions', [CustomerTransactionController::class, 'index'])->name('transactions.index');
     });
 });
