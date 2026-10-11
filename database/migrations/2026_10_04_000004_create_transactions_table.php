@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers')->restrictOnDelete();
             $table->string('transaction_code', 20)->unique();
-            $table->decimal('total_amount', 12, 2);
-            $table->enum('status', ['Diterima', 'Diproses', 'Selesai', 'Diambil', 'Dibatalkan']);
+            $table->foreignId('customer_id');
+            $table->foreignId('created_by');
+            $table->decimal('total_amount', 12, 2)->default(0);
             $table->timestamp('estimated_completed_at')->nullable();
+            $table->enum('status', ['Diterima', 'Diproses', 'Selesai', 'Diambil', 'Dibatalkan'])->default('Diterima');
             $table->timestamps();
         });
     }
