@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panduan Palet Warna Aqua Teal - CUCI.IN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              700: '#0e7490',
+              800: '#155e75',
+              950: '#083344',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen p-6 md:p-10 antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Header Container -->
+  <div class="max-w-6xl mx-auto space-y-10">
+    
+    <!-- Top Brand & Meta -->
+    <header class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-800 text-xs font-semibold uppercase tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+          Design System Token v2.0
+        </div>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+          CUCI<span class="text-brand-500">.IN</span>
+          <span class="text-slate-400 font-normal text-2xl">/</span>
+          <span class="text-slate-800 font-bold text-2xl">Palet Aqua Teal</span>
+        </h1>
+        <p class="text-slate-500 text-sm md:text-base max-w-2xl leading-relaxed">
+          Spesifikasi sistem token warna terpadu untuk platform manajemen laundry CUCI.IN. Disusun menjadi 3 kelompok utama: warna brand, status fungsional siklus cucian, dan permukaan netral slate.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 self-start md:self-auto bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs font-mono text-slate-600">
+        <div class="w-3 h-3 rounded-full bg-brand-600"></div>
+        <span>Primary: #0891b2</span>
+      </div>
+    </header>
+
+    <!-- SECTION 1: Brand Palette -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-brand-600 text-white text-xs font-bold">1</span>
+            Warna Brand Utama (Aqua Teal)
+          </h2>
+          <p class="text-sm text-slate-500 mt-1">Didaftarkan di token CSS <code class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded text-brand-700">--color-brand-*</code></p>
+        </div>
+        <span class="text-xs font-medium text-slate-400 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">8 Token Skala</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- brand-50 -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+          <div class="h-28 bg-[#ecfeff] flex items-end p-3.5 border-b border-slate-100">
+            <span class="text-xs font-bold text-cyan-900 bg-white/80 backdrop-blur px-2 py-0.5 rounded shadow-xs">Soft Ice Blue</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900">brand-50</span>
+              <span class="font-mono text-xs font-semibold text-slate-500">#ecfeff</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-normal">
+              Background card aktif, gradasi banner dashboard, subtle highlight area.
+            </p>
+          </div>
+        </div>
+
+        <!-- brand-100 -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+          <div class="h-28 bg-[#cffafe] flex items-end p-3.5 border-b border-slate-100">
+            <span class="text-xs font-bold text-cyan-900 bg-white/80 backdrop-blur px-2 py-0.5 rounded shadow-xs">Light Aqua</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900">brand-100</span>
+              <span class="font-mono text-xs font-semibold text-slate-500">#cffafe</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-normal">
+              Background badge role ("Pelanggan", "Admin", "Staff") &amp; chip pill.
+            </p>
+          </div>
+        </div>
+
+        <!-- brand-400 -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+          <div class="h-28 bg-[#22d3ee] flex items-end p-3.5 border-b border-slate-100">
+            <span class="text-xs font-bold text-slate-900 bg-white/80 backdrop-blur px-2 py-0.5 rounded shadow-xs">Fresh Cyan</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900">brand-400</span>
+              <span class="font-mono text-xs font-semibold text-slate-500">#22d3ee</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-normal">
+              Aksen wave air di logo CUCI.IN, glowing accent, &amp; highlight interaktif.
+            </p>
+          </div>
+        </div>
+
+        <!-- brand-500 -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+          <div class="h-28 bg-[#06b6d4] flex items-end p-3.5 border-b border-slate-100">
+            <span class="text-xs font-bold text-white bg-black/20 backdrop-blur px-2 py-0.5 rounded shadow-xs">Bright Aqua</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900">brand-500</span>
+              <span class="font-mono text-xs font-semibold text-slate-500">#06b6d4</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-normal">
+              Warna teks aksen <span class="font-bold">.IN</span>, efek ring focus input form, switch toggle.
+            </p>
+          </div>
+        </div>
+
+        <!-- brand-600 -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group border-brand-500 ring-2 ring-brand-500/10">
+          <div class="h-28 bg-[#0891b2] flex items-end p-3.5 border-b border-slate-100">
+            <span class="text-xs font-bold text-white bg-black/25 backdrop-blur px-2 py-0.5 rounded shadow-xs">Base Primary</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-brand-700">brand-600 (Primary)</span>
+              <span class="font-mono text-xs font-semibold text-brand-600">#0891b2</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-normal">
+              Tombol utama ("Masuk", "Daftar", "Simpan"), navbar aktif, brand anchor stop 1.
+            </p>
+          </div>
+        </div>
+
+        <!-- brand-700 -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+          <div class="h-28 bg-[#0e7490] flex items-end p-3.5 border-b border-slate-100">
+            <span class="text-xs font-bold text-white bg-black/30 backdrop-blur px-2 py-0.5 rounded shadow-xs">Deep Teal</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900">brand-700</span>
+              <span class="font-mono text-xs font-semibold text-slate-500">#0e7490</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-normal">
+              State Hover tombol (<code class="font-mono text-[11px]">hover:bg-brand-700</code>), hyperlink teks aktif.
+            </p>
+          </div>
+        </div>
+
+        <!-- brand-800 -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+          <div class="h-28 bg-[#155e75] flex items-end p-3.5 border-b border-slate-100">
+            <span class="text-xs font-bold text-white bg-black/30 backdrop-blur px-2 py-0.5 rounded shadow-xs">Dark Ocean</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900">brand-800</span>
+              <span class="font-mono text-xs font-semibold text-slate-500">#155e75</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-normal">
+              Warna teks pada badge role (<code class="font-mono text-[11px]">text-brand-800</code>), icon detail nav.
+            </p>
+          </div>
+        </div>
+
+        <!-- brand-950 -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group">
+          <div class="h-28 bg-[#083344] flex items-end p-3.5 border-b border-slate-100">
+            <span class="text-xs font-bold text-white bg-black/40 backdrop-blur px-2 py-0.5 rounded shadow-xs">Midnight Teal</span>
+          </div>
+          <div class="p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-sm text-slate-900">brand-950</span>
+              <span class="font-mono text-xs font-semibold text-slate-500">#083344</span>
+            </div>
+            <p class="text-xs text-slate-500 leading-normal">
+              Kontras tinggi, footer gelap, sidebar deep-contrast / dark elements.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 2: Semantic & Laundry Lifecycle -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-emerald-600 text-white text-xs font-bold">2</span>
+            Warna Semantik &amp; Status Cucian (Laundry Lifecycle)
+          </h2>
+          <p class="text-sm text-slate-500 mt-1">Digunakan untuk alur transaksi kasir, status cucian workshop, &amp; pelunasan pembayaran (Nayla &amp; Zaky)</p>
+        </div>
+        <span class="text-xs font-medium text-slate-400 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">4 Status Operasional</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Selesai / Bersih -->
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 relative overflow-hidden">
+          <div class="w-full h-14 rounded-lg bg-[#10b981] flex items-center justify-between px-4 text-white">
+            <span class="font-semibold text-sm">Selesai / Bersih</span>
+            <span class="font-mono text-xs bg-black/20 px-2 py-0.5 rounded">#10b981</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-emerald-600">Emerald Green</div>
+            <div class="text-sm font-semibold text-slate-800 mt-0.5">Cucian Selesai &amp; Pembayaran Lunas</div>
+            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+              Cucian selesai dicuci &amp; disetrika, tersusun di rak pickup outlet, pembayaran lunas 100%.
+            </p>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              ● Lunas
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              ● Siap Diambil
+            </span>
+          </div>
+        </div>
+
+        <!-- Sedang Dicuci / Proses -->
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 relative overflow-hidden">
+          <div class="w-full h-14 rounded-lg bg-[#f59e0b] flex items-center justify-between px-4 text-white">
+            <span class="font-semibold text-sm">Sedang Dicuci / Proses</span>
+            <span class="font-mono text-xs bg-black/20 px-2 py-0.5 rounded">#f59e0b</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-amber-600">Amber Gold</div>
+            <div class="text-sm font-semibold text-slate-800 mt-0.5">Mesin Cuci, Pengering &amp; Setrika</div>
+            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+              Pakaian sedang berada di dalam tabung cuci / setrika uap, bintang kilau di logo, tagihan Belum Lunas (DP).
+            </p>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+              ● Diproses
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+              ● Belum Lunas (DP)
+            </span>
+          </div>
+        </div>
+
+        <!-- Antrean / Baru Masuk -->
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 relative overflow-hidden">
+          <div class="w-full h-14 rounded-lg bg-[#0284c7] flex items-center justify-between px-4 text-white">
+            <span class="font-semibold text-sm">Antrean / Baru Masuk</span>
+            <span class="font-mono text-xs bg-black/20 px-2 py-0.5 rounded">#0284c7</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-sky-600">Sky Blue</div>
+            <div class="text-sm font-semibold text-slate-800 mt-0.5">Penimbangan Kasir POS</div>
+            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+              Nota baru dibuat di meja kasir, pakaian menunggu penimbangan &amp; antrean mesin workshop.
+            </p>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-200">
+              ● Diterima
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-50 text-sky-700 border border-sky-200">
+              ● Nota Baru
+            </span>
+          </div>
+        </div>
+
+        <!-- Batal / Kendala -->
+        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm space-y-3 relative overflow-hidden">
+          <div class="w-full h-14 rounded-lg bg-[#ef4444] flex items-center justify-between px-4 text-white">
+            <span class="font-semibold text-sm">Batal / Kendala</span>
+            <span class="font-mono text-xs bg-black/20 px-2 py-0.5 rounded">#ef4444</span>
+          </div>
+          <div>
+            <div class="text-xs font-bold uppercase tracking-wider text-rose-600">Rose Red</div>
+            <div class="text-sm font-semibold text-slate-800 mt-0.5">Error Validasi &amp; Komplain</div>
+            <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+              Pembayaran QRIS/Transfer gagal, komplain kerusakan bahan, stok deterjen habis, transaksi dibatalkan.
+            </p>
+          </div>
+          <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
+              ● Dibatalkan
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-200">
+              ● Gagal Bayar
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: Neutral Palette & Surface -->
+    <section class="space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+            <span class="flex items-center justify-center w-7 h-7 rounded-lg bg-slate-800 text-white text-xs font-bold">3</span>
+            Warna Netral (Slate Surface)
+          </h2>
+          <p class="text-sm text-slate-500 mt-1">Menjaga UI tetap bersih, ringan, kontras tinggi, dan tidak melelahkan mata operator</p>
+        </div>
+        <span class="text-xs font-medium text-slate-400 bg-white border border-slate-200 px-2.5 py-1 rounded-lg">5 Token Permukaan</span>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
+              <tr>
+                <th class="py-3.5 px-6">Elemen UI</th>
+                <th class="py-3.5 px-6">Hex Code</th>
+                <th class="py-3.5 px-6">Tailwind Utility</th>
+                <th class="py-3.5 px-6">Preview Swatch</th>
+                <th class="py-3.5 px-6">Fungsi &amp; Peruntukan Operasional</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-sans">
+              
+              <!-- Background Layar -->
+              <tr class="hover:bg-slate-50/60 transition-colors">
+                <td class="py-4 px-6 font-semibold text-slate-900">Background Layar</td>
+                <td class="py-4 px-6 font-mono text-xs text-slate-600">#f8fafc</td>
+                <td class="py-4 px-6 font-mono text-xs text-brand-700 font-medium bg-brand-50/50">bg-slate-50</td>
+                <td class="py-4 px-6">
+                  <div class="w-10 h-8 rounded border border-slate-200 bg-[#f8fafc] shadow-2xs"></div>
+                </td>
+                <td class="py-4 px-6 text-slate-600 text-xs leading-relaxed">
+                  Latar belakang kanvas seluruh halaman tamu (login/register) dan dashboard operasional admin/kasir.
+                </td>
+              </tr>
+
+              <!-- Surface Card -->
+              <tr class="hover:bg-slate-50/60 transition-colors">
+                <td class="py-4 px-6 font-semibold text-slate-900">Surface Card</td>
+                <td class="py-4 px-6 font-mono text-xs text-slate-600">#ffffff</td>
+                <td class="py-4 px-6 font-mono text-xs text-brand-700 font-medium bg-brand-50/50">bg-white</td>
+                <td class="py-4 px-6">
+                  <div class="w-10 h-8 rounded border border-slate-300 bg-white shadow-2xs"></div>
+                </td>
+                <td class="py-4 px-6 text-slate-600 text-xs leading-relaxed">
+                  Kotak formulir input, kartu statistik metrik (KPI), container data tabel, modal popup dialog.
+                </td>
+              </tr>
+
+              <!-- Border & Divider -->
+              <tr class="hover:bg-slate-50/60 transition-colors">
+                <td class="py-4 px-6 font-semibold text-slate-900">Border &amp; Divider</td>
+                <td class="py-4 px-6 font-mono text-xs text-slate-600">#e2e8f0</td>
+                <td class="py-4 px-6 font-mono text-xs text-brand-700 font-medium bg-brand-50/50">border-slate-200</td>
+                <td class="py-4 px-6">
+                  <div class="w-10 h-8 rounded border-2 border-[#e2e8f0] bg-white flex items-center justify-center">
+                    <div class="w-6 h-0.5 bg-[#e2e8f0]"></div>
+                  </div>
+                </td>
+                <td class="py-4 px-6 text-slate-600 text-xs leading-relaxed">
+                  Garis tepi card (stroke halus 1px) dan pemisah antar kolom tabel, separator navigasi breadcrumb.
+                </td>
+              </tr>
+
+              <!-- Teks Utama -->
+              <tr class="hover:bg-slate-50/60 transition-colors">
+                <td class="py-4 px-6 font-semibold text-slate-900">Teks Utama</td>
+                <td class="py-4 px-6 font-mono text-xs text-slate-600">#0f172a</td>
+                <td class="py-4 px-6 font-mono text-xs text-brand-700 font-medium bg-brand-50/50">text-slate-900</td>
+                <td class="py-4 px-6">
+                  <div class="w-10 h-8 rounded bg-[#0f172a] text-white text-[10px] flex items-center justify-center font-bold">Aa</div>
+                </td>
+                <td class="py-4 px-6 text-slate-600 text-xs leading-relaxed">
+                  Judul halaman (H1/H2), heading form modal, angka statistik kunci, nama pelanggan tebal di tabel.
+                </td>
+              </tr>
+
+              <!-- Teks Sekunder -->
+              <tr class="hover:bg-slate-50/60 transition-colors">
+                <td class="py-4 px-6 font-semibold text-slate-900">Teks Sekunder</td>
+                <td class="py-4 px-6 font-mono text-xs text-slate-600">#64748b</td>
+                <td class="py-4 px-6 font-mono text-xs text-brand-700 font-medium bg-brand-50/50">text-slate-500</td>
+                <td class="py-4 px-6">
+                  <div class="w-10 h-8 rounded bg-[#64748b] text-white text-[10px] flex items-center justify-center font-medium">Aa</div>
+                </td>
+                <td class="py-4 px-6 text-slate-600 text-xs leading-relaxed">
+                  Subtitle penjelasan, placeholder form input, tanggal nota, jam riwayat log, label kecil tabel.
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: Interactive Component Playground & Code Export -->
+    <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+      <div>
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          Contoh Penerapan Nyata Komponen UI (Live Demo)
+        </h2>
+        <p class="text-sm text-slate-500 mt-1">Kombinasi token Aqua Teal, Status Semantik, dan Slate Netral pada tombol, badge, serta kartu operasional</p>
+      </div>
+
+      <!-- Demo Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+        
+        <!-- Demo Buttons -->
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Tombol Aksi</span>
+          <div class="space-y-2.5">
+            <button class="w-full py-2.5 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold text-sm transition-colors shadow-xs flex items-center justify-center gap-2">
+              <span>Masuk ke Akun</span>
+              <span class="text-xs font-mono opacity-80">(brand-600)</span>
+            </button>
+            <button class="w-full py-2.5 px-4 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-800 font-semibold text-sm border border-brand-100 transition-colors flex items-center justify-center gap-2">
+              <span>+ Tambah Pelanggan Baru</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Demo Badges -->
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Badge Role &amp; Status</span>
+          <div class="flex flex-wrap gap-2 pt-1">
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-[#cffafe] text-[#155e75]">Admin</span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-[#cffafe] text-[#155e75]">Staff Kasir</span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Selesai • Lunas</span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Sedang Dicuci</span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-800">Antrean Kasir</span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">Kendala Bayar</span>
+          </div>
+        </div>
+
+        <!-- Demo Input Focus -->
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Focus Ring Form</span>
+          <div class="space-y-1.5">
+            <label class="text-xs font-semibold text-slate-700">Nomor Nota / Pelanggan</label>
+            <input type="text" value="TRK-20261025-045" class="w-full px-3.5 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-slate-900 font-mono" readonly>
+            <span class="text-[11px] text-slate-500 block">Focus ring menggunakan token brand-500 (#06b6d4)</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CSS / Tailwind Configuration snippet -->
+      <div class="mt-6 pt-6 border-t border-slate-200">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Tailwind Config Preset (Copy-Ready)</span>
+          <span class="text-xs font-mono text-slate-400">tailwind.config.js</span>
+        </div>
+        <pre class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono overflow-x-auto leading-relaxed"><code>module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        brand: {
+          50: '#ecfeff',
+          100: '#cffafe',
+          400: '#22d3ee',
+          500: '#06b6d4',
+          600: '#0891b2', // Base Primary
+          700: '#0e7490', // Hover
+          800: '#155e75', // Text badge
+          950: '#083344',
+        },
+        laundry: {
+          done: '#10b981',    // Selesai / Lunas
+          process: '#f59e0b', // Sedang Dicuci
+          queue: '#0284c7',   // Antrean / Masuk
+          issue: '#ef4444',   // Kendala / Batal
+        }
+      }
+    }
+  }
+}</code></pre>
+      </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="text-center text-xs text-slate-400 pb-8">
+      Sistem Dokumentasi Desain CUCI.IN &bull; Hak Cipta &copy; 2026 Tim Pengembang Operasional Laundry
+    </footer>
+
+  </div>
+
+</body>
+</html>

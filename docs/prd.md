@@ -537,6 +537,32 @@ Antarmuka harus:
 * Tidak berlebihan secara visual.
 * Responsif pada perangkat yang digunakan.
 
+### NFR-01.1 Standar Desain & Palet Warna (Design System Token)
+
+Untuk memastikan konsistensi antarmuka pengguna pada seluruh modul, antarmuka menggunakan tema **Aqua Teal** dengan spesifikasi token warna berikut:
+
+1. **Warna Brand Utama (Aqua Teal)**:
+   * Primary: `#0891b2` (`brand-600`) — Tombol aksi utama, navbar aktif, logo stop 1.
+   * Hover: `#0e7490` (`brand-700`) — State hover aksi utama, hyperlink teks aktif.
+   * Accent Cyan: `#06b6d4` (`brand-500`) — Teks aksen `.IN`, efek ring focus input form.
+   * Light Aqua: `#cffafe` (`brand-100`) — Background badge role ("Pelanggan", "Admin", "Staff") & chip pill.
+   * Soft Ice: `#ecfeff` (`brand-50`) — Background card aktif & gradasi banner dashboard.
+   * Dark Ocean: `#155e75` (`brand-800`) — Teks pada badge role.
+   * Midnight Teal: `#083344` (`brand-950`) — Elemen kontras tinggi & dark accents.
+
+2. **Warna Semantik Status Operasional (Laundry Lifecycle)**:
+   * **Selesai / Lunas**: `#10b981` (Emerald Green) — Cucian selesai & siap diambil, pembayaran lunas 100%.
+   * **Sedang Dicuci / Proses**: `#f59e0b` (Amber Gold) — Pakaian dalam mesin cuci/pengering/setrika, status belum lunas (DP).
+   * **Antrean / Baru Masuk**: `#0284c7` (Sky Blue) — Nota baru dibuat di meja kasir POS, antrean workshop.
+   * **Batal / Kendala**: `#ef4444` (Rose Red) — Pembayaran gagal, komplain kerusakan, transaksi dibatalkan.
+
+3. **Warna Netral (Slate Surface)**:
+   * Background Layar: `#f8fafc` (`slate-50`) — Latar belakang halaman tamu & dashboard.
+   * Surface Card: `#ffffff` (`white`) — Formulir input, kartu KPI statistik, tabel transaksi.
+   * Border & Divider: `#e2e8f0` (`slate-200`) — Garis tepi card dan pemisah kolom.
+   * Teks Utama: `#0f172a` (`slate-900`) — Judul halaman, heading, nama pelanggan.
+   * Teks Sekunder: `#64748b` (`slate-500`) — Subtitle, placeholder form, jam/tanggal nota.
+
 ## NFR-02 — Security
 
 Sistem harus:
