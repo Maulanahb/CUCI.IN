@@ -136,4 +136,148 @@ class StaffCustomerManagementTest extends TestCase
         $response->assertSee('Customer B');
         $response->assertSee('0822222222');
     }
+
+    public function test_admin_can_access_customers_page(): void
+    {
+        $this->withoutVite();
+
+        $admin = User::factory()->admin()->create();
+        Customer::create(['name' => 'Pelanggan Toko', 'phone' => '08123456789']);
+
+        // Admin mengakses via rute admin.customers.index
+        $responseAdmin = $this->actingAs($admin)->get(route('admin.customers.index'));
+        $responseAdmin->assertOk();
+        $responseAdmin->assertSee('Data Pelanggan');
+        $responseAdmin->assertSee('Pelanggan Toko');
+
+        // Admin juga dapat mengakses via rute staff.customers.index
+        $responseStaff = $this->actingAs($admin)->get(route('staff.customers.index'));
+        $responseStaff->assertOk();
+    }
+
+    public function test_staff_and_admin_can_create_new_customer(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $admin = User::factory()->admin()->create();
+
+        // Staff membuat pelanggan baru
+        $responseStaff = $this->actingAs($staff)->post(route('staff.customers.store'), [
+            'name' => 'Ahmad Dani',
+            'phone' => '081399887766',
+            'address' => 'Jl. Kemang Raya No. 15',
+        ]);
+
+        $this->assertDatabaseHas('customers', [
+            'name' => 'Ahmad Dani',
+            'phone' => '081399887766',
+            'address' => 'Jl. Kemang Raya No. 15',
+        ]);
+        $responseStaff->assertSessionHas('status', 'Data pelanggan berhasil ditambahkan.');
+
+        // Admin membuat pelanggan baru
+        $responseAdmin = $this->actingAs($admin)->post(route('admin.customers.store'), [
+            'name' => 'Maya Estianty',
+            'phone' => '081322334455',
+            'address' => 'Jl. Kebayoran No. 8',
+        ]);
+
+        $this->assertDatabaseHas('customers', [
+            'name' => 'Maya Estianty',
+            'phone' => '081322334455',
+        ]);
+        $responseAdmin->assertSessionHas('status', 'Data pelanggan berhasil ditambahkan.');
+    }
+
+    public function test_customer_creation_validation_requires_name_and_phone(): void
+    {
+        $staff = User::factory()->staff()->create();
+
+        $response = $this->actingAs($staff)->post(route('staff.customers.store'), [
+            'name' => '',
+            'phone' => '',
+            'address' => 'Jl. Tanpa Nama',
+        ]);
+
+        $response->assertSessionHasErrors(['name', 'phone']);
+    }
+
+    public function test_staff_and_admin_can_update_customer(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::create([
+            'name' => 'Nama Lama',
+            'phone' => '0811111111',
+            'address' => 'Alamat Lama',
+        ]);
+
+        $response = $this->actingAs($staff)->put(route('staff.customers.update', $customer), [
+            'name' => 'Nama Baru',
+            'phone' => '0822222222',
+            'address' => 'Alamat Baru',
+        ]);
+
+        $this->assertDatabaseHas('customers', [
+            'id' => $customer->id,
+            'name' => 'Nama Baru',
+            'phone' => '0822222222',
+            'address' => 'Alamat Baru',
+        ]);
+        $response->assertSessionHas('status', 'Data pelanggan berhasil diperbarui.');
+    }
+
+    public function test_customer_with_transactions_cannot_be_deleted(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::create([
+            'name' => 'Pelanggan Bertransaksi',
+            'phone' => '081234567890',
+        ]);
+
+        Transaction::create([
+            'customer_id' => $customer->id,
+            'transaction_code' => 'TRX-TEST-DEL-1',
+            'total_amount' => 30000,
+        ]);
+
+        $response = $this->actingAs($staff)->delete(route('staff.customers.destroy', $customer));
+
+        // Data tidak terhapus dari database
+        $this->assertDatabaseHas('customers', ['id' => $customer->id]);
+        $response->assertSessionHasErrors('error');
+    }
+
+    public function test_customer_without_transactions_can_be_deleted(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::create([
+            'name' => 'Pelanggan Baru Batal',
+            'phone' => '089999999999',
+        ]);
+
+        $response = $this->actingAs($staff)->delete(route('staff.customers.destroy', $customer));
+
+        $this->assertDatabaseMissing('customers', ['id' => $customer->id]);
+        $response->assertSessionHas('status', 'Data pelanggan berhasil dihapus.');
+    }
+
+    public function test_customer_role_cannot_perform_crud_operations(): void
+    {
+        $customerUser = User::factory()->customer()->create();
+        $targetCustomer = Customer::create([
+            'name' => 'Target Customer',
+            'phone' => '0877777777',
+        ]);
+
+        $this->actingAs($customerUser)
+            ->post(route('staff.customers.store'), ['name' => 'Hacker', 'phone' => '081'])
+            ->assertStatus(403);
+
+        $this->actingAs($customerUser)
+            ->put(route('staff.customers.update', $targetCustomer), ['name' => 'Hacker', 'phone' => '081'])
+            ->assertStatus(403);
+
+        $this->actingAs($customerUser)
+            ->delete(route('staff.customers.destroy', $targetCustomer))
+            ->assertStatus(403);
+    }
 }

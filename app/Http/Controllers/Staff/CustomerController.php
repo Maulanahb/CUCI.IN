@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -18,6 +19,7 @@ class CustomerController extends Controller
         $search = trim((string) $request->input('q', ''));
         $statusFilter = (string) $request->input('status', 'all');
         $selectedId = $request->input('customer_id');
+        $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
 
         // Total seluruh pelanggan terdaftar
         $totalCustomersCount = Customer::count();
@@ -111,7 +113,74 @@ class CustomerController extends Controller
             'counts',
             'search',
             'statusFilter',
-            'totalSpent'
+            'totalSpent',
+            'routePrefix'
         ));
+    }
+
+    /**
+     * Simpan data pelanggan baru ke database.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:500'],
+        ], [
+            'name.required' => 'Nama pelanggan wajib diisi.',
+            'name.max' => 'Nama pelanggan maksimal 100 karakter.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'phone.max' => 'Nomor telepon maksimal 20 karakter.',
+        ]);
+
+        $customer = Customer::create($validated);
+
+        $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
+
+        return redirect()->route("{$routePrefix}.customers.index", ['customer_id' => $customer->id])
+            ->with('status', 'Data pelanggan berhasil ditambahkan.');
+    }
+
+    /**
+     * Perbarui data pelanggan yang sudah ada.
+     */
+    public function update(Request $request, Customer $customer): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:100'],
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['nullable', 'string', 'max:500'],
+        ], [
+            'name.required' => 'Nama pelanggan wajib diisi.',
+            'name.max' => 'Nama pelanggan maksimal 100 karakter.',
+            'phone.required' => 'Nomor telepon wajib diisi.',
+            'phone.max' => 'Nomor telepon maksimal 20 karakter.',
+        ]);
+
+        $customer->update($validated);
+
+        $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
+
+        return redirect()->route("{$routePrefix}.customers.index", ['customer_id' => $customer->id])
+            ->with('status', 'Data pelanggan berhasil diperbarui.');
+    }
+
+    /**
+     * Hapus data pelanggan dari database jika tidak memiliki riwayat transaksi.
+     */
+    public function destroy(Request $request, Customer $customer): RedirectResponse
+    {
+        $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
+
+        if ($customer->transactions()->exists()) {
+            return redirect()->route("{$routePrefix}.customers.index", ['customer_id' => $customer->id])
+                ->withErrors(['error' => 'Pelanggan tidak dapat dihapus karena memiliki riwayat transaksi aktif.']);
+        }
+
+        $customer->delete();
+
+        return redirect()->route("{$routePrefix}.customers.index")
+            ->with('status', 'Data pelanggan berhasil dihapus.');
     }
 }
