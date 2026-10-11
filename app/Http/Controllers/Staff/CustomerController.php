@@ -44,12 +44,13 @@ class CustomerController extends Controller
             ->with(['user'])
             ->withCount('transactions');
 
-        // Pencarian berdasarkan Nama atau No. Telepon atau Alamat
+        // Pencarian case-insensitive berdasarkan Nama, No. Telepon, atau Alamat
         if ($search !== '') {
-            $customersQuery->where(function (Builder $query) use ($search) {
-                $query->where('name', 'like', "%{$search}%")
+            $searchLower = mb_strtolower($search);
+            $customersQuery->where(function (Builder $query) use ($search, $searchLower) {
+                $query->whereRaw('LOWER(name) LIKE ?', ["%{$searchLower}%"])
                     ->orWhere('phone', 'like', "%{$search}%")
-                    ->orWhere('address', 'like', "%{$search}%");
+                    ->orWhereRaw('LOWER(address) LIKE ?', ["%{$searchLower}%"]);
             });
         }
 

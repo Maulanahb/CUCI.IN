@@ -116,6 +116,11 @@ class StaffCustomerManagementTest extends TestCase
         $response->assertSee('Rina Kusuma');
         $response->assertDontSee('Budi Santoso');
 
+        $responseLowercase = $this->actingAs($staff)->get(route('staff.customers.index', ['q' => 'rina']));
+        $responseLowercase->assertOk();
+        $responseLowercase->assertSee('Rina Kusuma');
+        $responseLowercase->assertDontSee('Budi Santoso');
+
         $responsePhone = $this->actingAs($staff)->get(route('staff.customers.index', ['q' => '0811111111']));
         $responsePhone->assertOk();
         $responsePhone->assertSee('Budi Santoso');
