@@ -29,11 +29,16 @@
                 <p class="mt-1 text-xs text-slate-400">Dibuat hari ini</p>
             </div>
 
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm">
-                <p class="text-xs font-medium text-slate-500">Pelanggan Terdaftar</p>
+            <a href="{{ route('staff.customers.index') }}" class="group block rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-medium text-slate-500 group-hover:text-brand-600">Pelanggan Terdaftar</p>
+                    <svg class="size-4 text-slate-400 group-hover:text-brand-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
                 <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_customers'] }}</p>
-                <p class="mt-1 text-xs text-slate-400">Data customer laundry</p>
-            </div>
+                <p class="mt-1 text-xs text-slate-400">Data customer laundry &rarr;</p>
+            </a>
 
             <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm">
                 <p class="text-xs font-medium text-slate-500">Layanan Tersedia</p>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -121,20 +122,9 @@ class CustomerController extends Controller
     /**
      * Simpan data pelanggan baru ke database.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(CustomerRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:500'],
-        ], [
-            'name.required' => 'Nama pelanggan wajib diisi.',
-            'name.max' => 'Nama pelanggan maksimal 100 karakter.',
-            'phone.required' => 'Nomor telepon wajib diisi.',
-            'phone.max' => 'Nomor telepon maksimal 20 karakter.',
-        ]);
-
-        $customer = Customer::create($validated);
+        $customer = Customer::create($request->validated());
 
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
 
@@ -145,20 +135,9 @@ class CustomerController extends Controller
     /**
      * Perbarui data pelanggan yang sudah ada.
      */
-    public function update(Request $request, Customer $customer): RedirectResponse
+    public function update(CustomerRequest $request, Customer $customer): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:500'],
-        ], [
-            'name.required' => 'Nama pelanggan wajib diisi.',
-            'name.max' => 'Nama pelanggan maksimal 100 karakter.',
-            'phone.required' => 'Nomor telepon wajib diisi.',
-            'phone.max' => 'Nomor telepon maksimal 20 karakter.',
-        ]);
-
-        $customer->update($validated);
+        $customer->update($request->validated());
 
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
 
