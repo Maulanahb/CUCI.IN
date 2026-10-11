@@ -124,16 +124,12 @@ class TransactionController extends Controller
         /** @var LengthAwarePaginator $paginatedTransactions */
         $paginatedTransactions = $query->paginate(8)->withQueryString();
 
-        // Tentukan transaksi yang ditampilkan di panel rincian dokumen
+        // Tentukan transaksi yang ditampilkan di pop-up rincian dokumen (hanya jika ada permintaan selected)
         $selectedCode = $request->query('selected');
         $selectedTransaction = null;
 
         if ($selectedCode) {
             $selectedTransaction = $allTransactions->firstWhere('transaction_code', $selectedCode);
-        }
-
-        if (! $selectedTransaction && $paginatedTransactions->isNotEmpty()) {
-            $selectedTransaction = $paginatedTransactions->first();
         }
 
         return view('customer.transactions.index', [

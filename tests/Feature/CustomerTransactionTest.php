@@ -33,11 +33,11 @@ class CustomerTransactionTest extends TestCase
         $response = $this->actingAs($user)->get(route('customer.transactions.index'));
 
         $response->assertOk();
-        $response->assertSee('Riwayat Transaksi');
+        $response->assertSee('Lacak Cucian');
         $response->assertSee('Belum Ada Transaksi');
     }
 
-    public function test_sidebar_displays_riwayat_transaksi_for_customer(): void
+    public function test_sidebar_displays_lacak_cucian_for_customer(): void
     {
         $this->withoutVite();
 
@@ -48,7 +48,7 @@ class CustomerTransactionTest extends TestCase
         $response = $this->actingAs($user)->get(route('customer.dashboard'));
 
         $response->assertOk();
-        $response->assertSee('Riwayat Transaksi');
+        $response->assertSee('Lacak Cucian');
         $response->assertSee(route('customer.transactions.index'));
     }
 
@@ -105,5 +105,73 @@ class CustomerTransactionTest extends TestCase
         $response->assertSee('Rp 25.000');
         $response->assertSee('DP Kasir');
         $response->assertSee('Belum Lunas');
+    }
+
+    public function test_customer_can_open_and_close_transaction_detail_modal(): void
+    {
+        $this->withoutVite();
+
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->withAccount()->create(['name' => 'Budi Santoso']);
+        /** @var User $user */
+        $user = $customer->user;
+
+        $service = Service::create([
+            'name' => 'Cuci Komplit Reguler',
+            'price' => 8000,
+            'estimated_duration' => 3,
+            'description' => 'Cuci + Kering + Setrika Rapi',
+            'is_active' => true,
+        ]);
+
+        $trx = Transaction::create([
+            'customer_id' => $customer->id,
+            'transaction_code' => 'TRK-20261025-046',
+            'total_amount' => 52000,
+            'status' => 'Diproses',
+            'estimated_completed_at' => now()->addDays(3),
+        ]);
+
+        TransactionDetail::create([
+            'transaction_id' => $trx->id,
+            'service_id' => $service->id,
+            'weight' => 6.5,
+            'unit_price' => 8000,
+            'subtotal' => 52000,
+        ]);
+
+        Payment::create([
+            'transaction_id' => $trx->id,
+            'amount' => 52000,
+            'payment_type' => 'Pelunasan',
+            'method' => 'Transfer',
+            'verification_status' => 'Terverifikasi',
+            'paid_at' => now(),
+            'created_by' => $staff->id,
+        ]);
+
+        // 1. Tanpa query param selected: Modal tidak terbuka, tabel tampil bersih
+        $responseTable = $this->actingAs($user)->get(route('customer.transactions.index'));
+        $responseTable->assertOk();
+        $responseTable->assertSee('TRK-20261025-046');
+        $responseTable->assertDontSee('Tutup detail (Esc)');
+
+        // 2. Dengan query param selected: Modal terbuka di tengah layar sesuai database
+        $responseModal = $this->actingAs($user)->get(route('customer.transactions.index', ['selected' => 'TRK-20261025-046']));
+        $responseModal->assertOk();
+        $responseModal->assertSee('TRK-20261025-046');
+        $responseModal->assertSee('Detail Transaksi');
+        $responseModal->assertSee('Tanggal Masuk');
+        $responseModal->assertSee('Status Cucian');
+        $responseModal->assertSee('Estimasi Selesai');
+        $responseModal->assertSee('Status Pembayaran');
+        $responseModal->assertSee('Lunas');
+        $responseModal->assertSee('Rincian Layanan');
+        $responseModal->assertSee('Cuci Komplit Reguler');
+        $responseModal->assertSee('Cuci + Kering + Setrika Rapi');
+        $responseModal->assertSee('6.5 kg');
+        $responseModal->assertSee('Total Tagihan:');
+        $responseModal->assertSee('Rp 52.000');
+        $responseModal->assertSee('Tutup detail (Esc)');
     }
 }
