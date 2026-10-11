@@ -285,4 +285,59 @@ class StaffCustomerManagementTest extends TestCase
             ->delete(route('staff.customers.destroy', $targetCustomer))
             ->assertStatus(403);
     }
+
+    public function test_customer_phone_is_automatically_normalized_to_local_format(): void
+    {
+        $staff = User::factory()->staff()->create();
+
+        // 1. Input dengan format +62
+        $this->actingAs($staff)->post(route('staff.customers.store'), [
+            'name' => 'Budi Plus62',
+            'phone' => '+6281234567890',
+            'address' => 'Jl. Mawar',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('customers', [
+            'name' => 'Budi Plus62',
+            'phone' => '081234567890',
+        ]);
+
+        // 2. Input dengan format 62 tanpa plus dan ada spasi/strip
+        $this->actingAs($staff)->post(route('staff.customers.store'), [
+            'name' => 'Siti Strip',
+            'phone' => '62 813-9988-7766',
+            'address' => 'Jl. Melati',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('customers', [
+            'name' => 'Siti Strip',
+            'phone' => '081399887766',
+        ]);
+
+        // 3. Update customer dengan +62
+        $customer = Customer::create([
+            'name' => 'Andi Update',
+            'phone' => '0811111111',
+        ]);
+
+        $this->actingAs($staff)->put(route('staff.customers.update', $customer), [
+            'name' => 'Andi Update',
+            'phone' => '+628999888777',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('customers', [
+            'id' => $customer->id,
+            'phone' => '08999888777',
+        ]);
+    }
+
+    public function test_customer_whatsapp_url_generates_valid_wa_me_link(): void
+    {
+        $customer = Customer::create([
+            'name' => 'Pelanggan WA',
+            'phone' => '081234567890',
+        ]);
+
+        $this->assertSame('https://wa.me/6281234567890', $customer->whatsapp_url);
+    }
 }
