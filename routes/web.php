@@ -65,7 +65,23 @@ Route::middleware(['auth', 'active'])->group(function () {
     // Area Staff Operasional
     Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
-        Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+    });
+
+    // Area Pengelolaan Pelanggan (Admin & Staff)
+    Route::middleware('role:admin,staff')->group(function () {
+        Route::prefix('staff')->name('staff.')->group(function () {
+            Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+            Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+            Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+            Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+        });
+
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+            Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+            Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
+            Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+        });
     });
 
     // Area Pelanggan (Customer)
