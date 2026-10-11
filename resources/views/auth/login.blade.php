@@ -107,7 +107,7 @@
                     <span>Ingat saya</span>
                 </label>
 
-                <a href="#" class="font-medium text-brand-700 hover:text-brand-800 hover:underline">
+                <a href="{{ route('password.request') }}" class="font-medium text-brand-700 hover:text-brand-800 hover:underline">
                     Lupa Password?
                 </a>
             </div>
