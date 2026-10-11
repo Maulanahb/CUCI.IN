@@ -3,9 +3,12 @@
 namespace Tests\Feature;
 
 use App\Enums\TransactionStatus;
+use App\Models\Customer;
 use App\Models\Transaction;
+use App\Models\User;
 use App\Services\TransactionCodeGenerator;
 use Carbon\CarbonInterface;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -15,6 +18,19 @@ class TransactionTest extends TestCase
     use RefreshDatabase;
 
     /**
+     * Membuat transaksi dengan customer dan staff asli dari factory.
+     * Kode transaksi dibuat otomatis kecuali diisi lewat $overrides.
+     */
+    private function makeTransaction(array $overrides = []): Transaction
+    {
+        return Transaction::create(array_merge([
+            'customer_id' => Customer::factory()->create()->id,
+            'created_by' => User::factory()->staff()->create()->id,
+            'total_amount' => 50000,
+        ], $overrides));
+    }
+
+    /**
      * Test kode transaksi pertama yang digenerate adalah TRX-0001.
      */
     public function test_first_transaction_code_is_trx_0001(): void
@@ -22,11 +38,7 @@ class TransactionTest extends TestCase
         $code = TransactionCodeGenerator::generate();
         $this->assertEquals('TRX-0001', $code);
 
-        $transaction = Transaction::create([
-            'customer_id' => 1,
-            'created_by' => 1,
-            'total_amount' => 50000.00,
-        ]);
+        $transaction = $this->makeTransaction();
 
         $this->assertEquals('TRX-0001', $transaction->transaction_code);
         $this->assertDatabaseHas('transactions', [
@@ -40,23 +52,9 @@ class TransactionTest extends TestCase
      */
     public function test_transaction_codes_are_sequential(): void
     {
-        $t1 = Transaction::create([
-            'customer_id' => 10,
-            'created_by' => 1,
-            'total_amount' => 25000.00,
-        ]);
-
-        $t2 = Transaction::create([
-            'customer_id' => 11,
-            'created_by' => 1,
-            'total_amount' => 30000.00,
-        ]);
-
-        $t3 = Transaction::create([
-            'customer_id' => 12,
-            'created_by' => 2,
-            'total_amount' => 45000.00,
-        ]);
+        $t1 = $this->makeTransaction(['total_amount' => 25000]);
+        $t2 = $this->makeTransaction(['total_amount' => 30000]);
+        $t3 = $this->makeTransaction(['total_amount' => 45000]);
 
         $this->assertEquals('TRX-0001', $t1->transaction_code);
         $this->assertEquals('TRX-0002', $t2->transaction_code);
@@ -68,9 +66,9 @@ class TransactionTest extends TestCase
      */
     public function test_transaction_codes_are_unique_and_not_relying_on_count(): void
     {
-        $t1 = Transaction::create(['customer_id' => 1, 'created_by' => 1, 'total_amount' => 10000]);
-        $t2 = Transaction::create(['customer_id' => 2, 'created_by' => 1, 'total_amount' => 20000]);
-        $t3 = Transaction::create(['customer_id' => 3, 'created_by' => 1, 'total_amount' => 30000]);
+        $t1 = $this->makeTransaction(['total_amount' => 10000]);
+        $t2 = $this->makeTransaction(['total_amount' => 20000]);
+        $t3 = $this->makeTransaction(['total_amount' => 30000]);
 
         $this->assertEquals('TRX-0001', $t1->transaction_code);
         $this->assertEquals('TRX-0002', $t2->transaction_code);
@@ -82,11 +80,7 @@ class TransactionTest extends TestCase
         // Jumlah transaksi sekarang 2. Jika menggunakan count() + 1, kodenya akan menjadi TRX-0003 (duplikat).
         $this->assertEquals(2, Transaction::count());
 
-        $t4 = Transaction::create([
-            'customer_id' => 4,
-            'created_by' => 1,
-            'total_amount' => 40000,
-        ]);
+        $t4 = $this->makeTransaction(['total_amount' => 40000]);
 
         // Dengan generator yang aman, kode berikutnya adalah TRX-0004
         $this->assertEquals('TRX-0004', $t4->transaction_code);
@@ -102,11 +96,7 @@ class TransactionTest extends TestCase
     public function test_transaction_default_status_is_diterima(): void
     {
         // 1. Verifikasi default status pada Eloquent model instance
-        $transaction = Transaction::create([
-            'customer_id' => 99,
-            'created_by' => 88,
-            'total_amount' => 75000.00,
-        ]);
+        $transaction = $this->makeTransaction(['total_amount' => 75000]);
 
         $this->assertSame(TransactionStatus::Diterima, $transaction->status);
         $this->assertEquals('Diterima', $transaction->status->value);
@@ -119,8 +109,8 @@ class TransactionTest extends TestCase
         // 2. Verifikasi default status pada tingkat skema database / migrasi (raw DB insert tanpa field status)
         DB::table('transactions')->insert([
             'transaction_code' => 'TRX-RAW-01',
-            'customer_id' => 123,
-            'created_by' => 456,
+            'customer_id' => Customer::factory()->create()->id,
+            'created_by' => User::factory()->staff()->create()->id,
             'total_amount' => 20000,
             'created_at' => now(),
             'updated_at' => now(),
@@ -133,21 +123,29 @@ class TransactionTest extends TestCase
     }
 
     /**
-     * Test customer_id dan created_by dapat disimpan tanpa ketergantungan foreign key ke tabel lain.
+     * Test created_by boleh kosong (nullable) dan estimated_completed_at tersimpan sebagai datetime.
      */
-    public function test_transaction_can_be_created_without_foreign_key_constraints(): void
+    public function test_transaction_can_be_created_without_created_by(): void
     {
-        $transaction = Transaction::create([
-            'customer_id' => 999999, // ID dummy tanpa record di tabel customers
-            'created_by' => 888888,  // ID dummy tanpa record di tabel users
-            'total_amount' => 15000.00,
+        $transaction = $this->makeTransaction([
+            'created_by' => null,
+            'total_amount' => 15000,
             'estimated_completed_at' => now()->addDays(1),
         ]);
 
         $this->assertNotNull($transaction->id);
-        $this->assertEquals(999999, $transaction->customer_id);
-        $this->assertEquals(888888, $transaction->created_by);
+        $this->assertNull($transaction->created_by);
         $this->assertInstanceOf(CarbonInterface::class, $transaction->estimated_completed_at);
+    }
+
+    /**
+     * Test customer_id yang tidak ada di tabel customers ditolak oleh foreign key.
+     */
+    public function test_transaction_with_nonexistent_customer_is_rejected(): void
+    {
+        $this->expectException(QueryException::class);
+
+        $this->makeTransaction(['customer_id' => 999999]);
     }
 
     /**
@@ -155,12 +153,7 @@ class TransactionTest extends TestCase
      */
     public function test_transaction_code_expands_beyond_four_digits(): void
     {
-        Transaction::create([
-            'customer_id' => 1,
-            'created_by' => 1,
-            'transaction_code' => 'TRX-9999',
-            'total_amount' => 50000,
-        ]);
+        $this->makeTransaction(['transaction_code' => 'TRX-9999']);
 
         $this->assertEquals('TRX-10000', TransactionCodeGenerator::generate());
     }
