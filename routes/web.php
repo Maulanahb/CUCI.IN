@@ -7,8 +7,12 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Staff\CustomerController;
+use App\Http\Controllers\TransactionLookupController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+// Rute Publik: Lacak Cucian / Cek Transaksi Menggunakan Kode Nota (Daysyani - Tanpa Login)
+Route::get('/lookup', [TransactionLookupController::class, 'index'])->name('transactions.lookup');
 
 // Rute Home / Root: Mengarahkan pengguna sesuai status login & role
 Route::get('/', function () {
