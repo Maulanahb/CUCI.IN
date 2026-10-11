@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Staff\CustomerController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -64,6 +65,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     // Area Staff Operasional
     Route::middleware('role:staff')->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
+        Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
     });
 
     // Area Pelanggan (Customer)
