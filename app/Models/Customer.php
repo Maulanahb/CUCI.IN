@@ -38,4 +38,24 @@ class Customer extends Model
     {
         return $this->hasMany(Transaction::class, 'customer_id');
     }
+
+    /**
+     * Dapatkan link WhatsApp langsung untuk nomor pelanggan.
+     */
+    public function getWhatsappUrlAttribute(): ?string
+    {
+        if (! $this->phone) {
+            return null;
+        }
+
+        $digits = preg_replace('/[^\d]/', '', $this->phone);
+
+        if (str_starts_with($digits, '0')) {
+            $digits = '62'.substr($digits, 1);
+        } elseif (! str_starts_with($digits, '62')) {
+            $digits = '62'.$digits;
+        }
+
+        return "https://wa.me/{$digits}";
+    }
 }

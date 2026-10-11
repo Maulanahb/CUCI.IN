@@ -16,6 +16,56 @@ class CustomerRequest extends FormRequest
     }
 
     /**
+     * Persiapkan dan normalisasi input sebelum divalidasi.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('phone')) {
+            $this->merge([
+                'phone' => static::normalizePhoneNumber($this->input('phone')),
+            ]);
+        }
+    }
+
+    /**
+     * Normalisasi nomor telepon ke format lokal standar "08...".
+     *
+     * Contoh:
+     * - "+6281234567890"    -> "081234567890"
+     * - "+62 812-3456-7890" -> "081234567890"
+     * - "6281234567890"     -> "081234567890"
+     * - "81234567890"       -> "081234567890"
+     * - "081234567890"      -> "081234567890"
+     */
+    public static function normalizePhoneNumber(?string $phone): ?string
+    {
+        if (! $phone) {
+            return $phone;
+        }
+
+        $phone = trim($phone);
+
+        // Bersihkan spasi, titik, strip, atau tanda kurung
+        $cleaned = preg_replace('/[^\d+]/', '', $phone);
+
+        if (str_starts_with($cleaned, '+62')) {
+            $cleaned = substr($cleaned, 3);
+            if (! str_starts_with($cleaned, '0')) {
+                $cleaned = '0'.$cleaned;
+            }
+        } elseif (str_starts_with($cleaned, '62')) {
+            $cleaned = substr($cleaned, 2);
+            if (! str_starts_with($cleaned, '0')) {
+                $cleaned = '0'.$cleaned;
+            }
+        } elseif (str_starts_with($cleaned, '8')) {
+            $cleaned = '0'.$cleaned;
+        }
+
+        return ltrim($cleaned, '+');
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>

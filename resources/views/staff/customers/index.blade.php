@@ -11,6 +11,20 @@
             deleteModalOpen: false,
             editForm: { id: '', name: '', phone: '', address: '' },
             deleteForm: { id: '', name: '' },
+            formatPhone(val) {
+                if (!val) return '';
+                let cleaned = val.toString().trim().replace(/[^\d+]/g, '');
+                if (cleaned.startsWith('+62')) {
+                    let rest = cleaned.substring(3).replace(/^0+/, '');
+                    return '0' + rest;
+                } else if (cleaned.startsWith('62')) {
+                    let rest = cleaned.substring(2).replace(/^0+/, '');
+                    return '0' + rest;
+                } else if (cleaned.startsWith('8')) {
+                    return '0' + cleaned;
+                }
+                return cleaned.replace(/^\+/, '');
+            },
             openEditModal(data) {
                 this.editForm = { ...data };
                 this.editModalOpen = true;
@@ -229,12 +243,22 @@
 
                                     {{-- Kontak --}}
                                     <td class="px-5 py-3.5">
-                                        <div class="flex items-center gap-1.5 font-medium text-slate-800">
-                                            <svg class="size-3.5 text-emerald-600" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.18-.573c.978.58 1.911.928 3.151.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.995-.368-1.78-.769-2.936-2.578-3.025-2.697-.089-.119-.724-.962-.724-1.835 0-.873.456-1.302.619-1.479.163-.177.355-.221.473-.221.118 0 .237.001.341.006.109.006.255-.041.398.303.148.355.503 1.226.547 1.315.044.089.074.192.015.31-.059.119-.089.192-.178.296-.089.103-.187.23-.266.31-.089.089-.182.185-.078.363.103.178.46 0.758.987 1.228.679.605 1.252.793 1.43.882.178.089.281.074.385-.044.104-.119.444-.518.563-.695.118-.178.237-.148.399-.089.163.059 1.035.488 1.213.577.177.089.296.133.34.207.045.074.045.429-.099.834z"/>
-                                            </svg>
-                                            <span>{{ $customer->phone ?: '-' }}</span>
-                                        </div>
+                                        @if ($customer->phone)
+                                            <a
+                                                href="{{ $customer->whatsapp_url }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="inline-flex items-center gap-1.5 font-medium text-slate-800 hover:text-emerald-700 transition group"
+                                                title="Buka obrolan WhatsApp ke {{ $customer->name }}"
+                                            >
+                                                <svg class="size-3.5 text-emerald-600 transition group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.18-.573c.978.58 1.911.928 3.151.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.995-.368-1.78-.769-2.936-2.578-3.025-2.697-.089-.119-.724-.962-.724-1.835 0-.873.456-1.302.619-1.479.163-.177.355-.221.473-.221.118 0 .237.001.341.006.109.006.255-.041.398.303.148.355.503 1.226.547 1.315.044.089.074.192.015.31-.059.119-.089.192-.178.296-.089.103-.187.23-.266.31-.089.089-.182.185-.078.363.103.178.46 0.758.987 1.228.679.605 1.252.793 1.43.882.178.089.281.074.385-.044.104-.119.444-.518.563-.695.118-.178.237-.148.399-.089.163.059 1.035.488 1.213.577.177.089.296.133.34.207.045.074.045.429-.099.834z"/>
+                                                </svg>
+                                                <span class="group-hover:underline underline-offset-2">{{ $customer->phone }}</span>
+                                            </a>
+                                        @else
+                                            <span class="text-slate-400">-</span>
+                                        @endif
                                     </td>
 
                                     {{-- Alamat --}}
@@ -617,12 +641,22 @@
                                 <div>
                                     <h2 class="text-base font-bold text-slate-900 sm:text-lg">{{ $selectedCustomer->name }}</h2>
                                     <div class="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                                        <span class="inline-flex items-center gap-1 text-emerald-700 font-semibold">
-                                            <svg class="size-3.5" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.18-.573c.978.58 1.911.928 3.151.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.995-.368-1.78-.769-2.936-2.578-3.025-2.697-.089-.119-.724-.962-.724-1.835 0-.873.456-1.302.619-1.479.163-.177.355-.221.473-.221.118 0 .237.001.341.006.109.006.255-.041.398.303.148.355.503 1.226.547 1.315.044.089.074.192.015.31-.059.119-.089.192-.178.296-.089.103-.187.23-.266.31-.089.089-.182.185-.078.363.103.178.46 0.758.987 1.228.679.605 1.252.793 1.43.882.178.089.281.074.385-.044.104-.119.444-.518.563-.695.118-.178.237-.148.399-.089.163.059 1.035.488 1.213.577.177.089.296.133.34.207.045.074.045.429-.099.834z"/>
-                                            </svg>
-                                            WhatsApp: {{ $selectedCustomer->phone ?: '-' }}
-                                        </span>
+                                        @if ($selectedCustomer->phone)
+                                            <a
+                                                href="{{ $selectedCustomer->whatsapp_url }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="inline-flex items-center gap-1 text-emerald-700 font-semibold hover:text-emerald-800 transition group"
+                                                title="Buka obrolan WhatsApp ke {{ $selectedCustomer->name }}"
+                                            >
+                                                <svg class="size-3.5" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.18-.573c.978.58 1.911.928 3.151.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.995-.368-1.78-.769-2.936-2.578-3.025-2.697-.089-.119-.724-.962-.724-1.835 0-.873.456-1.302.619-1.479.163-.177.355-.221.473-.221.118 0 .237.001.341.006.109.006.255-.041.398.303.148.355.503 1.226.547 1.315.044.089.074.192.015.31-.059.119-.089.192-.178.296-.089.103-.187.23-.266.31-.089.089-.182.185-.078.363.103.178.46 0.758.987 1.228.679.605 1.252.793 1.43.882.178.089.281.074.385-.044.104-.119.444-.518.563-.695.118-.178.237-.148.399-.089.163.059 1.035.488 1.213.577.177.089.296.133.34.207.045.074.045.429-.099.834z"/>
+                                                </svg>
+                                                <span class="group-hover:underline underline-offset-2">WhatsApp: {{ $selectedCustomer->phone }}</span>
+                                            </a>
+                                        @else
+                                            <span class="text-xs text-slate-400">WhatsApp: -</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -965,7 +999,15 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700">Nomor Telepon / WhatsApp <span class="text-red-500">*</span></label>
-                        <input type="text" name="phone" required placeholder="Contoh: 081234567890" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                        <input
+                            type="text"
+                            name="phone"
+                            required
+                            placeholder="Contoh: 081234567890"
+                            @blur="$event.target.value = formatPhone($event.target.value)"
+                            class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                        >
+                        <p class="mt-1 text-[11px] text-slate-400">Otomatis diformat ke standar lokal <code class="font-semibold text-slate-600">08...</code> (misal mengetik <code class="text-slate-600">+628...</code> atau <code class="text-slate-600">628...</code> otomatis disesuaikan).</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700">Alamat Lengkap</label>
@@ -1010,7 +1052,15 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700">Nomor Telepon / WhatsApp <span class="text-red-500">*</span></label>
-                        <input type="text" name="phone" x-model="editForm.phone" required class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                        <input
+                            type="text"
+                            name="phone"
+                            x-model="editForm.phone"
+                            required
+                            @blur="editForm.phone = formatPhone(editForm.phone)"
+                            class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                        >
+                        <p class="mt-1 text-[11px] text-slate-400">Otomatis diformat ke standar lokal <code class="font-semibold text-slate-600">08...</code> (misal mengetik <code class="text-slate-600">+628...</code> atau <code class="text-slate-600">628...</code> otomatis disesuaikan).</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700">Alamat Lengkap</label>
