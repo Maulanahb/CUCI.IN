@@ -130,4 +130,11 @@
             Daftar Pelanggan
         </a>
     </div>
+
+    <div class="mt-2.5 text-center text-xs text-slate-500">
+        Ingin lacak pesanan tanpa login?
+        <a href="{{ route('transactions.lookup') }}" class="font-semibold text-brand-700 hover:text-brand-800 hover:underline">
+            Cek Transaksi
+        </a>
+    </div>
 </x-layouts::guest>
