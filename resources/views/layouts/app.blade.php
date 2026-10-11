@@ -10,7 +10,7 @@
     $navigation = match ($role) {
         'customer' => [
             ['label' => 'Dashboard', 'route' => 'customer.dashboard', 'active' => 'customer.dashboard', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
-            ['label' => 'Riwayat Transaksi', 'route' => 'customer.transactions.index', 'active' => 'customer.transactions.*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01'],
+            ['label' => 'Lacak Cucian', 'route' => 'customer.transactions.index', 'active' => 'customer.transactions.*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01'],
         ],
         default => [
             ['label' => 'Dashboard', 'route' => 'dashboard', 'active' => '*dashboard*', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
