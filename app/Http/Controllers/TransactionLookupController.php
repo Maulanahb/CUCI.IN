@@ -34,7 +34,7 @@ class TransactionLookupController extends Controller
                     'payments' => fn ($query) => $query->whereIn('verification_status', ['Terverifikasi', 'Tidak Diperlukan']),
                     'statusHistories.changedBy',
                 ])
-                ->where('transaction_code', $code)
+                ->whereRaw('UPPER(transaction_code) = ?', [mb_strtoupper($code)])
                 ->first();
 
             if ($transaction) {

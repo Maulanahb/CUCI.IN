@@ -89,6 +89,11 @@ class TransactionLookupTest extends TestCase
         $response->assertSee('DP');
         $response->assertSee('Diproses');
         $response->assertSee('2026');
+
+        $responseLowercase = $this->get(route('transactions.lookup', ['code' => 'trx-0001']));
+        $responseLowercase->assertOk();
+        $responseLowercase->assertSee('TRX-0001');
+        $responseLowercase->assertSee('Budi Santoso');
     }
 
     /**
