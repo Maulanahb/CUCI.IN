@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('customers')->restrictOnDelete();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->string('transaction_code', 20)->unique();
-            $table->decimal('total_amount', 12, 2);
-            $table->enum('status', ['Diterima', 'Diproses', 'Selesai', 'Diambil', 'Dibatalkan']);
+            $table->decimal('total_amount', 12, 2)->default(0);
+            $table->enum('status', ['Diterima', 'Diproses', 'Selesai', 'Diambil', 'Dibatalkan'])->default('Diterima');
             $table->timestamp('estimated_completed_at')->nullable();
             $table->timestamps();
         });
