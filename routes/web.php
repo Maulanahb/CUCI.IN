@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Customer\ComplaintController as CustomerComplaintController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Staff\CustomerController;
@@ -92,5 +93,9 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::middleware('role:customer')->prefix('customer')->name('customer.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'customer'])->name('dashboard');
         Route::get('/transactions', [CustomerTransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/complaints', [CustomerComplaintController::class, 'index'])->name('complaints.index');
+        Route::get('/complaints/create', [CustomerComplaintController::class, 'create'])->name('complaints.create');
+        Route::post('/complaints', [CustomerComplaintController::class, 'store'])->name('complaints.store');
+        Route::get('/complaints/{complaint}', [CustomerComplaintController::class, 'show'])->name('complaints.show');
     });
 });

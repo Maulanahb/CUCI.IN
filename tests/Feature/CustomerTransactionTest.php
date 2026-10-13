@@ -33,11 +33,11 @@ class CustomerTransactionTest extends TestCase
         $response = $this->actingAs($user)->get(route('customer.transactions.index'));
 
         $response->assertOk();
-        $response->assertSee('Lacak Cucian');
+        $response->assertSee('Riwayat Transaksi');
         $response->assertSee('Belum Ada Transaksi');
     }
 
-    public function test_sidebar_displays_lacak_cucian_for_customer(): void
+    public function test_sidebar_displays_riwayat_transaksi_for_customer(): void
     {
         $this->withoutVite();
 
@@ -48,7 +48,7 @@ class CustomerTransactionTest extends TestCase
         $response = $this->actingAs($user)->get(route('customer.dashboard'));
 
         $response->assertOk();
-        $response->assertSee('Lacak Cucian');
+        $response->assertSee('Riwayat Transaksi');
         $response->assertSee(route('customer.transactions.index'));
     }
 
@@ -173,5 +173,78 @@ class CustomerTransactionTest extends TestCase
         $responseModal->assertSee('Total Tagihan:');
         $responseModal->assertSee('Rp 52.000');
         $responseModal->assertSee('Tutup detail (Esc)');
+    }
+
+    public function test_customer_dashboard_displays_active_cucian_tracker_and_stats(): void
+    {
+        $this->withoutVite();
+
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->withAccount()->create(['name' => 'Dewi Sartika']);
+        /** @var User $user */
+        $user = $customer->user;
+
+        $service = Service::create([
+            'name' => 'Cuci Kilat 1 Hari',
+            'price' => 15000,
+            'estimated_duration' => 24,
+            'description' => 'Cuci kilat express',
+            'is_active' => true,
+        ]);
+
+        $activeTrx = Transaction::create([
+            'customer_id' => $customer->id,
+            'transaction_code' => 'TRK-20261025-099',
+            'total_amount' => 45000,
+            'status' => 'Diproses',
+            'estimated_completed_at' => now()->addDay(),
+        ]);
+
+        TransactionDetail::create([
+            'transaction_id' => $activeTrx->id,
+            'service_id' => $service->id,
+            'weight' => 3.0,
+            'unit_price' => 15000,
+            'subtotal' => 45000,
+        ]);
+
+        Payment::create([
+            'transaction_id' => $activeTrx->id,
+            'amount' => 20000,
+            'payment_type' => 'DP',
+            'method' => 'Tunai',
+            'verification_status' => 'Tidak Diperlukan',
+            'paid_at' => now(),
+            'created_by' => $staff->id,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('customer.dashboard'));
+
+        $response->assertOk();
+        $response->assertSee('Cucian Sedang Berjalan');
+        $response->assertSee('TRK-20261025-099');
+        $response->assertSee('Sedang Dicuci / Disetrika');
+        $response->assertSee('Cuci Kilat 1 Hari (3 kg)');
+        $response->assertSee('Diterima');
+        $response->assertSee('Diproses');
+        $response->assertSee('Selesai');
+        $response->assertSee('Sisa: Rp 25.000');
+        $response->assertSee('Riwayat Pesanan Terbaru');
+    }
+
+    public function test_customer_dashboard_displays_empty_state_when_no_active_cucian(): void
+    {
+        $this->withoutVite();
+
+        $customer = Customer::factory()->withAccount()->create(['name' => 'Ahmad Yani']);
+        /** @var User $user */
+        $user = $customer->user;
+
+        $response = $this->actingAs($user)->get(route('customer.dashboard'));
+
+        $response->assertOk();
+        $response->assertSee('Tidak Ada Cucian Aktif');
+        $response->assertSee('0');
+        $response->assertSee('Nota Aktif');
     }
 }

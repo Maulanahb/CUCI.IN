@@ -1,4 +1,4 @@
-<x-layouts::app title="Lacak Cucian">
+<x-layouts::app title="Riwayat Transaksi">
     <div class="space-y-6" x-data="{
         selectedTrxCode: '{{ $selectedTransaction?->transaction_code }}',
         copied: false,
@@ -17,12 +17,12 @@
                     <span class="text-slate-300">/</span>
                     <span>Portal Pelanggan</span>
                     <span class="text-slate-300">/</span>
-                    <span class="text-slate-700 font-medium">Lacak Cucian</span>
+                    <span class="text-slate-700 font-medium">Riwayat Transaksi</span>
                 </nav>
 
-                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Lacak Cucian</h1>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Riwayat Transaksi</h1>
                 <p class="mt-1 text-xs text-slate-500 sm:text-sm">
-                    Pantau progres cucian dan riwayat transaksi laundry Anda beserta rincian status pengerjaan dan pelunasan.
+                    Arsip riwayat transaksi laundry Anda beserta rincian nota, status pengerjaan, dan pelunasan.
                 </p>
             </div>
 
@@ -171,6 +171,7 @@
                             <tbody class="divide-y divide-slate-100">
                                 @foreach ($paginatedTransactions as $trx)
                                     @php
+                                        $statusVal = $trx->status instanceof \App\Enums\TransactionStatus ? $trx->status->value : (string) $trx->status;
                                         $paidAmount = (float) $trx->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
                                         $remainingAmount = max(0.0, (float) $trx->total_amount - $paidAmount);
                                         $isPaidOff = $remainingAmount <= 0.001;
@@ -187,7 +188,7 @@
                                         {{-- Kode Transaksi --}}
                                         <td class="py-3.5 px-4 whitespace-nowrap font-bold text-brand-700">
                                             <div class="flex items-center gap-1.5">
-                                                @if (in_array($trx->status, ['Diterima', 'Diproses', 'Selesai']))
+                                                @if (in_array($statusVal, ['Diterima', 'Diproses', 'Selesai'], true))
                                                     <span class="size-2 rounded-full bg-emerald-500 ring-2 ring-emerald-200" style="width: 8px; height: 8px;"></span>
                                                 @endif
                                                 <span>{{ $trx->transaction_code }}</span>
@@ -253,8 +254,9 @@
                                         {{-- Status Cucian --}}
                                         <td class="py-3.5 px-4 whitespace-nowrap">
                                             @php
-                                                $statusClasses = match ($trx->status) {
-                                                    'Diterima', 'Diproses' => 'bg-brand-50 border-brand-200 text-brand-700',
+                                                $statusClasses = match ($statusVal) {
+                                                    'Diterima' => 'bg-sky-50 border-sky-200 text-sky-700',
+                                                    'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
                                                     'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-700',
                                                     'Diambil' => 'bg-slate-100 border-slate-200 text-slate-700',
                                                     'Dibatalkan' => 'bg-rose-50 border-rose-200 text-rose-700',
@@ -263,7 +265,7 @@
                                             @endphp
                                             <span class="inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $statusClasses }}">
                                                 <span class="size-1.5 rounded-full bg-current" style="width: 6px; height: 6px;"></span>
-                                                {{ $trx->status }}
+                                                {{ $statusVal }}
                                             </span>
                                         </td>
 
@@ -347,8 +349,19 @@
                                 </div>
                                 <div>
                                     <p class="text-[11px] font-medium text-slate-400">Status Cucian</p>
-                                    <span class="mt-0.5 inline-block rounded-full bg-brand-50 border border-brand-200 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
-                                        {{ $selectedTransaction->status }}
+                                    @php
+                                        $selStatusVal = $selectedTransaction->status instanceof \App\Enums\TransactionStatus ? $selectedTransaction->status->value : (string) $selectedTransaction->status;
+                                        $selStatusClasses = match ($selStatusVal) {
+                                            'Diterima' => 'bg-sky-50 border-sky-200 text-sky-700',
+                                            'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
+                                            'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-700',
+                                            'Diambil' => 'bg-slate-100 border-slate-200 text-slate-700',
+                                            'Dibatalkan' => 'bg-rose-50 border-rose-200 text-rose-700',
+                                            default => 'bg-slate-50 border-slate-200 text-slate-700',
+                                        };
+                                    @endphp
+                                    <span class="mt-0.5 inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $selStatusClasses }}">
+                                        {{ $selStatusVal }}
                                     </span>
                                 </div>
                                 <div>
@@ -439,8 +452,22 @@
                             </div>
                         </div>
 
-                        {{-- Footer Modal: Tombol Tutup --}}
-                        <div class="border-t border-slate-100 bg-slate-50/70 px-5 py-3 flex justify-end">
+                        {{-- Footer Modal: Tombol Aksi --}}
+                        <div class="border-t border-slate-100 bg-slate-50/70 px-5 py-3 flex items-center justify-between">
+                            @if ($selStatusVal !== 'Dibatalkan')
+                                <a
+                                    href="{{ route('customer.complaints.create', ['transaction_code' => $selectedTransaction->transaction_code]) }}"
+                                    class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50/60 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 hover:text-rose-800"
+                                >
+                                    <svg class="size-3.5 shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <span>Laporkan Masalah</span>
+                                </a>
+                            @else
+                                <div></div>
+                            @endif
+
                             <a
                                 href="{{ $closeModalUrl }}"
                                 class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 focus:outline-none"
