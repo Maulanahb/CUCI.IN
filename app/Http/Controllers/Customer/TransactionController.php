@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer;
 
+use App\Enums\TransactionStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Transaction;
@@ -51,15 +52,30 @@ class TransactionController extends Controller
         $totalTransactions = $allTransactions->count();
 
         // 2. Cucian Berjalan (Status Diterima, Diproses, Selesai)
-        $activeOrders = $allTransactions->whereIn('status', ['Diterima', 'Diproses', 'Selesai'])->count();
-        $inProgressCount = $allTransactions->whereIn('status', ['Diterima', 'Diproses'])->count();
-        $readyCount = $allTransactions->where('status', 'Selesai')->count();
+        $activeOrders = $allTransactions->filter(function (Transaction $trx): bool {
+            $status = $trx->status instanceof TransactionStatus ? $trx->status->value : (string) $trx->status;
+
+            return in_array($status, ['Diterima', 'Diproses', 'Selesai'], true);
+        })->count();
+
+        $inProgressCount = $allTransactions->filter(function (Transaction $trx): bool {
+            $status = $trx->status instanceof TransactionStatus ? $trx->status->value : (string) $trx->status;
+
+            return in_array($status, ['Diterima', 'Diproses'], true);
+        })->count();
+
+        $readyCount = $allTransactions->filter(function (Transaction $trx): bool {
+            $status = $trx->status instanceof TransactionStatus ? $trx->status->value : (string) $trx->status;
+
+            return $status === 'Selesai';
+        })->count();
 
         // 3. Menunggu Pelunasan
         $unpaidAmount = 0.0;
         $unpaidCount = 0;
         foreach ($allTransactions as $trx) {
-            if ($trx->status === 'Dibatalkan') {
+            $status = $trx->status instanceof TransactionStatus ? $trx->status->value : (string) $trx->status;
+            if ($status === 'Dibatalkan') {
                 continue;
             }
 
@@ -72,7 +88,11 @@ class TransactionController extends Controller
         }
 
         // 4. Total Pengeluaran (Akumulasi nilai transaksi yang tidak dibatalkan)
-        $totalSpent = (float) $allTransactions->where('status', '!=', 'Dibatalkan')->sum('total_amount');
+        $totalSpent = (float) $allTransactions->filter(function (Transaction $trx): bool {
+            $status = $trx->status instanceof TransactionStatus ? $trx->status->value : (string) $trx->status;
+
+            return $status !== 'Dibatalkan';
+        })->sum('total_amount');
 
         $stats = [
             'total_transactions' => $totalTransactions,
