@@ -8,6 +8,7 @@ use App\Http\Controllers\Customer\ComplaintController as CustomerComplaintContro
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Staff\CustomerController;
+use App\Http\Controllers\Staff\TransactionController as StaffTransactionController;
 use App\Http\Controllers\TransactionLookupController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -79,6 +80,8 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
             Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
             Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+
+            Route::post('/transactions', [StaffTransactionController::class, 'store'])->name('transactions.store');
         });
 
         Route::prefix('admin')->name('admin.')->group(function () {
@@ -86,6 +89,8 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
             Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
             Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
+
+            Route::post('/transactions', [StaffTransactionController::class, 'store'])->name('transactions.store');
         });
     });
 
