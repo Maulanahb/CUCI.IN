@@ -63,8 +63,7 @@ class Transaction extends Model
     }
 
     /**
-     * TODO: Relasi ke Customer (many-to-one).
-     * Model Customer dikelola oleh rekan tim (Daysyani).
+     * Relasi ke Customer (many-to-one).
      */
     public function customer(): BelongsTo
     {
@@ -72,8 +71,7 @@ class Transaction extends Model
     }
 
     /**
-     * TODO: Relasi ke User pembuat transaksi (many-to-one).
-     * Model User dikelola oleh rekan tim (Maulana).
+     * Relasi ke User pembuat transaksi (many-to-one).
      */
     public function user(): BelongsTo
     {
@@ -89,12 +87,19 @@ class Transaction extends Model
     }
 
     /**
-     * TODO: Relasi ke TransactionDetail (one-to-many).
-     * Model TransactionDetail dikelola oleh rekan tim (Gargarina).
+     * Relasi ke TransactionDetail (one-to-many).
      */
     public function details(): HasMany
     {
         return $this->hasMany(TransactionDetail::class, 'transaction_id');
+    }
+
+    /**
+     * Alias relasi ke transaction details.
+     */
+    public function transactionDetails(): HasMany
+    {
+        return $this->details();
     }
 
     /**
