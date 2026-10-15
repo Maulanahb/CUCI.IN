@@ -81,7 +81,9 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
             Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
+            Route::get('/transactions/create', [StaffTransactionController::class, 'create'])->name('transactions.create');
             Route::post('/transactions', [StaffTransactionController::class, 'store'])->name('transactions.store');
+            Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])->name('transactions.show');
         });
 
         Route::prefix('admin')->name('admin.')->group(function () {
@@ -90,7 +92,9 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::put('/customers/{customer}', [CustomerController::class, 'update'])->name('customers.update');
             Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 
+            Route::get('/transactions/create', [StaffTransactionController::class, 'create'])->name('transactions.create');
             Route::post('/transactions', [StaffTransactionController::class, 'store'])->name('transactions.store');
+            Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])->name('transactions.show');
         });
     });
 
