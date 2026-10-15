@@ -138,11 +138,14 @@ class TransactionController extends Controller
         $createdBy = (int) auth()->id();
 
         try {
-            $transaction = CreateTransaction::execute(
-                $customerId,
-                $createdBy,
-                $items
-            );
+            $transaction = CreateTransaction::execute([
+                'customer_id' => $customerId,
+                'created_by' => $createdBy,
+                'items' => $items,
+                'pay_now' => $request->boolean('pay_now'),
+                'payment_method' => $validated['payment_method'] ?? 'Tunai',
+                'payment_amount' => $validated['payment_amount'] ?? null,
+            ]);
         } catch (InvalidArgumentException $e) {
             throw ValidationException::withMessages([
                 'items' => [$e->getMessage()],

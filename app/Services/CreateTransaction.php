@@ -26,10 +26,19 @@ class CreateTransaction
         int|string|null $createdBy = null,
         array $items = []
     ): Transaction {
+        $payNow = false;
+        $paymentMethod = 'Tunai';
+        $paymentAmount = null;
+
         if (is_array($customerOrData)) {
             $customerId = $customerOrData['customer_id'] ?? null;
             $createdBy = $customerOrData['created_by'] ?? $createdBy;
             $items = $customerOrData['items'] ?? $customerOrData['details'] ?? $items;
+            $payNow = (bool) ($customerOrData['pay_now'] ?? false);
+            $paymentMethod = (string) ($customerOrData['payment_method'] ?? 'Tunai');
+            $paymentAmount = isset($customerOrData['payment_amount']) && $customerOrData['payment_amount'] !== null && $customerOrData['payment_amount'] !== ''
+                ? (float) $customerOrData['payment_amount']
+                : null;
         } else {
             $customerId = $customerOrData;
         }
@@ -42,7 +51,7 @@ class CreateTransaction
             throw new InvalidArgumentException('Created by (user ID Staff) harus diisi.');
         }
 
-        return DB::transaction(function () use ($customerId, $createdBy, $items): Transaction {
+        return DB::transaction(function () use ($customerId, $createdBy, $items, $payNow, $paymentMethod, $paymentAmount): Transaction {
             // 1. Pastikan customer ada di database
             $customer = Customer::find($customerId);
             if ($customer === null) {
@@ -85,8 +94,22 @@ class CreateTransaction
                 'changed_at' => now(),
             ]);
 
-            // 7. Muat relasi details, customer & statusHistories dan kembalikan model Transaction
-            $transaction->load(['details', 'customer', 'statusHistories']);
+            // 7. Jika kasir memilih untuk bayar sekarang (Lunas atau DP)
+            if ($payNow) {
+                $payAmount = $paymentAmount !== null && $paymentAmount > 0
+                    ? $paymentAmount
+                    : (float) $transaction->total_amount;
+
+                RecordPayment::execute(
+                    transaction: $transaction,
+                    amount: $payAmount,
+                    method: $paymentMethod,
+                    userId: (int) $createdBy
+                );
+            }
+
+            // 8. Muat relasi details, customer, statusHistories & payments dan kembalikan model Transaction
+            $transaction->load(['details', 'customer', 'statusHistories', 'payments']);
 
             return $transaction;
         });

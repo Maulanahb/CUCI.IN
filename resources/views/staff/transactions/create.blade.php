@@ -414,8 +414,86 @@
                                 <span class="font-bold text-slate-900" x-text="getMaxDuration() + ' Jam'">0 Jam</span>
                             </div>
                             <div class="border-t border-brand-200/80 pt-2 flex items-center justify-between">
-                                <span class="text-xs font-extrabold text-slate-800">Total Bayar:</span>
+                                <span class="text-xs font-extrabold text-slate-800">Total Tagihan:</span>
                                 <span class="text-xl font-black text-brand-700" x-text="formatRupiah(getTotalAmount())">Rp 0</span>
+                            </div>
+                        </div>
+
+                        {{-- Section 3.5: Opsi Pembayaran Kasir --}}
+                        <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-bold text-slate-800">Pembayaran Kasir</label>
+                                <span class="text-[10px] font-semibold text-slate-500">Pilih status bayar saat ini</span>
+                            </div>
+
+                            {{-- Pilihan Opsi Pembayaran --}}
+                            <div class="grid grid-cols-3 gap-1.5 rounded-lg bg-slate-200/70 p-1 text-xs font-semibold">
+                                <button
+                                    type="button"
+                                    @click="paymentChoice = 'unpaid'"
+                                    :class="paymentChoice === 'unpaid' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
+                                    class="rounded-md py-1.5 transition text-center"
+                                >
+                                    Bayar Nanti
+                                </button>
+                                <button
+                                    type="button"
+                                    @click="paymentChoice = 'full'"
+                                    :class="paymentChoice === 'full' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
+                                    class="rounded-md py-1.5 transition text-center"
+                                >
+                                    Bayar Lunas
+                                </button>
+                                <button
+                                    type="button"
+                                    @click="paymentChoice = 'dp'"
+                                    :class="paymentChoice === 'dp' ? 'bg-amber-500 text-white shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
+                                    class="rounded-md py-1.5 transition text-center"
+                                >
+                                    Bayar DP
+                                </button>
+                            </div>
+
+                            {{-- Hidden input pay_now --}}
+                            <input type="hidden" name="pay_now" :value="paymentChoice !== 'unpaid' ? '1' : '0'" />
+
+                            {{-- Detail Metode Pembayaran jika Bayar Sekarang --}}
+                            <div x-show="paymentChoice !== 'unpaid'" x-transition class="space-y-3 pt-1">
+                                <div>
+                                    <label class="block mb-1 text-[11px] font-semibold text-slate-600">Metode Pembayaran</label>
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <template x-for="m in ['Tunai', 'QRIS', 'Transfer']" :key="m">
+                                            <label
+                                                class="flex items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-bold cursor-pointer transition"
+                                                :class="paymentMethod === m ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-2xs' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'"
+                                            >
+                                                <input type="radio" name="payment_method" :value="m" x-model="paymentMethod" class="sr-only" />
+                                                <span x-text="m"></span>
+                                            </label>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                {{-- Input Nominal DP jika memilih DP --}}
+                                <div x-show="paymentChoice === 'dp'" x-transition>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <label for="payment_amount" class="text-[11px] font-semibold text-slate-600">Nominal DP (Uang Muka)</label>
+                                        <span class="text-[10px] text-amber-700 font-bold" x-text="'Maks. ' + formatRupiah(getTotalAmount())"></span>
+                                    </div>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-slate-400">Rp</span>
+                                        <input
+                                            type="number"
+                                            id="payment_amount"
+                                            name="payment_amount"
+                                            x-model="dpAmount"
+                                            min="1000"
+                                            :max="getTotalAmount()"
+                                            placeholder="Contoh: 20000"
+                                            class="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 py-1.5 text-xs font-semibold text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -589,6 +667,9 @@
                 items: @json(old('items', [['service_id' => ($services->first()?->id ?? ''), 'weight' => '']])),
                 servicesList: @json($services),
                 servicesMap: @json($services->keyBy('id')),
+                paymentChoice: '{{ old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid' }}',
+                paymentMethod: '{{ old('payment_method', 'Tunai') }}',
+                dpAmount: '{{ old('payment_amount', '') }}',
 
                 get filteredServices() {
                     let list = this.servicesList;

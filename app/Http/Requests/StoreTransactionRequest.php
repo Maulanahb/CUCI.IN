@@ -47,6 +47,21 @@ class StoreTransactionRequest extends FormRequest
                 'numeric',
                 'gt:0',
             ],
+            'pay_now' => [
+                'nullable',
+                'boolean',
+            ],
+            'payment_method' => [
+                'nullable',
+                'required_if:pay_now,true',
+                'string',
+                'in:Tunai,Transfer,QRIS',
+            ],
+            'payment_amount' => [
+                'nullable',
+                'numeric',
+                'min:0',
+            ],
         ];
     }
 
