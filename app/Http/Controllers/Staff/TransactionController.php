@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Customer;
+use App\Models\LaundryStatusHistory;
 use App\Models\Service;
 use App\Models\Transaction;
 use App\Services\CreateTransaction;
@@ -69,11 +70,28 @@ class TransactionController extends Controller
         $transaction->load([
             'customer',
             'details.service',
+            'statusHistories.changedBy',
         ]);
 
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
 
         return view('staff.transactions.show', compact('transaction', 'routePrefix'));
+    }
+
+    /**
+     * Tampilkan halaman cetak nota struk kasir thermal (print-friendly).
+     */
+    public function print(Request $request, Transaction $transaction): View
+    {
+        $transaction->load([
+            'customer',
+            'details.service',
+            'creator',
+        ]);
+
+        $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
+
+        return view('staff.transactions.print', compact('transaction', 'routePrefix'));
     }
 
     /**
@@ -88,8 +106,17 @@ class TransactionController extends Controller
             ],
         ]);
 
+        $newStatus = $validated['status'];
+
         $transaction->update([
-            'status' => $validated['status'],
+            'status' => $newStatus,
+        ]);
+
+        LaundryStatusHistory::create([
+            'transaction_id' => $transaction->id,
+            'status' => $newStatus,
+            'changed_by' => auth()->id(),
+            'changed_at' => now(),
         ]);
 
         return redirect()

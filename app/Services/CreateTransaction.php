@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\TransactionStatus;
 use App\Models\Customer;
+use App\Models\LaundryStatusHistory;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Support\Facades\DB;
@@ -76,8 +77,16 @@ class CreateTransaction
                 ]);
             }
 
-            // 6. Muat relasi details & customer dan kembalikan model Transaction
-            $transaction->load(['details', 'customer']);
+            // 6. Catat log riwayat status pertama kali (Diterima)
+            LaundryStatusHistory::create([
+                'transaction_id' => $transaction->id,
+                'status' => TransactionStatus::Diterima,
+                'changed_by' => $createdBy,
+                'changed_at' => now(),
+            ]);
+
+            // 7. Muat relasi details, customer & statusHistories dan kembalikan model Transaction
+            $transaction->load(['details', 'customer', 'statusHistories']);
 
             return $transaction;
         });

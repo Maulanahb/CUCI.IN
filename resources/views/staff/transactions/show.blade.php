@@ -64,7 +64,19 @@
             </div>
 
             {{-- Tombol Aksi Header --}}
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
+                <a
+                    id="btn-print-receipt"
+                    href="{{ route("{$currentRoutePrefix}.transactions.print", $transaction) }}"
+                    target="_blank"
+                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
+                >
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    <span>Cetak Nota</span>
+                </a>
+
                 <a
                     id="btn-back-to-create"
                     href="{{ route("{$currentRoutePrefix}.transactions.create") }}"
@@ -619,6 +631,84 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+
+        {{-- ============================================================
+            AUDIT TRAIL / RIWAYAT PEMBARUAN STATUS
+        ============================================================= --}}
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <div class="mb-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-900">
+                        Riwayat Pembaruan Status
+                    </h2>
+                    <p class="mt-0.5 text-xs text-slate-500">
+                        Catatan audit trail seluruh perubahan status pengerjaan cucian.
+                    </p>
+                </div>
+                <span class="text-xs font-medium text-slate-400">
+                    Total: {{ $transaction->statusHistories->count() }} catatan
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+                        <tr>
+                            <th class="px-5 py-3 font-semibold">Waktu Perubahan</th>
+                            <th class="px-5 py-3 font-semibold">Status</th>
+                            <th class="px-5 py-3 font-semibold">Petugas (Diubah Oleh)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse ($transaction->statusHistories->sortByDesc('id') as $history)
+                            @php
+                                $histStatus = $history->status instanceof \App\Enums\TransactionStatus
+                                    ? $history->status->value
+                                    : (string) $history->status;
+                                $histBadge = match ($histStatus) {
+                                    'Diterima' => 'bg-blue-50 text-blue-700 border-blue-200',
+                                    'Diproses' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                    'Selesai' => 'bg-green-50 text-green-700 border-green-200',
+                                    'Diambil' => 'bg-slate-100 text-slate-700 border-slate-200',
+                                    'Dibatalkan' => 'bg-red-50 text-red-700 border-red-200',
+                                    default => 'bg-slate-50 text-slate-600 border-slate-200',
+                                };
+                            @endphp
+                            <tr class="hover:bg-slate-50/80">
+                                <td class="px-5 py-3.5 text-xs text-slate-600">
+                                    <div class="font-medium text-slate-800">
+                                        {{ $history->changed_at?->translatedFormat('d F Y, H:i:s') ?? '-' }}
+                                    </div>
+                                    <div class="mt-0.5 text-[11px] text-slate-400">
+                                        {{ $history->changed_at?->diffForHumans() }}
+                                    </div>
+                                </td>
+                                <td class="px-5 py-3.5">
+                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $histBadge }}">
+                                        {{ $histStatus }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3.5 text-xs font-medium text-slate-700">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex size-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600">
+                                            {{ strtoupper(substr($history->changedBy?->name ?? 'S', 0, 1)) }}
+                                        </div>
+                                        <span>{{ $history->changedBy?->name ?? 'Sistem' }}</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="px-5 py-8 text-center text-xs text-slate-400">
+                                    Belum ada catatan riwayat status untuk transaksi ini.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 

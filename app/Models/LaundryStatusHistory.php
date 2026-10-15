@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TransactionStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,6 +38,7 @@ class LaundryStatusHistory extends Model
     protected function casts(): array
     {
         return [
+            'status' => TransactionStatus::class,
             'changed_at' => 'datetime',
         ];
     }
