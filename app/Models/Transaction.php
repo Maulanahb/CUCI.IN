@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Transaction extends Model
 {
@@ -115,6 +116,11 @@ class Transaction extends Model
      * TODO: Relasi ke LaundryStatusHistory (one-to-many).
      * Dikelola oleh rekan tim (Nayla).
      */
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
     public function statusHistories(): HasMany
     {
         return $this->hasMany(LaundryStatusHistory::class, 'transaction_id');
