@@ -9,6 +9,7 @@ use App\Http\Controllers\Customer\TransactionController as CustomerTransactionCo
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Staff\CustomerController;
+use App\Http\Controllers\Staff\PaymentController;
 use App\Http\Controllers\Staff\TransactionController as StaffTransactionController;
 use App\Http\Controllers\TransactionLookupController;
 use Illuminate\Support\Facades\Auth;
@@ -142,8 +143,14 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
                     ->name('transactions.show');
 
+                Route::get('/transactions/{transaction}/print', [StaffTransactionController::class, 'print'])
+                    ->name('transactions.print');
+
                 Route::patch('/transactions/{transaction}/status', [StaffTransactionController::class, 'updateStatus'])
                     ->name('transactions.status');
+
+                Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
+                    ->name('transactions.payments.store');
 
                 // Layanan (Katalog untuk Staff)
                 Route::get('/services', [ServiceController::class, 'index'])
@@ -170,6 +177,9 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('customers.destroy');
 
                 // Transaksi
+                Route::get('/transactions', [StaffTransactionController::class, 'index'])
+                    ->name('transactions.index');
+
                 Route::get('/transactions/create', [StaffTransactionController::class, 'create'])
                     ->name('transactions.create');
 
@@ -178,6 +188,15 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
                     ->name('transactions.show');
+
+                Route::get('/transactions/{transaction}/print', [StaffTransactionController::class, 'print'])
+                    ->name('transactions.print');
+
+                Route::patch('/transactions/{transaction}/status', [StaffTransactionController::class, 'updateStatus'])
+                    ->name('transactions.status');
+
+                Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
+                    ->name('transactions.payments.store');
 
                 // Layanan (CRUD Master Layanan untuk Admin)
                 Route::get('/services', [ServiceController::class, 'index'])
