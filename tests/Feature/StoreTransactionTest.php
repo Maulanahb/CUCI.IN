@@ -409,4 +409,71 @@ class StoreTransactionTest extends TestCase
         $response->assertJsonValidationErrors(['items']);
         $this->assertEquals(0, Transaction::count());
     }
+
+    public function test_can_record_direct_full_payment_on_transaction_store(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $service = Service::create([
+            'name' => 'Cuci Komplit',
+            'price' => 10000.00,
+            'estimated_duration' => 24,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($staff)->post(route('staff.transactions.store'), [
+            'customer_id' => $customer->id,
+            'items' => [
+                ['service_id' => $service->id, 'weight' => 2],
+            ],
+            'pay_now' => true,
+            'payment_method' => 'Tunai',
+            'payment_amount' => 20000,
+        ]);
+
+        $response->assertRedirect();
+        $transaction = Transaction::latest('id')->first();
+        $this->assertNotNull($transaction);
+        $this->assertEquals('Lunas', $transaction->payment_status);
+        $this->assertDatabaseHas('payments', [
+            'transaction_id' => $transaction->id,
+            'amount' => 20000,
+            'payment_type' => 'Pembayaran Penuh',
+            'method' => 'Tunai',
+        ]);
+    }
+
+    public function test_can_record_direct_dp_payment_on_transaction_store(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $service = Service::create([
+            'name' => 'Cuci Komplit',
+            'price' => 10000.00,
+            'estimated_duration' => 24,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($staff)->post(route('staff.transactions.store'), [
+            'customer_id' => $customer->id,
+            'items' => [
+                ['service_id' => $service->id, 'weight' => 2],
+            ],
+            'pay_now' => true,
+            'payment_method' => 'QRIS',
+            'payment_amount' => 10000,
+        ]);
+
+        $response->assertRedirect();
+        $transaction = Transaction::latest('id')->first();
+        $this->assertNotNull($transaction);
+        $this->assertEquals('DP', $transaction->payment_status);
+        $this->assertEquals(10000, $transaction->remaining_amount);
+        $this->assertDatabaseHas('payments', [
+            'transaction_id' => $transaction->id,
+            'amount' => 10000,
+            'payment_type' => 'DP',
+            'method' => 'QRIS',
+        ]);
+    }
 }

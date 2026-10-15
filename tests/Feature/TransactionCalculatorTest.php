@@ -272,7 +272,7 @@ class TransactionCalculatorTest extends TestCase
             'is_active' => true,
         ]);
 
-        $calculator = new TransactionCalculator();
+        $calculator = new TransactionCalculator;
 
         $result1 = $calculator->calculate([
             ['service_id' => $service->id, 'weight' => 2],

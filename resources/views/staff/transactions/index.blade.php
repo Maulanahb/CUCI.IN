@@ -1,3 +1,7 @@
+@php
+    $routePrefix = request()->routeIs('admin.*') ? 'admin' : 'staff';
+@endphp
+
 <x-layouts::app title="Kelola Transaksi">
 
     <div class="space-y-6">
@@ -8,7 +12,7 @@
             <div>
                 <div class="flex items-center gap-2">
                     <a
-                        href="{{ route('staff.dashboard') }}"
+                        href="{{ route($routePrefix . '.dashboard') }}"
                         class="text-sm text-slate-400 hover:text-brand-600"
                     >
                         Dashboard
@@ -30,6 +34,18 @@
                 </p>
             </div>
 
+            <div>
+                <a
+                    href="{{ route($routePrefix . '.transactions.create') }}"
+                    class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 active:scale-98"
+                >
+                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>Buka Kasir POS Baru</span>
+                </a>
+            </div>
+
         </div>
 
 
@@ -46,7 +62,7 @@
 
             <form
                 method="GET"
-                action="{{ route('staff.transactions.index') }}"
+                action="{{ route($routePrefix . '.transactions.index') }}"
                 class="grid grid-cols-1 gap-4 md:grid-cols-3"
             >
 
@@ -136,7 +152,7 @@
                 <div class="md:col-span-3 flex justify-end gap-2">
 
                     <a
-                        href="{{ route('staff.transactions.index') }}"
+                        href="{{ route($routePrefix . '.transactions.index') }}"
                         class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
                     >
                         Reset
@@ -249,13 +265,25 @@
                                 </td>
 
 
-                                {{-- Total --}}
+                                {{-- Total & Status Bayar --}}
                                 <td class="px-5 py-4">
-
                                     <p class="font-semibold text-slate-900">
                                         Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
                                     </p>
 
+                                    @php
+                                        $payStatus = $transaction->payment_status;
+                                        $payClasses = match ($payStatus) {
+                                            'Lunas' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                                            'DP' => 'bg-amber-50 text-amber-700 border-amber-200',
+                                            default => 'bg-rose-50 text-rose-700 border-rose-200',
+                                        };
+                                    @endphp
+                                    <div class="mt-1">
+                                        <span class="inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold {{ $payClasses }}">
+                                            {{ $payStatus }}
+                                        </span>
+                                    </div>
                                 </td>
 
 
@@ -282,14 +310,22 @@
 
                                 {{-- Aksi --}}
                                 <td class="px-5 py-4 text-right">
-
-                                    <a
-                                        href="{{ route('staff.transactions.show', $transaction) }}"
-                                        class="inline-flex items-center rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
-                                    >
-                                        Detail
-                                    </a>
-
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <a
+                                            href="{{ route($routePrefix . '.transactions.show', $transaction) }}"
+                                            class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900"
+                                        >
+                                            Detail
+                                        </a>
+                                        <a
+                                            href="{{ route($routePrefix . '.transactions.print', $transaction) }}"
+                                            target="_blank"
+                                            class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-brand-700 shadow-2xs transition hover:bg-brand-50"
+                                            title="Cetak Struk"
+                                        >
+                                            Cetak
+                                        </a>
+                                    </div>
                                 </td>
 
                             </tr>

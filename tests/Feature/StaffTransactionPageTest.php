@@ -213,4 +213,21 @@ class StaffTransactionPageTest extends TestCase
         $responseShow->assertSee('Cuci Bedcover');
         $responseShow->assertSee('Rp 30.000');
     }
+
+    /**
+     * Halaman POS menampilkan tombol '+ Pelanggan Baru' dan modal quick-add.
+     */
+    public function test_pos_page_renders_quick_add_customer_button_and_modal(): void
+    {
+        $this->withoutVite();
+        $staff = User::factory()->staff()->create();
+
+        $response = $this->actingAs($staff)->get(route('staff.transactions.create'));
+
+        $response->assertOk();
+        $response->assertSee('Pelanggan Baru');
+        $response->assertSee('modal-quick-customer');
+        $response->assertSee('quick_customer_name');
+        $response->assertSee('quick_customer_phone');
+    }
 }
