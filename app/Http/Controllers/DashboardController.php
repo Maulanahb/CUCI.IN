@@ -54,7 +54,24 @@ class DashboardController extends Controller
             'transactions_today' => Transaction::whereDate('created_at', today())->count(),
         ];
 
-        return view('staff.dashboard', compact('stats'));
+        $statusCounts = [
+            'diterima' => Transaction::where('status', TransactionStatus::Diterima)->count(),
+            'diproses' => Transaction::where('status', TransactionStatus::Diproses)->count(),
+            'selesai' => Transaction::where('status', TransactionStatus::Selesai)->count(),
+            'diambil' => Transaction::where('status', TransactionStatus::Diambil)->count(),
+        ];
+
+        $todayTransactions = Transaction::with(['customer', 'details.service'])
+            ->latest('id')
+            ->take(6)
+            ->get();
+
+        $activeServices = Service::where('is_active', true)
+            ->latest('id')
+            ->take(4)
+            ->get();
+
+        return view('staff.dashboard', compact('stats', 'statusCounts', 'todayTransactions', 'activeServices'));
     }
 
     /**
