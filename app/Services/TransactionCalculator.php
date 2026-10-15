@@ -14,16 +14,16 @@ class TransactionCalculator
      * Hitung subtotal tiap item, total transaksi, dan estimasi waktu selesai.
      *
      * @param  array<int, array<string, mixed>>  $items  Daftar item berisi 'service_id' dan 'weight'
-     * @param  \Carbon\CarbonInterface|\DateTimeInterface|string|null  $startTime  Waktu acuan awal (default: sekarang)
+     * @param  CarbonInterface|DateTimeInterface|string|null  $startTime  Waktu acuan awal (default: sekarang)
      * @return array{
      *     items: list<array{service_id: int, weight: string, unit_price: string, subtotal: string}>,
      *     details: list<array{service_id: int, weight: string, unit_price: string, subtotal: string}>,
      *     total_amount: string,
-     *     estimated_completed_at: \Carbon\CarbonInterface,
+     *     estimated_completed_at: CarbonInterface,
      *     estimated_duration: int
      * }
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
     public static function calculate(array $items, CarbonInterface|DateTimeInterface|string|null $startTime = null): array
     {
@@ -67,7 +67,7 @@ class TransactionCalculator
                 $serviceCache[$serviceId] = Service::find($serviceId);
             }
 
-            /** @var \App\Models\Service|null $service */
+            /** @var Service|null $service */
             $service = $serviceCache[$serviceId];
 
             if ($service === null) {
@@ -118,7 +118,6 @@ class TransactionCalculator
      * Memungkinkan pemanggilan objek sebagai callable/invokable.
      *
      * @param  array<int, array<string, mixed>>  $items
-     * @param  \Carbon\CarbonInterface|\DateTimeInterface|string|null  $startTime
      * @return array<string, mixed>
      */
     public function __invoke(array $items, CarbonInterface|DateTimeInterface|string|null $startTime = null): array
