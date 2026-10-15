@@ -109,6 +109,12 @@ class TransactionController extends Controller
 
         $newStatus = $validated['status'];
 
+        if ($newStatus === 'Diambil' && ! $transaction->isPaidOff()) {
+            throw ValidationException::withMessages([
+                'status' => 'Cucian belum dapat diserahkan karena pembayaran belum lunas. Sisa tagihan: Rp '.number_format($transaction->remaining_amount, 0, ',', '.'),
+            ]);
+        }
+
         $transaction->update([
             'status' => $newStatus,
         ]);
