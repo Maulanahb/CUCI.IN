@@ -10,10 +10,12 @@
     $navigation = match ($role) {
         'customer' => [
             ['label' => 'Dashboard', 'route' => 'customer.dashboard', 'active' => 'customer.dashboard', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
-            ['label' => 'Lacak Cucian', 'route' => 'customer.transactions.index', 'active' => 'customer.transactions.*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01'],
+            ['label' => 'Riwayat Transaksi', 'route' => 'customer.transactions.index', 'active' => 'customer.transactions.*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01'],
+            ['label' => 'Pengaduan', 'route' => 'customer.complaints.index', 'active' => 'customer.complaints.*', 'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
         ],
         default => [
             ['label' => 'Dashboard', 'route' => 'dashboard', 'active' => '*dashboard*', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
+            ['label' => 'Transaksi Baru', 'route' => ($role && Route::has("{$role}.transactions.create")) ? "{$role}.transactions.create" : 'transactions.create', 'active' => '*transactions.create*', 'icon' => 'M12 4v16m8-8H4'],
             ['label' => 'Transaksi', 'route' => ($role && Route::has("{$role}.transactions.index")) ? "{$role}.transactions.index" : 'transactions.index', 'active' => '*transactions*', 'icon' => 'M9 5h10M9 12h10M9 19h10M4 5h.01M4 12h.01M4 19h.01'],
             ['label' => 'Pelanggan', 'route' => ($role && Route::has("{$role}.customers.index")) ? "{$role}.customers.index" : 'customers.index', 'active' => '*customers*', 'icon' => 'M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 10a4 4 0 100-8 4 4 0 000 8zM21 20v-2a4 4 0 00-3-3.87M16 2.13a4 4 0 010 7.75'],
             ['label' => 'Layanan', 'route' => ($role && Route::has("{$role}.services.index")) ? "{$role}.services.index" : 'services.index', 'active' => '*services*', 'icon' => 'M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2'],
