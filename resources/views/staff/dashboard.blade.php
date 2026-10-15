@@ -103,7 +103,7 @@
 
             {{-- Siap Diambil Pelanggan --}}
             <a
-                href="{{ route('staff.transactions.index') }}"
+                href="{{ route('staff.transactions.index', ['status' => 'Selesai']) }}"
                 class="group block rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:border-brand-300 hover:shadow-md"
             >
                 <div class="flex items-center justify-between">
@@ -126,7 +126,7 @@
         <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs sm:p-6">
             <div class="mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-3">
                 <div>
-                    <h3 class="text-sm font-bold text-slate-900 sm:text-base">Antrean Pengerjaan Cucian</h3>
+                    <h3 class="text-sm font-bold text-slate-900 sm:text-base">Antrean & Status Operasional Cucian</h3>
                     <p class="text-xs text-slate-500">Pantau proses cucian laundry dan perbarui status pengerjaan.</p>
                 </div>
                 <a href="{{ route('staff.transactions.index') }}" class="text-xs font-semibold text-brand-600 hover:text-brand-700">
@@ -136,44 +136,68 @@
 
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {{-- Diterima --}}
-                <div class="rounded-xl border border-sky-100 bg-sky-50/50 p-4 transition hover:border-sky-200">
+                <a
+                    href="{{ route('staff.transactions.index', ['status' => 'Diterima']) }}"
+                    class="group block rounded-xl border border-sky-100 bg-sky-50/50 p-4 transition hover:border-sky-300 hover:bg-sky-50 hover:shadow-xs active:scale-[0.99]"
+                >
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-sky-800">1. Diterima</span>
+                        <span class="text-xs font-semibold text-sky-800 transition group-hover:text-sky-900">Diterima</span>
                         <span class="inline-flex size-2 rounded-full bg-sky-500 animate-pulse"></span>
                     </div>
-                    <p class="mt-2 text-2xl font-extrabold text-sky-900">{{ $statusCounts['diterima'] ?? 0 }}</p>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <p class="text-2xl font-extrabold text-sky-900">{{ $statusCounts['diterima'] ?? 0 }}</p>
+                        <span class="text-xs font-semibold text-sky-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    </div>
                     <p class="mt-1 text-[11px] text-sky-600">Antrean masuk baru</p>
-                </div>
+                </a>
 
                 {{-- Diproses --}}
-                <div class="rounded-xl border border-amber-100 bg-amber-50/50 p-4 transition hover:border-amber-200">
+                <a
+                    href="{{ route('staff.transactions.index', ['status' => 'Diproses']) }}"
+                    class="group block rounded-xl border border-amber-100 bg-amber-50/50 p-4 transition hover:border-amber-300 hover:bg-amber-50 hover:shadow-xs active:scale-[0.99]"
+                >
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-amber-800">2. Diproses</span>
+                        <span class="text-xs font-semibold text-amber-800 transition group-hover:text-amber-900">Diproses</span>
                         <span class="inline-flex size-2 rounded-full bg-amber-500"></span>
                     </div>
-                    <p class="mt-2 text-2xl font-extrabold text-amber-900">{{ $statusCounts['diproses'] ?? 0 }}</p>
-                    <p class="mt-1 text-[11px] text-amber-600">Sedang dicuci & setrika</p>
-                </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <p class="text-2xl font-extrabold text-amber-900">{{ $statusCounts['diproses'] ?? 0 }}</p>
+                        <span class="text-xs font-semibold text-amber-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    </div>
+                    <p class="mt-1 text-[11px] text-amber-600">Sedang dicuci & disetrika</p>
+                </a>
 
                 {{-- Selesai --}}
-                <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 transition hover:border-emerald-200">
+                <a
+                    href="{{ route('staff.transactions.index', ['status' => 'Selesai']) }}"
+                    class="group block rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 transition hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-xs active:scale-[0.99]"
+                >
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-emerald-800">3. Selesai</span>
+                        <span class="text-xs font-semibold text-emerald-800 transition group-hover:text-emerald-900">Selesai</span>
                         <span class="inline-flex size-2 rounded-full bg-emerald-500"></span>
                     </div>
-                    <p class="mt-2 text-2xl font-extrabold text-emerald-900">{{ $statusCounts['selesai'] ?? 0 }}</p>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <p class="text-2xl font-extrabold text-emerald-900">{{ $statusCounts['selesai'] ?? 0 }}</p>
+                        <span class="text-xs font-semibold text-emerald-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    </div>
                     <p class="mt-1 text-[11px] text-emerald-600">Siap diambil pelanggan</p>
-                </div>
+                </a>
 
                 {{-- Diambil --}}
-                <div class="rounded-xl border border-slate-100 bg-slate-50/80 p-4 transition hover:border-slate-200">
+                <a
+                    href="{{ route('staff.transactions.index', ['status' => 'Diambil']) }}"
+                    class="group block rounded-xl border border-slate-100 bg-slate-50/80 p-4 transition hover:border-slate-300 hover:bg-slate-100/80 hover:shadow-xs active:scale-[0.99]"
+                >
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">4. Diambil</span>
+                        <span class="text-xs font-semibold text-slate-700 transition group-hover:text-slate-900">Diambil</span>
                         <span class="inline-flex size-2 rounded-full bg-slate-400"></span>
                     </div>
-                    <p class="mt-2 text-2xl font-extrabold text-slate-900">{{ $statusCounts['diambil'] ?? 0 }}</p>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <p class="text-2xl font-extrabold text-slate-900">{{ $statusCounts['diambil'] ?? 0 }}</p>
+                        <span class="text-xs font-semibold text-slate-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    </div>
                     <p class="mt-1 text-[11px] text-slate-500">Selesai diserahkan</p>
-                </div>
+                </a>
             </div>
         </div>
 

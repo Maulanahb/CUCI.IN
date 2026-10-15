@@ -121,44 +121,68 @@
 
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {{-- Diterima --}}
-                <div class="rounded-xl border border-sky-100 bg-sky-50/50 p-4 transition hover:border-sky-200">
+                <a
+                    href="{{ route('admin.transactions.index', ['status' => 'Diterima']) }}"
+                    class="group block rounded-xl border border-sky-100 bg-sky-50/50 p-4 transition hover:border-sky-300 hover:bg-sky-50 hover:shadow-xs active:scale-[0.99]"
+                >
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-sky-800">Diterima</span>
+                        <span class="text-xs font-semibold text-sky-800 transition group-hover:text-sky-900">Diterima</span>
                         <span class="inline-flex size-2 rounded-full bg-sky-500 animate-pulse"></span>
                     </div>
-                    <p class="mt-2 text-2xl font-extrabold text-sky-900">{{ $statusCounts['diterima'] ?? 0 }}</p>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <p class="text-2xl font-extrabold text-sky-900">{{ $statusCounts['diterima'] ?? 0 }}</p>
+                        <span class="text-xs font-semibold text-sky-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    </div>
                     <p class="mt-1 text-[11px] text-sky-600">Antrean masuk baru</p>
-                </div>
+                </a>
 
                 {{-- Diproses --}}
-                <div class="rounded-xl border border-amber-100 bg-amber-50/50 p-4 transition hover:border-amber-200">
+                <a
+                    href="{{ route('admin.transactions.index', ['status' => 'Diproses']) }}"
+                    class="group block rounded-xl border border-amber-100 bg-amber-50/50 p-4 transition hover:border-amber-300 hover:bg-amber-50 hover:shadow-xs active:scale-[0.99]"
+                >
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-amber-800">Diproses</span>
+                        <span class="text-xs font-semibold text-amber-800 transition group-hover:text-amber-900">Diproses</span>
                         <span class="inline-flex size-2 rounded-full bg-amber-500"></span>
                     </div>
-                    <p class="mt-2 text-2xl font-extrabold text-amber-900">{{ $statusCounts['diproses'] ?? 0 }}</p>
-                    <p class="mt-1 text-[11px] text-amber-600">Sedang dicuci / setrika</p>
-                </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <p class="text-2xl font-extrabold text-amber-900">{{ $statusCounts['diproses'] ?? 0 }}</p>
+                        <span class="text-xs font-semibold text-amber-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    </div>
+                    <p class="mt-1 text-[11px] text-amber-600">Sedang dicuci & disetrika</p>
+                </a>
 
                 {{-- Selesai --}}
-                <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 transition hover:border-emerald-200">
+                <a
+                    href="{{ route('admin.transactions.index', ['status' => 'Selesai']) }}"
+                    class="group block rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 transition hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-xs active:scale-[0.99]"
+                >
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-emerald-800">Selesai</span>
+                        <span class="text-xs font-semibold text-emerald-800 transition group-hover:text-emerald-900">Selesai</span>
                         <span class="inline-flex size-2 rounded-full bg-emerald-500"></span>
                     </div>
-                    <p class="mt-2 text-2xl font-extrabold text-emerald-900">{{ $statusCounts['selesai'] ?? 0 }}</p>
-                    <p class="mt-1 text-[11px] text-emerald-600">Siap diambil customer</p>
-                </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <p class="text-2xl font-extrabold text-emerald-900">{{ $statusCounts['selesai'] ?? 0 }}</p>
+                        <span class="text-xs font-semibold text-emerald-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    </div>
+                    <p class="mt-1 text-[11px] text-emerald-600">Siap diambil pelanggan</p>
+                </a>
 
                 {{-- Diambil --}}
-                <div class="rounded-xl border border-slate-100 bg-slate-50/80 p-4 transition hover:border-slate-200">
+                <a
+                    href="{{ route('admin.transactions.index', ['status' => 'Diambil']) }}"
+                    class="group block rounded-xl border border-slate-100 bg-slate-50/80 p-4 transition hover:border-slate-300 hover:bg-slate-100/80 hover:shadow-xs active:scale-[0.99]"
+                >
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700">Diambil</span>
+                        <span class="text-xs font-semibold text-slate-700 transition group-hover:text-slate-900">Diambil</span>
                         <span class="inline-flex size-2 rounded-full bg-slate-400"></span>
                     </div>
-                    <p class="mt-2 text-2xl font-extrabold text-slate-900">{{ $statusCounts['diambil'] ?? 0 }}</p>
-                    <p class="mt-1 text-[11px] text-slate-500">Telah diserahkan</p>
-                </div>
+                    <div class="mt-2 flex items-baseline justify-between">
+                        <p class="text-2xl font-extrabold text-slate-900">{{ $statusCounts['diambil'] ?? 0 }}</p>
+                        <span class="text-xs font-semibold text-slate-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    </div>
+                    <p class="mt-1 text-[11px] text-slate-500">Selesai diserahkan</p>
+                </a>
             </div>
         </div>
 
