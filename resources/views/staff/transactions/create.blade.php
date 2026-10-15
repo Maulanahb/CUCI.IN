@@ -79,9 +79,22 @@
                 </div>
 
                 <div>
-                    <label for="customer_id" class="block text-xs font-semibold text-slate-700">
-                        Nama / Telepon Pelanggan <span class="text-rose-500">*</span>
-                    </label>
+                    <div class="flex items-center justify-between">
+                        <label for="customer_id" class="block text-xs font-semibold text-slate-700">
+                            Nama / Telepon Pelanggan <span class="text-rose-500">*</span>
+                        </label>
+                        <button
+                            type="button"
+                            id="btn-open-quick-customer"
+                            onclick="openQuickCustomerModal()"
+                            class="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 transition hover:text-brand-700 focus:outline-none"
+                        >
+                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            <span>+ Pelanggan Baru</span>
+                        </button>
+                    </div>
                     <div class="mt-1.5">
                         <select
                             id="customer_id"
@@ -109,7 +122,7 @@
                     @enderror
 
                     <p class="mt-2 text-[11px] text-slate-400">
-                        Pelanggan belum terdaftar? Anda dapat menambahkannya melalui menu <a href="{{ route("{$currentRoutePrefix}.customers.index") }}" class="font-medium text-brand-600 underline hover:text-brand-700">Data Pelanggan</a>.
+                        Pelanggan belum terdaftar? Klik <span class="font-medium text-brand-600">+ Pelanggan Baru</span> di atas atau kelola via menu <a href="{{ route("{$currentRoutePrefix}.customers.index") }}" class="font-medium text-brand-600 underline hover:text-brand-700">Data Pelanggan</a>.
                     </p>
                 </div>
             </div>
@@ -235,5 +248,238 @@
                 </div>
             </div>
         </form>
+
+        {{-- Modal Tambah Pelanggan Cepat --}}
+        <div
+            id="modal-quick-customer"
+            class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/50 backdrop-blur-xs transition-opacity duration-200"
+            aria-labelledby="modal-quick-customer-title"
+            role="dialog"
+            aria-modal="true"
+            onclick="if (event.target === this) closeQuickCustomerModal()"
+        >
+            <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-xl transition-all sm:my-8">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="flex size-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900" id="modal-quick-customer-title">
+                                    Tambah Pelanggan Baru
+                                </h3>
+                                <p class="text-[11px] text-slate-500">Daftarkan pelanggan baru langsung tanpa keluar dari kasir POS.</p>
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            onclick="closeQuickCustomerModal()"
+                            class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none"
+                            aria-label="Tutup"
+                        >
+                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    {{-- Container Error Validasi AJAX --}}
+                    <div id="quick-customer-errors" class="mt-4 hidden rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800">
+                        <div class="flex items-center gap-1.5 font-semibold">
+                            <svg class="size-4 shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span>Gagal menyimpan data pelanggan:</span>
+                        </div>
+                        <ul id="quick-customer-errors-list" class="mt-1 list-inside list-disc space-y-0.5 pl-2 font-normal"></ul>
+                    </div>
+
+                    <form id="form-quick-customer" onsubmit="submitQuickCustomer(event)" class="mt-4 space-y-4">
+                        <div>
+                            <label for="quick_customer_name" class="block text-xs font-semibold text-slate-700">
+                                Nama Pelanggan <span class="text-rose-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="quick_customer_name"
+                                name="name"
+                                required
+                                placeholder="Contoh: Budi Santoso"
+                                class="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label for="quick_customer_phone" class="block text-xs font-semibold text-slate-700">
+                                Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="quick_customer_phone"
+                                name="phone"
+                                required
+                                placeholder="Contoh: 081234567890"
+                                class="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                            />
+                        </div>
+
+                        <div>
+                            <label for="quick_customer_address" class="block text-xs font-semibold text-slate-700">
+                                Alamat <span class="text-slate-400 font-normal">(Opsional)</span>
+                            </label>
+                            <textarea
+                                id="quick_customer_address"
+                                name="address"
+                                rows="2"
+                                placeholder="Contoh: Jl. Merdeka No. 10"
+                                class="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                            ></textarea>
+                        </div>
+
+                        <div class="mt-6 flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
+                            <button
+                                type="button"
+                                onclick="closeQuickCustomerModal()"
+                                class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                id="btn-save-quick-customer"
+                                class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
+                            >
+                                <svg id="btn-save-quick-customer-spinner" class="hidden size-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                                </svg>
+                                <span id="btn-save-quick-customer-text">Simpan & Pilih</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        function openQuickCustomerModal() {
+            const modal = document.getElementById('modal-quick-customer');
+            if (modal) {
+                modal.classList.remove('hidden');
+                document.getElementById('quick-customer-errors').classList.add('hidden');
+                document.getElementById('quick-customer-errors-list').innerHTML = '';
+                document.getElementById('form-quick-customer').reset();
+                setTimeout(() => {
+                    const nameInput = document.getElementById('quick_customer_name');
+                    if (nameInput) nameInput.focus();
+                }, 100);
+            }
+        }
+
+        function closeQuickCustomerModal() {
+            const modal = document.getElementById('modal-quick-customer');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeQuickCustomerModal();
+            }
+        });
+
+        async function submitQuickCustomer(event) {
+            event.preventDefault();
+            const btn = document.getElementById('btn-save-quick-customer');
+            const spinner = document.getElementById('btn-save-quick-customer-spinner');
+            const btnText = document.getElementById('btn-save-quick-customer-text');
+            const errorBox = document.getElementById('quick-customer-errors');
+            const errorList = document.getElementById('quick-customer-errors-list');
+
+            const name = document.getElementById('quick_customer_name').value.trim();
+            const phone = document.getElementById('quick_customer_phone').value.trim();
+            const address = document.getElementById('quick_customer_address').value.trim();
+
+            if (!name || !phone) {
+                return;
+            }
+
+            btn.disabled = true;
+            spinner.classList.remove('hidden');
+            btnText.textContent = 'Menyimpan...';
+            errorBox.classList.add('hidden');
+            errorList.innerHTML = '';
+
+            try {
+                const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '{{ csrf_token() }}';
+
+                const response = await fetch('{{ route("{$currentRoutePrefix}.customers.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        phone: phone,
+                        address: address,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success && data.customer) {
+                    const customerSelect = document.getElementById('customer_id');
+                    if (customerSelect) {
+                        const option = document.createElement('option');
+                        option.value = data.customer.id;
+                        option.textContent = `${data.customer.name} (${data.customer.phone})`;
+                        option.selected = true;
+                        customerSelect.appendChild(option);
+                        customerSelect.value = data.customer.id;
+                    }
+
+                    closeQuickCustomerModal();
+
+                    let badge = document.getElementById('quick-customer-notice');
+                    if (!badge && customerSelect) {
+                        badge = document.createElement('p');
+                        badge.id = 'quick-customer-notice';
+                        badge.className = 'mt-1.5 text-xs font-semibold text-emerald-600 flex items-center gap-1';
+                        customerSelect.parentNode.insertAdjacentElement('afterend', badge);
+                    }
+                    if (badge) {
+                        badge.innerHTML = `<svg class="size-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Pelanggan ${data.customer.name} berhasil didaftarkan dan otomatis dipilih.`;
+                    }
+                } else if (response.status === 422 && data.errors) {
+                    errorList.innerHTML = '';
+                    Object.values(data.errors).forEach(errArray => {
+                        errArray.forEach(err => {
+                            const li = document.createElement('li');
+                            li.textContent = err;
+                            errorList.appendChild(li);
+                        });
+                    });
+                    errorBox.classList.remove('hidden');
+                } else {
+                    errorList.innerHTML = `<li>${data.message || 'Gagal menyimpan data pelanggan.'}</li>`;
+                    errorBox.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorList.innerHTML = '<li>Terjadi kesalahan koneksi. Silakan coba lagi.</li>';
+                errorBox.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                btnText.textContent = 'Simpan & Pilih';
+            }
+        }
+    </script>
 </x-layouts::app>
