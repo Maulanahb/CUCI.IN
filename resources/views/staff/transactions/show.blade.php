@@ -630,8 +630,12 @@
         </div>
 
         {{-- ============================================================
-            UPDATE STATUS OPERASIONAL
+            UPDATE STATUS OPERASIONAL (DENGAN ROLLBACK GUARD & ALASAN)
         ============================================================= --}}
+        @php
+            $isTerminal = in_array($statusValue, ['Diambil', 'Dibatalkan']);
+        @endphp
+
         <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
@@ -658,59 +662,166 @@
                 </div>
             </div>
 
-            {{-- Form Update --}}
-            <form
-                method="POST"
-                action="{{ route('staff.transactions.status', $transaction) }}"
-                class="mt-6"
-            >
-                @csrf
-                @method('PATCH')
-
-                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    {{-- Status --}}
-                    <div class="md:col-span-2">
-                        <label
-                            for="status"
-                            class="mb-1.5 block text-xs font-medium text-slate-600"
-                        >
-                            Ubah Status
-                        </label>
-
-                        <select
-                            name="status"
-                            id="status"
-                            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
-                        >
-                            <option value="Diterima" @selected($statusValue === 'Diterima')>
-                                Diterima
-                            </option>
-                            <option value="Diproses" @selected($statusValue === 'Diproses')>
-                                Diproses
-                            </option>
-                            <option value="Selesai" @selected($statusValue === 'Selesai')>
-                                Selesai
-                            </option>
-                            <option value="Diambil" @selected($statusValue === 'Diambil')>
-                                Diambil
-                            </option>
-                            <option value="Dibatalkan" @selected($statusValue === 'Dibatalkan')>
-                                Dibatalkan
-                            </option>
-                        </select>
-                    </div>
-
-                    {{-- Submit --}}
-                    <div class="flex items-end">
-                        <button
-                            type="submit"
-                            class="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
-                        >
-                            Perbarui Status
-                        </button>
+            @if ($isTerminal)
+                {{-- Banner Final / Terminal --}}
+                <div class="mt-6 rounded-xl border p-4 {{ $statusValue === 'Diambil' ? 'border-emerald-200 bg-emerald-50/60 text-emerald-900' : 'border-rose-200 bg-rose-50/60 text-rose-900' }}">
+                    <div class="flex items-center gap-3">
+                        <div class="flex size-9 shrink-0 items-center justify-center rounded-xl {{ $statusValue === 'Diambil' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600' }}">
+                            @if ($statusValue === 'Diambil')
+                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                            @else
+                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            @endif
+                        </div>
+                        <div>
+                            <h3 class="text-xs font-bold">
+                                {{ $statusValue === 'Diambil' ? 'Transaksi Telah Selesai & Cucian Diambil' : 'Transaksi Dibatalkan' }}
+                            </h3>
+                            <p class="mt-0.5 text-xs {{ $statusValue === 'Diambil' ? 'text-emerald-700' : 'text-rose-700' }}">
+                                {{ $statusValue === 'Diambil' ? 'Cucian fisik telah diserahkan kepada pelanggan. Status transaksi ini telah ditutup permanen.' : 'Transaksi ini telah dibatalkan dan tidak dapat diproses lebih lanjut.' }}
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </form>
+            @else
+                {{-- Form Update dengan Alpine.js Guard --}}
+                <form
+                    x-data="{
+                        currentStatus: '{{ $statusValue }}',
+                        selectedStatus: '{{ old('status', $statusValue) }}',
+                        notes: '{{ old('notes', '') }}',
+                        rank(s) {
+                            return { 'Diterima': 1, 'Diproses': 2, 'Selesai': 3, 'Diambil': 4, 'Dibatalkan': 0 }[s] ?? 0;
+                        },
+                        isRollback() {
+                            if (this.selectedStatus === 'Dibatalkan' || this.selectedStatus === this.currentStatus) return false;
+                            return this.rank(this.selectedStatus) < this.rank(this.currentStatus);
+                        },
+                        needsNotes() {
+                            return this.isRollback() || this.selectedStatus === 'Dibatalkan';
+                        }
+                    }"
+                    method="POST"
+                    action="{{ route("{$currentRoutePrefix}.transactions.status", $transaction) }}"
+                    class="mt-6 space-y-4"
+                >
+                    @csrf
+                    @method('PATCH')
+
+                    {{-- Error validation alerts --}}
+                    @if ($errors->has('status') || $errors->has('notes'))
+                        <div class="rounded-xl border border-rose-200 bg-rose-50/70 p-3.5 text-xs text-rose-700">
+                            <p class="font-semibold">{{ $errors->first('status') ?: $errors->first('notes') }}</p>
+                        </div>
+                    @endif
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        {{-- Select Status --}}
+                        <div class="md:col-span-2">
+                            <label
+                                for="status"
+                                class="mb-1.5 block text-xs font-medium text-slate-600"
+                            >
+                                Ubah Status
+                            </label>
+
+                            <select
+                                name="status"
+                                id="status"
+                                x-model="selectedStatus"
+                                class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                            >
+                                <option value="Diterima" @selected($statusValue === 'Diterima')>
+                                    1. Diterima (Antrean Masuk)
+                                </option>
+                                <option value="Diproses" @selected($statusValue === 'Diproses')>
+                                    2. Diproses (Dicuci & Disetrika)
+                                </option>
+                                <option value="Selesai" @selected($statusValue === 'Selesai')>
+                                    3. Selesai (Siap Diambil)
+                                </option>
+                                <option value="Diambil" @selected($statusValue === 'Diambil')>
+                                    4. Diambil (Diserahkan ke Pelanggan)
+                                </option>
+                                <option value="Dibatalkan" @selected($statusValue === 'Dibatalkan')>
+                                    &times; Dibatalkan (Batalkan Transaksi)
+                                </option>
+                            </select>
+                        </div>
+
+                        {{-- Submit Button --}}
+                        <div class="flex items-end">
+                            <button
+                                type="submit"
+                                class="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+                            >
+                                Perbarui Status
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Dynamic Warning & Mandatory Reason Field when Rolling Back or Cancelling --}}
+                    <div
+                        x-show="needsNotes()"
+                        x-cloak
+                        x-transition:enter="ease-out duration-150"
+                        x-transition:enter-start="opacity-0 -translate-y-1"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        class="rounded-xl border p-4 transition-all"
+                        :class="selectedStatus === 'Dibatalkan' ? 'border-rose-200 bg-rose-50/60' : 'border-amber-200 bg-amber-50/60'"
+                    >
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="flex size-7 shrink-0 items-center justify-center rounded-lg text-xs"
+                                :class="selectedStatus === 'Dibatalkan' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'"
+                            >
+                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+
+                            <div class="flex-1">
+                                <p
+                                    class="text-xs font-semibold"
+                                    :class="selectedStatus === 'Dibatalkan' ? 'text-rose-900' : 'text-amber-900'"
+                                    x-text="selectedStatus === 'Dibatalkan' ? 'Perhatian: Transaksi akan dibatalkan.' : 'Perhatian: Anda memundurkan status cucian dari ' + currentStatus + ' ke ' + selectedStatus + '.'"
+                                ></p>
+
+                                <p
+                                    class="mt-0.5 text-[11px]"
+                                    :class="selectedStatus === 'Dibatalkan' ? 'text-rose-700' : 'text-amber-700'"
+                                >
+                                    Tuliskan alasan koreksi/pembatalan di bawah ini agar tercatat di audit trail sistem.
+                                </p>
+
+                                <div class="mt-3">
+                                    <label
+                                        for="notes"
+                                        class="mb-1 block text-xs font-semibold"
+                                        :class="selectedStatus === 'Dibatalkan' ? 'text-rose-800' : 'text-amber-800'"
+                                    >
+                                        Alasan Koreksi Status <span class="text-rose-600">*</span>
+                                    </label>
+
+                                    <textarea
+                                        name="notes"
+                                        id="notes"
+                                        rows="2"
+                                        x-model="notes"
+                                        :required="needsNotes()"
+                                        placeholder="Contoh: Salah klik status oleh kasir / pakaian perlu dicuci ulang karena noda belum tuntas"
+                                        class="w-full rounded-lg border border-slate-300 bg-white p-2.5 text-xs text-slate-800 shadow-2xs outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+                                    ></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            @endif
         </div>
 
 
@@ -902,6 +1013,7 @@
                             <th class="px-5 py-3 font-semibold">Waktu Perubahan</th>
                             <th class="px-5 py-3 font-semibold">Status</th>
                             <th class="px-5 py-3 font-semibold">Petugas (Diubah Oleh)</th>
+                            <th class="px-5 py-3 font-semibold">Catatan / Alasan</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -941,10 +1053,22 @@
                                         <span>{{ $history->changedBy?->name ?? 'Sistem' }}</span>
                                     </div>
                                 </td>
+                                <td class="px-5 py-3.5 text-xs text-slate-600">
+                                    @if ($history->notes)
+                                        <span class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-800 border border-amber-200">
+                                            <svg class="size-3.5 shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span>{{ $history->notes }}</span>
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400">-</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="px-5 py-8 text-center text-xs text-slate-400">
+                                <td colspan="4" class="px-5 py-8 text-center text-xs text-slate-400">
                                     Belum ada catatan riwayat status untuk transaksi ini.
                                 </td>
                             </tr>

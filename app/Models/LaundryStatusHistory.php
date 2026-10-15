@@ -26,6 +26,7 @@ class LaundryStatusHistory extends Model
     protected $fillable = [
         'transaction_id',
         'status',
+        'notes',
         'changed_by',
         'changed_at',
     ];

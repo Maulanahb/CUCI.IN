@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\Enums\TransactionStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Customer;
@@ -99,6 +100,8 @@ class TransactionController extends Controller
 
     /**
      * Mengubah status operasional cucian.
+     *
+     * @throws ValidationException
      */
     public function updateStatus(Request $request, Transaction $transaction): RedirectResponse
     {
@@ -107,11 +110,50 @@ class TransactionController extends Controller
                 'required',
                 'in:Diterima,Diproses,Selesai,Diambil,Dibatalkan',
             ],
+            'notes' => [
+                'nullable',
+                'string',
+                'max:500',
+            ],
         ]);
 
-        $newStatus = $validated['status'];
+        $currentStatus = $transaction->status instanceof TransactionStatus
+            ? $transaction->status
+            : TransactionStatus::from((string) $transaction->status);
 
-        if ($newStatus === 'Diambil' && ! $transaction->isPaidOff()) {
+        $newStatus = TransactionStatus::from($validated['status']);
+        $notes = ! empty($validated['notes']) ? trim($validated['notes']) : null;
+
+        // 1. Cek apakah status saat ini adalah terminal (Diambil atau Dibatalkan)
+        if ($currentStatus->isTerminal()) {
+            throw ValidationException::withMessages([
+                'status' => "Transaksi telah berstatus {$currentStatus->value} dan tidak dapat diubah lagi.",
+            ]);
+        }
+
+        // 2. Cek apakah status baru sama dengan status saat ini
+        if ($newStatus === $currentStatus) {
+            throw ValidationException::withMessages([
+                'status' => 'Status yang dipilih sama dengan status saat ini.',
+            ]);
+        }
+
+        // 3. Cek jika status baru adalah Dibatalkan, wajib ada alasan pembatalan
+        if ($newStatus === TransactionStatus::Dibatalkan && empty($notes)) {
+            throw ValidationException::withMessages([
+                'notes' => 'Alasan pembatalan wajib diisi.',
+            ]);
+        }
+
+        // 4. Cek jika status baru merupakan rollback (mundur), wajib ada catatan alasan
+        if ($currentStatus->isRollbackTo($newStatus) && empty($notes)) {
+            throw ValidationException::withMessages([
+                'notes' => 'Alasan koreksi status wajib diisi saat memundurkan status cucian.',
+            ]);
+        }
+
+        // 5. Cek jika status baru adalah Diambil, wajib lunas
+        if ($newStatus === TransactionStatus::Diambil && ! $transaction->isPaidOff()) {
             throw ValidationException::withMessages([
                 'status' => 'Cucian belum dapat diserahkan karena pembayaran belum lunas. Sisa tagihan: Rp '.number_format($transaction->remaining_amount, 0, ',', '.'),
             ]);
@@ -124,6 +166,7 @@ class TransactionController extends Controller
         LaundryStatusHistory::create([
             'transaction_id' => $transaction->id,
             'status' => $newStatus,
+            'notes' => $notes,
             'changed_by' => auth()->id(),
             'changed_at' => now(),
         ]);
