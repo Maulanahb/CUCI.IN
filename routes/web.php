@@ -192,6 +192,9 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/transactions/{transaction}/print', [StaffTransactionController::class, 'print'])
                     ->name('transactions.print');
 
+                Route::patch('/transactions/{transaction}/status', [StaffTransactionController::class, 'updateStatus'])
+                    ->name('transactions.status');
+
                 Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
                     ->name('transactions.payments.store');
 

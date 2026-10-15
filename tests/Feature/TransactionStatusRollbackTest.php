@@ -162,4 +162,27 @@ class TransactionStatusRollbackTest extends TestCase
         $response->assertSessionHasErrors('notes');
         $this->assertSame(TransactionStatus::Diterima, $transaction->fresh()->status);
     }
+
+    public function test_admin_can_view_transaction_and_update_status(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $transaction = Transaction::factory()->create([
+            'customer_id' => $this->customer->id,
+            'created_by' => $this->staff->id,
+            'status' => TransactionStatus::Diterima,
+        ]);
+
+        $response = $this->actingAs($admin)
+            ->get(route('admin.transactions.show', $transaction));
+
+        $response->assertOk();
+
+        $patchResponse = $this->actingAs($admin)
+            ->patch(route('admin.transactions.status', $transaction), [
+                'status' => 'Diproses',
+            ]);
+
+        $patchResponse->assertSessionHasNoErrors();
+        $this->assertSame(TransactionStatus::Diproses, $transaction->fresh()->status);
+    }
 }
