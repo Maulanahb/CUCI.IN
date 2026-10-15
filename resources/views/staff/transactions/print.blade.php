@@ -261,18 +261,30 @@
 
         <div class="divider"></div>
 
-        {{-- Total & Status --}}
+        {{-- Total & Rincian Pembayaran --}}
         <div class="total-section">
-            <div class="total-row">
-                <span>TOTAL:</span>
-                <span>Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}</span>
+            <div class="meta-row">
+                <span class="meta-label">Total Tagihan:</span>
+                <span class="meta-value font-bold">Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}</span>
             </div>
-            <div class="meta-row" style="margin-top: 8px;">
+            <div class="meta-row">
+                <span class="meta-label">Sudah Dibayar:</span>
+                <span class="meta-value">Rp {{ number_format($transaction->total_paid, 0, ',', '.') }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">Sisa Tagihan:</span>
+                <span class="meta-value font-bold">Rp {{ number_format($transaction->remaining_amount, 0, ',', '.') }}</span>
+            </div>
+            <div class="meta-row" style="margin-top: 6px;">
+                <span class="meta-label">Status Bayar:</span>
+                <span class="badge-status font-bold">{{ $transaction->payment_status }}</span>
+            </div>
+            <div class="meta-row" style="margin-top: 4px;">
                 <span class="meta-label">Status Cucian:</span>
                 <span class="badge-status">{{ $statusValue }}</span>
             </div>
             @if ($transaction->estimated_completed_at)
-                <div class="meta-row">
+                <div class="meta-row" style="margin-top: 4px;">
                     <span class="meta-label">Estimasi Selesai:</span>
                     <span class="meta-value">{{ $transaction->estimated_completed_at->format('d/m/Y H:i') }}</span>
                 </div>

@@ -26,6 +26,7 @@ class TransactionController extends Controller
         $query = Transaction::with([
             'customer',
             'details.service',
+            'payments',
         ])->latest();
 
         // Pencarian berdasarkan kode transaksi atau nama customer
@@ -88,6 +89,7 @@ class TransactionController extends Controller
             'customer',
             'details.service',
             'creator',
+            'payments',
         ]);
 
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
