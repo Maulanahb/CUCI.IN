@@ -76,7 +76,6 @@ class StoreTransactionTest extends TestCase
         ]);
 
         $response = $this->actingAs($staff)
-            ->from(route('staff.customers.index'))
             ->post(route('staff.transactions.store'), [
                 'customer_id' => $customer->id,
                 'items' => [
@@ -85,11 +84,10 @@ class StoreTransactionTest extends TestCase
                 ],
             ]);
 
-        $response->assertRedirect(route('staff.customers.index'));
-        $response->assertSessionHas('success');
-
         $transaction = Transaction::first();
         $this->assertNotNull($transaction);
+        $response->assertRedirect(route('staff.transactions.show', $transaction));
+        $response->assertSessionHas('success');
         $this->assertEquals($customer->id, $transaction->customer_id);
         $this->assertEquals($staff->id, $transaction->created_by);
         $this->assertSame(TransactionStatus::Diterima, $transaction->status);

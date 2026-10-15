@@ -116,11 +116,11 @@ class Transaction extends Model
      * TODO: Relasi ke LaundryStatusHistory (one-to-many).
      * Dikelola oleh rekan tim (Nayla).
      */
-
     public function payment(): HasOne
     {
-    return $this->hasOne(Payment::class);
-    }      
+        return $this->hasOne(Payment::class);
+    }
+
     public function statusHistories(): HasMany
     {
         return $this->hasMany(LaundryStatusHistory::class, 'transaction_id');
