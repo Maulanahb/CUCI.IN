@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\ComplaintController as CustomerComplaintController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Staff\CustomerController;
 use App\Http\Controllers\Staff\TransactionController as StaffTransactionController;
 use App\Http\Controllers\TransactionLookupController;
@@ -146,10 +147,14 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::patch('/transactions/{transaction}/status', [StaffTransactionController::class, 'updateStatus'])
                     ->name('transactions.status');
+
+                // Layanan (Katalog untuk Staff)
+                Route::get('/services', [ServiceController::class, 'index'])
+                    ->name('services.index');
             });
 
         // -------------------------------------------------
-        // Customer & Transaksi untuk Admin
+        // Customer, Transaksi & Layanan untuk Admin
         // -------------------------------------------------
         Route::prefix('admin')
             ->name('admin.')
@@ -168,6 +173,9 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('customers.destroy');
 
                 // Transaksi
+                Route::get('/transactions', [StaffTransactionController::class, 'index'])
+                    ->name('transactions.index');
+
                 Route::get('/transactions/create', [StaffTransactionController::class, 'create'])
                     ->name('transactions.create');
 
@@ -179,6 +187,22 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::get('/transactions/{transaction}/print', [StaffTransactionController::class, 'print'])
                     ->name('transactions.print');
+
+                // Layanan (CRUD Master Layanan untuk Admin)
+                Route::get('/services', [ServiceController::class, 'index'])
+                    ->name('services.index');
+
+                Route::post('/services', [ServiceController::class, 'store'])
+                    ->name('services.store');
+
+                Route::put('/services/{service}', [ServiceController::class, 'update'])
+                    ->name('services.update');
+
+                Route::patch('/services/{service}/toggle', [ServiceController::class, 'toggle'])
+                    ->name('services.toggle');
+
+                Route::delete('/services/{service}', [ServiceController::class, 'destroy'])
+                    ->name('services.destroy');
             });
     });
 

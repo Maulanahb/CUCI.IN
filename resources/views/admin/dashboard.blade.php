@@ -40,17 +40,27 @@
                 <p class="mt-1 text-xs text-slate-400">Guest & Terdaftar &rarr;</p>
             </a>
 
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm">
-                <p class="text-xs font-medium text-slate-500">Layanan Aktif</p>
+            <a href="{{ route('admin.services.index') }}" class="group block rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-medium text-slate-500 group-hover:text-brand-600">Layanan Aktif</p>
+                    <svg class="size-4 text-slate-400 group-hover:text-brand-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
                 <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_services'] }}</p>
-                <p class="mt-1 text-xs text-brand-600 font-medium">Siap digunakan kasir</p>
-            </div>
+                <p class="mt-1 text-xs text-brand-600 font-medium">Kelola master layanan &rarr;</p>
+            </a>
 
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm">
-                <p class="text-xs font-medium text-slate-500">Total Transaksi</p>
+            <a href="{{ route('admin.transactions.index') }}" class="group block rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md">
+                <div class="flex items-center justify-between">
+                    <p class="text-xs font-medium text-slate-500 group-hover:text-brand-600">Total Transaksi</p>
+                    <svg class="size-4 text-slate-400 group-hover:text-brand-600 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
                 <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['total_transactions'] }}</p>
-                <p class="mt-1 text-xs text-slate-400">Keseluruhan riwayat</p>
-            </div>
+                <p class="mt-1 text-xs text-slate-400">Riwayat transaksi &rarr;</p>
+            </a>
         </div>
     </div>
 </x-layouts::app>
