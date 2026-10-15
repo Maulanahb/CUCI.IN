@@ -222,9 +222,9 @@
                     <button
                         type="button"
                         @click="addItem()"
-                        class="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50/80 px-3 py-2 text-xs font-semibold text-brand-700 transition hover:bg-brand-100 active:scale-98 shadow-2xs"
+                        class="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-brand-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                     >
-                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                         </svg>
                         <span>Tambah Layanan Lain</span>
