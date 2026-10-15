@@ -106,7 +106,7 @@
 
             {{-- Layanan --}}
             <a
-                href="{{ route('staff.services.index') }}"
+                href="{{ Route::has('staff.services.index') ? route('staff.services.index') : '#' }}"
                 class="group rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md"
             >
                 <div class="flex items-center justify-between">
@@ -236,7 +236,7 @@
                     PEMBAYARAN
                 ===================================================== --}}
                 <a
-                    href="{{ route('staff.payments.index') }}"
+                    href="{{ Route::has('staff.payments.index') ? route('staff.payments.index') : '#' }}"
                     class="group rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md"
                 >
 

@@ -9,17 +9,15 @@ use App\Http\Controllers\Customer\TransactionController as CustomerTransactionCo
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Staff\CustomerController;
 use App\Http\Controllers\Staff\TransactionController as StaffTransactionController;
-use App\Http\Controllers\Staff\PaymentController;
-use App\Http\Controllers\Staff\ServiceController;
 use App\Http\Controllers\TransactionLookupController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
-// Rute Publik: Lacak Cucian / Cek Transaksi Menggunakan Kode Nota
+// Rute Publik: Lacak Cucian / Cek Transaksi Menggunakan Kode Nota (Tanpa Login)
 Route::get('/lookup', [TransactionLookupController::class, 'index'])
     ->name('transactions.lookup');
 
-// Rute Home / Root
+// Rute Home / Root: Mengarahkan pengguna sesuai status login & role
 Route::get('/', function () {
     if (Auth::check()) {
         $user = Auth::user();
@@ -40,9 +38,8 @@ Route::get('/', function () {
     return redirect()->route('login');
 })->name('home');
 
-// Rute Autentikasi Pengguna Tamu
+// Rute Autentikasi Pengguna Tamu (Guest)
 Route::middleware('guest')->group(function () {
-
     Route::get('/login', [LoginController::class, 'create'])
         ->name('login');
 
@@ -68,7 +65,6 @@ Route::middleware('guest')->group(function () {
         ->name('password.update');
 });
 
-
 // Rute Khusus Pengguna Terautentikasi & Aktif
 Route::middleware(['auth', 'active'])->group(function () {
 
@@ -76,123 +72,50 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('/logout', [LoginController::class, 'destroy'])
         ->name('logout');
 
-
     // Shortcut dashboard umum sesuai role
     Route::get('/dashboard', function () {
-
         return match (Auth::user()->role) {
-
             'admin' => redirect()->route('admin.dashboard'),
-
             'staff' => redirect()->route('staff.dashboard'),
-
             'customer' => redirect()->route('customer.dashboard'),
-
             default => redirect()->route('login'),
-
         };
-
     })->name('dashboard');
-
 
     // =========================================================
     // AREA ADMINISTRATOR
     // =========================================================
-
     Route::middleware('role:admin')
         ->prefix('admin')
         ->name('admin.')
         ->group(function () {
-
             Route::get('/dashboard', [DashboardController::class, 'admin'])
                 ->name('dashboard');
         });
 
-
     // =========================================================
     // AREA STAFF OPERASIONAL
     // =========================================================
-
     Route::middleware('role:staff')
         ->prefix('staff')
         ->name('staff.')
         ->group(function () {
-
-            // -------------------------------------------------
-            // Dashboard Staff
-            // -------------------------------------------------
-
             Route::get('/dashboard', [DashboardController::class, 'staff'])
                 ->name('dashboard');
-
-
-            // -------------------------------------------------
-            // Kelola Transaksi
-            // -------------------------------------------------
-
-            // Daftar transaksi
-            Route::get('/transactions', [StaffTransactionController::class, 'index'])
-                ->name('transactions.index');
-
-            // Detail transaksi
-            Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
-                ->name('transactions.show');
-
-            // Update status cucian
-            Route::patch('/transactions/{transaction}/status', [StaffTransactionController::class, 'updateStatus'])
-                ->name('transactions.status');
-
-            // Membuat transaksi baru
-            Route::post('/transactions', [StaffTransactionController::class, 'store'])
-                ->name('transactions.store');
-
-
-            // -------------------------------------------------
-            // Pembayaran
-            // -------------------------------------------------
-
-            // Daftar pembayaran
-            Route::get('/payments', [PaymentController::class, 'index'])
-                ->name('payments.index');
-
-            // Detail pembayaran
-            Route::get('/payments/{payment}', [PaymentController::class, 'show'])
-                ->name('payments.show');
-
-            // Verifikasi pembayaran
-            Route::patch('/payments/{payment}/verify', [PaymentController::class, 'verify'])
-                ->name('payments.verify');
-
-
-            // -------------------------------------------------
-            // Layanan
-            // -------------------------------------------------
-
-            // Daftar layanan
-            Route::get('/services', [ServiceController::class, 'index'])
-                ->name('services.index');
-
-            // Detail layanan
-            Route::get('/services/{service}', [ServiceController::class, 'show'])
-                ->name('services.show');
         });
 
-
     // =========================================================
-    // AREA PENGELOLAAN PELANGGAN
-    // ADMIN & STAFF
+    // AREA PENGELOLAAN PELANGGAN & TRANSAKSI (ADMIN & STAFF)
     // =========================================================
-
     Route::middleware('role:admin,staff')->group(function () {
 
         // -------------------------------------------------
-        // Customer untuk Staff
+        // Pengelolaan untuk Staff (dapat diakses Admin juga)
         // -------------------------------------------------
-
         Route::prefix('staff')
             ->name('staff.')
             ->group(function () {
-
+                // Customer
                 Route::get('/customers', [CustomerController::class, 'index'])
                     ->name('customers.index');
 
@@ -204,17 +127,31 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])
                     ->name('customers.destroy');
+
+                // Transaksi
+                Route::get('/transactions/create', [StaffTransactionController::class, 'create'])
+                    ->name('transactions.create');
+
+                Route::get('/transactions', [StaffTransactionController::class, 'index'])
+                    ->name('transactions.index');
+
+                Route::post('/transactions', [StaffTransactionController::class, 'store'])
+                    ->name('transactions.store');
+
+                Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
+                    ->name('transactions.show');
+
+                Route::patch('/transactions/{transaction}/status', [StaffTransactionController::class, 'updateStatus'])
+                    ->name('transactions.status');
             });
 
-
         // -------------------------------------------------
-        // Customer untuk Admin
+        // Customer & Transaksi untuk Admin
         // -------------------------------------------------
-
         Route::prefix('admin')
             ->name('admin.')
             ->group(function () {
-
+                // Customer
                 Route::get('/customers', [CustomerController::class, 'index'])
                     ->name('customers.index');
 
@@ -226,19 +163,26 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])
                     ->name('customers.destroy');
+
+                // Transaksi
+                Route::get('/transactions/create', [StaffTransactionController::class, 'create'])
+                    ->name('transactions.create');
+
+                Route::post('/transactions', [StaffTransactionController::class, 'store'])
+                    ->name('transactions.store');
+
+                Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
+                    ->name('transactions.show');
             });
     });
-
 
     // =========================================================
     // AREA CUSTOMER
     // =========================================================
-
     Route::middleware('role:customer')
         ->prefix('customer')
         ->name('customer.')
         ->group(function () {
-
             Route::get('/dashboard', [DashboardController::class, 'customer'])
                 ->name('dashboard');
 
