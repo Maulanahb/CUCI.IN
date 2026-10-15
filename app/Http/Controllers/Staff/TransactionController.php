@@ -71,6 +71,7 @@ class TransactionController extends Controller
             'customer',
             'details.service',
             'statusHistories.changedBy',
+            'payments.creator',
         ]);
 
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
