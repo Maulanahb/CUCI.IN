@@ -1,5 +1,13 @@
 @php
     $currentRoutePrefix = $routePrefix ?? (request()->routeIs('admin.*') ? 'admin' : 'staff');
+    $customerDirectory = $customers->mapWithKeys(fn ($c) => [
+        (string) $c->id => [
+            'id' => (string) $c->id,
+            'name' => $c->name,
+            'phone' => $c->phone,
+            'address' => $c->address ?? '',
+        ],
+    ]);
 @endphp
 
 <x-layouts::app title="Transaksi Baru (POS)">
@@ -72,57 +80,118 @@
                         </div>
                         <div>
                             <h2 class="text-sm font-bold text-slate-900 sm:text-base">Data Pelanggan</h2>
-                            <p class="text-[11px] text-slate-500">Pilih pelanggan yang melakukan order cucian.</p>
+                            <p class="text-[11px] text-slate-500">Pilih pelanggan terdaftar atau tambahkan pelanggan baru langsung.</p>
                         </div>
                     </div>
-                    <span class="rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-700">Wajib</span>
+                    <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">Langkah 1</span>
                 </div>
 
                 <div>
-                    <div class="flex items-center justify-between">
-                        <label for="customer_id" class="block text-xs font-semibold text-slate-700">
-                            Nama / Telepon Pelanggan <span class="text-rose-500">*</span>
-                        </label>
+                    <label for="customer_id" class="block text-xs font-semibold text-slate-700">
+                        Nama / No. Telepon Pelanggan <span class="text-rose-500">*</span>
+                    </label>
+
+                    {{-- Input Group Berdampingan: Dropdown Select & Tombol Tambah --}}
+                    <div class="mt-1.5 flex flex-col gap-2 sm:flex-row sm:items-center">
+                        <div class="relative flex-1">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <select
+                                id="customer_id"
+                                name="customer_id"
+                                onchange="onCustomerSelectChange(this.value)"
+                                @class([
+                                    'w-full rounded-xl border bg-white pl-10 pr-9 py-2.5 text-xs text-slate-800 transition focus:outline-none focus:ring-2 sm:text-sm',
+                                    'border-rose-300 focus:border-rose-400 focus:ring-rose-200' => $errors->has('customer_id'),
+                                    'border-slate-300 focus:border-brand-500 focus:ring-brand-100' => ! $errors->has('customer_id'),
+                                ])
+                            >
+                                <option value="">-- Cari atau Pilih Pelanggan --</option>
+                                @foreach ($customers as $customer)
+                                    <option
+                                        value="{{ $customer->id }}"
+                                        {{ (string) old('customer_id') === (string) $customer->id ? 'selected' : '' }}
+                                    >
+                                        {{ $customer->name }} ({{ $customer->phone }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         <button
                             type="button"
                             id="btn-open-quick-customer"
                             onclick="openQuickCustomerModal()"
-                            class="inline-flex items-center gap-1 text-xs font-semibold text-brand-600 transition hover:text-brand-700 focus:outline-none"
+                            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                         >
-                            <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                             </svg>
                             <span>+ Pelanggan Baru</span>
                         </button>
-                    </div>
-                    <div class="mt-1.5">
-                        <select
-                            id="customer_id"
-                            name="customer_id"
-                            @class([
-                                'w-full rounded-xl border bg-white px-3.5 py-2.5 text-xs text-slate-800 transition focus:outline-none focus:ring-2 sm:text-sm',
-                                'border-rose-300 focus:border-rose-400 focus:ring-rose-200' => $errors->has('customer_id'),
-                                'border-slate-300 focus:border-brand-500 focus:ring-brand-100' => ! $errors->has('customer_id'),
-                            ])
-                        >
-                            <option value="">-- Pilih Pelanggan --</option>
-                            @foreach ($customers as $customer)
-                                <option
-                                    value="{{ $customer->id }}"
-                                    {{ (string) old('customer_id') === (string) $customer->id ? 'selected' : '' }}
-                                >
-                                    {{ $customer->name }} ({{ $customer->phone }})
-                                </option>
-                            @endforeach
-                        </select>
                     </div>
 
                     @error('customer_id')
                         <p class="mt-1.5 text-xs font-medium text-rose-600">{{ $message }}</p>
                     @enderror
 
+                    {{-- Kartu Info Preview Pelanggan Terpilih --}}
+                    <div
+                        id="customer-preview-card"
+                        class="mt-3 hidden rounded-xl border border-emerald-200/90 bg-emerald-50/50 p-3.5 transition-all duration-200"
+                    >
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-3">
+                                <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 font-bold text-xs text-emerald-800 shadow-2xs" id="preview-avatar">
+                                    PL
+                                </div>
+                                <div class="space-y-0.5">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <h3 class="text-xs font-bold text-slate-900 sm:text-sm" id="preview-name">-</h3>
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800">
+                                            <svg class="size-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Pelanggan Terpilih
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+                                        <span class="inline-flex items-center gap-1 font-medium text-slate-700">
+                                            <svg class="size-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                            </svg>
+                                            <span id="preview-phone">-</span>
+                                        </span>
+                                        <span class="text-slate-300">•</span>
+                                        <span class="inline-flex items-center gap-1 text-slate-500">
+                                            <svg class="size-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <span id="preview-address" class="line-clamp-1 italic text-slate-500">Alamat belum diisi</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                onclick="resetCustomerSelection()"
+                                class="shrink-0 rounded-lg p-1.5 text-slate-400 transition hover:bg-emerald-100 hover:text-slate-700 focus:outline-none"
+                                title="Ganti / Bersihkan Pilihan"
+                            >
+                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
                     <p class="mt-2 text-[11px] text-slate-400">
-                        Pelanggan belum terdaftar? Klik <span class="font-medium text-brand-600">+ Pelanggan Baru</span> di atas atau kelola via menu <a href="{{ route("{$currentRoutePrefix}.customers.index") }}" class="font-medium text-brand-600 underline hover:text-brand-700">Data Pelanggan</a>.
+                        Belum punya data kontak? Klik tombol <span class="font-medium text-brand-600">+ Pelanggan Baru</span> di atas atau kelola via menu <a href="{{ route("{$currentRoutePrefix}.customers.index") }}" class="font-medium text-brand-600 underline hover:text-brand-700">Data Pelanggan</a>.
                     </p>
                 </div>
             </div>
@@ -252,14 +321,14 @@
         {{-- Modal Tambah Pelanggan Cepat --}}
         <div
             id="modal-quick-customer"
-            class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/50 backdrop-blur-xs transition-opacity duration-200"
+            class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200"
             aria-labelledby="modal-quick-customer-title"
             role="dialog"
             aria-modal="true"
             onclick="if (event.target === this) closeQuickCustomerModal()"
         >
             <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
-                <div class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-xl transition-all sm:my-8">
+                <div class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-2xl transition-all sm:my-8">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3">
                         <div class="flex items-center gap-2.5">
                             <div class="flex size-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
@@ -302,41 +371,66 @@
                             <label for="quick_customer_name" class="block text-xs font-semibold text-slate-700">
                                 Nama Pelanggan <span class="text-rose-500">*</span>
                             </label>
-                            <input
-                                type="text"
-                                id="quick_customer_name"
-                                name="name"
-                                required
-                                placeholder="Contoh: Budi Santoso"
-                                class="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
-                            />
+                            <div class="relative mt-1.5">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    id="quick_customer_name"
+                                    name="name"
+                                    required
+                                    placeholder="Contoh: Budi Santoso"
+                                    class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                                />
+                            </div>
                         </div>
 
                         <div>
-                            <label for="quick_customer_phone" class="block text-xs font-semibold text-slate-700">
-                                Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                id="quick_customer_phone"
-                                name="phone"
-                                required
-                                placeholder="Contoh: 081234567890"
-                                class="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
-                            />
+                            <div class="flex items-center justify-between">
+                                <label for="quick_customer_phone" class="block text-xs font-semibold text-slate-700">
+                                    Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
+                                </label>
+                                <span class="text-[11px] text-slate-400">Otomatis format 08xxx</span>
+                            </div>
+                            <div class="relative mt-1.5">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    id="quick_customer_phone"
+                                    name="phone"
+                                    required
+                                    placeholder="081234567890"
+                                    class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                                />
+                            </div>
                         </div>
 
                         <div>
                             <label for="quick_customer_address" class="block text-xs font-semibold text-slate-700">
                                 Alamat <span class="text-slate-400 font-normal">(Opsional)</span>
                             </label>
-                            <textarea
-                                id="quick_customer_address"
-                                name="address"
-                                rows="2"
-                                placeholder="Contoh: Jl. Merdeka No. 10"
-                                class="mt-1.5 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
-                            ></textarea>
+                            <div class="relative mt-1.5">
+                                <div class="pointer-events-none absolute top-3 left-0 flex items-center pl-3.5 text-slate-400">
+                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <textarea
+                                    id="quick_customer_address"
+                                    name="address"
+                                    rows="2"
+                                    placeholder="Contoh: Jl. Merdeka No. 10, RT 02/05"
+                                    class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                                ></textarea>
+                            </div>
                         </div>
 
                         <div class="mt-6 flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
@@ -366,6 +460,73 @@
     </div>
 
     <script>
+        // Direktori data pelanggan untuk update preview instan
+        const customersDirectory = @json($customerDirectory);
+
+        function getCustomerInitials(name) {
+            if (!name) return 'PL';
+            const parts = name.trim().split(/\s+/);
+            if (parts.length >= 2) {
+                return (parts[0][0] + parts[1][0]).toUpperCase();
+            }
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        function updateCustomerPreview(customerId) {
+            const card = document.getElementById('customer-preview-card');
+            const strId = customerId ? String(customerId) : '';
+
+            if (!strId || !customersDirectory[strId]) {
+                if (card) card.classList.add('hidden');
+                return;
+            }
+
+            const cust = customersDirectory[strId];
+            const nameEl = document.getElementById('preview-name');
+            const phoneEl = document.getElementById('preview-phone');
+            const addressEl = document.getElementById('preview-address');
+            const avatarEl = document.getElementById('preview-avatar');
+
+            if (nameEl) nameEl.textContent = cust.name;
+            if (phoneEl) phoneEl.textContent = cust.phone;
+            if (avatarEl) avatarEl.textContent = getCustomerInitials(cust.name);
+
+            if (addressEl) {
+                if (cust.address && cust.address.trim() !== '') {
+                    addressEl.textContent = cust.address;
+                    addressEl.classList.remove('italic', 'text-slate-400');
+                    addressEl.classList.add('text-slate-600');
+                } else {
+                    addressEl.textContent = 'Alamat belum diisi';
+                    addressEl.classList.add('italic', 'text-slate-400');
+                    addressEl.classList.remove('text-slate-600');
+                }
+            }
+
+            if (card) card.classList.remove('hidden');
+        }
+
+        function onCustomerSelectChange(val) {
+            updateCustomerPreview(val);
+        }
+
+        function resetCustomerSelection() {
+            const select = document.getElementById('customer_id');
+            if (select) {
+                select.value = '';
+                updateCustomerPreview('');
+                select.focus();
+            }
+        }
+
+        // Tampilkan preview saat load jika ada opsi lama terpilih
+        document.addEventListener('DOMContentLoaded', function() {
+            const select = document.getElementById('customer_id');
+            if (select && select.value) {
+                updateCustomerPreview(select.value);
+            }
+        });
+
         function openQuickCustomerModal() {
             const modal = document.getElementById('modal-quick-customer');
             if (modal) {
@@ -436,28 +597,22 @@
                 const data = await response.json();
 
                 if (response.ok && data.success && data.customer) {
+                    const cust = data.customer;
+                    const strId = String(cust.id);
+                    customersDirectory[strId] = cust;
+
                     const customerSelect = document.getElementById('customer_id');
                     if (customerSelect) {
                         const option = document.createElement('option');
-                        option.value = data.customer.id;
-                        option.textContent = `${data.customer.name} (${data.customer.phone})`;
+                        option.value = cust.id;
+                        option.textContent = `${cust.name} (${cust.phone})`;
                         option.selected = true;
                         customerSelect.appendChild(option);
-                        customerSelect.value = data.customer.id;
+                        customerSelect.value = cust.id;
+                        updateCustomerPreview(strId);
                     }
 
                     closeQuickCustomerModal();
-
-                    let badge = document.getElementById('quick-customer-notice');
-                    if (!badge && customerSelect) {
-                        badge = document.createElement('p');
-                        badge.id = 'quick-customer-notice';
-                        badge.className = 'mt-1.5 text-xs font-semibold text-emerald-600 flex items-center gap-1';
-                        customerSelect.parentNode.insertAdjacentElement('afterend', badge);
-                    }
-                    if (badge) {
-                        badge.innerHTML = `<svg class="size-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> Pelanggan ${data.customer.name} berhasil didaftarkan dan otomatis dipilih.`;
-                    }
                 } else if (response.status === 422 && data.errors) {
                     errorList.innerHTML = '';
                     Object.values(data.errors).forEach(errArray => {
