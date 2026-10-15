@@ -18,6 +18,38 @@ use InvalidArgumentException;
 class TransactionController extends Controller
 {
     /**
+     * Menampilkan daftar transaksi.
+     */
+    public function index(Request $request): View
+    {
+        $query = Transaction::with([
+            'customer',
+            'details.service',
+        ])->latest();
+
+        // Pencarian berdasarkan kode transaksi atau nama customer
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('transaction_code', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($customerQuery) use ($search) {
+                        $customerQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Filter berdasarkan status cucian
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $transactions = $query->paginate(10)->withQueryString();
+
+        return view('staff.transactions.index', compact('transactions'));
+    }
+
+    /**
      * Tampilkan form pembuatan transaksi baru (POS).
      */
     public function create(Request $request): View
@@ -30,18 +62,43 @@ class TransactionController extends Controller
     }
 
     /**
-     * Tampilkan halaman rincian transaksi.
+     * Menampilkan rincian/detail transaksi.
      */
     public function show(Request $request, Transaction $transaction): View
     {
-        $transaction->load(['details.service', 'customer']);
+        $transaction->load([
+            'customer',
+            'details.service',
+        ]);
+
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
 
         return view('staff.transactions.show', compact('transaction', 'routePrefix'));
     }
 
     /**
-     * Simpan transaksi baru yang diinput oleh Staff.
+     * Mengubah status operasional cucian.
+     */
+    public function updateStatus(Request $request, Transaction $transaction): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => [
+                'required',
+                'in:Diterima,Diproses,Selesai,Diambil,Dibatalkan',
+            ],
+        ]);
+
+        $transaction->update([
+            'status' => $validated['status'],
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Status transaksi berhasil diperbarui.');
+    }
+
+    /**
+     * Simpan transaksi baru yang diinput oleh Staff atau Admin.
      *
      * @throws ValidationException
      */
@@ -54,7 +111,11 @@ class TransactionController extends Controller
         $createdBy = (int) auth()->id();
 
         try {
-            $transaction = CreateTransaction::execute($customerId, $createdBy, $items);
+            $transaction = CreateTransaction::execute(
+                $customerId,
+                $createdBy,
+                $items
+            );
         } catch (InvalidArgumentException $e) {
             throw ValidationException::withMessages([
                 'items' => [$e->getMessage()],
