@@ -104,9 +104,9 @@
                         class="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl bg-brand-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                     >
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                         </svg>
-                        <span>+ Pelanggan Baru</span>
+                        <span>Pelanggan Baru</span>
                     </button>
                 </div>
 
@@ -200,7 +200,7 @@
                     </div>
 
                     <p class="mt-2 text-[11px] text-slate-400">
-                        Pelanggan belum terdaftar? Klik tombol <span class="font-medium text-brand-600">+ Pelanggan Baru</span> di atas untuk mendaftarkannya secara instan.
+                        Pelanggan belum terdaftar? Klik tombol <span class="font-medium text-brand-600">Pelanggan Baru</span> di atas untuk mendaftarkannya secara instan.
                     </p>
                 </div>
             </div>
@@ -227,7 +227,7 @@
                         <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                         </svg>
-                        <span>+ Tambah Layanan Lain</span>
+                        <span>Tambah Layanan Lain</span>
                     </button>
                 </div>
 
