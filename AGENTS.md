@@ -146,3 +146,77 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Run `vendor/bin/phpunit` to call the test runner directly. It accepts the same file path and `--filter=testName` arguments.
 
 </laravel-boost-guidelines>
+
+=== cuci-in team & milestone 2 guidelines ===
+
+# CUCI.IN — Alur Kerja Tim & Panduan Pengembang IDE AGY (Milestone 2)
+
+Sistem ini dikembangkan oleh tim mahasiswa D4 Sistem Informasi Bisnis (SIB) menggunakan Full Laravel Multi-Page Application (MPA), Tailwind CSS, dan Alpine.js. 
+
+Panduan ini wajib dipatuhi oleh seluruh asisten AI di Antigravity IDE (AGY) saat mendampingi anggota tim dalam pengerjaan Milestone 2 (Minggu 9–12).
+
+---
+
+## 1. Identifikasi Anggota Tim & Pembagian Modul Fitur
+
+Asisten AI di IDE AGY HARUS mengenali tugas masing-masing anggota dan langsung mengarahkan bantuan teknis ke modul yang telah dialokasikan:
+
+### A. Daysyani Sophi Masayu (`daysyani` | `syaniday@gmail.com`)
+- **Fokus Modul:** Modul Tiket Pengaduan Pelanggan (*Complaint Handling*), Dashboard Customer, dan Skenario Uji Fungsional Komplain.
+- **Cabang Git Utama:** `feature/complaint-handling`
+- **Spesifikasi Tugas:**
+  - Formulir pengajuan pengaduan pelanggan terhubung nomor nota transaksi (`TRX-XXXX`).
+  - Fitur unggah foto kendala/noda pakaian dan pelacakan status tiket (*Menunggu* $\rightarrow$ *Diproses* $\rightarrow$ *Selesai*).
+  - Tampilan pemantauan status cucian mandiri dan riwayat komplain pada Dashboard Customer.
+  - Penulisan skenario dan eksekusi pengujian di `tests/Feature/CustomerComplaintTest.php`.
+
+### B. Gargarina Nanda Iswati / Ayin (`ayinanda` | `ayiniswati22@gmail.com`)
+- **Fokus Modul:** Pengelolaan Katalog Layanan Lanjutan, Mesin Ekspor Laporan (PDF & Excel), dan Diagram Rekayasa Sistem.
+- **Cabang Git Utama:** `feature/advanced-service-catalog` dan `feature/export-reports-pdf-excel`
+- **Spesifikasi Tugas:**
+  - Pengaturan tarif layanan dinamis, estimasi durasi selesai dinamis, dan integrasi paket kilat ke katalog kasir.
+  - Implementasi mesin unduh/ekspor laporan operasional laundry ke dokumen siap cetak (PDF & Excel).
+  - Pemodelan visual *Activity Diagram* (AD) dan *Sequence Diagram* (SD) yang merefleksikan kode aktual.
+
+### C. Nayla Annora Nobel Widyonarko / Nora (`nayla annora nobel widyonarko` / `annora1304` | `naylaannora@gmail.com`)
+- **Fokus Modul:** Modul Upload Bukti Pembayaran Digital, Panel Verifikasi Kasir, dan Dataset Seeder Pengujian.
+- **Cabang Git Utama:** `feature/payment-proof-upload` dan `feature/cashier-payment-verification`
+- **Spesifikasi Tugas:**
+  - Komponen upload bukti transfer bank dan struk QRIS oleh pelanggan beserta validasi berkas gambar (format MIME & batas ukuran file).
+  - Panel verifikasi bukti bayar bagi kasir/admin untuk menyetujui (*approve*) atau menolak (*reject*) pembayaran digital.
+  - Penyiapan dataset seeder transaksi dan pengujian modul pembayaran.
+
+### D. Maulana Ahmad Bukhori (`Maulanahb` | `maulanahmad2287@gmail.com`)
+- **Fokus:** Project Leader, Manajemen Peran Pengguna (*Role Authorization* Admin/Kasir/Owner), Optimasi Logika Kasir POS & Thermal Receipt, dan Koordinasi Tim.
+- **Cabang Git:** `feature/user-role-management`, `develop`, `main`
+
+### E. Muh. Zaky Dawamul Busro (`Zakydawamul` | `zakydb091005@gmail.com`)
+- **Fokus:** Backend Architecture, Mesin Kueri Agregasi Pelaporan Keuangan/Operasional, Optimasi Indeks Basis Data, dan Resolusi Defek Backend (*Bug Log*).
+- **Cabang Git:** `feature/reporting-aggregation-engine`, `fix/backend-bug-log-resolution`
+
+---
+
+## 2. Standar Koding & Prosedur Pengerjaan (SOP Antigravity Agent)
+
+Setiap agen AI di IDE AGY wajib memandu pengerjaan dengan alur terstandar berikut:
+
+1. **Cabang Git Terpisah (*Feature Branching*):**
+   - Sebelum mulai mengoding, buat cabang fitur baru dari `develop`: `git checkout -b feature/<nama-fitur>`.
+   - Hindari komit langsung ke cabang `main` atau `develop`.
+
+2. **Arsitektur & Konvensi Tampilan:**
+   - Wajib menggunakan arsitektur **Laravel Multi-Page Application (Blade)**, **Tailwind CSS**, dan **Alpine.js**.
+   - DILARANG menggunakan Vue.js, React, atau framework SPA tanpa persetujuan tim.
+   - Gunakan layout resmi yang sudah ada (`resources/views/layouts/app.blade.php`, `resources/views/layouts/staff.blade.php`, dll).
+   - Gunakan komponen Blade yang sudah ada di `resources/views/components/` untuk konsistensi UI.
+
+3. **Komit Git Bertahap & Bermakna (*Commit Often*):**
+   - Pandu pengembang untuk membuat komit teratur dan modular (setiap selesai satu sub-fitur atau komponen) agar riwayat kontribusi tercatat rapi di Git.
+   - Format pesan komit: `feat(...)`, `fix(...)`, `test(...)`, `refactor(...)`, `docs(...)`.
+   - Pastikan konfigurasi git author sesuai dengan nama dan email anggota yang bertugas.
+
+4. **Kualitas & Verifikasi Kode:**
+   - Setiap fitur baru harus dilengkapi dengan feature test PHPUnit di `tests/Feature/`.
+   - Pastikan seluruh test lulus dengan menjalankan: `php artisan test`.
+   - Jalankan pemformat kode otomatis sebelum selesai: `vendor/bin/pint --format agent`.
+

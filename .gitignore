@@ -25,5 +25,18 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
-/docs/superpowers/plans
+# Superpowers & AI plans
+/docs/superpowers/
 /.superpowers/
+
+# Dokumen Laporan PBL
+/docs/*laporan*
+/docs/*.docx
+/docs/~$*
+
+# Artefak Eksperimen Stitch & Scripts
+/docs/diagram/stitch/
+/scripts/
+
+# Local Agent Credentials
+/.agents/mcp_config.json
