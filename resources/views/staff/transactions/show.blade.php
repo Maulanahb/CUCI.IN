@@ -1,14 +1,7 @@
 @php
     $currentRoutePrefix = $routePrefix ?? (request()->routeIs('admin.*') ? 'admin' : 'staff');
     $statusValue = $transaction->status instanceof \App\Enums\TransactionStatus ? $transaction->status->value : (string) $transaction->status;
-    $statusClasses = match ($statusValue) {
-        'Diterima' => 'bg-blue-50 text-blue-700 border-blue-200',
-        'Diproses' => 'bg-amber-50 text-amber-700 border-amber-200',
-        'Selesai' => 'bg-green-50 text-green-700 border-green-200',
-        'Diambil' => 'bg-slate-100 text-slate-700 border-slate-200',
-        'Dibatalkan' => 'bg-red-50 text-red-700 border-red-200',
-        default => 'bg-slate-50 text-slate-600 border-slate-200',
-    };
+    $statusClasses = \App\Enums\TransactionStatus::visualStyle($statusValue)['badge'];
 @endphp
 
 <x-layouts::app title="Detail Transaksi {{ $transaction->transaction_code }}">

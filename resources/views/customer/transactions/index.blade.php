@@ -253,20 +253,7 @@
 
                                         {{-- Status Cucian --}}
                                         <td class="py-3.5 px-4 whitespace-nowrap">
-                                            @php
-                                                $statusClasses = match ($statusVal) {
-                                                    'Diterima' => 'bg-sky-50 border-sky-200 text-sky-700',
-                                                    'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
-                                                    'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-700',
-                                                    'Diambil' => 'bg-slate-100 border-slate-200 text-slate-700',
-                                                    'Dibatalkan' => 'bg-rose-50 border-rose-200 text-rose-700',
-                                                    default => 'bg-slate-50 border-slate-200 text-slate-700',
-                                                };
-                                            @endphp
-                                            <span class="inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $statusClasses }}">
-                                                <span class="size-1.5 rounded-full bg-current" style="width: 6px; height: 6px;"></span>
-                                                {{ $statusVal }}
-                                            </span>
+                                            <x-status-badge :status="$trx->status" />
                                         </td>
 
                                         {{-- Aksi --}}
@@ -302,6 +289,7 @@
                     $selPaid = (float) $selectedTransaction->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
                     $selRemaining = max(0.0, (float) $selectedTransaction->total_amount - $selPaid);
                     $selIsPaidOff = $selRemaining <= 0.001;
+                    $selStatusVal = $selectedTransaction->status instanceof \App\Enums\TransactionStatus ? $selectedTransaction->status->value : (string) $selectedTransaction->status;
                     $closeModalUrl = request()->fullUrlWithQuery(['selected' => null]);
                     $latestPayment = $selectedTransaction->payments->last();
                     $creatorName = $latestPayment?->creator?->name;
@@ -349,20 +337,9 @@
                                 </div>
                                 <div>
                                     <p class="text-[11px] font-medium text-slate-400">Status Cucian</p>
-                                    @php
-                                        $selStatusVal = $selectedTransaction->status instanceof \App\Enums\TransactionStatus ? $selectedTransaction->status->value : (string) $selectedTransaction->status;
-                                        $selStatusClasses = match ($selStatusVal) {
-                                            'Diterima' => 'bg-sky-50 border-sky-200 text-sky-700',
-                                            'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
-                                            'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-700',
-                                            'Diambil' => 'bg-slate-100 border-slate-200 text-slate-700',
-                                            'Dibatalkan' => 'bg-rose-50 border-rose-200 text-rose-700',
-                                            default => 'bg-slate-50 border-slate-200 text-slate-700',
-                                        };
-                                    @endphp
-                                    <span class="mt-0.5 inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $selStatusClasses }}">
-                                        {{ $selStatusVal }}
-                                    </span>
+                                    <div class="mt-0.5">
+                                        <x-status-badge :status="$selectedTransaction->status" />
+                                    </div>
                                 </div>
                                 <div>
                                     <p class="text-[11px] font-medium text-slate-400">Estimasi Selesai</p>

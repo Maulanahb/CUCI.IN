@@ -55,4 +55,56 @@ enum TransactionStatus: string
 
         return $targetEnum->rank() < $this->rank();
     }
+
+    /**
+     * Kelas Tailwind CSS untuk badge status berbasis semantik visual UX laundry.
+     */
+    public function badgeClasses(): string
+    {
+        return match ($this) {
+            self::Diterima => 'bg-sky-50 text-sky-700 border-sky-200',
+            self::Diproses => 'bg-amber-50 text-amber-700 border-amber-200',
+            self::Selesai => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+            self::Diambil => 'bg-slate-100 text-slate-700 border-slate-300',
+            self::Dibatalkan => 'bg-rose-50 text-rose-700 border-rose-200',
+        };
+    }
+
+    /**
+     * Kelas Tailwind CSS untuk dot indikator visual.
+     */
+    public function dotClasses(): string
+    {
+        return match ($this) {
+            self::Diterima => 'bg-sky-500',
+            self::Diproses => 'bg-amber-500',
+            self::Selesai => 'bg-emerald-500',
+            self::Diambil => 'bg-slate-400',
+            self::Dibatalkan => 'bg-rose-500',
+        };
+    }
+
+    /**
+     * Mendapatkan pasangan style badge, dot, dan label untuk status (baik instance enum maupun string).
+     *
+     * @return array{badge: string, dot: string, label: string}
+     */
+    public static function visualStyle(self|string|null $status): array
+    {
+        $enum = is_string($status) ? self::tryFrom($status) : $status;
+
+        if ($enum instanceof self) {
+            return [
+                'badge' => $enum->badgeClasses(),
+                'dot' => $enum->dotClasses(),
+                'label' => $enum->value,
+            ];
+        }
+
+        return [
+            'badge' => 'bg-slate-100 text-slate-700 border-slate-200',
+            'dot' => 'bg-slate-400',
+            'label' => (string) ($status ?? '-'),
+        ];
+    }
 }

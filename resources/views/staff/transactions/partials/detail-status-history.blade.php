@@ -28,19 +28,6 @@
             </thead>
             <tbody class="divide-y divide-slate-100">
                 @forelse ($transaction->statusHistories->sortByDesc('id') as $history)
-                    @php
-                        $histStatus = $history->status instanceof \App\Enums\TransactionStatus
-                            ? $history->status->value
-                            : (string) $history->status;
-                        $histBadge = match ($histStatus) {
-                            'Diterima' => 'bg-blue-50 text-blue-700 border-blue-200',
-                            'Diproses' => 'bg-amber-50 text-amber-700 border-amber-200',
-                            'Selesai' => 'bg-green-50 text-green-700 border-green-200',
-                            'Diambil' => 'bg-slate-100 text-slate-700 border-slate-200',
-                            'Dibatalkan' => 'bg-red-50 text-red-700 border-red-200',
-                            default => 'bg-slate-50 text-slate-600 border-slate-200',
-                        };
-                    @endphp
                     <tr class="hover:bg-slate-50/80 transition-colors">
                         <td class="px-5 py-3.5 text-xs text-slate-600">
                             <div class="font-medium text-slate-800">
@@ -51,9 +38,7 @@
                             </div>
                         </td>
                         <td class="px-5 py-3.5">
-                            <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $histBadge }}">
-                                {{ $histStatus }}
-                            </span>
+                            <x-status-badge :status="$history->status" />
                         </td>
                         <td class="px-5 py-3.5 text-xs font-medium text-slate-700">
                             <div class="flex items-center gap-2">

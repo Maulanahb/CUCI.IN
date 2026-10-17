@@ -48,17 +48,6 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
                     @foreach ($recentTransactions as $trx)
-                        @php
-                            $statusStr = $trx->status instanceof \App\Enums\TransactionStatus ? $trx->status->value : (string) $trx->status;
-                            $badgeClass = match ($statusStr) {
-                                'Diterima' => 'bg-sky-50 text-sky-700 border-sky-200',
-                                'Diproses' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                'Selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                'Diambil' => 'bg-slate-100 text-slate-700 border-slate-200',
-                                'Dibatalkan' => 'bg-rose-50 text-rose-700 border-rose-200',
-                                default => 'bg-slate-100 text-slate-700 border-slate-200',
-                            };
-                        @endphp
                         <tr class="transition hover:bg-slate-50/70">
                             <td class="py-3 font-mono font-bold text-slate-900 whitespace-nowrap">
                                 {{ $trx->transaction_code }}
@@ -71,9 +60,7 @@
                                 Rp {{ number_format($trx->total_amount, 0, ',', '.') }}
                             </td>
                             <td class="py-3 whitespace-nowrap">
-                                <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold {{ $badgeClass }}">
-                                    {{ $statusStr }}
-                                </span>
+                                <x-status-badge :status="$trx->status" class="text-[10px] px-2 py-0.5" />
                             </td>
                             <td class="py-3 text-right whitespace-nowrap">
                                 <div class="inline-flex items-center gap-1.5">

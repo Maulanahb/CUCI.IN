@@ -45,16 +45,7 @@
                             </span>
                         </div>
 
-                        <span class="rounded-full px-2.5 py-0.5 text-[11px] font-semibold {{ match ($statusVal) {
-                            'Diterima' => 'bg-sky-50 text-sky-700 border border-sky-200/60',
-                            'Diproses' => 'bg-amber-50 text-amber-700 border border-amber-200/60',
-                            'Selesai' => 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
-                            'Diambil' => 'bg-slate-100 text-slate-700 border border-slate-200/60',
-                            'Dibatalkan' => 'bg-rose-50 text-rose-700 border border-rose-200/60',
-                            default => 'bg-slate-100 text-slate-700',
-                        } }}">
-                            {{ $statusVal }}
-                        </span>
+                        <x-status-badge :status="$transaction->status" class="text-[11px]" />
 
                         <a
                             href="{{ route('customer.transactions.index', ['selected' => $transaction->transaction_code]) }}"

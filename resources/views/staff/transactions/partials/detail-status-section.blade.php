@@ -26,9 +26,7 @@
                 </span>
 
                 <div class="mt-1">
-                    <span class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold {{ $statusClasses }}">
-                        {{ $statusValue }}
-                    </span>
+                    <x-status-badge :status="$transaction->status" class="px-3 py-1 text-xs" />
                 </div>
             </div>
         </div>
