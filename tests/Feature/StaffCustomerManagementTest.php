@@ -383,4 +383,21 @@ class StaffCustomerManagementTest extends TestCase
         $response->assertDontSee('48 Hari');
         $response->assertSee('bg-amber-100');
     }
+
+    public function test_master_detail_view_renders_sticky_scrollable_container(): void
+    {
+        $this->withoutVite();
+
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::create([
+            'name' => 'Budi Santoso',
+            'phone' => '081234567801',
+            'address' => 'Jl. Kenanga',
+        ]);
+
+        $response = $this->actingAs($staff)->get(route('staff.customers.index', ['customer_id' => $customer->id]));
+        $response->assertOk();
+        $response->assertSee('overflow-y-auto');
+        $response->assertSee('sticky top-6');
+    }
 }

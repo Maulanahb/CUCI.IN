@@ -457,9 +457,9 @@
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
 
                 {{-- Kolom Kiri (Master List): Daftar Pelanggan Kompak --}}
-                <div class="lg:col-span-5 xl:col-span-4 rounded-2xl border border-slate-200/90 bg-white shadow-xs">
+                <div class="lg:col-span-5 xl:col-span-4 sticky top-6 max-h-[calc(100vh-5rem)] flex flex-col rounded-2xl border border-slate-200/90 bg-white shadow-xs overflow-hidden">
                     {{-- Header List Pelanggan --}}
-                    <div class="border-b border-slate-100 p-4">
+                    <div class="shrink-0 border-b border-slate-100 p-4">
                         <div class="flex items-center justify-between">
                             <h2 class="text-sm font-bold text-slate-900">Daftar Pelanggan</h2>
                             <span class="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
@@ -524,14 +524,14 @@
                     </div>
 
                     {{-- List Item Pelanggan --}}
-                    <div class="divide-y divide-slate-100">
+                    <div class="flex-1 overflow-y-auto divide-y divide-slate-100 no-scrollbar">
                         @forelse ($customers as $customer)
                             @php
                                 $isSelected = $selectedCustomer->id === $customer->id;
-                                $initials = collect(explode(' ', $customer->name))
+                                $initials = strtoupper(collect(explode(' ', $customer->name))
                                     ->map(fn($part) => mb_substr($part, 0, 1))
                                     ->take(2)
-                                    ->implode('');
+                                    ->implode(''));
                             @endphp
                             <div
                                 @class([
@@ -615,7 +615,7 @@
 
                     {{-- Pagination Footer --}}
                     @if ($customers->hasPages())
-                        <div class="border-t border-slate-100 p-3">
+                        <div class="shrink-0 border-t border-slate-100 p-3 bg-slate-50/50">
                             {{ $customers->links() }}
                         </div>
                     @endif
