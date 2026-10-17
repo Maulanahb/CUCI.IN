@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TransactionStatus;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Service;
@@ -339,5 +340,47 @@ class StaffCustomerManagementTest extends TestCase
         ]);
 
         $this->assertSame('https://wa.me/6281234567890', $customer->whatsapp_url);
+    }
+
+    public function test_customer_detail_shows_semantic_status_badges_and_formatted_duration(): void
+    {
+        $this->withoutVite();
+
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::create([
+            'name' => 'andi pratama',
+            'phone' => '081234567890',
+            'address' => 'Jl. Mawar',
+        ]);
+
+        $service = Service::create([
+            'name' => 'Cuci Kering',
+            'price' => 10000,
+            'estimated_duration' => 48,
+            'description' => 'Cuci Kering Bersih',
+            'is_active' => true,
+        ]);
+
+        $transaction = Transaction::create([
+            'customer_id' => $customer->id,
+            'transaction_code' => 'TRK-20261025-099',
+            'total_amount' => 50000,
+            'status' => TransactionStatus::Diproses,
+            'estimated_completed_at' => now()->addDays(2),
+        ]);
+
+        TransactionDetail::create([
+            'transaction_id' => $transaction->id,
+            'service_id' => $service->id,
+            'weight' => 5.0,
+            'unit_price' => 10000,
+            'subtotal' => 50000,
+        ]);
+
+        $response = $this->actingAs($staff)->get(route('staff.customers.index', ['customer_id' => $customer->id]));
+        $response->assertOk();
+        $response->assertSee('2 Hari');
+        $response->assertDontSee('48 Hari');
+        $response->assertSee('bg-amber-100');
     }
 }

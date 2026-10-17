@@ -1,10 +1,10 @@
 {{-- Kolom Kanan (Detail Panel): Profil & Riwayat Cucian --}}
 <div class="lg:col-span-7 xl:col-span-8 space-y-5">
     @php
-        $selectedInitials = collect(explode(' ', $selectedCustomer->name))
+        $selectedInitials = strtoupper(collect(explode(' ', $selectedCustomer->name))
             ->map(fn($part) => mb_substr($part, 0, 1))
             ->take(2)
-            ->implode('');
+            ->implode(''));
         $hasTransactions = $selectedCustomer->transactions()->exists();
     @endphp
 
@@ -132,6 +132,15 @@
             $service = $firstDetail?->service;
             $latestPayment = $activeTransaction->payments->last();
             $isPaid = $latestPayment && in_array($latestPayment->verification_status, ['Tidak Diperlukan', 'Terverifikasi']);
+            $activeStatusVal = $activeTransaction->status instanceof \App\Enums\TransactionStatus
+                ? $activeTransaction->status->value
+                : (string) $activeTransaction->status;
+            $activeDurHours = $service?->estimated_duration;
+            $activeDurFormatted = $activeDurHours
+                ? ($activeDurHours >= 24 && $activeDurHours % 24 === 0
+                    ? ($activeDurHours / 24) . ' Hari'
+                    : $activeDurHours . ' Jam')
+                : '-';
         @endphp
         <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -206,7 +215,7 @@
                             Rp {{ number_format($activeTransaction->total_amount, 0, ',', '.') }}
                         </p>
                         <span class="mt-0.5 inline-block rounded bg-sky-50 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700">
-                            Selesai {{ $service?->estimated_duration ?? 3 }} Hari
+                            Selesai {{ $activeDurFormatted }}
                         </span>
                     </div>
                 </div>
@@ -227,11 +236,11 @@
                     <div>
                         <span @class([
                             'rounded px-2.5 py-0.5 text-[11px] font-bold uppercase',
-                            'bg-sky-50 text-sky-700 border border-sky-200' => in_array($activeTransaction->status, ['Diterima', 'Diproses']),
-                            'bg-brand-50 text-brand-700 border border-brand-200' => in_array($activeTransaction->status, ['Selesai', 'Diambil']),
-                            'bg-rose-50 text-rose-700 border border-rose-200' => $activeTransaction->status === 'Dibatalkan',
+                            'bg-sky-50 text-sky-700 border border-sky-200' => in_array($activeStatusVal, ['Diterima', 'Diproses']),
+                            'bg-emerald-50 text-emerald-700 border border-emerald-200' => in_array($activeStatusVal, ['Selesai', 'Diambil']),
+                            'bg-rose-50 text-rose-700 border border-rose-200' => $activeStatusVal === 'Dibatalkan',
                         ])>
-                            {{ $activeTransaction->status }}
+                            {{ $activeStatusVal }}
                         </span>
                     </div>
                 </div>
@@ -278,6 +287,15 @@
                             $detail = $prevTrx->details->first();
                             $prevService = $detail?->service;
                             $isRowSelected = $activeTransaction && $activeTransaction->id === $prevTrx->id;
+                            $prevStatusVal = $prevTrx->status instanceof \App\Enums\TransactionStatus
+                                ? $prevTrx->status->value
+                                : (string) $prevTrx->status;
+                            $prevDurHours = $prevService?->estimated_duration;
+                            $prevDurFormatted = $prevDurHours
+                                ? ($prevDurHours >= 24 && $prevDurHours % 24 === 0
+                                    ? ($prevDurHours / 24) . ' Hari'
+                                    : $prevDurHours . ' Jam')
+                                : '-';
                         @endphp
                         <tr
                             onclick="window.location.href='{{ route("{$currentRoutePrefix}.customers.index", array_filter([
@@ -310,7 +328,7 @@
                             </td>
                             <td class="py-2.5">
                                 <span class="rounded bg-sky-50 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700">
-                                    {{ $prevService?->estimated_duration ?? 3 }} Hari
+                                    {{ $prevDurFormatted }}
                                 </span>
                             </td>
                             <td class="py-2.5 font-semibold text-slate-900">
@@ -319,11 +337,11 @@
                             <td class="py-2.5 text-right">
                                 <span @class([
                                     'rounded-full px-2 py-0.5 text-[10px] font-semibold',
-                                    'bg-brand-100 text-brand-800' => in_array($prevTrx->status, ['Selesai', 'Diambil']),
-                                    'bg-amber-100 text-amber-800' => in_array($prevTrx->status, ['Diterima', 'Diproses']),
-                                    'bg-rose-100 text-rose-800' => $prevTrx->status === 'Dibatalkan',
+                                    'bg-emerald-100 text-emerald-800' => in_array($prevStatusVal, ['Selesai', 'Diambil']),
+                                    'bg-amber-100 text-amber-800' => in_array($prevStatusVal, ['Diterima', 'Diproses']),
+                                    'bg-rose-100 text-rose-800' => $prevStatusVal === 'Dibatalkan',
                                 ])>
-                                    {{ $prevTrx->status }}
+                                    {{ $prevStatusVal }}
                                 </span>
                             </td>
                         </tr>
