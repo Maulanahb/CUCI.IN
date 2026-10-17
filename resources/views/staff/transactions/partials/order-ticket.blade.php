@@ -31,6 +31,28 @@
             </div>
         </div>
 
+        {{-- Alert Pemulihan Draf Otomatis --}}
+        <div
+            x-show="draftRestored"
+            x-cloak
+            x-transition
+            class="flex items-center justify-between gap-2 border-b border-amber-200/90 bg-amber-50 px-4 py-2.5 text-xs text-amber-900"
+        >
+            <div class="flex items-center gap-1.5 min-w-0">
+                <svg class="size-4 shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="truncate">Draf kasir sebelumnya dipulihkan otomatis.</span>
+            </div>
+            <button
+                type="button"
+                @click="clearDraft()"
+                class="shrink-0 rounded px-2 py-0.5 font-bold text-amber-800 hover:bg-amber-100/80 hover:text-amber-950 transition cursor-pointer"
+            >
+                Reset Draf
+            </button>
+        </div>
+
         <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5 no-scrollbar">
             {{-- Section 1: Data Pelanggan --}}
             <div>

@@ -11,6 +11,67 @@
             paymentChoice: '{{ old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid' }}',
             paymentMethod: '{{ old('payment_method', 'Tunai') }}',
             dpAmount: '{{ old('payment_amount', '') }}',
+            draftRestored: false,
+
+            init() {
+                const hasOldServerInput = {{ old('customer_id') || old('items') ? 'true' : 'false' }};
+                if (!hasOldServerInput) {
+                    try {
+                        const saved = localStorage.getItem('cuciin_pos_draft');
+                        if (saved) {
+                            const draft = JSON.parse(saved);
+                            if (draft.items && Array.isArray(draft.items) && draft.items.length > 0) {
+                                this.items = draft.items;
+                                this.draftRestored = true;
+                            }
+                            if (draft.paymentChoice) this.paymentChoice = draft.paymentChoice;
+                            if (draft.paymentMethod) this.paymentMethod = draft.paymentMethod;
+                            if (draft.dpAmount) this.dpAmount = draft.dpAmount;
+                            if (draft.customerId) {
+                                this.$nextTick(() => {
+                                    const select = document.getElementById('customer_id');
+                                    if (select) {
+                                        select.value = draft.customerId;
+                                        updateCustomerPreview(draft.customerId);
+                                    }
+                                });
+                            }
+                        }
+                    } catch (e) {}
+                }
+
+                this.$watch('items', () => this.persistDraft(), { deep: true });
+                this.$watch('paymentChoice', () => this.persistDraft());
+                this.$watch('paymentMethod', () => this.persistDraft());
+                this.$watch('dpAmount', () => this.persistDraft());
+            },
+
+            persistDraft() {
+                try {
+                    const select = document.getElementById('customer_id');
+                    const customerId = select ? select.value : '';
+                    localStorage.setItem('cuciin_pos_draft', JSON.stringify({
+                        items: this.items,
+                        customerId: customerId,
+                        paymentChoice: this.paymentChoice,
+                        paymentMethod: this.paymentMethod,
+                        dpAmount: this.dpAmount,
+                        savedAt: new Date().toISOString()
+                    }));
+                } catch (e) {}
+            },
+
+            clearDraft() {
+                try {
+                    localStorage.removeItem('cuciin_pos_draft');
+                } catch (e) {}
+                this.items = [{ service_id: (this.servicesList[0]?.id || ''), weight: '' }];
+                this.paymentChoice = 'unpaid';
+                this.paymentMethod = 'Tunai';
+                this.dpAmount = '';
+                this.draftRestored = false;
+                resetCustomerSelection();
+            },
 
             get filteredServices() {
                 let list = this.servicesList;
@@ -155,6 +216,12 @@
 
     function onCustomerSelectChange(val) {
         updateCustomerPreview(val);
+        try {
+            const saved = localStorage.getItem('cuciin_pos_draft');
+            const draft = saved ? JSON.parse(saved) : {};
+            draft.customerId = val;
+            localStorage.setItem('cuciin_pos_draft', JSON.stringify(draft));
+        } catch (e) {}
     }
 
     function resetCustomerSelection() {
@@ -164,13 +231,30 @@
             updateCustomerPreview('');
             select.focus();
         }
+        try {
+            const saved = localStorage.getItem('cuciin_pos_draft');
+            if (saved) {
+                const draft = JSON.parse(saved);
+                draft.customerId = '';
+                localStorage.setItem('cuciin_pos_draft', JSON.stringify(draft));
+            }
+        } catch (e) {}
     }
 
-    // Inisialisasi preview saat halaman selesai dimuat jika ada customer terpilih
+    // Inisialisasi preview saat halaman selesai dimuat jika ada customer terpilih & pasang submit listener
     document.addEventListener('DOMContentLoaded', function() {
         const select = document.getElementById('customer_id');
         if (select && select.value) {
             updateCustomerPreview(select.value);
+        }
+
+        const form = document.getElementById('transaction-form');
+        if (form) {
+            form.addEventListener('submit', function() {
+                try {
+                    localStorage.removeItem('cuciin_pos_draft');
+                } catch (e) {}
+            });
         }
     });
 
