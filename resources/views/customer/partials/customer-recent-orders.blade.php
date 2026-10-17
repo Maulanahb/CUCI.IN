@@ -32,19 +32,12 @@
                     $isPaidOff = $remaining <= 0;
                 @endphp
                 <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between py-3.5 transition hover:bg-slate-50/70 rounded-lg px-2">
-                    <div class="flex items-center gap-3">
-                        <div class="flex size-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600 shrink-0">
-                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-bold font-mono text-slate-900">{{ $transaction->transaction_code }}</p>
-                            <p class="text-[11px] text-slate-500">{{ $transaction->created_at->translatedFormat('d F Y, H:i') }}</p>
-                        </div>
+                    <div>
+                        <p class="text-xs font-bold font-mono text-slate-900">{{ $transaction->transaction_code }}</p>
+                        <p class="text-[11px] text-slate-500">{{ $transaction->created_at->translatedFormat('d F Y, H:i') }}</p>
                     </div>
 
-                    <div class="flex items-center justify-between sm:justify-end gap-3 pl-12 sm:pl-0">
+                    <div class="flex items-center justify-between sm:justify-end gap-3">
                         <div class="text-right">
                             <p class="text-xs font-bold text-slate-900 tabular-nums">Rp {{ number_format((float) $transaction->total_amount, 0, ',', '.') }}</p>
                             <span class="text-[10px] {{ $isPaidOff ? 'text-emerald-600 font-semibold' : 'text-amber-600 font-medium' }}">

@@ -123,7 +123,7 @@
                             <div class="relative flex justify-between">
                                 {{-- Step 1: Diterima --}}
                                 <div class="flex flex-col items-center text-center">
-                                    <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 1 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
+                                    <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 1 ? 'bg-brand-600 text-white shadow-2xs' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
                                         @if ($currentStep > 1)
                                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -138,7 +138,7 @@
 
                                 {{-- Step 2: Diproses --}}
                                 <div class="flex flex-col items-center text-center">
-                                    <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 2 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
+                                    <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 2 ? 'bg-brand-600 text-white shadow-2xs' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
                                         @if ($currentStep > 2)
                                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -153,7 +153,7 @@
 
                                 {{-- Step 3: Selesai --}}
                                 <div class="flex flex-col items-center text-center">
-                                    <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 3 ? 'bg-emerald-600 text-white ring-4 ring-emerald-100' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
+                                    <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 3 ? 'bg-emerald-600 text-white shadow-2xs' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
                                         @if ($currentStep >= 3)
                                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />

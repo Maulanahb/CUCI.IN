@@ -25,3 +25,35 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* ============================================================
+   IMPECCABLE CRAFT FLOOR: BROWSER SURFACES THEME
+   Themed text selection, custom input carets, and slim scrollbars
+============================================================ */
+::selection {
+    background-color: #cffafe; /* brand-100 */
+    color: #083344; /* brand-950 */
+}
+
+input, textarea, [contenteditable="true"] {
+    caret-color: #0891b2; /* brand-600 */
+}
+
+/* Custom minimal scrollbar for data tables and horizontal overflow */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* slate-300 */
+    border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* slate-400 */
+}

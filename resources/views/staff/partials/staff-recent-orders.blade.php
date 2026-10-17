@@ -3,16 +3,9 @@
 ============================================================= --}}
 <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs sm:p-6 lg:col-span-2">
     <div class="mb-4 flex items-center justify-between border-b border-slate-100 pb-3">
-        <div class="flex items-center gap-2">
-            <div class="flex size-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            </div>
-            <div>
-                <h3 class="text-sm font-bold text-slate-900 sm:text-base">Antrean Cucian Terkini</h3>
-                <p class="text-xs text-slate-500">Order cucian terbaru yang memerlukan penanganan staff.</p>
-            </div>
+        <div>
+            <h2 class="text-sm font-bold text-slate-900 sm:text-base">Antrean Cucian Terkini</h2>
+            <p class="text-xs text-slate-500">Order cucian yang tercatat masuk hari ini di kasir POS.</p>
         </div>
         <a
             href="{{ route('staff.transactions.index') }}"
@@ -45,12 +38,12 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs">
                 <thead>
-                    <tr class="border-b border-slate-100 text-slate-400">
-                        <th class="pb-2.5 font-semibold">Nota</th>
-                        <th class="pb-2.5 font-semibold">Pelanggan</th>
-                        <th class="pb-2.5 font-semibold">Total Tagihan</th>
-                        <th class="pb-2.5 font-semibold">Status Pengerjaan</th>
-                        <th class="pb-2.5 text-right font-semibold">Aksi</th>
+                    <tr class="border-b border-slate-100 text-slate-500 font-semibold">
+                        <th class="pb-2.5">Nota</th>
+                        <th class="pb-2.5">Pelanggan</th>
+                        <th class="pb-2.5">Total Tagihan</th>
+                        <th class="pb-2.5">Status Pengerjaan</th>
+                        <th class="pb-2.5 text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 text-slate-700">
