@@ -6,6 +6,19 @@
 <x-layouts::app title="Katalog Layanan Laundry">
     <div
         class="space-y-6"
+        @keydown.slash.window="
+            if (!createModalOpen && !editModalOpen && !deleteModalOpen && !detailModalOpen && !['INPUT', 'TEXTAREA', 'SELECT'].includes($event.target.tagName)) {
+                $event.preventDefault();
+                const search = document.getElementById('service-search-input');
+                if (search) { search.focus(); search.select(); }
+            }
+        "
+        @keydown.escape.window="
+            createModalOpen = false;
+            editModalOpen = false;
+            deleteModalOpen = false;
+            detailModalOpen = false;
+        "
         x-data="{
             createModalOpen: false,
             editModalOpen: false,
@@ -26,6 +39,7 @@
                 transactionCount: 0
             },
             detailData: {
+                id: '',
                 name: '',
                 price: 0,
                 estimated_duration: 0,
@@ -36,6 +50,9 @@
             },
             openCreateModal() {
                 this.createModalOpen = true;
+                this.$nextTick(() => {
+                    document.getElementById('create_name')?.focus();
+                });
             },
             openEditModal(service) {
                 this.editForm = {
@@ -47,6 +64,9 @@
                     is_active: Boolean(service.is_active)
                 };
                 this.editModalOpen = true;
+                this.$nextTick(() => {
+                    document.getElementById('edit_name')?.focus();
+                });
             },
             openDeleteModal(service) {
                 this.deleteForm = {
@@ -58,6 +78,7 @@
             },
             openDetailModal(service) {
                 this.detailData = {
+                    id: service.id,
                     name: service.name,
                     price: parseFloat(service.price),
                     estimated_duration: service.estimated_duration,
@@ -69,7 +90,8 @@
                 this.detailModalOpen = true;
             },
             formatRupiah(val) {
-                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+                const num = Math.max(0, parseFloat(val) || 0);
+                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(num);
             }
         }"
     >

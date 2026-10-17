@@ -12,8 +12,8 @@
                 </svg>
             </div>
         </div>
-        <p class="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">{{ $stats['total'] }}</p>
-        <p class="mt-0.5 text-[11px] text-slate-400">Seluruh jenis layanan</p>
+        <p class="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl tabular-nums">{{ $stats['total'] }}</p>
+        <p class="mt-0.5 text-[11px] text-slate-500">Seluruh jenis layanan</p>
     </div>
 
     {{-- Card 2: Layanan Aktif --}}
@@ -27,8 +27,8 @@
                 </span>
             </div>
         </div>
-        <p class="mt-2 text-xl font-bold tracking-tight text-emerald-600 sm:text-2xl">{{ $stats['active'] }}</p>
-        <p class="mt-0.5 text-[11px] text-slate-400">Siap dipilih di kasir</p>
+        <p class="mt-2 text-xl font-bold tracking-tight text-emerald-600 sm:text-2xl tabular-nums">{{ $stats['active'] }}</p>
+        <p class="mt-0.5 text-[11px] text-slate-500">Siap dipilih di kasir</p>
     </div>
 
     {{-- Card 3: Layanan Nonaktif --}}
@@ -41,8 +41,8 @@
                 </svg>
             </div>
         </div>
-        <p class="mt-2 text-xl font-bold tracking-tight text-slate-600 sm:text-2xl">{{ $stats['inactive'] }}</p>
-        <p class="mt-0.5 text-[11px] text-slate-400">Layanan diarsipkan</p>
+        <p class="mt-2 text-xl font-bold tracking-tight text-slate-600 sm:text-2xl tabular-nums">{{ $stats['inactive'] }}</p>
+        <p class="mt-0.5 text-[11px] text-slate-500">Layanan diarsipkan</p>
     </div>
 
     {{-- Card 4: Rata-rata Tarif --}}
@@ -55,10 +55,10 @@
                 </svg>
             </div>
         </div>
-        <p class="mt-2 text-lg font-bold tracking-tight text-brand-700 sm:text-xl">
+        <p class="mt-2 text-lg font-bold tracking-tight text-brand-700 sm:text-xl tabular-nums">
             Rp {{ number_format($stats['avg_price'], 0, ',', '.') }}
         </p>
-        <p class="mt-0.5 text-[11px] text-brand-600/80">
+        <p class="mt-0.5 text-[11px] text-brand-700 font-medium">
             Durasi tercepat: {{ $stats['min_duration'] > 0 ? $stats['min_duration'] . ' jam' : '-' }}
         </p>
     </div>

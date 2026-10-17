@@ -35,21 +35,21 @@
                         </td>
 
                         {{-- Tarif Satuan --}}
-                        <td class="px-5 py-4 font-semibold text-slate-800">
-                            <span class="inline-flex items-center rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700">
+                        <td class="px-5 py-4 font-semibold text-slate-800 whitespace-nowrap">
+                            <span class="inline-flex items-center rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-bold text-brand-700 tabular-nums">
                                 Rp {{ number_format($service->price, 0, ',', '.') }} <span class="ml-1 text-[10px] font-normal text-brand-600/80">/kg</span>
                             </span>
                         </td>
 
                         {{-- Estimasi Durasi --}}
-                        <td class="px-5 py-4 text-slate-600">
+                        <td class="px-5 py-4 text-slate-600 whitespace-nowrap">
                             <div class="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
-                                <svg class="size-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <svg class="size-4 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                <span>{{ $service->estimated_duration }} Jam</span>
+                                <span class="tabular-nums">{{ $service->estimated_duration }} Jam</span>
                                 @if ($service->estimated_duration >= 24)
-                                    <span class="text-[11px] text-slate-400">
+                                    <span class="text-[11px] text-slate-500 tabular-nums">
                                         ({{ round($service->estimated_duration / 24, 1) }} hari)
                                     </span>
                                 @endif
@@ -57,14 +57,15 @@
                         </td>
 
                         {{-- Status Ketersediaan --}}
-                        <td class="px-5 py-4">
+                        <td class="px-5 py-4 whitespace-nowrap">
                             @if ($isAdmin)
                                 <form method="POST" action="{{ route('admin.services.toggle', $service) }}" class="inline">
                                     @csrf
                                     @method('PATCH')
                                     <button
                                         type="submit"
-                                        title="Klik untuk mengubah status ketersediaan"
+                                        title="Klik untuk mengubah status ketersediaan {{ $service->name }}"
+                                        aria-label="Ubah status ketersediaan {{ $service->name }}"
                                         @class([
                                             'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold transition hover:opacity-85 cursor-pointer select-none',
                                             'border-emerald-200 bg-emerald-50 text-emerald-700' => $service->is_active,
@@ -96,14 +97,14 @@
                         </td>
 
                         {{-- Penggunaan Transaksi --}}
-                        <td class="px-5 py-4 text-center">
+                        <td class="px-5 py-4 text-center whitespace-nowrap">
                             @if ($service->transaction_details_count > 0)
-                                <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                                <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 tabular-nums">
                                     <span>{{ $service->transaction_details_count }}</span>
                                     <span class="text-[10px] font-normal">order</span>
                                 </span>
                             @else
-                                <span class="text-xs text-slate-400">0 order</span>
+                                <span class="text-xs text-slate-400 tabular-nums">0 order</span>
                             @endif
                         </td>
 
@@ -116,7 +117,7 @@
                                     @click="openDetailModal({{ json_encode($service) }})"
                                     class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                                     title="Lihat Detail & Simulasi"
-                                    aria-label="Lihat Detail & Simulasi"
+                                    aria-label="Lihat Detail & Simulasi {{ $service->name }}"
                                 >
                                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -131,7 +132,7 @@
                                         @click="openEditModal({{ json_encode($service) }})"
                                         class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 cursor-pointer"
                                         title="Ubah Layanan"
-                                        aria-label="Ubah Layanan"
+                                        aria-label="Ubah Layanan {{ $service->name }}"
                                     >
                                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -148,7 +149,7 @@
                                             'border-slate-100 text-slate-300 hover:bg-slate-100 hover:text-slate-500' => $service->transaction_details_count > 0,
                                         ])
                                         title="{{ $service->transaction_details_count > 0 ? 'Layanan memiliki riwayat transaksi (Gunakan nonaktifkan)' : 'Hapus Layanan' }}"
-                                        aria-label="Hapus Layanan"
+                                        aria-label="Hapus Layanan {{ $service->name }}"
                                     >
                                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -170,7 +171,19 @@
                             <p class="mt-1 text-xs text-slate-500">
                                 {{ $search !== '' ? 'Tidak ada hasil untuk kata kunci "' . $search . '".' : 'Belum ada data layanan laundry yang tersimpan.' }}
                             </p>
-                            @if ($isAdmin && $search === '')
+                            @if ($search !== '' || $statusFilter !== 'all')
+                                <div class="mt-4">
+                                    <a
+                                        href="{{ route("{$currentRoutePrefix}.services.index") }}"
+                                        class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 cursor-pointer"
+                                    >
+                                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        <span>Reset Filter & Tampilkan Semua</span>
+                                    </a>
+                                </div>
+                            @elseif ($isAdmin)
                                 <div class="mt-4">
                                     <button
                                         type="button"

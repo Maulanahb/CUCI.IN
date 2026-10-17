@@ -12,7 +12,7 @@
                 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900' => $statusFilter !== 'all',
             ])
         >
-            Semua ({{ $stats['total'] }})
+            Semua <span class="tabular-nums">({{ $stats['total'] }})</span>
         </a>
 
         <a
@@ -23,7 +23,7 @@
                 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900' => $statusFilter !== 'active',
             ])
         >
-            Aktif ({{ $stats['active'] }})
+            Aktif <span class="tabular-nums">({{ $stats['active'] }})</span>
         </a>
 
         <a
@@ -34,7 +34,7 @@
                 'bg-slate-100 text-slate-600 hover:bg-slate-200/70 hover:text-slate-900' => $statusFilter !== 'inactive',
             ])
         >
-            Nonaktif ({{ $stats['inactive'] }})
+            Nonaktif <span class="tabular-nums">({{ $stats['inactive'] }})</span>
         </a>
     </div>
 
@@ -53,7 +53,7 @@
             type="text"
             name="q"
             value="{{ $search }}"
-            placeholder="Cari nama layanan..."
+            placeholder="Cari nama layanan... (Tekan /)"
             class="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2 pr-9 pl-9 text-xs text-slate-800 transition placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
         />
         @if ($search !== '')

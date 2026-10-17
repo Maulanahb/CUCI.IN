@@ -47,7 +47,7 @@
                 </button>
             </div>
 
-            <form method="POST" action="{{ route('admin.services.store') }}" class="mt-5 space-y-4">
+            <form method="POST" action="{{ route('admin.services.store') }}" class="mt-5 space-y-4" x-data="{ submitting: false }" @submit="submitting = true">
                 @csrf
 
                 {{-- Nama Layanan --}}
@@ -152,12 +152,17 @@
                     </button>
                     <button
                         type="submit"
-                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98 cursor-pointer"
+                        :disabled="submitting"
+                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <svg x-show="!submitting" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
-                        <span>Simpan Layanan</span>
+                        <svg x-show="submitting" class="size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-text="submitting ? 'Menyimpan...' : 'Simpan Layanan'"></span>
                     </button>
                 </div>
             </form>
@@ -212,6 +217,8 @@
                 method="POST"
                 :action="'{{ url('admin/services') }}/' + editForm.id"
                 class="mt-5 space-y-4"
+                x-data="{ submitting: false }"
+                @submit="submitting = true"
             >
                 @csrf
                 @method('PUT')
@@ -326,12 +333,17 @@
                     </button>
                     <button
                         type="submit"
-                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98 cursor-pointer"
+                        :disabled="submitting"
+                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-5 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <svg x-show="!submitting" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
-                        <span>Simpan Perubahan</span>
+                        <svg x-show="submitting" class="size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-text="submitting ? 'Menyimpan...' : 'Simpan Perubahan'"></span>
                     </button>
                 </div>
             </form>
@@ -514,12 +526,12 @@
                             min="0.1"
                             step="0.5"
                             x-model.number="detailData.calcWeight"
-                            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-200"
+                            class="mt-1 flex h-9 w-full items-center rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-800 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-200"
                         />
                     </div>
                     <div class="w-1/2">
                         <label class="text-[11px] font-semibold text-slate-600">Hasil Subtotal:</label>
-                        <div class="mt-1 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold text-brand-700 border border-brand-100">
+                        <div class="mt-1 flex h-9 w-full items-center rounded-lg border border-brand-200 bg-white px-2.5 text-xs font-bold text-brand-700 shadow-2xs tabular-nums">
                             <span x-text="formatRupiah(detailData.calcWeight * detailData.price)"></span>
                         </div>
                     </div>
@@ -527,11 +539,20 @@
             </div>
         </div>
 
-        <div class="mt-6 flex items-center justify-end border-t border-slate-100 pt-4">
+        <div class="mt-6 flex items-center justify-between border-t border-slate-100 pt-4">
+            <a
+                href="{{ route("{$currentRoutePrefix}.transactions.create") }}"
+                class="inline-flex items-center gap-1.5 text-xs font-bold text-brand-600 transition hover:text-brand-700 hover:underline"
+            >
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span>Buka Kasir POS</span>
+            </a>
             <button
                 type="button"
                 @click="detailModalOpen = false"
-                class="rounded-xl bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 cursor-pointer"
+                class="rounded-xl bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-200 cursor-pointer"
             >
                 Tutup
             </button>
