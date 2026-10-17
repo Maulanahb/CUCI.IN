@@ -4,7 +4,23 @@
 
 <x-layouts::app title="Kelola Transaksi">
 
-    <div class="space-y-6">
+    <div
+        class="space-y-6"
+        x-data="{
+            selectedIds: [],
+            allIds: {{ json_encode($transactions->pluck('id')) }},
+            toggleAll(event) {
+                if (event.target.checked) {
+                    this.selectedIds = [...this.allIds];
+                } else {
+                    this.selectedIds = [];
+                }
+            },
+            isAllSelected() {
+                return this.allIds.length > 0 && this.selectedIds.length === this.allIds.length;
+            }
+        }"
+    >
 
         {{-- Header --}}
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -203,7 +219,15 @@
                     <thead class="bg-slate-50 text-xs uppercase text-slate-500">
 
                         <tr>
-
+                            <th class="w-10 px-4 py-3">
+                                <input
+                                    type="checkbox"
+                                    @change="toggleAll($event)"
+                                    :checked="isAllSelected()"
+                                    class="size-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                                    aria-label="Pilih semua transaksi"
+                                />
+                            </th>
                             <th class="px-5 py-3 font-semibold">
                                 Kode Transaksi
                             </th>
@@ -233,8 +257,16 @@
 
                         @forelse ($transactions as $transaction)
 
-                            <tr class="transition hover:bg-slate-50">
-
+                            <tr class="transition hover:bg-slate-50" :class="selectedIds.includes({{ $transaction->id }}) ? 'bg-brand-50/40' : ''">
+                                <td class="w-10 px-4 py-4">
+                                    <input
+                                        type="checkbox"
+                                        :value="{{ $transaction->id }}"
+                                        x-model.number="selectedIds"
+                                        class="size-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                                        aria-label="Pilih transaksi {{ $transaction->transaction_code }}"
+                                    />
+                                </td>
                                 {{-- Kode --}}
                                 <td class="px-5 py-4">
 
@@ -335,7 +367,7 @@
                             <tr>
 
                                 <td
-                                    colspan="5"
+                                    colspan="6"
                                     class="px-5 py-12 text-center"
                                 >
 
@@ -387,6 +419,66 @@
 
             @endif
 
+        </div>
+
+        {{-- Floating Bulk Action Bar --}}
+        <div
+            x-cloak
+            x-show="selectedIds.length > 0"
+            x-transition:enter="ease-out duration-200"
+            x-transition:enter-start="opacity-0 translate-y-4"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-4"
+            class="fixed bottom-6 left-1/2 z-40 -translate-x-1/2 flex items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/95 px-5 py-3 text-white shadow-2xl backdrop-blur-md"
+        >
+            <div class="flex items-center gap-2 border-r border-slate-700 pr-3">
+                <span class="flex size-6 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white" x-text="selectedIds.length"></span>
+                <span class="text-xs font-medium text-slate-200">Terpilih</span>
+            </div>
+
+            <form
+                method="POST"
+                action="{{ route($routePrefix . '.transactions.bulk-status') }}"
+                class="flex items-center gap-2"
+            >
+                @csrf
+                @method('PATCH')
+
+                <template x-for="id in selectedIds" :key="id">
+                    <input type="hidden" name="transaction_ids[]" :value="id" />
+                </template>
+
+                <select
+                    name="status"
+                    required
+                    class="rounded-xl border border-slate-700 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white outline-none focus:border-brand-400 focus:ring-1 focus:ring-brand-400"
+                >
+                    <option value="Diproses">Ubah ke: Diproses</option>
+                    <option value="Selesai">Ubah ke: Selesai</option>
+                    <option value="Diambil">Ubah ke: Diambil</option>
+                </select>
+
+                <button
+                    type="submit"
+                    class="rounded-xl bg-brand-600 px-3.5 py-1.5 text-xs font-bold text-white transition hover:bg-brand-500 active:scale-98 cursor-pointer"
+                >
+                    Terapkan
+                </button>
+            </form>
+
+            <button
+                type="button"
+                @click="selectedIds = []"
+                class="rounded-lg p-1 text-slate-400 transition hover:bg-slate-800 hover:text-slate-200 cursor-pointer"
+                title="Batal pilihan"
+                aria-label="Batal pilihan"
+            >
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
     </div>

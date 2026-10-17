@@ -177,6 +177,65 @@ class TransactionController extends Controller
     }
 
     /**
+     * Memperbarui status operasional untuk beberapa transaksi sekaligus (Bulk Action).
+     */
+    public function bulkUpdateStatus(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'transaction_ids' => ['required', 'array', 'min:1'],
+            'transaction_ids.*' => ['required', 'integer', 'exists:transactions,id'],
+            'status' => ['required', 'in:Diterima,Diproses,Selesai,Diambil,Dibatalkan'],
+            'notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $targetStatus = TransactionStatus::from($validated['status']);
+        $notes = ! empty($validated['notes']) ? trim($validated['notes']) : 'Pembaruan massal kasir';
+        $transactions = Transaction::whereIn('id', $validated['transaction_ids'])->get();
+
+        $updatedCount = 0;
+        $skippedCount = 0;
+
+        foreach ($transactions as $transaction) {
+            $currentStatus = $transaction->status instanceof TransactionStatus
+                ? $transaction->status
+                : TransactionStatus::from((string) $transaction->status);
+
+            // Lewati jika sudah terminal atau status sudah sama
+            if ($currentStatus->isTerminal() || $currentStatus === $targetStatus) {
+                $skippedCount++;
+
+                continue;
+            }
+
+            // Jika status Diambil tapi belum lunas, lewati
+            if ($targetStatus === TransactionStatus::Diambil && ! $transaction->isPaidOff()) {
+                $skippedCount++;
+
+                continue;
+            }
+
+            $transaction->update(['status' => $targetStatus]);
+
+            LaundryStatusHistory::create([
+                'transaction_id' => $transaction->id,
+                'status' => $targetStatus,
+                'notes' => $notes,
+                'changed_by' => auth()->id(),
+                'changed_at' => now(),
+            ]);
+
+            $updatedCount++;
+        }
+
+        $message = "{$updatedCount} transaksi berhasil diperbarui ke status {$targetStatus->value}.";
+        if ($skippedCount > 0) {
+            $message .= " ({$skippedCount} transaksi dilewati karena sudah selesai/belum lunas).";
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
      * Simpan transaksi baru yang diinput oleh Staff atau Admin.
      *
      * @throws ValidationException

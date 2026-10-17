@@ -146,6 +146,9 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::get('/transactions/{transaction}/print', [StaffTransactionController::class, 'print'])
                     ->name('transactions.print');
 
+                Route::patch('/transactions/bulk-status', [StaffTransactionController::class, 'bulkUpdateStatus'])
+                    ->name('transactions.bulk-status');
+
                 Route::patch('/transactions/{transaction}/status', [StaffTransactionController::class, 'updateStatus'])
                     ->name('transactions.status');
 
@@ -191,6 +194,9 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::get('/transactions/{transaction}/print', [StaffTransactionController::class, 'print'])
                     ->name('transactions.print');
+
+                Route::patch('/transactions/bulk-status', [StaffTransactionController::class, 'bulkUpdateStatus'])
+                    ->name('transactions.bulk-status');
 
                 Route::patch('/transactions/{transaction}/status', [StaffTransactionController::class, 'updateStatus'])
                     ->name('transactions.status');
