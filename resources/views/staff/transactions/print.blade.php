@@ -35,6 +35,69 @@
             padding: 24px 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: max-width 0.2s ease, font-size 0.2s ease, padding 0.2s ease;
+        }
+
+        .receipt-container.size-58mm {
+            max-width: 280px;
+            font-size: 11px;
+            padding: 16px 12px;
+        }
+
+        .receipt-container.size-58mm .header-title {
+            font-size: 15px;
+        }
+
+        .receipt-container.size-58mm .header-subtitle {
+            font-size: 10px;
+        }
+
+        .receipt-container.size-58mm .item-header {
+            font-size: 11px;
+        }
+
+        .receipt-container.size-58mm .item-sub {
+            font-size: 10px;
+        }
+
+        .receipt-container.size-58mm .total-row {
+            font-size: 12px;
+        }
+
+        .receipt-container.size-58mm .footer-note {
+            font-size: 9px;
+        }
+
+        .receipt-container.size-80mm {
+            max-width: 380px;
+            font-size: 13px;
+            padding: 24px 20px;
+        }
+
+        .paper-toggle {
+            display: inline-flex;
+            background: #e2e8f0;
+            border-radius: 6px;
+            padding: 2px;
+            gap: 2px;
+        }
+
+        .paper-toggle button {
+            border: none;
+            background: transparent;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .paper-toggle button.active {
+            background: #ffffff;
+            color: #0284c7;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
         }
 
         .text-center { text-align: center; }
@@ -133,6 +196,7 @@
         .actions-bar {
             margin-bottom: 16px;
             display: flex;
+            align-items: center;
             gap: 10px;
         }
 
@@ -168,10 +232,16 @@
             border-color: #0369a1;
         }
 
+        @page {
+            size: auto;
+            margin: 0;
+        }
+
         @media print {
             body {
                 background: #ffffff;
                 padding: 0;
+                margin: 0;
             }
 
             .no-print {
@@ -181,9 +251,37 @@
             .receipt-container {
                 box-shadow: none;
                 border-radius: 0;
-                padding: 10px 0;
-                width: 100%;
-                max-width: 100%;
+                margin: 0 auto;
+            }
+
+            .receipt-container.size-58mm {
+                width: 58mm !important;
+                max-width: 58mm !important;
+                padding: 3mm 2mm !important;
+                font-size: 10px !important;
+            }
+
+            .receipt-container.size-58mm .header-title {
+                font-size: 13px !important;
+            }
+
+            .receipt-container.size-58mm .total-row {
+                font-size: 11px !important;
+            }
+
+            .receipt-container.size-80mm {
+                width: 80mm !important;
+                max-width: 80mm !important;
+                padding: 6mm 4mm !important;
+                font-size: 12px !important;
+            }
+
+            .receipt-container.size-80mm .header-title {
+                font-size: 16px !important;
+            }
+
+            .receipt-container.size-80mm .total-row {
+                font-size: 13px !important;
             }
         }
     </style>
@@ -191,18 +289,24 @@
 <body>
 
     <div class="actions-bar no-print">
-        <button onclick="window.print()" class="btn btn-primary">
+        <button onclick="window.print()" class="btn btn-primary" id="btn-print">
             <svg style="width:14px;height:14px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
             Print Struk
         </button>
+
+        <div class="paper-toggle" role="group" aria-label="Pilihan Ukuran Kertas">
+            <button type="button" id="toggle-58mm" onclick="setPaperSize('58mm')">58 mm (Mini)</button>
+            <button type="button" id="toggle-80mm" onclick="setPaperSize('80mm')" class="active">80 mm (Standar)</button>
+        </div>
+
         <button onclick="window.close()" class="btn">
             Tutup
         </button>
     </div>
 
-    <div class="receipt-container">
+    <div id="receipt-container" class="receipt-container size-80mm">
         {{-- Header Kasir --}}
         <div class="text-center">
             <h1 class="header-title">CUCI.IN LAUNDRY</h1>
@@ -305,7 +409,42 @@
     </div>
 
     <script>
+        function setPaperSize(size) {
+            const container = document.getElementById('receipt-container');
+            const btn58 = document.getElementById('toggle-58mm');
+            const btn80 = document.getElementById('toggle-80mm');
+
+            if (!container) return;
+
+            if (size === '58mm') {
+                container.classList.remove('size-80mm');
+                container.classList.add('size-58mm');
+                if (btn58) btn58.classList.add('active');
+                if (btn80) btn80.classList.remove('active');
+            } else {
+                container.classList.remove('size-58mm');
+                container.classList.add('size-80mm');
+                if (btn80) btn80.classList.add('active');
+                if (btn58) btn58.classList.remove('active');
+            }
+
+            try {
+                localStorage.setItem('cuciin_receipt_size', size);
+            } catch (e) {}
+        }
+
         window.addEventListener('load', function() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const querySize = urlParams.get('size');
+                const savedSize = localStorage.getItem('cuciin_receipt_size');
+                const activeSize = querySize || savedSize;
+
+                if (activeSize && (activeSize === '58mm' || activeSize === '80mm')) {
+                    setPaperSize(activeSize);
+                }
+            } catch (e) {}
+
             window.print();
         });
     </script>

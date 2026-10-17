@@ -192,6 +192,9 @@ class TransactionStatusHistoryAndPrintTest extends TestCase
         $response->assertSee('Rp 24.000');
         $response->assertSee('Budi Kasir');
         $response->assertSee('window.print()');
+        $response->assertSee('58 mm (Mini)');
+        $response->assertSee('80 mm (Standar)');
+        $response->assertSee('setPaperSize');
     }
 
     /**
