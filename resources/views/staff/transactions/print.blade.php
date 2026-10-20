@@ -167,14 +167,14 @@
         }
 
         .btn-primary {
-            background: #0284c7;
-            border-color: #0284c7;
+            background: #0e7490;
+            border-color: #0e7490;
             color: #ffffff;
         }
 
         .btn-primary:hover {
-            background: #0369a1;
-            border-color: #0369a1;
+            background: #155e75;
+            border-color: #155e75;
         }
 
         @media print {
@@ -281,6 +281,23 @@
                 <span class="meta-label">Sudah Dibayar:</span>
                 <span class="meta-value">Rp {{ number_format($transaction->total_paid, 0, ',', '.') }}</span>
             </div>
+
+            @foreach ($transaction->payments->sortBy('id') as $payment)
+                <div class="meta-row" style="margin-top: 4px;">
+                    <span class="meta-label">{{ $payment->payment_type }} · {{ $payment->method }}</span>
+                    <span class="meta-value">Rp {{ number_format($payment->amount, 0, ',', '.') }}</span>
+                </div>
+                @if ($payment->cash_received !== null)
+                    <div class="meta-row">
+                        <span class="meta-label">Diterima / Kembali</span>
+                        <span class="meta-value">
+                            Rp {{ number_format($payment->cash_received, 0, ',', '.') }} /
+                            Rp {{ number_format($payment->change_amount, 0, ',', '.') }}
+                        </span>
+                    </div>
+                @endif
+            @endforeach
+
             <div class="meta-row">
                 <span class="meta-label">Sisa Tagihan:</span>
                 <span class="meta-value font-bold">Rp {{ number_format($transaction->remaining_amount, 0, ',', '.') }}</span>

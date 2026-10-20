@@ -16,6 +16,7 @@ class TransactionLookupController extends Controller
         $code = trim((string) $request->input('code', ''));
         $transaction = null;
         $searched = false;
+        $maskedCustomerName = 'Pelanggan Umum';
 
         $paymentSummary = [
             'total_paid' => 0.0,
@@ -54,6 +55,13 @@ class TransactionLookupController extends Controller
                     'status' => $paymentStatus,
                     'latest_payment' => $transaction->payments->last(),
                 ];
+
+                if ($transaction->customer?->name) {
+                    $maskedCustomerName = collect(preg_split('/\s+/', trim($transaction->customer->name)))
+                        ->filter()
+                        ->map(fn (string $part): string => mb_substr($part, 0, 1).'***')
+                        ->implode(' ');
+                }
             }
         }
 
@@ -62,6 +70,7 @@ class TransactionLookupController extends Controller
             'searched' => $searched,
             'transaction' => $transaction,
             'paymentSummary' => $paymentSummary,
+            'maskedCustomerName' => $maskedCustomerName,
         ]);
     }
 }

@@ -40,3 +40,5 @@ Thumbs.db
 
 # Local Agent Credentials
 /.agents/mcp_config.json
+/.impeccable/
+.agent/skills/impeccable/scripts/bin/

@@ -14,7 +14,7 @@
         </x-ui.button>
     </x-slot>
 
-    <div class="space-y-5">
+    <div class="space-y-6">
 
         {{-- Flash message --}}
         @if (session('success'))
@@ -81,11 +81,19 @@
         {{-- Daftar transaksi --}}
         <x-ui.card padding="p-0" class="overflow-hidden">
             <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-                <div>
-                    <h2 class="text-sm font-semibold text-slate-900">Daftar Transaksi</h2>
-                    <p class="mt-0.5 text-xs text-slate-500">
-                        {{ $transactions->total() }} nota ditemukan
-                    </p>
+                <div class="flex items-center gap-3">
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5h10M9 12h10M9 19h10M4 5h.01M4 12h.01M4 19h.01" />
+                        </svg>
+                    </div>
+
+                    <div>
+                        <h2 class="text-sm font-semibold text-slate-900">Daftar Transaksi</h2>
+                        <p class="mt-0.5 text-xs text-slate-500">
+                            {{ $transactions->total() }} nota ditemukan
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -94,11 +102,11 @@
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                         <tr>
-                            <th class="px-5 py-3 font-semibold">Kode Nota</th>
-                            <th class="px-5 py-3 font-semibold">Pelanggan</th>
-                            <th class="px-5 py-3 font-semibold">Total</th>
-                            <th class="px-5 py-3 font-semibold">Status</th>
-                            <th class="px-5 py-3 text-right font-semibold">Aksi</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Kode Nota</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Pelanggan</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Total</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Status</th>
+                            <th scope="col" class="px-5 py-3 text-right font-semibold">Aksi</th>
                         </tr>
                     </thead>
 
@@ -136,15 +144,15 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <x-ui.button
                                             :href="route($routePrefix . '.transactions.show', $transaction)"
-                                            variant="secondary"
-                                            size="sm"
+                                            variant="soft"
+                                            size="xs"
                                         >
                                             Detail
                                         </x-ui.button>
                                         <x-ui.button
                                             :href="route($routePrefix . '.transactions.print', $transaction)"
-                                            variant="ghost"
-                                            size="sm"
+                                            variant="secondary"
+                                            size="xs"
                                             target="_blank"
                                             rel="noopener"
                                         >
@@ -199,15 +207,15 @@
                             <div class="flex items-center gap-1.5">
                                 <x-ui.button
                                     :href="route($routePrefix . '.transactions.show', $transaction)"
-                                    variant="secondary"
-                                    size="sm"
+                                    variant="soft"
+                                    size="xs"
                                 >
                                     Detail
                                 </x-ui.button>
                                 <x-ui.button
                                     :href="route($routePrefix . '.transactions.print', $transaction)"
-                                    variant="ghost"
-                                    size="sm"
+                                    variant="secondary"
+                                    size="xs"
                                     target="_blank"
                                     rel="noopener"
                                 >

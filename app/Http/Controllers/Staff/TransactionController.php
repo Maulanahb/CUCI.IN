@@ -13,6 +13,7 @@ use App\Services\CreateTransaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use InvalidArgumentException;
@@ -159,17 +160,19 @@ class TransactionController extends Controller
             ]);
         }
 
-        $transaction->update([
-            'status' => $newStatus,
-        ]);
+        DB::transaction(function () use ($transaction, $newStatus, $notes): void {
+            $transaction->update([
+                'status' => $newStatus,
+            ]);
 
-        LaundryStatusHistory::create([
-            'transaction_id' => $transaction->id,
-            'status' => $newStatus,
-            'notes' => $notes,
-            'changed_by' => auth()->id(),
-            'changed_at' => now(),
-        ]);
+            LaundryStatusHistory::create([
+                'transaction_id' => $transaction->id,
+                'status' => $newStatus,
+                'notes' => $notes,
+                'changed_by' => auth()->id(),
+                'changed_at' => now(),
+            ]);
+        });
 
         return redirect()
             ->back()

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\TransactionStatus;
 use App\Models\Payment;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
@@ -20,48 +21,75 @@ class RecordPayment
         string $method,
         int $userId,
         ?string $paymentType = null,
-        ?string $proofFile = null
+        ?string $proofFile = null,
+        ?float $cashReceived = null
     ): Payment {
         if ($amount <= 0) {
             throw new InvalidArgumentException('Nominal pembayaran harus lebih besar dari 0.');
-        }
-
-        $remaining = $transaction->remaining_amount;
-
-        if ($remaining <= 0) {
-            throw new InvalidArgumentException('Transaksi ini sudah lunas, tidak dapat menerima pembayaran lagi.');
-        }
-
-        if ($amount > $remaining) {
-            $formattedRemaining = number_format($remaining, 0, ',', '.');
-            throw new InvalidArgumentException('Nominal pembayaran (Rp '.number_format($amount, 0, ',', '.').") melebihi sisa tagihan (Rp {$formattedRemaining}).");
         }
 
         if (! in_array($method, ['Tunai', 'Transfer', 'QRIS'], true)) {
             throw new InvalidArgumentException("Metode pembayaran '{$method}' tidak valid.");
         }
 
-        // Tentukan tipe pembayaran otomatis jika belum diset
-        if (! $paymentType) {
-            $totalPaidBefore = $transaction->total_paid;
-            if ($totalPaidBefore == 0 && $amount >= (float) $transaction->total_amount) {
-                $paymentType = 'Pembayaran Penuh';
-            } elseif ($amount >= $remaining) {
-                $paymentType = 'Pelunasan';
-            } else {
-                $paymentType = 'DP';
+        $cashReceived = $method === 'Tunai' ? $cashReceived : null;
+        $changeAmount = null;
+
+        if ($cashReceived !== null) {
+            if ($cashReceived < $amount) {
+                throw new InvalidArgumentException('Uang diterima kurang dari nominal pembayaran.');
             }
+
+            $changeAmount = round($cashReceived - $amount, 2);
         }
 
-        // Sesuai FR-13: Tunai tidak memerlukan verifikasi. Untuk transaksi kasir langsung, default Tidak Diperlukan
-        $verificationStatus = 'Tidak Diperlukan';
+        return DB::transaction(function () use ($transaction, $amount, $method, $userId, $paymentType, $proofFile, $cashReceived, $changeAmount): Payment {
+            $lockedTransaction = Transaction::query()
+                ->whereKey($transaction->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        return DB::transaction(function () use ($transaction, $amount, $paymentType, $method, $proofFile, $verificationStatus, $userId): Payment {
+            $status = $lockedTransaction->status instanceof TransactionStatus
+                ? $lockedTransaction->status
+                : TransactionStatus::from((string) $lockedTransaction->status);
+
+            if ($status->isTerminal()) {
+                throw new InvalidArgumentException("Transaksi berstatus {$status->value} tidak dapat menerima pembayaran.");
+            }
+
+            $remaining = $lockedTransaction->remaining_amount;
+
+            if ($remaining <= 0) {
+                throw new InvalidArgumentException('Transaksi ini sudah lunas, tidak dapat menerima pembayaran lagi.');
+            }
+
+            if ($amount > $remaining) {
+                $formattedRemaining = number_format($remaining, 0, ',', '.');
+                throw new InvalidArgumentException('Nominal pembayaran (Rp '.number_format($amount, 0, ',', '.').") melebihi sisa tagihan (Rp {$formattedRemaining}).");
+            }
+
+            if (! $paymentType) {
+                $totalPaidBefore = $lockedTransaction->total_paid;
+
+                if ($totalPaidBefore == 0 && $amount >= (float) $lockedTransaction->total_amount) {
+                    $paymentType = 'Pembayaran Penuh';
+                } elseif ($amount >= $remaining) {
+                    $paymentType = 'Pelunasan';
+                } else {
+                    $paymentType = 'DP';
+                }
+            }
+
+            // Sesuai FR-13: Tunai tidak memerlukan verifikasi. Untuk transaksi kasir langsung, default Tidak Diperlukan
+            $verificationStatus = 'Tidak Diperlukan';
+
             $payment = Payment::create([
-                'transaction_id' => $transaction->id,
+                'transaction_id' => $lockedTransaction->id,
                 'amount' => $amount,
                 'payment_type' => $paymentType,
                 'method' => $method,
+                'cash_received' => $cashReceived,
+                'change_amount' => $changeAmount,
                 'proof_file' => $proofFile,
                 'verification_status' => $verificationStatus,
                 'paid_at' => now(),

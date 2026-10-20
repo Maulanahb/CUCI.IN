@@ -20,6 +20,8 @@ class Payment extends Model
         'amount',
         'payment_type',
         'method',
+        'cash_received',
+        'change_amount',
         'proof_file',
         'verification_status',
         'paid_at',
@@ -37,6 +39,8 @@ class Payment extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'cash_received' => 'decimal:2',
+            'change_amount' => 'decimal:2',
             'paid_at' => 'datetime',
             'verified_at' => 'datetime',
         ];

@@ -21,13 +21,7 @@
         {{-- Top Bar Navigasi Kasir --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Kasir POS — Transaksi Baru</h1>
-                    <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700">
-                        <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Terminal Aktif
-                    </span>
-                </div>
+                <p class="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Kasir POS — Transaksi Baru</p>
                 <p class="mt-0.5 text-xs text-slate-500 sm:text-sm">
                     Pilih layanan di katalog kiri, sesuaikan timbangan, dan simpan nota kasir secara instan.
                 </p>
@@ -36,7 +30,7 @@
             <div class="flex items-center gap-2">
                 <a
                     href="{{ $transactionIndexRoute }}"
-                    class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900 active:scale-98"
+                    class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 active:scale-98"
                 >
                     <svg class="size-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -209,7 +203,7 @@
                     id="transaction-form"
                     method="POST"
                     action="{{ route("{$currentRoutePrefix}.transactions.store") }}"
-                    class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white"
+                    class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs"
                     @submit="isSubmitting = true"
                 >
                     @csrf
@@ -506,7 +500,7 @@
                                 type="submit"
                                 id="btn-submit-transaction"
                                 :disabled="isSubmitting"
-                                class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-700 disabled:pointer-events-none disabled:opacity-60"
+                                class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-60"
                             >
                                 <svg x-show="isSubmitting" x-cloak class="size-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -645,14 +639,14 @@
                             <button
                                 type="button"
                                 onclick="closeQuickCustomerModal()"
-                                class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                                class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                             >
                                 Batal
                             </button>
                             <button
                                 type="submit"
                                 id="btn-save-quick-customer"
-                                class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
+                                class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
                             >
                                 <svg id="btn-save-quick-customer-spinner" class="hidden size-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

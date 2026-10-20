@@ -4,10 +4,6 @@
         <div class="relative overflow-hidden rounded-2xl border border-brand-100 bg-gradient-to-r from-brand-50 via-white to-brand-50/50 p-6 shadow-sm">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-800">
-                        <span class="size-2 rounded-full bg-brand-600"></span>
-                        Staff Operasional & Kasir
-                    </span>
                     <h2 class="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
                         Selamat Datang, {{ auth()->user()->name }}!
                     </h2>
@@ -19,7 +15,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <a
                         href="{{ route('staff.transactions.create') }}"
-                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 active:scale-98"
+                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 active:scale-98"
                     >
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -28,7 +24,7 @@
                     </a>
                     <a
                         href="{{ route('staff.customers.index') }}"
-                        class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900 active:scale-98"
+                        class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 active:scale-98"
                     >
                         <svg class="size-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 10a4 4 0 100-8 4 4 0 000 8z" />
@@ -244,7 +240,7 @@
                         <p class="mt-1 text-xs text-slate-500">Gunakan terminal kasir POS untuk menginput cucian pelanggan baru.</p>
                         <a
                             href="{{ route('staff.transactions.create') }}"
-                            class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700"
+                            class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800"
                         >
                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -266,17 +262,6 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-slate-700">
                                 @foreach ($todayTransactions as $trx)
-                                    @php
-                                        $statusStr = $trx->status instanceof \App\Enums\TransactionStatus ? $trx->status->value : (string) $trx->status;
-                                        $badgeClass = match ($statusStr) {
-                                            'Diterima' => 'bg-sky-50 text-sky-700 border-sky-200',
-                                            'Diproses' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                            'Selesai' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                            'Diambil' => 'bg-slate-100 text-slate-700 border-slate-200',
-                                            'Dibatalkan' => 'bg-rose-50 text-rose-700 border-rose-200',
-                                            default => 'bg-slate-100 text-slate-700 border-slate-200',
-                                        };
-                                    @endphp
                                     <tr class="transition hover:bg-slate-50/70">
                                         <td class="py-3 font-mono font-bold text-slate-900">
                                             {{ $trx->transaction_code }}
@@ -289,26 +274,27 @@
                                             Rp {{ number_format($trx->total_amount, 0, ',', '.') }}
                                         </td>
                                         <td class="py-3">
-                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold {{ $badgeClass }}">
-                                                {{ $statusStr }}
-                                            </span>
+                                            <x-ui.status-badge :status="$trx->status" size="sm" />
                                         </td>
                                         <td class="py-3 text-right">
-                                            <div class="inline-flex items-center gap-1.5">
-                                                <a
-                                                    href="{{ route('staff.transactions.show', $trx) }}"
-                                                    class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900"
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                <x-ui.button
+                                                    :href="route('staff.transactions.show', $trx)"
+                                                    variant="soft"
+                                                    size="xs"
                                                 >
                                                     Detail
-                                                </a>
-                                                <a
-                                                    href="{{ route('staff.transactions.print', $trx) }}"
+                                                </x-ui.button>
+                                                <x-ui.button
+                                                    :href="route('staff.transactions.print', $trx)"
+                                                    variant="secondary"
+                                                    size="xs"
                                                     target="_blank"
-                                                    class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-brand-700 shadow-2xs transition hover:bg-brand-50"
+                                                    rel="noopener"
                                                     title="Cetak Struk Thermal"
                                                 >
                                                     Cetak
-                                                </a>
+                                                </x-ui.button>
                                             </div>
                                         </td>
                                     </tr>
@@ -355,7 +341,7 @@
                     <div class="mt-4 border-t border-slate-100 pt-3">
                         <a
                             href="{{ route('staff.transactions.create') }}"
-                            class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-600 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 active:scale-98"
+                            class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-700 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 active:scale-98"
                         >
                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -363,21 +349,6 @@
                             <span>Buka Kasir POS Baru</span>
                         </a>
                     </div>
-                </div>
-
-                {{-- Card Panduan Operasional Cepat --}}
-                <div class="rounded-2xl border border-brand-200/80 bg-gradient-to-br from-brand-50/70 via-white to-brand-50/30 p-5 shadow-xs">
-                    <div class="flex items-center gap-2">
-                        <div class="flex size-7 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
-                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        <h4 class="text-xs font-bold text-slate-900">Tips Kasir Operasional</h4>
-                    </div>
-                    <p class="mt-2 text-xs leading-relaxed text-slate-600">
-                        Pastikan timbang cucian dengan akurat di halaman Kasir POS. Setelah transaksi disimpan, Anda dapat langsung mencetak nota struk thermal dan menempelkannya ke kantong cucian pelanggan.
-                    </p>
                 </div>
             </div>
         </div>

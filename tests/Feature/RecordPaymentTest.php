@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TransactionStatus;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\Transaction;
@@ -149,5 +150,50 @@ class RecordPaymentTest extends TestCase
             'method' => 'QRIS',
             'created_by' => $this->admin->id,
         ]);
+    }
+
+    public function test_cash_payment_persists_received_cash_and_change(): void
+    {
+        $response = $this->actingAs($this->staff)
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 50000,
+                'method' => 'Tunai',
+                'cash_received' => 100000,
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('payments', [
+            'transaction_id' => $this->transaction->id,
+            'amount' => 50000,
+            'cash_received' => 100000,
+            'change_amount' => 50000,
+        ]);
+    }
+
+    public function test_cash_payment_rejects_tendered_cash_below_amount(): void
+    {
+        $response = $this->actingAs($this->staff)
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 50000,
+                'method' => 'Tunai',
+                'cash_received' => 40000,
+            ]);
+
+        $response->assertSessionHasErrors(['cash_received']);
+        $this->assertDatabaseCount('payments', 0);
+    }
+
+    public function test_cannot_record_payment_on_cancelled_transaction(): void
+    {
+        $this->transaction->update(['status' => TransactionStatus::Dibatalkan]);
+
+        $response = $this->actingAs($this->staff)
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 50000,
+                'method' => 'Tunai',
+            ]);
+
+        $response->assertSessionHasErrors(['amount']);
+        $this->assertDatabaseCount('payments', 0);
     }
 }
