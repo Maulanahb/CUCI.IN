@@ -5,7 +5,7 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-800">
-                        <span class="size-2 rounded-full bg-brand-600 animate-pulse"></span>
+                        <span class="size-2 rounded-full bg-brand-600"></span>
                         Administrator
                     </span>
                     <h2 class="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
                 <p class="mt-2 text-2xl font-extrabold text-slate-900">{{ $stats['total_users'] }}</p>
-                <p class="mt-1 text-xs text-slate-400">Admin, Staff & Customer</p>
+                <p class="mt-1 text-xs text-slate-500">Admin, Staff & Customer</p>
             </div>
 
             {{-- Total Pelanggan --}}
@@ -123,65 +123,73 @@
                 {{-- Diterima --}}
                 <a
                     href="{{ route('admin.transactions.index', ['status' => 'Diterima']) }}"
-                    class="group block rounded-xl border border-sky-100 bg-sky-50/50 p-4 transition hover:border-sky-300 hover:bg-sky-50 hover:shadow-xs active:scale-[0.99]"
+                    class="group block rounded-xl border border-sky-100 bg-sky-50/50 p-4 transition-colors hover:border-sky-300 hover:bg-sky-50"
                 >
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-sky-800 transition group-hover:text-sky-900">Diterima</span>
-                        <span class="inline-flex size-2 rounded-full bg-sky-500 animate-pulse"></span>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-semibold text-sky-800 transition-colors group-hover:text-sky-900">Diterima</span>
+                        <span class="inline-flex size-2 rounded-full bg-sky-500"></span>
                     </div>
-                    <div class="mt-2 flex items-baseline justify-between">
-                        <p class="text-2xl font-extrabold text-sky-900">{{ $statusCounts['diterima'] ?? 0 }}</p>
-                        <span class="text-xs font-semibold text-sky-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    <div class="mt-2 flex items-baseline justify-between gap-2">
+                        <p class="text-2xl font-extrabold tabular-nums text-sky-900">{{ $statusCounts['diterima'] ?? 0 }}</p>
+                        <svg class="size-4 text-sky-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
-                    <p class="mt-1 text-[11px] text-sky-600">Antrean masuk baru</p>
+                    <p class="mt-1 text-xs text-sky-800">Antrean masuk baru</p>
                 </a>
 
                 {{-- Diproses --}}
                 <a
                     href="{{ route('admin.transactions.index', ['status' => 'Diproses']) }}"
-                    class="group block rounded-xl border border-amber-100 bg-amber-50/50 p-4 transition hover:border-amber-300 hover:bg-amber-50 hover:shadow-xs active:scale-[0.99]"
+                    class="group block rounded-xl border border-amber-100 bg-amber-50/50 p-4 transition-colors hover:border-amber-300 hover:bg-amber-50"
                 >
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-amber-800 transition group-hover:text-amber-900">Diproses</span>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-semibold text-amber-800 transition-colors group-hover:text-amber-900">Diproses</span>
                         <span class="inline-flex size-2 rounded-full bg-amber-500"></span>
                     </div>
-                    <div class="mt-2 flex items-baseline justify-between">
-                        <p class="text-2xl font-extrabold text-amber-900">{{ $statusCounts['diproses'] ?? 0 }}</p>
-                        <span class="text-xs font-semibold text-amber-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    <div class="mt-2 flex items-baseline justify-between gap-2">
+                        <p class="text-2xl font-extrabold tabular-nums text-amber-900">{{ $statusCounts['diproses'] ?? 0 }}</p>
+                        <svg class="size-4 text-amber-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
-                    <p class="mt-1 text-[11px] text-amber-600">Sedang dicuci & disetrika</p>
+                    <p class="mt-1 text-xs text-amber-800">Sedang dicuci & disetrika</p>
                 </a>
 
                 {{-- Selesai --}}
                 <a
                     href="{{ route('admin.transactions.index', ['status' => 'Selesai']) }}"
-                    class="group block rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 transition hover:border-emerald-300 hover:bg-emerald-50 hover:shadow-xs active:scale-[0.99]"
+                    class="group block rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 transition-colors hover:border-emerald-300 hover:bg-emerald-50"
                 >
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-emerald-800 transition group-hover:text-emerald-900">Selesai</span>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-semibold text-emerald-800 transition-colors group-hover:text-emerald-900">Selesai</span>
                         <span class="inline-flex size-2 rounded-full bg-emerald-500"></span>
                     </div>
-                    <div class="mt-2 flex items-baseline justify-between">
-                        <p class="text-2xl font-extrabold text-emerald-900">{{ $statusCounts['selesai'] ?? 0 }}</p>
-                        <span class="text-xs font-semibold text-emerald-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    <div class="mt-2 flex items-baseline justify-between gap-2">
+                        <p class="text-2xl font-extrabold tabular-nums text-emerald-900">{{ $statusCounts['selesai'] ?? 0 }}</p>
+                        <svg class="size-4 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
-                    <p class="mt-1 text-[11px] text-emerald-600">Siap diambil pelanggan</p>
+                    <p class="mt-1 text-xs text-emerald-800">Siap diambil pelanggan</p>
                 </a>
 
                 {{-- Diambil --}}
                 <a
                     href="{{ route('admin.transactions.index', ['status' => 'Diambil']) }}"
-                    class="group block rounded-xl border border-slate-100 bg-slate-50/80 p-4 transition hover:border-slate-300 hover:bg-slate-100/80 hover:shadow-xs active:scale-[0.99]"
+                    class="group block rounded-xl border border-slate-200 bg-slate-50/80 p-4 transition-colors hover:border-slate-300 hover:bg-slate-100/80"
                 >
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold text-slate-700 transition group-hover:text-slate-900">Diambil</span>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-semibold text-slate-700 transition-colors group-hover:text-slate-900">Diambil</span>
                         <span class="inline-flex size-2 rounded-full bg-slate-400"></span>
                     </div>
-                    <div class="mt-2 flex items-baseline justify-between">
-                        <p class="text-2xl font-extrabold text-slate-900">{{ $statusCounts['diambil'] ?? 0 }}</p>
-                        <span class="text-xs font-semibold text-slate-600 opacity-0 transition-all duration-150 group-hover:opacity-100 group-hover:translate-x-0.5">&rarr;</span>
+                    <div class="mt-2 flex items-baseline justify-between gap-2">
+                        <p class="text-2xl font-extrabold tabular-nums text-slate-900">{{ $statusCounts['diambil'] ?? 0 }}</p>
+                        <svg class="size-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
                     </div>
-                    <p class="mt-1 text-[11px] text-slate-500">Selesai diserahkan</p>
+                    <p class="mt-1 text-xs text-slate-600">Selesai diserahkan</p>
                 </a>
             </div>
         </div>
@@ -212,13 +220,13 @@
 
                 @if ($recentTransactions->isEmpty())
                     <div class="flex flex-col items-center justify-center py-10 text-center">
-                        <div class="flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                        <div class="flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-500">
                             <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                             </svg>
                         </div>
                         <h4 class="mt-3 text-sm font-bold text-slate-700">Belum Ada Transaksi</h4>
-                        <p class="mt-1 text-xs text-slate-400">Gunakan kasir POS untuk menginput penerimaan laundry baru.</p>
+                        <p class="mt-1 text-xs text-slate-500">Gunakan kasir POS untuk menginput penerimaan laundry baru.</p>
                         <a
                             href="{{ route('admin.transactions.create') }}"
                             class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700"
@@ -230,7 +238,7 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs">
                             <thead>
-                                <tr class="border-b border-slate-100 text-slate-400">
+                                <tr class="border-b border-slate-100 text-slate-500">
                                     <th class="pb-2.5 font-semibold">Nota</th>
                                     <th class="pb-2.5 font-semibold">Pelanggan</th>
                                     <th class="pb-2.5 font-semibold">Total</th>
@@ -257,13 +265,13 @@
                                         </td>
                                         <td class="py-3">
                                             <p class="font-semibold text-slate-900">{{ $trx->customer?->name ?? 'Pelanggan Umum' }}</p>
-                                            <p class="text-[11px] text-slate-400">{{ $trx->customer?->phone ?? '-' }}</p>
+                                            <p class="text-xs text-slate-500">{{ $trx->customer?->phone ?? '-' }}</p>
                                         </td>
                                         <td class="py-3 font-bold text-slate-900">
                                             Rp {{ number_format($trx->total_amount, 0, ',', '.') }}
                                         </td>
                                         <td class="py-3">
-                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[10px] font-bold {{ $badgeClass }}">
+                                            <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold {{ $badgeClass }}">
                                                 {{ $statusStr }}
                                             </span>
                                         </td>
@@ -271,14 +279,14 @@
                                             <div class="inline-flex items-center gap-1.5">
                                                 <a
                                                     href="{{ route('admin.transactions.show', $trx) }}"
-                                                    class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900"
+                                                    class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900"
                                                 >
                                                     Detail
                                                 </a>
                                                 <a
                                                     href="{{ route('admin.transactions.print', $trx) }}"
                                                     target="_blank"
-                                                    class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-brand-700 shadow-2xs transition hover:bg-brand-50"
+                                                    class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-brand-700 shadow-2xs transition hover:bg-brand-50"
                                                     title="Cetak Struk"
                                                 >
                                                     Cetak
@@ -312,17 +320,17 @@
                             <div class="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-3 transition hover:border-slate-200">
                                 <div>
                                     <h4 class="text-xs font-bold text-slate-900">{{ $service->name }}</h4>
-                                    <p class="text-[11px] text-slate-400">Estimasi {{ $service->estimated_duration }} Jam</p>
+                                    <p class="text-xs text-slate-500">Estimasi {{ $service->estimated_duration }} Jam</p>
                                 </div>
                                 <div class="text-right">
                                     <p class="text-xs font-extrabold text-brand-700">
                                         Rp {{ number_format($service->price, 0, ',', '.') }}
                                     </p>
-                                    <span class="text-[10px] text-slate-400">/ kg</span>
+                                    <span class="text-xs text-slate-500">/ kg</span>
                                 </div>
                             </div>
                         @empty
-                            <p class="py-4 text-center text-xs text-slate-400">Belum ada layanan aktif.</p>
+                            <p class="py-4 text-center text-xs text-slate-500">Belum ada layanan aktif.</p>
                         @endforelse
                     </div>
 

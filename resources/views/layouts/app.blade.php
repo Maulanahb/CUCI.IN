@@ -106,7 +106,7 @@
                     </svg>
                 </button>
 
-                <h1 class="text-base font-semibold text-slate-900 sm:text-lg">{{ $title ?? config('app.name') }}</h1>
+                <h1 class="min-w-0 truncate text-base font-semibold text-slate-900 sm:text-lg">{{ $title ?? config('app.name') }}</h1>
 
                 @isset($actions)
                     <div class="ml-auto flex items-center gap-2">{{ $actions }}</div>
