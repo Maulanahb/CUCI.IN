@@ -605,6 +605,20 @@ Source code harus:
 * Menggunakan Alpine.js untuk interaksi UI ringan.
 * Menggunakan Git untuk version control.
 
+## NFR-06 — Deployment & Infrastructure Environment
+
+Sistem harus dapat dioperasikan pada lingkungan server produksi dengan spesifikasi teknis:
+
+* **Sistem Operasi Server:** Linux (Ubuntu 22.04 LTS atau versi yang lebih baru).
+* **Komputasi & Memori:** Minimum 1 vCPU, 1–2 GB RAM.
+* **Penyimpanan Primer:** Minimum 20–40 GB SSD Storage.
+* **Web Server & Runtime:** Nginx / Apache, PHP 8.4 (beserta ekstensi pdo_pgsql, mbstring, openssl, gd, bcmath).
+* **Basis Data:** PostgreSQL versi 15 atau lebih baru.
+* **Penyimpanan Berkas (Object Storage):** Kompatibel dengan S3 API (Cloudflare R2 / AWS S3) untuk menampung gambar nota komplain pakaian dan struk bukti pembayaran.
+* **Keamanan Jaringan:** Protokol HTTPS dengan sertifikat SSL/TLS aktif.
+
+*Catatan Tata Kelola Pengadaan:* Analisis komparasi vendor cloud, evaluasi kredit pelajar Azure for Students, rincian anggaran biaya (RAB), dan skema pembiayaan tim didokumentasikan terpisah pada artefak [Rencana Pengadaan (docs/procurement_plan.md)](./procurement_plan.md).
+
 ---
 
 # 15. Architecture Requirements
