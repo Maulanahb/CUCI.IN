@@ -118,55 +118,61 @@ class TransactionController extends Controller
             ],
         ]);
 
-        $currentStatus = $transaction->status instanceof TransactionStatus
-            ? $transaction->status
-            : TransactionStatus::from((string) $transaction->status);
-
         $newStatus = TransactionStatus::from($validated['status']);
         $notes = ! empty($validated['notes']) ? trim($validated['notes']) : null;
 
-        // 1. Cek apakah status saat ini adalah terminal (Diambil atau Dibatalkan)
-        if ($currentStatus->isTerminal()) {
-            throw ValidationException::withMessages([
-                'status' => "Transaksi telah berstatus {$currentStatus->value} dan tidak dapat diubah lagi.",
-            ]);
-        }
-
-        // 2. Cek apakah status baru sama dengan status saat ini
-        if ($newStatus === $currentStatus) {
-            throw ValidationException::withMessages([
-                'status' => 'Status yang dipilih sama dengan status saat ini.',
-            ]);
-        }
-
-        // 3. Cek jika status baru adalah Dibatalkan, wajib ada alasan pembatalan
-        if ($newStatus === TransactionStatus::Dibatalkan && empty($notes)) {
-            throw ValidationException::withMessages([
-                'notes' => 'Alasan pembatalan wajib diisi.',
-            ]);
-        }
-
-        // 4. Cek jika status baru merupakan rollback (mundur), wajib ada catatan alasan
-        if ($currentStatus->isRollbackTo($newStatus) && empty($notes)) {
-            throw ValidationException::withMessages([
-                'notes' => 'Alasan koreksi status wajib diisi saat memundurkan status cucian.',
-            ]);
-        }
-
-        // 5. Cek jika status baru adalah Diambil, wajib lunas
-        if ($newStatus === TransactionStatus::Diambil && ! $transaction->isPaidOff()) {
-            throw ValidationException::withMessages([
-                'status' => 'Cucian belum dapat diserahkan karena pembayaran belum lunas. Sisa tagihan: Rp '.number_format($transaction->remaining_amount, 0, ',', '.'),
-            ]);
-        }
-
         DB::transaction(function () use ($transaction, $newStatus, $notes): void {
-            $transaction->update([
+            // Kunci baris agar dua kasir tidak mengubah status bersamaan.
+            $current = Transaction::query()
+                ->whereKey($transaction->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            $currentStatus = $current->status instanceof TransactionStatus
+                ? $current->status
+                : TransactionStatus::from((string) $current->status);
+
+            // 1. Cek apakah status saat ini adalah terminal (Diambil atau Dibatalkan)
+            if ($currentStatus->isTerminal()) {
+                throw ValidationException::withMessages([
+                    'status' => "Transaksi telah berstatus {$currentStatus->value} dan tidak dapat diubah lagi.",
+                ]);
+            }
+
+            // 2. Cek apakah status baru sama dengan status saat ini
+            if ($newStatus === $currentStatus) {
+                throw ValidationException::withMessages([
+                    'status' => 'Status yang dipilih sama dengan status saat ini.',
+                ]);
+            }
+
+            // 3. Cek jika status baru adalah Dibatalkan, wajib ada alasan pembatalan
+            if ($newStatus === TransactionStatus::Dibatalkan && empty($notes)) {
+                throw ValidationException::withMessages([
+                    'notes' => 'Alasan pembatalan wajib diisi.',
+                ]);
+            }
+
+            // 4. Cek jika status baru merupakan rollback (mundur), wajib ada catatan alasan
+            if ($currentStatus->isRollbackTo($newStatus) && empty($notes)) {
+                throw ValidationException::withMessages([
+                    'notes' => 'Alasan koreksi status wajib diisi saat memundurkan status cucian.',
+                ]);
+            }
+
+            // 5. Cek jika status baru adalah Diambil, wajib lunas
+            if ($newStatus === TransactionStatus::Diambil && ! $current->isPaidOff()) {
+                throw ValidationException::withMessages([
+                    'status' => 'Cucian belum dapat diserahkan karena pembayaran belum lunas. Sisa tagihan: Rp '.number_format($current->remaining_amount, 0, ',', '.'),
+                ]);
+            }
+
+            $current->update([
                 'status' => $newStatus,
             ]);
 
             LaundryStatusHistory::create([
-                'transaction_id' => $transaction->id,
+                'transaction_id' => $current->id,
                 'status' => $newStatus,
                 'notes' => $notes,
                 'changed_by' => auth()->id(),
@@ -200,6 +206,7 @@ class TransactionController extends Controller
                 'pay_now' => $request->boolean('pay_now'),
                 'payment_method' => $validated['payment_method'] ?? 'Tunai',
                 'payment_amount' => $validated['payment_amount'] ?? null,
+                'payment_choice' => $validated['payment_choice'] ?? null,
             ]);
         } catch (InvalidArgumentException $e) {
             throw ValidationException::withMessages([

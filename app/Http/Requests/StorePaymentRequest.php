@@ -26,7 +26,6 @@ class StorePaymentRequest extends FormRequest
             'amount' => ['required', 'numeric', 'min:1'],
             'cash_received' => ['nullable', 'numeric', 'min:0', 'gte:amount', 'exclude_unless:method,Tunai'],
             'method' => ['required', 'string', 'in:Tunai,Transfer,QRIS'],
-            'payment_type' => ['nullable', 'string', 'in:Pembayaran Penuh,DP,Pelunasan'],
         ];
     }
 

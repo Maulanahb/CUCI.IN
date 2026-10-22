@@ -451,6 +451,7 @@
 
                             {{-- Hidden input pay_now --}}
                             <input type="hidden" name="pay_now" :value="paymentChoice !== 'unpaid' ? '1' : '0'" />
+                            <input type="hidden" name="payment_choice" :value="paymentChoice" />
 
                             {{-- Detail Metode Pembayaran jika Bayar Sekarang --}}
                             <div x-show="paymentChoice !== 'unpaid'" x-transition class="space-y-3 pt-1">
@@ -670,7 +671,7 @@
                 items: @json(old('items', [['service_id' => ($services->first()?->id ?? ''), 'weight' => '']])),
                 servicesList: @json($services),
                 servicesMap: @json($services->keyBy('id')),
-                paymentChoice: @js(old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid'),
+                paymentChoice: @js(old('payment_choice', old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid')),
                 paymentMethod: @js(old('payment_method', 'Tunai')),
                 dpAmount: @js(old('payment_amount', '')),
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Enums\TransactionStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
+use App\Models\Payment;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -79,7 +80,7 @@ class TransactionController extends Controller
                 continue;
             }
 
-            $paid = (float) $trx->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
+            $paid = $trx->total_paid;
             $remaining = max(0.0, (float) $trx->total_amount - $paid);
             if ($remaining > 0) {
                 $unpaidAmount += $remaining;
@@ -128,16 +129,12 @@ class TransactionController extends Controller
 
         // Filter status pembayaran
         if ($statusPembayaran = $request->query('status_pembayaran')) {
+            $paidSql = 'COALESCE((SELECT SUM(amount) FROM payments WHERE payments.transaction_id = transactions.id AND payments.verification_status IN (?, ?)), 0)';
+
             if ($statusPembayaran === 'Lunas') {
-                $query->whereRaw(
-                    '(SELECT COALESCE(SUM(amount), 0) FROM payments WHERE payments.transaction_id = transactions.id AND payments.verification_status != ?) >= transactions.total_amount',
-                    ['Ditolak']
-                );
+                $query->whereRaw("{$paidSql} >= transactions.total_amount", Payment::PAID_STATUSES);
             } elseif ($statusPembayaran === 'Belum Lunas') {
-                $query->whereRaw(
-                    '(SELECT COALESCE(SUM(amount), 0) FROM payments WHERE payments.transaction_id = transactions.id AND payments.verification_status != ?) < transactions.total_amount',
-                    ['Ditolak']
-                );
+                $query->whereRaw("{$paidSql} < transactions.total_amount", Payment::PAID_STATUSES);
             }
         }
 

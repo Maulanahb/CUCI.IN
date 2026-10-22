@@ -120,7 +120,7 @@ class DashboardController extends Controller
                 continue;
             }
 
-            $paid = (float) $trx->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
+            $paid = $trx->total_paid;
             $remaining = max(0.0, (float) $trx->total_amount - $paid);
             if ($remaining > 0) {
                 $unpaidAmount += $remaining;

@@ -32,14 +32,14 @@ class TransactionLookupController extends Controller
                 ->with([
                     'customer',
                     'details.service',
-                    'payments' => fn ($query) => $query->whereIn('verification_status', ['Terverifikasi', 'Tidak Diperlukan']),
+                    'payments' => fn ($query) => $query->paid(),
                     'statusHistories.changedBy',
                 ])
                 ->whereRaw('UPPER(transaction_code) = ?', [mb_strtoupper($code)])
                 ->first();
 
             if ($transaction) {
-                $totalPaid = (float) $transaction->payments->sum('amount');
+                $totalPaid = $transaction->total_paid;
                 $totalAmount = (float) $transaction->total_amount;
                 $remainingAmount = max(0.0, $totalAmount - $totalPaid);
 

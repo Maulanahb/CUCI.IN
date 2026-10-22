@@ -301,14 +301,15 @@
                                     <td class="px-5 py-3.5 text-right">
                                         <div class="flex items-center justify-end gap-1.5">
                                             {{-- 1. Tombol Detail --}}
-                                            <a
-                                                href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
+                                            <x-ui.button
+                                                :href="route($currentRoutePrefix . '.customers.index', array_filter([
                                                     'customer_id' => $customer->id,
                                                     'q' => $search,
                                                     'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                                     'page' => request('page'),
-                                                ])) }}"
-                                                class="inline-flex min-w-[5.5rem] items-center justify-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-2.5 py-1.5 text-xs font-semibold text-brand-700 shadow-2xs transition hover:border-brand-300 hover:bg-brand-100 hover:text-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                                                ]))"
+                                                variant="soft"
+                                                size="row"
                                                 title="Lihat profil dan riwayat nota"
                                             >
                                                 <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -316,52 +317,57 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 <span>Detail</span>
-                                            </a>
+                                            </x-ui.button>
 
                                             {{-- 2. Tombol Edit --}}
-                                            <button
+                                            <x-ui.button
                                                 type="button"
+                                                variant="soft-warning"
+                                                size="row"
                                                 @click="openEditModal({{ json_encode([
                                                     'id' => $customer->id,
                                                     'name' => $customer->name,
                                                     'phone' => $customer->phone,
                                                     'address' => $customer->address ?? '',
                                                 ]) }})"
-                                                class="inline-flex min-w-[5.5rem] items-center justify-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-800 shadow-2xs transition hover:border-amber-300 hover:bg-amber-100 hover:text-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                                 title="Edit data pelanggan"
                                             >
                                                 <svg class="size-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                                 </svg>
                                                 <span>Edit</span>
-                                            </button>
+                                            </x-ui.button>
 
-                                            {{-- 3. Tombol Hapus --}}
+                                            {{-- 3. Tombol Hapus / Terkunci --}}
                                             @if ($customer->transactions_count > 0)
-                                                <span
-                                                    class="inline-flex min-w-[5.5rem] cursor-not-allowed items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-500 shadow-2xs"
+                                                <x-ui.button
+                                                    as="span"
+                                                    variant="muted"
+                                                    size="row"
+                                                    class="cursor-not-allowed"
                                                     title="Pelanggan memiliki {{ $customer->transactions_count }} riwayat nota dan tidak dapat dihapus."
                                                 >
-                                                    <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                                     </svg>
-                                                    <span class="sr-only sm:not-sr-only">Terkunci</span>
-                                                </span>
+                                                    <span>Terkunci</span>
+                                                </x-ui.button>
                                             @else
-                                                <button
+                                                <x-ui.button
                                                     type="button"
+                                                    variant="danger-outline"
+                                                    size="row"
                                                     @click="openDeleteModal({{ json_encode([
                                                         'id' => $customer->id,
                                                         'name' => $customer->name,
                                                     ]) }})"
-                                                    class="inline-flex min-w-[5.5rem] items-center justify-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-semibold text-rose-700 transition-colors hover:bg-rose-100 hover:text-rose-800 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
                                                     title="Hapus data pelanggan"
                                                 >
                                                     <svg class="size-3.5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                                     </svg>
                                                     <span>Hapus</span>
-                                                </button>
+                                                </x-ui.button>
                                             @endif
                                         </div>
                                     </td>
@@ -416,40 +422,46 @@
 
                             {{-- Mobile Actions Bar --}}
                             <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
-                                <a
-                                    href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
+                                <x-ui.button
+                                    :href="route($currentRoutePrefix . '.customers.index', array_filter([
                                         'customer_id' => $customer->id,
                                         'q' => $search,
                                         'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                         'page' => request('page'),
-                                    ])) }}"
-                                    class="flex-1 text-center rounded-lg border border-brand-200 bg-brand-50 py-2 text-xs font-semibold text-brand-700 shadow-2xs hover:bg-brand-100"
+                                    ]))"
+                                    variant="soft"
+                                    size="xs"
+                                    class="flex-1"
                                 >
                                     Detail
-                                </a>
-                                <button
+                                </x-ui.button>
+                                <x-ui.button
                                     type="button"
+                                    variant="soft-warning"
+                                    size="xs"
+                                    class="flex-1"
                                     @click="openEditModal({{ json_encode([
                                         'id' => $customer->id,
                                         'name' => $customer->name,
                                         'phone' => $customer->phone,
                                         'address' => $customer->address ?? '',
                                     ]) }})"
-                                    class="flex-1 rounded-lg border border-amber-200 bg-amber-50/70 py-2 text-xs font-semibold text-amber-800"
                                 >
                                     Edit
-                                </button>
+                                </x-ui.button>
                                 @if ($customer->transactions_count === 0)
-                                    <button
+                                    <x-ui.button
                                         type="button"
+                                        variant="danger-outline"
+                                        size="xs"
+                                        class="flex-1"
                                         @click="openDeleteModal({{ json_encode([
                                             'id' => $customer->id,
                                             'name' => $customer->name,
                                         ]) }})"
-                                        class="flex-1 rounded-lg border border-rose-200 bg-rose-50/70 py-2 text-xs font-semibold text-rose-700"
                                     >
                                         Hapus
-                                    </button>
+                                    </x-ui.button>
                                 @endif
                             </div>
                         </div>
@@ -577,48 +589,47 @@
 
                                 {{-- Action Bar on Each Card in Master List --}}
                                 <div class="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-100/70">
-                                    <a
-                                        href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
+                                    <x-ui.button
+                                        :href="route($currentRoutePrefix . '.customers.index', array_filter([
                                             'customer_id' => $customer->id,
                                             'q' => $search,
                                             'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                             'page' => request('page'),
-                                        ])) }}"
-                                        @class([
-                                            'inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition',
-                                            'bg-brand-700 text-white shadow-2xs' => $isSelected,
-                                            'border border-brand-200 bg-brand-50 text-brand-700 hover:bg-brand-100' => ! $isSelected,
-                                        ])
+                                        ]))"
+                                        :variant="$isSelected ? 'primary' : 'soft'"
+                                        size="xs"
                                     >
                                         {{ $isSelected ? 'Terpilih' : 'Detail' }}
-                                    </a>
+                                    </x-ui.button>
 
-                                    <button
+                                    <x-ui.button
                                         type="button"
+                                        variant="soft-warning"
+                                        size="xs"
                                         @click="openEditModal({{ json_encode([
                                             'id' => $customer->id,
                                             'name' => $customer->name,
                                             'phone' => $customer->phone,
                                             'address' => $customer->address ?? '',
                                         ]) }})"
-                                        class="inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 hover:text-amber-900"
                                         title="Edit Pelanggan"
                                     >
                                         Edit
-                                    </button>
+                                    </x-ui.button>
 
                                     @if ($customer->transactions_count === 0)
-                                        <button
+                                        <x-ui.button
                                             type="button"
+                                            variant="danger-outline"
+                                            size="xs"
                                             @click="openDeleteModal({{ json_encode([
                                                 'id' => $customer->id,
                                                 'name' => $customer->name,
                                             ]) }})"
-                                            class="inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50/70 px-2 py-1 text-xs font-semibold text-rose-600 transition hover:bg-rose-100"
                                             title="Hapus Pelanggan"
                                         >
                                             Hapus
-                                        </button>
+                                        </x-ui.button>
                                     @endif
                                 </div>
                             </div>
@@ -679,64 +690,70 @@
 
                             {{-- Tombol Aksi Panel Detail --}}
                             <div class="flex items-center gap-2">
-                                <button
+                                <x-ui.button
                                     type="button"
+                                    variant="soft-warning"
+                                    size="row"
                                     @click="openEditModal({{ json_encode([
                                         'id' => $selectedCustomer->id,
                                         'name' => $selectedCustomer->name,
                                         'phone' => $selectedCustomer->phone,
                                         'address' => $selectedCustomer->address,
                                     ]) }})"
-                                    class="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 shadow-2xs transition hover:bg-amber-100 hover:text-amber-900"
                                     title="Edit data pelanggan"
                                 >
                                     <svg class="size-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                     </svg>
                                     <span>Edit</span>
-                                </button>
+                                </x-ui.button>
 
                                 @if ($hasTransactions)
-                                    <span
-                                        class="inline-flex cursor-not-allowed items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-500"
+                                    <x-ui.button
+                                        as="span"
+                                        variant="muted"
+                                        size="row"
+                                        class="cursor-not-allowed"
                                         title="Pelanggan memiliki riwayat transaksi dan tidak dapat dihapus."
                                     >
                                         <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                         </svg>
                                         <span>Terkunci</span>
-                                    </span>
+                                    </x-ui.button>
                                 @else
-                                    <button
+                                    <x-ui.button
                                         type="button"
+                                        variant="danger-outline"
+                                        size="row"
                                         @click="openDeleteModal({{ json_encode([
                                             'id' => $selectedCustomer->id,
                                             'name' => $selectedCustomer->name,
                                         ]) }})"
-                                        class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50/60 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-100"
                                         title="Hapus data pelanggan"
                                     >
-                                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <svg class="size-3.5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                         </svg>
                                         <span>Hapus</span>
-                                    </button>
+                                    </x-ui.button>
                                 @endif
 
                                 {{-- Tutup Detail (Kembali ke Tampilan Penuh) --}}
-                                <a
-                                    href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
+                                <x-ui.button
+                                    :href="route($currentRoutePrefix . '.customers.index', array_filter([
                                         'q' => $search,
                                         'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                         'page' => request('page'),
-                                    ])) }}"
-                                    class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                                    ]))"
+                                    variant="secondary"
+                                    size="icon"
                                     title="Tutup Detail dan Kembali ke Tabel"
                                 >
                                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
-                                </a>
+                                </x-ui.button>
                             </div>
                         </div>
 

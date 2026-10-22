@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,6 +10,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Payment extends Model
 {
     use HasFactory;
+
+    /**
+     * Status verifikasi yang dihitung sebagai uang masuk.
+     *
+     * @var list<string>
+     */
+    public const PAID_STATUSES = ['Tidak Diperlukan', 'Terverifikasi'];
 
     /**
      * The attributes that are mass assignable.
@@ -44,6 +52,14 @@ class Payment extends Model
             'paid_at' => 'datetime',
             'verified_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Batasi kueri ke pembayaran yang sah sebagai uang masuk.
+     */
+    public function scopePaid(Builder $query): Builder
+    {
+        return $query->whereIn('verification_status', self::PAID_STATUSES);
     }
 
     /**

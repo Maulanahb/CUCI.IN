@@ -404,46 +404,45 @@
                                 <td class="px-5 py-4 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         {{-- Tombol Detail / Preview --}}
-                                        <button
+                                        <x-ui.button
                                             type="button"
+                                            variant="soft"
+                                            size="icon"
                                             @click="openDetailModal({{ json_encode($service) }})"
-                                            class="inline-flex size-8 items-center justify-center rounded-lg border border-brand-200 bg-brand-50 text-brand-700 transition hover:border-brand-300 hover:bg-brand-100 hover:text-brand-800"
                                             title="Lihat Detail & Simulasi"
                                         >
                                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                             </svg>
-                                        </button>
+                                        </x-ui.button>
 
                                         @if ($isAdmin)
                                             {{-- Tombol Edit --}}
-                                            <button
+                                            <x-ui.button
                                                 type="button"
+                                                variant="soft-warning"
+                                                size="icon"
                                                 @click="openEditModal({{ json_encode($service) }})"
-                                                class="inline-flex size-8 items-center justify-center rounded-lg border border-amber-200 bg-amber-50 text-amber-700 transition hover:border-amber-300 hover:bg-amber-100 hover:text-amber-900"
                                                 title="Ubah Layanan"
                                             >
                                                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
-                                            </button>
+                                            </x-ui.button>
 
                                             {{-- Tombol Hapus --}}
-                                            <button
+                                            <x-ui.button
                                                 type="button"
+                                                variant="{{ $service->transaction_details_count > 0 ? 'muted' : 'danger-outline' }}"
+                                                size="icon"
                                                 @click="openDeleteModal({{ json_encode($service) }})"
-                                                @class([
-                                                    'inline-flex size-8 items-center justify-center rounded-lg border transition',
-                                                    'border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700' => $service->transaction_details_count === 0,
-                                                    'border-slate-100 text-slate-300 hover:bg-slate-100 hover:text-slate-500' => $service->transaction_details_count > 0,
-                                                ])
                                                 title="{{ $service->transaction_details_count > 0 ? 'Layanan memiliki riwayat transaksi (Gunakan nonaktifkan)' : 'Hapus Layanan' }}"
                                             >
                                                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
-                                            </button>
+                                            </x-ui.button>
                                         @endif
                                     </div>
                                 </td>

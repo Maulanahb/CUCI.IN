@@ -20,7 +20,6 @@ class RecordPayment
         float $amount,
         string $method,
         int $userId,
-        ?string $paymentType = null,
         ?string $proofFile = null,
         ?float $cashReceived = null
     ): Payment {
@@ -43,7 +42,7 @@ class RecordPayment
             $changeAmount = round($cashReceived - $amount, 2);
         }
 
-        return DB::transaction(function () use ($transaction, $amount, $method, $userId, $paymentType, $proofFile, $cashReceived, $changeAmount): Payment {
+        return DB::transaction(function () use ($transaction, $amount, $method, $userId, $proofFile, $cashReceived, $changeAmount): Payment {
             $lockedTransaction = Transaction::query()
                 ->whereKey($transaction->id)
                 ->lockForUpdate()
@@ -68,20 +67,18 @@ class RecordPayment
                 throw new InvalidArgumentException('Nominal pembayaran (Rp '.number_format($amount, 0, ',', '.').") melebihi sisa tagihan (Rp {$formattedRemaining}).");
             }
 
-            if (! $paymentType) {
-                $totalPaidBefore = $lockedTransaction->total_paid;
+            $totalPaidBefore = $lockedTransaction->total_paid;
 
-                if ($totalPaidBefore == 0 && $amount >= (float) $lockedTransaction->total_amount) {
-                    $paymentType = 'Pembayaran Penuh';
-                } elseif ($amount >= $remaining) {
-                    $paymentType = 'Pelunasan';
-                } else {
-                    $paymentType = 'DP';
-                }
+            if ($totalPaidBefore == 0 && $amount >= (float) $lockedTransaction->total_amount) {
+                $paymentType = 'Pembayaran Penuh';
+            } elseif ($amount >= $remaining) {
+                $paymentType = 'Pelunasan';
+            } else {
+                $paymentType = 'DP';
             }
 
-            // Sesuai FR-13: Tunai tidak memerlukan verifikasi. Untuk transaksi kasir langsung, default Tidak Diperlukan
-            $verificationStatus = 'Tidak Diperlukan';
+            // Kasir mencatat pembayaran setelah uang diterima, jadi transfer/QRIS langsung dianggap terverifikasi.
+            $verificationStatus = $method === 'Tunai' ? 'Tidak Diperlukan' : 'Terverifikasi';
 
             $payment = Payment::create([
                 'transaction_id' => $lockedTransaction->id,
@@ -95,8 +92,6 @@ class RecordPayment
                 'paid_at' => now(),
                 'created_by' => $userId,
             ]);
-
-            $transaction->refresh();
 
             return $payment;
         });

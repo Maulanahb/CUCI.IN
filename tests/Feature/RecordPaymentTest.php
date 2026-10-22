@@ -196,4 +196,37 @@ class RecordPaymentTest extends TestCase
         $response->assertSessionHasErrors(['amount']);
         $this->assertDatabaseCount('payments', 0);
     }
+
+    public function test_payment_type_is_derived_server_side(): void
+    {
+        $response = $this->actingAs($this->staff)
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 10000,
+                'method' => 'Tunai',
+                'payment_type' => 'Pembayaran Penuh',
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('payments', [
+            'transaction_id' => $this->transaction->id,
+            'amount' => 10000,
+            'payment_type' => 'DP',
+        ]);
+    }
+
+    public function test_non_cash_payment_is_recorded_as_verified(): void
+    {
+        $response = $this->actingAs($this->staff)
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 50000,
+                'method' => 'QRIS',
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('payments', [
+            'transaction_id' => $this->transaction->id,
+            'method' => 'QRIS',
+            'verification_status' => 'Terverifikasi',
+        ]);
+    }
 }
