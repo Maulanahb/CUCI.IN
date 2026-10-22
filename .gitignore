@@ -29,8 +29,10 @@ Thumbs.db
 /docs/superpowers/
 /.superpowers/
 
-# Dokumen Laporan PBL
+# Dokumen Laporan PBL & Jobsheet
 /docs/*laporan*
+/docs/*jobsheet*
+/docs/*JOBSHEET*
 /docs/*.docx
 /docs/~$*
 
@@ -40,3 +42,6 @@ Thumbs.db
 
 # Local Agent Credentials
 /.agents/mcp_config.json
+/.agent/mcp_config.json
+/.impeccable/
+.agent/skills/impeccable/scripts/bin/

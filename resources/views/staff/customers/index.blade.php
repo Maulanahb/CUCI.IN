@@ -34,27 +34,20 @@
                 this.deleteModalOpen = true;
             }
         }"
+        @keydown.escape.window="createModalOpen = false; editModalOpen = false; deleteModalOpen = false"
     >
-        {{-- Header & Sub-deskripsi Halaman --}}
+        {{-- Sub-deskripsi & aksi halaman --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Data Pelanggan</h1>
-                <p class="mt-0.5 text-xs text-slate-500 sm:text-sm">
-                    Kelola direktori kontak pelanggan, riwayat cucian, serta pemantauan status order laundry secara terpadu.
-                </p>
-            </div>
-            <div>
-                <button
-                    type="button"
-                    @click="createModalOpen = true"
-                    class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
-                >
-                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span>Tambah Pelanggan</span>
-                </button>
-            </div>
+            <p class="text-sm text-slate-500">
+                Kelola direktori kontak pelanggan, riwayat cucian, serta pemantauan status order laundry secara terpadu.
+            </p>
+
+            <x-ui.button type="button" @click="createModalOpen = true" class="w-full sm:w-auto">
+                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Tambah Pelanggan
+            </x-ui.button>
         </div>
 
         {{-- Pesan Status & Error Alert --}}
@@ -83,48 +76,71 @@
             </div>
         @endif
 
-        {{-- Card Metrik Ringkasan (Executive KPI Grid) --}}
+        {{-- Card Metrik Ringkasan --}}
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-            <div class="rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs">
-                <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Total Pelanggan</span>
-                <div class="mt-1.5 flex items-baseline justify-between">
-                    <span class="text-2xl font-extrabold tracking-tight text-slate-900">{{ $totalCustomersCount }}</span>
-                    <span class="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-bold text-brand-700">Akun</span>
+            <div class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-medium text-slate-500">Total Pelanggan</span>
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 10a4 4 0 100-8 4 4 0 000 8zM21 20v-2a4 4 0 00-3-3.87M16 2.13a4 4 0 010 7.75" />
+                        </svg>
+                    </div>
                 </div>
+                <p class="mt-2 text-2xl font-extrabold tabular-nums text-slate-900">{{ $totalCustomersCount }}</p>
+                <p class="mt-1 text-xs text-slate-500">Akun terdaftar</p>
             </div>
-            <div class="rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs">
-                <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Sedang Proses</span>
-                <div class="mt-1.5 flex items-baseline justify-between">
-                    <span class="text-2xl font-extrabold tracking-tight text-amber-600">{{ $counts['processing'] }}</span>
-                    <span class="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-700">Cucian</span>
+
+            <div class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-medium text-slate-500">Sedang Proses</span>
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
                 </div>
+                <p class="mt-2 text-2xl font-extrabold tabular-nums text-amber-700">{{ $counts['processing'] }}</p>
+                <p class="mt-1 text-xs text-slate-500">Sedang dikerjakan</p>
             </div>
-            <div class="rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs">
-                <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Siap Diambil</span>
-                <div class="mt-1.5 flex items-baseline justify-between">
-                    <span class="text-2xl font-extrabold tracking-tight text-sky-600">{{ $counts['ready'] }}</span>
-                    <span class="rounded bg-sky-50 px-1.5 py-0.5 text-[10px] font-bold text-sky-700">Siap</span>
+
+            <div class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-medium text-slate-500">Siap Diambil</span>
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 00-2 2v8a2 2 0 002 2h14a2 2 0 002-2v-8a2 2 0 00-2-2M9 8V6a3 3 0 016 0v2" />
+                        </svg>
+                    </div>
                 </div>
+                <p class="mt-2 text-2xl font-extrabold tabular-nums text-sky-700">{{ $counts['ready'] }}</p>
+                <p class="mt-1 text-xs text-slate-500">Menunggu diambil</p>
             </div>
-            <div class="rounded-xl border border-slate-200/90 bg-white p-4 shadow-xs">
-                <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase">Selesai / Diambil</span>
-                <div class="mt-1.5 flex items-baseline justify-between">
-                    <span class="text-2xl font-extrabold tracking-tight text-emerald-600">{{ $counts['completed'] }}</span>
-                    <span class="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">Selesai</span>
+
+            <div class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-medium text-slate-500">Selesai / Diambil</span>
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
                 </div>
+                <p class="mt-2 text-2xl font-extrabold tabular-nums text-emerald-700">{{ $counts['completed'] }}</p>
+                <p class="mt-1 text-xs text-slate-500">Sudah diserahkan</p>
             </div>
         </div>
 
         {{-- Kontainer Utama --}}
         @if (! $selectedCustomer)
             {{-- VIEW A: Full Data Table (Saat Belum Ada Pelanggan Yang Dipilih) --}}
-            <div class="rounded-2xl border border-slate-200/90 bg-white shadow-xs">
+            <div class="rounded-2xl border border-slate-200/80 bg-white shadow-xs">
                 {{-- Header Tabel & Kontrol Pencarian/Filter --}}
                 <div class="border-b border-slate-100 p-4 sm:p-5">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h2 class="text-base font-bold text-slate-900">Daftar Pelanggan</h2>
-                            <p class="text-xs text-slate-400">Pilih pelanggan untuk melihat rincian nota atau kelola data melalui tombol aksi.</p>
+                            <p class="text-xs text-slate-500">Pilih pelanggan untuk melihat rincian nota atau kelola data melalui tombol aksi.</p>
                         </div>
 
                         {{-- Search Input Form --}}
@@ -134,7 +150,7 @@
                             @endif
                             <div class="relative">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <svg class="size-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg class="size-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </div>
@@ -143,12 +159,12 @@
                                     name="q"
                                     value="{{ $search }}"
                                     placeholder="Cari nama atau telepon..."
-                                    class="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2 pr-9 pl-9 text-xs text-slate-900 transition placeholder:text-slate-400 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2 pr-9 pl-9 text-xs text-slate-900 transition placeholder:text-slate-500 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                                 >
                                 @if ($search !== '')
                                     <a
                                         href="{{ route("{$currentRoutePrefix}.customers.index", ['status' => $statusFilter]) }}"
-                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-600"
                                         title="Hapus pencarian"
                                     >
                                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -166,7 +182,7 @@
                             href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'all'])) }}"
                             @class([
                                 'shrink-0 rounded-lg px-3 py-1.5 font-semibold transition',
-                                'bg-brand-600 text-white shadow-2xs' => $statusFilter === 'all',
+                                'bg-brand-700 text-white shadow-2xs' => $statusFilter === 'all',
                                 'bg-slate-100 text-slate-600 hover:bg-slate-200' => $statusFilter !== 'all',
                             ])
                         >
@@ -176,7 +192,7 @@
                             href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'processing'])) }}"
                             @class([
                                 'shrink-0 rounded-lg px-3 py-1.5 font-semibold transition',
-                                'bg-brand-600 text-white shadow-2xs' => $statusFilter === 'processing',
+                                'bg-brand-700 text-white shadow-2xs' => $statusFilter === 'processing',
                                 'bg-slate-100 text-slate-600 hover:bg-slate-200' => $statusFilter !== 'processing',
                             ])
                         >
@@ -186,7 +202,7 @@
                             href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'ready'])) }}"
                             @class([
                                 'shrink-0 rounded-lg px-3 py-1.5 font-semibold transition',
-                                'bg-brand-600 text-white shadow-2xs' => $statusFilter === 'ready',
+                                'bg-brand-700 text-white shadow-2xs' => $statusFilter === 'ready',
                                 'bg-slate-100 text-slate-600 hover:bg-slate-200' => $statusFilter !== 'ready',
                             ])
                         >
@@ -196,7 +212,7 @@
                             href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'completed'])) }}"
                             @class([
                                 'shrink-0 rounded-lg px-3 py-1.5 font-semibold transition',
-                                'bg-brand-600 text-white shadow-2xs' => $statusFilter === 'completed',
+                                'bg-brand-700 text-white shadow-2xs' => $statusFilter === 'completed',
                                 'bg-slate-100 text-slate-600 hover:bg-slate-200' => $statusFilter !== 'completed',
                             ])
                         >
@@ -208,7 +224,7 @@
                 {{-- Desktop Table View --}}
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left text-xs">
-                        <thead class="border-b border-slate-100 bg-slate-50/60 text-[11px] font-bold tracking-wider text-slate-400 uppercase">
+                        <thead class="border-b border-slate-100 bg-slate-50/60 text-xs font-bold tracking-wider text-slate-500 uppercase">
                             <tr>
                                 <th class="px-5 py-3.5">Pelanggan</th>
                                 <th class="px-5 py-3.5">Kontak / WhatsApp</th>
@@ -234,7 +250,7 @@
                                             </div>
                                             <div>
                                                 <span class="font-bold text-slate-900">{{ $customer->name }}</span>
-                                                <p class="text-[11px] text-slate-400">
+                                                <p class="text-xs text-slate-500">
                                                     Terdaftar {{ $customer->created_at ? $customer->created_at->translatedFormat('d M Y') : '-' }}
                                                 </p>
                                             </div>
@@ -257,7 +273,7 @@
                                                 <span class="group-hover:underline underline-offset-2">{{ $customer->phone }}</span>
                                             </a>
                                         @else
-                                            <span class="text-slate-400">-</span>
+                                            <span class="text-slate-500">-</span>
                                         @endif
                                     </td>
 
@@ -271,11 +287,11 @@
                                     {{-- Total Nota --}}
                                     <td class="px-5 py-3.5">
                                         @if ($customer->transactions_count > 0)
-                                            <span class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-[11px] font-bold text-brand-700">
+                                            <span class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold text-brand-700">
                                                 {{ $customer->transactions_count }} Nota
                                             </span>
                                         @else
-                                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+                                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
                                                 Belum Ada Nota
                                             </span>
                                         @endif
@@ -285,67 +301,73 @@
                                     <td class="px-5 py-3.5 text-right">
                                         <div class="flex items-center justify-end gap-1.5">
                                             {{-- 1. Tombol Detail --}}
-                                            <a
-                                                href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
+                                            <x-ui.button
+                                                :href="route($currentRoutePrefix . '.customers.index', array_filter([
                                                     'customer_id' => $customer->id,
                                                     'q' => $search,
                                                     'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                                     'page' => request('page'),
-                                                ])) }}"
-                                                class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                                                ]))"
+                                                variant="soft"
+                                                size="row"
                                                 title="Lihat profil dan riwayat nota"
                                             >
-                                                <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                 </svg>
                                                 <span>Detail</span>
-                                            </a>
+                                            </x-ui.button>
 
                                             {{-- 2. Tombol Edit --}}
-                                            <button
+                                            <x-ui.button
                                                 type="button"
+                                                variant="soft-warning"
+                                                size="row"
                                                 @click="openEditModal({{ json_encode([
                                                     'id' => $customer->id,
                                                     'name' => $customer->name,
                                                     'phone' => $customer->phone,
                                                     'address' => $customer->address ?? '',
                                                 ]) }})"
-                                                class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-amber-400 hover:bg-amber-50 hover:text-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                                                 title="Edit data pelanggan"
                                             >
                                                 <svg class="size-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                                 </svg>
                                                 <span>Edit</span>
-                                            </button>
+                                            </x-ui.button>
 
-                                            {{-- 3. Tombol Hapus --}}
+                                            {{-- 3. Tombol Hapus / Terkunci --}}
                                             @if ($customer->transactions_count > 0)
-                                                <span
-                                                    class="inline-flex items-center gap-1 rounded-lg border border-slate-100 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-400 cursor-not-allowed"
+                                                <x-ui.button
+                                                    as="span"
+                                                    variant="muted"
+                                                    size="row"
+                                                    class="cursor-not-allowed"
                                                     title="Pelanggan memiliki {{ $customer->transactions_count }} riwayat nota dan tidak dapat dihapus."
                                                 >
-                                                    <svg class="size-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                                     </svg>
-                                                    <span class="sr-only sm:not-sr-only">Terkunci</span>
-                                                </span>
+                                                    <span>Terkunci</span>
+                                                </x-ui.button>
                                             @else
-                                                <button
+                                                <x-ui.button
                                                     type="button"
+                                                    variant="danger-outline"
+                                                    size="row"
                                                     @click="openDeleteModal({{ json_encode([
                                                         'id' => $customer->id,
                                                         'name' => $customer->name,
                                                     ]) }})"
-                                                    class="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50/50 px-2.5 py-1.5 text-xs font-semibold text-rose-600 shadow-2xs transition hover:border-rose-300 hover:bg-rose-100 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
                                                     title="Hapus data pelanggan"
                                                 >
                                                     <svg class="size-3.5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                                     </svg>
                                                     <span>Hapus</span>
-                                                </button>
+                                                </x-ui.button>
                                             @endif
                                         </div>
                                     </td>
@@ -353,13 +375,13 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="p-8 text-center">
-                                        <div class="mx-auto flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400">
+                                        <div class="mx-auto flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
                                             <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                             </svg>
                                         </div>
                                         <p class="mt-3 text-sm font-bold text-slate-900">Data Pelanggan Tidak Ditemukan</p>
-                                        <p class="mt-0.5 text-xs text-slate-400">Silakan sesuaikan kata kunci atau filter status pencarian Anda.</p>
+                                        <p class="mt-0.5 text-xs text-slate-500">Silakan sesuaikan kata kunci atau filter status pencarian Anda.</p>
                                     </td>
                                 </tr>
                             @endforelse
@@ -387,7 +409,7 @@
                                         <p class="text-xs text-slate-500">{{ $customer->phone ?: '-' }}</p>
                                     </div>
                                 </div>
-                                <span class="rounded bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700">
+                                <span class="rounded bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
                                     {{ $customer->transactions_count }} Nota
                                 </span>
                             </div>
@@ -400,45 +422,51 @@
 
                             {{-- Mobile Actions Bar --}}
                             <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
-                                <a
-                                    href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
+                                <x-ui.button
+                                    :href="route($currentRoutePrefix . '.customers.index', array_filter([
                                         'customer_id' => $customer->id,
                                         'q' => $search,
                                         'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                         'page' => request('page'),
-                                    ])) }}"
-                                    class="flex-1 text-center rounded-lg border border-slate-200 bg-white py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50"
+                                    ]))"
+                                    variant="soft"
+                                    size="xs"
+                                    class="flex-1"
                                 >
                                     Detail
-                                </a>
-                                <button
+                                </x-ui.button>
+                                <x-ui.button
                                     type="button"
+                                    variant="soft-warning"
+                                    size="xs"
+                                    class="flex-1"
                                     @click="openEditModal({{ json_encode([
                                         'id' => $customer->id,
                                         'name' => $customer->name,
                                         'phone' => $customer->phone,
                                         'address' => $customer->address ?? '',
                                     ]) }})"
-                                    class="flex-1 rounded-lg border border-amber-200 bg-amber-50/70 py-2 text-xs font-semibold text-amber-800"
                                 >
                                     Edit
-                                </button>
+                                </x-ui.button>
                                 @if ($customer->transactions_count === 0)
-                                    <button
+                                    <x-ui.button
                                         type="button"
+                                        variant="danger-outline"
+                                        size="xs"
+                                        class="flex-1"
                                         @click="openDeleteModal({{ json_encode([
                                             'id' => $customer->id,
                                             'name' => $customer->name,
                                         ]) }})"
-                                        class="flex-1 rounded-lg border border-rose-200 bg-rose-50/70 py-2 text-xs font-semibold text-rose-700"
                                     >
                                         Hapus
-                                    </button>
+                                    </x-ui.button>
                                 @endif
                             </div>
                         </div>
                     @empty
-                        <div class="p-6 text-center text-xs text-slate-400">
+                        <div class="p-6 text-center text-xs text-slate-500">
                             Data Tidak Ditemukan.
                         </div>
                     @endforelse
@@ -457,12 +485,12 @@
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
 
                 {{-- Kolom Kiri (Master List): Daftar Pelanggan Kompak --}}
-                <div class="lg:col-span-5 xl:col-span-4 rounded-2xl border border-slate-200/90 bg-white shadow-xs">
+                <div class="lg:col-span-5 xl:col-span-4 rounded-2xl border border-slate-200/80 bg-white shadow-xs">
                     {{-- Header List Pelanggan --}}
                     <div class="border-b border-slate-100 p-4">
                         <div class="flex items-center justify-between">
                             <h2 class="text-sm font-bold text-slate-900">Daftar Pelanggan</h2>
-                            <span class="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
+                            <span class="rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
                                 {{ $totalCustomersCount }} Total
                             </span>
                         </div>
@@ -474,7 +502,7 @@
                             @endif
                             <div class="relative">
                                 <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <svg class="size-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </div>
@@ -483,18 +511,18 @@
                                     name="q"
                                     value="{{ $search }}"
                                     placeholder="Cari nama atau telepon..."
-                                    class="w-full rounded-lg border border-slate-200 bg-slate-50/60 py-2 pr-8 pl-8 text-xs text-slate-900 transition placeholder:text-slate-400 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                                    class="w-full rounded-lg border border-slate-200 bg-slate-50/60 py-2 pr-8 pl-8 text-xs text-slate-900 transition placeholder:text-slate-500 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                                 >
                             </div>
                         </form>
 
                         {{-- Tab Filter Pills --}}
-                        <div class="no-scrollbar mt-3 flex items-center gap-1 overflow-x-auto pb-0.5 text-[11px]">
+                        <div class="no-scrollbar mt-3 flex items-center gap-1 overflow-x-auto pb-0.5 text-xs">
                             <a
                                 href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'all'])) }}"
                                 @class([
                                     'shrink-0 rounded-md px-2.5 py-1 font-semibold transition',
-                                    'bg-brand-600 text-white shadow-2xs' => $statusFilter === 'all',
+                                    'bg-brand-700 text-white shadow-2xs' => $statusFilter === 'all',
                                     'bg-slate-100 text-slate-600 hover:bg-slate-200' => $statusFilter !== 'all',
                                 ])
                             >
@@ -504,7 +532,7 @@
                                 href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'processing'])) }}"
                                 @class([
                                     'shrink-0 rounded-md px-2.5 py-1 font-semibold transition',
-                                    'bg-brand-600 text-white shadow-2xs' => $statusFilter === 'processing',
+                                    'bg-brand-700 text-white shadow-2xs' => $statusFilter === 'processing',
                                     'bg-slate-100 text-slate-600 hover:bg-slate-200' => $statusFilter !== 'processing',
                                 ])
                             >
@@ -514,7 +542,7 @@
                                 href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'ready'])) }}"
                                 @class([
                                     'shrink-0 rounded-md px-2.5 py-1 font-semibold transition',
-                                    'bg-brand-600 text-white shadow-2xs' => $statusFilter === 'ready',
+                                    'bg-brand-700 text-white shadow-2xs' => $statusFilter === 'ready',
                                     'bg-slate-100 text-slate-600 hover:bg-slate-200' => $statusFilter !== 'ready',
                                 ])
                             >
@@ -536,7 +564,7 @@
                             <div
                                 @class([
                                     'p-3.5 transition space-y-2',
-                                    'border-l-4 border-brand-600 bg-brand-50/60' => $isSelected,
+                                    'bg-brand-50/60 ring-1 ring-inset ring-brand-100' => $isSelected,
                                     'hover:bg-slate-50/70' => ! $isSelected,
                                 ])
                             >
@@ -551,63 +579,62 @@
                                         </div>
                                         <div class="min-w-0 flex-1">
                                             <h3 class="truncate text-xs font-bold text-slate-900 sm:text-sm">{{ $customer->name }}</h3>
-                                            <p class="truncate text-[11px] text-slate-500">{{ $customer->phone ?: '-' }}</p>
+                                            <p class="truncate text-xs text-slate-500">{{ $customer->phone ?: '-' }}</p>
                                         </div>
                                     </div>
-                                    <span class="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-600">
+                                    <span class="shrink-0 rounded bg-slate-100 px-1.5 py-0.5 text-xs font-bold text-slate-600">
                                         {{ $customer->transactions_count }} Nota
                                     </span>
                                 </div>
 
                                 {{-- Action Bar on Each Card in Master List --}}
                                 <div class="flex items-center justify-end gap-1.5 pt-1 border-t border-slate-100/70">
-                                    <a
-                                        href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
+                                    <x-ui.button
+                                        :href="route($currentRoutePrefix . '.customers.index', array_filter([
                                             'customer_id' => $customer->id,
                                             'q' => $search,
                                             'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                             'page' => request('page'),
-                                        ])) }}"
-                                        @class([
-                                            'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-semibold transition',
-                                            'bg-brand-600 text-white shadow-2xs' => $isSelected,
-                                            'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50' => ! $isSelected,
-                                        ])
+                                        ]))"
+                                        :variant="$isSelected ? 'primary' : 'soft'"
+                                        size="xs"
                                     >
                                         {{ $isSelected ? 'Terpilih' : 'Detail' }}
-                                    </a>
+                                    </x-ui.button>
 
-                                    <button
+                                    <x-ui.button
                                         type="button"
+                                        variant="soft-warning"
+                                        size="xs"
                                         @click="openEditModal({{ json_encode([
                                             'id' => $customer->id,
                                             'name' => $customer->name,
                                             'phone' => $customer->phone,
                                             'address' => $customer->address ?? '',
                                         ]) }})"
-                                        class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-amber-400 hover:bg-amber-50 hover:text-amber-800"
                                         title="Edit Pelanggan"
                                     >
                                         Edit
-                                    </button>
+                                    </x-ui.button>
 
                                     @if ($customer->transactions_count === 0)
-                                        <button
+                                        <x-ui.button
                                             type="button"
+                                            variant="danger-outline"
+                                            size="xs"
                                             @click="openDeleteModal({{ json_encode([
                                                 'id' => $customer->id,
                                                 'name' => $customer->name,
                                             ]) }})"
-                                            class="inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50/70 px-2 py-1 text-[11px] font-semibold text-rose-600 transition hover:bg-rose-100"
                                             title="Hapus Pelanggan"
                                         >
                                             Hapus
-                                        </button>
+                                        </x-ui.button>
                                     @endif
                                 </div>
                             </div>
                         @empty
-                            <div class="p-6 text-center text-xs text-slate-400">
+                            <div class="p-6 text-center text-xs text-slate-500">
                                 Data Tidak Ditemukan.
                             </div>
                         @endforelse
@@ -632,7 +659,7 @@
                     @endphp
 
                     {{-- 1. Kartu Info Profil Pelanggan Terpilih --}}
-                    <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <div class="flex items-center gap-3.5">
                                 <div class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-sm font-bold text-brand-800">
@@ -655,7 +682,7 @@
                                                 <span class="group-hover:underline underline-offset-2">WhatsApp: {{ $selectedCustomer->phone }}</span>
                                             </a>
                                         @else
-                                            <span class="text-xs text-slate-400">WhatsApp: -</span>
+                                            <span class="text-xs text-slate-500">WhatsApp: -</span>
                                         @endif
                                     </div>
                                 </div>
@@ -663,84 +690,90 @@
 
                             {{-- Tombol Aksi Panel Detail --}}
                             <div class="flex items-center gap-2">
-                                <button
+                                <x-ui.button
                                     type="button"
+                                    variant="soft-warning"
+                                    size="row"
                                     @click="openEditModal({{ json_encode([
                                         'id' => $selectedCustomer->id,
                                         'name' => $selectedCustomer->name,
                                         'phone' => $selectedCustomer->phone,
                                         'address' => $selectedCustomer->address,
                                     ]) }})"
-                                    class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-amber-400 hover:bg-amber-50 hover:text-amber-800"
                                     title="Edit data pelanggan"
                                 >
                                     <svg class="size-3.5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
                                     </svg>
                                     <span>Edit</span>
-                                </button>
+                                </x-ui.button>
 
                                 @if ($hasTransactions)
-                                    <span
-                                        class="inline-flex cursor-not-allowed items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-400"
+                                    <x-ui.button
+                                        as="span"
+                                        variant="muted"
+                                        size="row"
+                                        class="cursor-not-allowed"
                                         title="Pelanggan memiliki riwayat transaksi dan tidak dapat dihapus."
                                     >
                                         <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                         </svg>
                                         <span>Terkunci</span>
-                                    </span>
+                                    </x-ui.button>
                                 @else
-                                    <button
+                                    <x-ui.button
                                         type="button"
+                                        variant="danger-outline"
+                                        size="row"
                                         @click="openDeleteModal({{ json_encode([
                                             'id' => $selectedCustomer->id,
                                             'name' => $selectedCustomer->name,
                                         ]) }})"
-                                        class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50/60 px-3 py-1.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-100"
                                         title="Hapus data pelanggan"
                                     >
-                                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <svg class="size-3.5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                                         </svg>
                                         <span>Hapus</span>
-                                    </button>
+                                    </x-ui.button>
                                 @endif
 
                                 {{-- Tutup Detail (Kembali ke Tampilan Penuh) --}}
-                                <a
-                                    href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
+                                <x-ui.button
+                                    :href="route($currentRoutePrefix . '.customers.index', array_filter([
                                         'q' => $search,
                                         'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                         'page' => request('page'),
-                                    ])) }}"
-                                    class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                                    ]))"
+                                    variant="secondary"
+                                    size="icon"
                                     title="Tutup Detail dan Kembali ke Tabel"
                                 >
                                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
-                                </a>
+                                </x-ui.button>
                             </div>
                         </div>
 
                         {{-- Metadata Pelanggan --}}
                         <div class="mt-4 grid grid-cols-2 gap-4 border-t border-slate-100 pt-3 sm:grid-cols-3">
                             <div>
-                                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Terdaftar Sejak</p>
+                                <p class="text-xs font-bold tracking-wider text-slate-500 uppercase">Terdaftar Sejak</p>
                                 <p class="mt-0.5 text-xs font-bold text-slate-800">
                                     {{ $selectedCustomer->created_at ? $selectedCustomer->created_at->translatedFormat('d M Y') : '-' }}
                                 </p>
                             </div>
                             <div>
-                                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Total Transaksi</p>
+                                <p class="text-xs font-bold tracking-wider text-slate-500 uppercase">Total Transaksi</p>
                                 <p class="mt-0.5 text-xs font-bold text-slate-800">
                                     {{ $selectedCustomer->transactions_count ?? $selectedCustomer->transactions()->count() }} Nota
                                     <span class="font-normal text-slate-500">(Rp {{ number_format($totalSpent, 0, ',', '.') }})</span>
                                 </p>
                             </div>
                             <div class="col-span-2 sm:col-span-1">
-                                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Alamat</p>
+                                <p class="text-xs font-bold tracking-wider text-slate-500 uppercase">Alamat</p>
                                 <p class="mt-0.5 truncate text-xs font-semibold text-slate-700" title="{{ $selectedCustomer->address ?: '-' }}">
                                     {{ $selectedCustomer->address ?: '-' }}
                                 </p>
@@ -756,11 +789,11 @@
                             $latestPayment = $activeTransaction->payments->last();
                             $isPaid = $latestPayment && in_array($latestPayment->verification_status, ['Tidak Diperlukan', 'Terverifikasi']);
                         @endphp
-                        <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+                        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
                             <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <span class="text-sm font-bold text-slate-900 sm:text-base">{{ $activeTransaction->transaction_code }}</span>
-                                    <p class="text-[11px] text-slate-400">
+                                    <p class="text-xs text-slate-500">
                                         Diterima: {{ $activeTransaction->created_at->translatedFormat('d M Y, H:i') }} WIB
                                         @if ($latestPayment && $latestPayment->creator)
                                             oleh {{ $latestPayment->creator->name }}
@@ -768,19 +801,11 @@
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span @class([
-                                        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold',
-                                        'bg-brand-50 text-brand-700 ring-1 ring-brand-600/20' => $isPaid,
-                                        'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20' => ! $isPaid,
-                                    ])>
-                                        <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        {{ $isPaid ? 'Lunas' : 'Belum Lunas' }}
-                                        @if ($latestPayment)
-                                            ({{ $latestPayment->method }})
-                                        @endif
-                                    </span>
+                                    <x-ui.payment-badge :status="$isPaid ? 'Lunas' : 'Belum Bayar'" size="sm" />
+
+                                    @if ($latestPayment)
+                                        <span class="text-xs text-slate-500">{{ $latestPayment->method }}</span>
+                                    @endif
 
                                     {{-- Tombol Tutup Rincian Transaksi --}}
                                     <a
@@ -790,7 +815,7 @@
                                             'status' => $statusFilter !== 'all' ? $statusFilter : null,
                                             'page' => request('page'),
                                         ])) }}"
-                                        class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                                        class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                                         title="Tutup rincian transaksi ini"
                                     >
                                         <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -802,7 +827,7 @@
 
                             {{-- Box Detail Transaksi --}}
                             <div class="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 p-4">
-                                <p class="text-[10px] font-bold tracking-wider text-slate-400 uppercase">Detail Transaksi</p>
+                                <p class="text-xs font-bold tracking-wider text-slate-500 uppercase">Detail Transaksi</p>
 
                                 <div class="mt-2.5 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                                     <div>
@@ -810,7 +835,7 @@
                                             <h4 class="text-xs font-bold text-slate-900 sm:text-sm">
                                                 {{ $service?->name ?? 'Cuci Komplit Reguler' }}
                                             </h4>
-                                            <span class="rounded bg-sky-100 px-1.5 py-0.5 text-[9px] font-bold text-sky-700 uppercase">
+                                            <span class="rounded bg-sky-100 px-1.5 py-0.5 text-xs font-bold text-sky-700 uppercase">
                                                 Kategori Reguler
                                             </span>
                                         </div>
@@ -828,7 +853,7 @@
                                         <p class="text-sm font-extrabold text-slate-900">
                                             Rp {{ number_format($activeTransaction->total_amount, 0, ',', '.') }}
                                         </p>
-                                        <span class="mt-0.5 inline-block rounded bg-sky-50 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700">
+                                        <span class="mt-0.5 inline-block rounded bg-sky-50 px-1.5 py-0.5 text-xs font-semibold text-sky-700">
                                             Selesai {{ $service?->estimated_duration ?? 3 }} Hari
                                         </span>
                                     </div>
@@ -848,21 +873,14 @@
                                         </span>
                                     </div>
                                     <div>
-                                        <span @class([
-                                            'rounded px-2.5 py-0.5 text-[11px] font-bold uppercase',
-                                            'bg-sky-50 text-sky-700 border border-sky-200' => in_array($activeTransaction->status, ['Diterima', 'Diproses']),
-                                            'bg-brand-50 text-brand-700 border border-brand-200' => in_array($activeTransaction->status, ['Selesai', 'Diambil']),
-                                            'bg-rose-50 text-rose-700 border border-rose-200' => $activeTransaction->status === 'Dibatalkan',
-                                        ])>
-                                            {{ $activeTransaction->status }}
-                                        </span>
+                                        <x-ui.status-badge :status="$activeTransaction->status" />
                                     </div>
                                 </div>
                             </div>
 
                             {{-- Footer Total Akhir --}}
                             <div class="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-3">
-                                <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">Total Akhir :</span>
+                                <span class="text-xs font-bold tracking-wider text-slate-500 uppercase">Total Akhir :</span>
                                 <span class="text-lg font-extrabold text-slate-900">
                                     Rp {{ number_format($activeTransaction->total_amount, 0, ',', '.') }}
                                 </span>
@@ -871,7 +889,7 @@
                     @endif
 
                     {{-- 3. Tabel Riwayat Transaksi Cucian Sebelumnya --}}
-                    <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
                         <div class="flex items-center justify-between">
                             <h3 class="text-xs font-bold tracking-wider text-slate-900 uppercase">
                                 Riwayat Transaksi Cucian Sebelumnya
@@ -883,16 +901,16 @@
                             </div>
                         </div>
 
-                        <div class="mt-3 overflow-x-auto">
+                        <div class="mt-3 hidden overflow-x-auto md:block">
                             <table class="w-full text-left text-xs">
                                 <thead>
-                                    <tr class="border-b border-slate-100 text-[10px] font-bold text-slate-400 uppercase">
-                                        <th class="pb-2.5 font-semibold">No. Nota</th>
-                                        <th class="pb-2.5 font-semibold">Tgl Masuk</th>
-                                        <th class="pb-2.5 font-semibold">Kategori Layanan</th>
-                                        <th class="pb-2.5 font-semibold">Durasi</th>
-                                        <th class="pb-2.5 font-semibold">Total Biaya</th>
-                                        <th class="pb-2.5 text-right font-semibold">Status</th>
+                                    <tr class="border-b border-slate-100 text-xs font-bold text-slate-500 uppercase">
+                                        <th scope="col" class="pb-2.5 font-semibold">No. Nota</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Tgl Masuk</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Kategori Layanan</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Durasi</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Total Biaya</th>
+                                        <th scope="col" class="pb-2.5 text-right font-semibold">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -917,7 +935,7 @@
                                             ])
                                             title="Klik untuk melihat detail nota {{ $prevTrx->transaction_code }}"
                                         >
-                                            <td class="py-2.5 font-bold text-slate-900 group-hover:text-brand-600">
+                                            <td class="py-2.5 font-bold text-slate-900 group-hover:text-brand-700">
                                                 <div class="flex items-center gap-1.5">
                                                     @if ($isRowSelected)
                                                         <span class="size-1.5 rounded-full bg-brand-600"></span>
@@ -932,7 +950,7 @@
                                                 {{ $prevService?->name ?? 'Cuci Komplit' }}
                                             </td>
                                             <td class="py-2.5">
-                                                <span class="rounded bg-sky-50 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700">
+                                                <span class="rounded bg-sky-50 px-1.5 py-0.5 text-xs font-semibold text-sky-700">
                                                     {{ $prevService?->estimated_duration ?? 3 }} Hari
                                                 </span>
                                             </td>
@@ -940,19 +958,12 @@
                                                 Rp {{ number_format($prevTrx->total_amount, 0, ',', '.') }}
                                             </td>
                                             <td class="py-2.5 text-right">
-                                                <span @class([
-                                                    'rounded-full px-2 py-0.5 text-[10px] font-semibold',
-                                                    'bg-brand-100 text-brand-800' => in_array($prevTrx->status, ['Selesai', 'Diambil']),
-                                                    'bg-amber-100 text-amber-800' => in_array($prevTrx->status, ['Diterima', 'Diproses']),
-                                                    'bg-rose-100 text-rose-800' => $prevTrx->status === 'Dibatalkan',
-                                                ])>
-                                                    {{ $prevTrx->status }}
-                                                </span>
+                                                <x-ui.status-badge :status="$prevTrx->status" size="sm" />
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="6" class="py-5 text-center text-xs text-slate-400">
+                                            <td colspan="6" class="py-5 text-center text-xs text-slate-500">
                                                 Belum ada riwayat transaksi lampau untuk pelanggan ini.
                                             </td>
                                         </tr>
@@ -961,7 +972,57 @@
                             </table>
                         </div>
 
-                        <div class="mt-3 border-t border-slate-100 pt-2.5 text-[11px] text-slate-400">
+                        {{-- Kartu riwayat (mobile) --}}
+                        <div class="mt-3 space-y-2 md:hidden">
+                            @forelse ($previousTransactions as $prevTrx)
+                                @php
+                                    $detail = $prevTrx->details->first();
+                                    $prevService = $detail?->service;
+                                    $isRowSelected = $activeTransaction && $activeTransaction->id === $prevTrx->id;
+                                    $transactionUrl = route("{$currentRoutePrefix}.customers.index", array_filter([
+                                        'customer_id' => $selectedCustomer->id,
+                                        'transaction_id' => $prevTrx->id,
+                                        'q' => $search,
+                                        'status' => $statusFilter !== 'all' ? $statusFilter : null,
+                                        'page' => request('page'),
+                                    ]));
+                                @endphp
+
+                                <a
+                                    href="{{ $transactionUrl }}"
+                                    @class([
+                                        'block rounded-xl border border-slate-200 p-3.5 transition-colors',
+                                        'border-brand-200 bg-brand-50/60' => $isRowSelected,
+                                        'hover:bg-slate-50' => ! $isRowSelected,
+                                    ])
+                                >
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <p class="font-bold text-slate-900">{{ $prevTrx->transaction_code }}</p>
+                                            <p class="mt-0.5 text-xs text-slate-500">
+                                                {{ $prevTrx->created_at->translatedFormat('d M Y') }} &middot;
+                                                {{ $prevService?->name ?? 'Cuci Komplit' }}
+                                            </p>
+                                        </div>
+
+                                        <x-ui.status-badge :status="$prevTrx->status" size="sm" />
+                                    </div>
+
+                                    <div class="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+                                        <span class="text-xs text-slate-500">{{ $prevService?->estimated_duration ?? 3 }} hari</span>
+                                        <span class="text-sm font-semibold text-slate-900">
+                                            <x-ui.money :value="$prevTrx->total_amount" />
+                                        </span>
+                                    </div>
+                                </a>
+                            @empty
+                                <p class="rounded-xl border border-slate-200 px-4 py-6 text-center text-xs text-slate-500">
+                                    Belum ada riwayat transaksi lampau untuk pelanggan ini.
+                                </p>
+                            @endforelse
+                        </div>
+
+                        <div class="mt-3 border-t border-slate-100 pt-2.5 text-xs text-slate-500">
                             Total riwayat tersimpan: {{ $selectedCustomer->transactions_count ?? $selectedCustomer->transactions()->count() }} transaksi. Klik baris untuk melihat detail nota di atas.
                         </div>
                     </div>
@@ -973,7 +1034,10 @@
         <div
             x-cloak
             x-show="createModalOpen"
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
+            class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 bg-slate-900/40 backdrop-blur-xs sm:items-center"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-customer-title"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100"
@@ -982,12 +1046,12 @@
             x-transition:leave-end="opacity-0"
         >
             <div
-                class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
+                class="my-auto w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:p-6"
                 @click.outside="createModalOpen = false"
             >
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 class="text-base font-bold text-slate-900">Tambah Pelanggan Baru</h3>
-                    <button type="button" @click="createModalOpen = false" class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                    <h3 id="create-customer-title" class="text-base font-bold text-slate-900">Tambah Pelanggan Baru</h3>
+                    <button type="button" @click="createModalOpen = false" aria-label="Tutup dialog" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-600">
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
@@ -1007,15 +1071,15 @@
                             @blur="$event.target.value = formatPhone($event.target.value)"
                             class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                         >
-                        <p class="mt-1 text-[11px] text-slate-400">Otomatis diformat ke standar lokal <code class="font-semibold text-slate-600">08...</code> (misal mengetik <code class="text-slate-600">+628...</code> atau <code class="text-slate-600">628...</code> otomatis disesuaikan).</p>
+                        <p class="mt-1 text-xs text-slate-500">Otomatis diformat ke standar lokal <code class="font-semibold text-slate-600">08...</code> (misal mengetik <code class="text-slate-600">+628...</code> atau <code class="text-slate-600">628...</code> otomatis disesuaikan).</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700">Alamat Lengkap</label>
                         <textarea name="address" rows="3" placeholder="Contoh: Jl. Merpati No. 12, RT 02/04" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"></textarea>
                     </div>
                     <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
-                        <button type="button" @click="createModalOpen = false" class="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Batal</button>
-                        <button type="submit" class="rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-brand-700">Simpan Pelanggan</button>
+                        <button type="button" @click="createModalOpen = false" class="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-100">Batal</button>
+                        <button type="submit" class="inline-flex h-10 items-center justify-center rounded-xl bg-brand-700 px-4 text-xs font-semibold text-white shadow-xs hover:bg-brand-800">Simpan Pelanggan</button>
                     </div>
                 </form>
             </div>
@@ -1025,7 +1089,10 @@
         <div
             x-cloak
             x-show="editModalOpen"
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
+            class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 bg-slate-900/40 backdrop-blur-xs sm:items-center"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="edit-customer-title"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100"
@@ -1034,12 +1101,12 @@
             x-transition:leave-end="opacity-0"
         >
             <div
-                class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
+                class="my-auto w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:p-6"
                 @click.outside="editModalOpen = false"
             >
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 class="text-base font-bold text-slate-900">Edit Data Pelanggan</h3>
-                    <button type="button" @click="editModalOpen = false" class="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600">
+                    <h3 id="edit-customer-title" class="text-base font-bold text-slate-900">Edit Data Pelanggan</h3>
+                    <button type="button" @click="editModalOpen = false" aria-label="Tutup dialog" class="rounded-lg p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-600">
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                 </div>
@@ -1060,15 +1127,15 @@
                             @blur="editForm.phone = formatPhone(editForm.phone)"
                             class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                         >
-                        <p class="mt-1 text-[11px] text-slate-400">Otomatis diformat ke standar lokal <code class="font-semibold text-slate-600">08...</code> (misal mengetik <code class="text-slate-600">+628...</code> atau <code class="text-slate-600">628...</code> otomatis disesuaikan).</p>
+                        <p class="mt-1 text-xs text-slate-500">Otomatis diformat ke standar lokal <code class="font-semibold text-slate-600">08...</code> (misal mengetik <code class="text-slate-600">+628...</code> atau <code class="text-slate-600">628...</code> otomatis disesuaikan).</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700">Alamat Lengkap</label>
                         <textarea name="address" x-model="editForm.address" rows="3" class="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2 text-xs text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"></textarea>
                     </div>
                     <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
-                        <button type="button" @click="editModalOpen = false" class="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Batal</button>
-                        <button type="submit" class="rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-brand-700">Simpan Perubahan</button>
+                        <button type="button" @click="editModalOpen = false" class="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-100">Batal</button>
+                        <button type="submit" class="inline-flex h-10 items-center justify-center rounded-xl bg-brand-700 px-4 text-xs font-semibold text-white shadow-xs hover:bg-brand-800">Simpan Perubahan</button>
                     </div>
                 </form>
             </div>
@@ -1078,7 +1145,10 @@
         <div
             x-cloak
             x-show="deleteModalOpen"
-            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs"
+            class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 bg-slate-900/40 backdrop-blur-xs sm:items-center"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-customer-title"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0"
             x-transition:enter-end="opacity-100"
@@ -1087,7 +1157,7 @@
             x-transition:leave-end="opacity-0"
         >
             <div
-                class="w-full max-w-sm rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
+                class="my-auto w-full max-w-sm max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-5 shadow-xl sm:p-6"
                 @click.outside="deleteModalOpen = false"
             >
                 <div class="flex size-11 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
@@ -1095,15 +1165,15 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </div>
-                <h3 class="mt-3 text-base font-bold text-slate-900">Hapus Data Pelanggan?</h3>
+                <h3 id="delete-customer-title" class="mt-3 text-base font-bold text-slate-900">Hapus Data Pelanggan?</h3>
                 <p class="mt-1 text-xs text-slate-500">
                     Apakah Anda yakin ingin menghapus pelanggan <strong class="text-slate-800" x-text="deleteForm.name"></strong>? Data yang telah dihapus tidak dapat dikembalikan.
                 </p>
                 <form method="POST" :action="'/' + '{{ $currentRoutePrefix }}' + '/customers/' + deleteForm.id" class="mt-5 flex items-center justify-end gap-2">
                     @csrf
                     @method('DELETE')
-                    <button type="button" @click="deleteModalOpen = false" class="rounded-xl border border-slate-200 px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">Batal</button>
-                    <button type="submit" class="rounded-xl bg-rose-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-rose-700 transition">Ya, Hapus Pelanggan</button>
+                    <button type="button" @click="deleteModalOpen = false" class="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-xs font-semibold text-slate-600 hover:border-slate-300 hover:bg-slate-100 transition">Batal</button>
+                    <button type="submit" class="inline-flex h-10 items-center justify-center rounded-xl bg-rose-600 px-4 text-xs font-semibold text-white shadow-xs hover:bg-rose-700 transition">Ya, Hapus Pelanggan</button>
                 </form>
             </div>
         </div>

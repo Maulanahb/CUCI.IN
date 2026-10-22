@@ -16,25 +16,29 @@
             padding: 0;
         }
 
+        @page {
+            size: 80mm auto;
+            margin: 0;
+        }
+
         body {
-            font-family: 'Courier New', Courier, monospace, system-ui;
-            font-size: 13px;
-            line-height: 1.4;
-            color: #1e293b;
-            background-color: #f1f5f9;
-            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11.5px;
+            line-height: 1.45;
+            color: #111827;
+            background-color: #e2e8f0;
+            padding: 24px 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
         .receipt-container {
-            width: 100%;
-            max-width: 380px;
+            width: 80mm;
+            max-width: 100%;
             background: #ffffff;
-            padding: 24px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            padding: 4mm 4mm 5mm;
+            border: 1px solid #cbd5e1;
         }
 
         .text-center { text-align: center; }
@@ -43,37 +47,39 @@
         .uppercase { text-transform: uppercase; }
 
         .header-title {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 800;
-            letter-spacing: 1px;
-            color: #0f172a;
+            letter-spacing: 0.08em;
+            color: #111827;
+            text-transform: uppercase;
         }
 
         .header-subtitle {
-            font-size: 11px;
-            color: #64748b;
+            font-size: 10px;
+            color: #374151;
             margin-top: 2px;
         }
 
         .divider {
-            border-top: 1px dashed #94a3b8;
-            margin: 12px 0;
+            border-top: 1px dashed #6b7280;
+            margin: 8px 0;
         }
 
         .meta-row {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            margin-bottom: 4px;
+            gap: 8px;
+            font-size: 11px;
+            margin-bottom: 3px;
         }
 
         .meta-label {
-            color: #64748b;
+            color: #374151;
         }
 
         .meta-value {
-            font-weight: 600;
-            color: #0f172a;
+            font-weight: 700;
+            color: #111827;
             text-align: right;
         }
 
@@ -88,16 +94,17 @@
         .item-header {
             display: flex;
             justify-content: space-between;
-            font-weight: 600;
-            font-size: 12px;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 11px;
         }
 
         .item-sub {
             display: flex;
             justify-content: space-between;
-            font-size: 11px;
-            color: #64748b;
-            margin-top: 2px;
+            font-size: 10.5px;
+            color: #374151;
+            margin-top: 1px;
         }
 
         .total-section {
@@ -107,25 +114,27 @@
         .total-row {
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            border-top: 1px dashed #6b7280;
+            padding-top: 6px;
+            font-size: 13px;
             font-weight: 800;
-            color: #0f172a;
+            color: #111827;
         }
 
         .badge-status {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 9999px;
-            font-size: 11px;
+            border: 1px solid #111827;
+            padding: 1px 6px;
+            font-size: 10px;
             font-weight: 700;
-            background: #e2e8f0;
-            color: #334155;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
         .footer-note {
-            margin-top: 14px;
-            font-size: 10px;
-            color: #64748b;
+            margin-top: 12px;
+            font-size: 9.5px;
+            color: #374151;
             text-align: center;
             line-height: 1.4;
         }
@@ -158,14 +167,14 @@
         }
 
         .btn-primary {
-            background: #0284c7;
-            border-color: #0284c7;
+            background: #0e7490;
+            border-color: #0e7490;
             color: #ffffff;
         }
 
         .btn-primary:hover {
-            background: #0369a1;
-            border-color: #0369a1;
+            background: #155e75;
+            border-color: #155e75;
         }
 
         @media print {
@@ -179,11 +188,12 @@
             }
 
             .receipt-container {
+                width: 80mm;
+                max-width: 80mm;
+                border: 0;
+                padding: 3mm 4mm;
                 box-shadow: none;
                 border-radius: 0;
-                padding: 10px 0;
-                width: 100%;
-                max-width: 100%;
             }
         }
     </style>
@@ -271,6 +281,23 @@
                 <span class="meta-label">Sudah Dibayar:</span>
                 <span class="meta-value">Rp {{ number_format($transaction->total_paid, 0, ',', '.') }}</span>
             </div>
+
+            @foreach ($transaction->payments->sortBy('id') as $payment)
+                <div class="meta-row" style="margin-top: 4px;">
+                    <span class="meta-label">{{ $payment->payment_type }} · {{ $payment->method }}</span>
+                    <span class="meta-value">Rp {{ number_format($payment->amount, 0, ',', '.') }}</span>
+                </div>
+                @if ($payment->cash_received !== null)
+                    <div class="meta-row">
+                        <span class="meta-label">Diterima / Kembali</span>
+                        <span class="meta-value">
+                            Rp {{ number_format($payment->cash_received, 0, ',', '.') }} /
+                            Rp {{ number_format($payment->change_amount, 0, ',', '.') }}
+                        </span>
+                    </div>
+                @endif
+            @endforeach
+
             <div class="meta-row">
                 <span class="meta-label">Sisa Tagihan:</span>
                 <span class="meta-value font-bold">Rp {{ number_format($transaction->remaining_amount, 0, ',', '.') }}</span>

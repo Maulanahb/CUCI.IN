@@ -11,17 +11,9 @@
         {{-- Breadcrumb & Header Halaman --}}
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between print:hidden">
             <div>
-                {{-- Breadcrumb --}}
-                <nav class="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1" aria-label="Breadcrumb">
-                    <span class="text-brand-700 font-semibold">CUCI.IN</span>
-                    <span class="text-slate-300">/</span>
-                    <span>Portal Pelanggan</span>
-                    <span class="text-slate-300">/</span>
-                    <span class="text-slate-700 font-medium">Riwayat Transaksi</span>
-                </nav>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Riwayat Transaksi</h1>
 
-                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Riwayat Transaksi</h1>
-                <p class="mt-1 text-xs text-slate-500 sm:text-sm">
+                <p class="text-xs text-slate-500 sm:text-sm">
                     Arsip riwayat transaksi laundry Anda beserta rincian nota, status pengerjaan, dan pelunasan.
                 </p>
             </div>
@@ -33,9 +25,9 @@
         {{-- 4 Kartu Statistik Ringkasan --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
             {{-- Kartu 1: Total Transaksi --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Transaksi</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Transaksi</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shrink-0" style="width: 36px; height: 36px;">
                         <svg class="w-5 h-5 shrink-0" width="20" height="20" style="width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -46,9 +38,9 @@
             </div>
 
             {{-- Kartu 2: Cucian Berjalan --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Cucian Berjalan</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Cucian Berjalan</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-sky-50 text-sky-700 shrink-0" style="width: 36px; height: 36px;">
                         <svg class="w-5 h-5 shrink-0" width="20" height="20" style="width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -59,9 +51,9 @@
             </div>
 
             {{-- Kartu 3: Menunggu Pelunasan --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-amber-700/80">Menunggu Pelunasan</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-amber-700/80">Menunggu Pelunasan</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-amber-50 text-amber-700 shrink-0" style="width: 36px; height: 36px;">
                         <svg class="w-5 h-5 shrink-0" width="20" height="20" style="width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -74,9 +66,9 @@
             </div>
 
             {{-- Kartu 4: Total Pengeluaran --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Pengeluaran</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Pengeluaran</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 shrink-0" style="width: 36px; height: 36px;">
                         <svg class="w-4 h-4 shrink-0" width="16" height="16" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
@@ -90,12 +82,12 @@
         </div>
 
         {{-- Bar Pencarian & Filter --}}
-        <div class="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs print:hidden">
+        <div class="rounded-xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs print:hidden">
             <form method="GET" action="{{ route('customer.transactions.index') }}" class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 {{-- Input Pencarian --}}
                 <div class="relative flex-1">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                        <svg class="w-4 h-4 text-slate-400 shrink-0" width="16" height="16" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" width="16" height="16" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
@@ -139,10 +131,10 @@
                     {{-- Tombol Reset (Langsung di samping dropdown seperti pada foto) --}}
                     <a
                         href="{{ route('customer.transactions.index') }}"
-                        class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 shadow-xs transition hover:bg-slate-50 hover:text-slate-900"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 shadow-xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                         title="Reset semua filter pencarian"
                     >
-                        <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" width="14" height="14" style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg class="w-3.5 h-3.5 text-slate-500 shrink-0" width="14" height="14" style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                         Reset
@@ -154,10 +146,10 @@
         {{-- Konten Utama: Tabel Transaksi (Lebar Penuh & Ringkas) --}}
         @if ($paginatedTransactions->isNotEmpty())
             <div class="space-y-4 print:hidden">
-                <div class="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-xs">
-                    <div class="overflow-x-auto">
+                <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-xs">
+                    <div class="hidden overflow-x-auto md:block">
                         <table class="w-full text-left text-xs sm:text-sm text-slate-600">
-                            <thead class="border-b border-slate-200 bg-slate-50/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                            <thead class="border-b border-slate-200 bg-slate-50/70 text-xs font-bold uppercase tracking-wider text-slate-500">
                                 <tr>
                                     <th scope="col" class="py-3 px-4">Kode Transaksi</th>
                                     <th scope="col" class="py-3 px-4">Tanggal Masuk</th>
@@ -207,7 +199,7 @@
                                                     {{ $servicesText ?: 'Layanan Laundry' }}
                                                 </p>
                                                 @if ($totalWeight > 0)
-                                                    <p class="text-[11px] text-slate-400">
+                                                    <p class="text-xs text-slate-500">
                                                         Berat {{ number_format($totalWeight, 1) }} kg
                                                     </p>
                                                 @endif
@@ -220,7 +212,7 @@
                                                 Rp {{ number_format($trx->total_amount, 0, ',', '.') }}
                                             </p>
                                             @if ($paidAmount > 0)
-                                                <p class="text-[11px] text-slate-500">
+                                                <p class="text-xs text-slate-500">
                                                     Dibayar: <span class="font-semibold text-brand-700">Rp {{ number_format($paidAmount, 0, ',', '.') }}</span>
                                                     @if ($hasDp)
                                                         <span class="text-amber-700 font-medium">(DP Kasir)</span>
@@ -231,49 +223,19 @@
 
                                         {{-- Status Pembayaran --}}
                                         <td class="py-3.5 px-4 whitespace-nowrap">
-                                            @if ($isPaidOff)
-                                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                                                    <svg class="w-3 h-3 shrink-0" width="12" height="12" style="width: 12px; height: 12px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                    Lunas
-                                                </span>
-                                            @elseif ($hasDp)
-                                                <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-                                                    <span class="size-1.5 rounded-full bg-amber-500" style="width: 6px; height: 6px;"></span>
-                                                    Belum Lunas (DP Kasir)
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center gap-1 rounded-full bg-rose-50 border border-rose-200 px-2.5 py-0.5 text-xs font-semibold text-rose-700">
-                                                    <span class="size-1.5 rounded-full bg-rose-500" style="width: 6px; height: 6px;"></span>
-                                                    Belum Bayar
-                                                </span>
-                                            @endif
+                                            <x-ui.payment-badge :status="$isPaidOff ? 'Lunas' : ($hasDp ? 'DP' : 'Belum Bayar')" size="sm" />
                                         </td>
 
                                         {{-- Status Cucian --}}
                                         <td class="py-3.5 px-4 whitespace-nowrap">
-                                            @php
-                                                $statusClasses = match ($statusVal) {
-                                                    'Diterima' => 'bg-sky-50 border-sky-200 text-sky-700',
-                                                    'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
-                                                    'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-700',
-                                                    'Diambil' => 'bg-slate-100 border-slate-200 text-slate-700',
-                                                    'Dibatalkan' => 'bg-rose-50 border-rose-200 text-rose-700',
-                                                    default => 'bg-slate-50 border-slate-200 text-slate-700',
-                                                };
-                                            @endphp
-                                            <span class="inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $statusClasses }}">
-                                                <span class="size-1.5 rounded-full bg-current" style="width: 6px; height: 6px;"></span>
-                                                {{ $statusVal }}
-                                            </span>
+                                            <x-ui.status-badge :status="$trx->status" size="sm" />
                                         </td>
 
                                         {{-- Aksi --}}
                                         <td class="py-3.5 px-4 whitespace-nowrap text-center">
                                             <a
                                                 href="{{ request()->fullUrlWithQuery(['selected' => $trx->transaction_code]) }}"
-                                                class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+                                                class="inline-flex items-center gap-1.5 rounded-lg border border-brand-200 bg-brand-50 px-2.5 py-1.5 text-xs font-semibold text-brand-700 shadow-2xs transition hover:border-brand-300 hover:bg-brand-100 hover:text-brand-800"
                                                 title="Lihat Detail Nota"
                                             >
                                                 <svg class="w-3.5 h-3.5 shrink-0" width="14" height="14" style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -287,6 +249,68 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    {{-- Kartu (mobile) --}}
+                    <div class="divide-y divide-slate-100 md:hidden">
+                        @foreach ($paginatedTransactions as $trx)
+                            @php
+                                $statusVal = $trx->status instanceof \App\Enums\TransactionStatus ? $trx->status->value : (string) $trx->status;
+                                $paidAmount = (float) $trx->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
+                                $remainingAmount = max(0.0, (float) $trx->total_amount - $paidAmount);
+                                $isPaidOff = $remainingAmount <= 0.001;
+                                $hasDp = ! $isPaidOff && $paidAmount > 0;
+                                $servicesText = $trx->details->map(fn($d) => $d->service?->name)->filter()->join(', ');
+                                $totalWeight = $trx->details->sum('weight');
+                                $isSelected = $selectedTransaction && $selectedTransaction->id === $trx->id;
+                            @endphp
+
+                            <a
+                                href="{{ request()->fullUrlWithQuery(['selected' => $trx->transaction_code]) }}"
+                                class="block p-4 transition-colors hover:bg-slate-50 {{ $isSelected ? 'bg-brand-50/60' : '' }}"
+                            >
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="font-bold text-brand-700 tabular-nums">{{ $trx->transaction_code }}</p>
+                                        <p class="mt-0.5 text-xs text-slate-500">
+                                            {{ $trx->created_at?->translatedFormat('d M Y, H:i') }} WIB
+                                        </p>
+                                    </div>
+
+                                    <x-ui.status-badge :status="$trx->status" size="sm" />
+                                </div>
+
+                                <div class="mt-3 flex items-end justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="truncate text-sm font-semibold text-slate-800">
+                                            {{ $servicesText ?: 'Layanan Laundry' }}
+                                        </p>
+                                        <p class="text-xs text-slate-500">
+                                            {{ number_format((float) $totalWeight, 1, ',', '.') }} kg &middot; {{ $trx->details->count() }} layanan
+                                        </p>
+                                    </div>
+
+                                    <div class="shrink-0 text-right">
+                                        <p class="text-sm font-bold text-slate-900">
+                                            <x-ui.money :value="$trx->total_amount" />
+                                        </p>
+                                        <x-ui.payment-badge :status="$isPaidOff ? 'Lunas' : ($hasDp ? 'DP' : 'Belum Bayar')" size="sm" class="mt-1" />
+                                    </div>
+                                </div>
+
+                                <div class="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+                                    <span class="text-xs text-slate-500">
+                                        @if ($paidAmount > 0)
+                                            Dibayar <x-ui.money :value="$paidAmount" class="font-medium text-slate-600" />
+                                        @else
+                                            Belum ada pembayaran
+                                        @endif
+                                    </span>
+
+                                    <span class="text-xs font-semibold text-brand-700">Lihat detail &rarr;</span>
+                                </div>
+                            </a>
+                        @endforeach
                     </div>
 
                     {{-- Pagination --}}
@@ -328,7 +352,7 @@
                             </div>
                             <a
                                 href="{{ $closeModalUrl }}"
-                                class="inline-flex size-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 focus:outline-none"
+                                class="inline-flex size-8 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 focus:outline-none"
                                 title="Tutup detail (Esc)"
                             >
                                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -342,45 +366,28 @@
                             {{-- Info Transaksi --}}
                             <div class="grid grid-cols-2 gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
                                 <div>
-                                    <p class="text-[11px] font-medium text-slate-400">Tanggal Masuk</p>
+                                    <p class="text-xs font-medium text-slate-500">Tanggal Masuk</p>
                                     <p class="mt-0.5 font-semibold text-slate-800">
                                         {{ $selectedTransaction->created_at->translatedFormat('d M Y, H:i') }} WIB
                                     </p>
                                 </div>
                                 <div>
-                                    <p class="text-[11px] font-medium text-slate-400">Status Cucian</p>
-                                    @php
-                                        $selStatusVal = $selectedTransaction->status instanceof \App\Enums\TransactionStatus ? $selectedTransaction->status->value : (string) $selectedTransaction->status;
-                                        $selStatusClasses = match ($selStatusVal) {
-                                            'Diterima' => 'bg-sky-50 border-sky-200 text-sky-700',
-                                            'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
-                                            'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-700',
-                                            'Diambil' => 'bg-slate-100 border-slate-200 text-slate-700',
-                                            'Dibatalkan' => 'bg-rose-50 border-rose-200 text-rose-700',
-                                            default => 'bg-slate-50 border-slate-200 text-slate-700',
-                                        };
-                                    @endphp
-                                    <span class="mt-0.5 inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $selStatusClasses }}">
-                                        {{ $selStatusVal }}
-                                    </span>
+                                    <p class="text-xs font-medium text-slate-500">Status Cucian</p>
+                                    <div class="mt-0.5">
+                                        <x-ui.status-badge :status="$selectedTransaction->status" size="sm" />
+                                    </div>
                                 </div>
                                 <div>
-                                    <p class="text-[11px] font-medium text-slate-400">Estimasi Selesai</p>
+                                    <p class="text-xs font-medium text-slate-500">Estimasi Selesai</p>
                                     <p class="mt-0.5 font-semibold text-slate-800">
                                         {{ $selectedTransaction->estimated_completed_at ? $selectedTransaction->estimated_completed_at->translatedFormat('d M Y, H:i') . ' WIB' : 'Menunggu update' }}
                                     </p>
                                 </div>
                                 <div>
-                                    <p class="text-[11px] font-medium text-slate-400">Status Pembayaran</p>
-                                    @if ($selIsPaidOff)
-                                        <span class="mt-0.5 inline-block rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                                            Lunas
-                                        </span>
-                                    @else
-                                        <span class="mt-0.5 inline-block rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-                                            Belum Lunas
-                                        </span>
-                                    @endif
+                                    <p class="text-xs font-medium text-slate-500">Status Pembayaran</p>
+                                    <div class="mt-0.5">
+                                        <x-ui.payment-badge :status="$selIsPaidOff ? 'Lunas' : 'Belum Bayar'" size="sm" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -403,7 +410,7 @@
                                                     <td class="py-2.5 px-3">
                                                         <p class="font-semibold text-slate-800">{{ $item->service?->name ?? 'Layanan' }}</p>
                                                         @if ($item->service?->description)
-                                                            <p class="text-[11px] text-slate-400">{{ $item->service->description }}</p>
+                                                            <p class="text-xs text-slate-500">{{ $item->service->description }}</p>
                                                         @endif
                                                     </td>
                                                     <td class="py-2.5 px-3 text-center whitespace-nowrap">
@@ -418,7 +425,7 @@
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="4" class="py-3 px-3 text-center text-slate-400">Tidak ada rincian item</td>
+                                                    <td colspan="4" class="py-3 px-3 text-center text-slate-500">Tidak ada rincian item</td>
                                                 </tr>
                                             @endforelse
                                         </tbody>
@@ -439,7 +446,7 @@
                                     <span class="font-semibold text-brand-700">
                                         Rp {{ number_format($selPaid, 0, ',', '.') }}
                                         @if ($latestPayment)
-                                            <span class="font-normal text-slate-400">({{ $latestPayment->method }})</span>
+                                            <span class="font-normal text-slate-500">({{ $latestPayment->method }})</span>
                                         @endif
                                     </span>
                                 </div>
@@ -454,7 +461,7 @@
 
                         {{-- Footer Modal: Tombol Aksi --}}
                         <div class="border-t border-slate-100 bg-slate-50/70 px-5 py-3 flex items-center justify-between">
-                            @if ($selStatusVal !== 'Dibatalkan')
+                            @if ($selectedTransaction->status !== \App\Enums\TransactionStatus::Dibatalkan)
                                 <a
                                     href="{{ route('customer.complaints.create', ['transaction_code' => $selectedTransaction->transaction_code]) }}"
                                     class="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50/60 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 hover:text-rose-800"
@@ -470,7 +477,7 @@
 
                             <a
                                 href="{{ $closeModalUrl }}"
-                                class="inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 focus:outline-none"
+                                class="inline-flex items-center justify-center rounded-lg bg-slate-100 px-4 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-200 focus:outline-none"
                             >
                                 Tutup
                             </a>
@@ -480,7 +487,7 @@
             @endif
         @else
             {{-- Tampilan Kosong (Empty State Sebenarnya Jika Tidak Ada Data) --}}
-            <div class="rounded-2xl border border-slate-200/90 bg-white p-8 sm:p-12 text-center shadow-xs">
+            <div class="rounded-2xl border border-slate-200/80 bg-white p-8 sm:p-12 text-center shadow-xs">
                 <div class="mx-auto flex size-14 items-center justify-center rounded-full bg-brand-50 text-brand-700 shrink-0" style="width: 56px; height: 56px;">
                     <svg class="w-7 h-7 shrink-0" width="28" height="28" style="width: 28px; height: 28px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

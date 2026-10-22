@@ -21,13 +21,7 @@
         {{-- Top Bar Navigasi Kasir --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Kasir POS — Transaksi Baru</h1>
-                    <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
-                        <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Terminal Aktif
-                    </span>
-                </div>
+                <p class="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Kasir POS — Transaksi Baru</p>
                 <p class="mt-0.5 text-xs text-slate-500 sm:text-sm">
                     Pilih layanan di katalog kiri, sesuaikan timbangan, dan simpan nota kasir secara instan.
                 </p>
@@ -36,7 +30,7 @@
             <div class="flex items-center gap-2">
                 <a
                     href="{{ $transactionIndexRoute }}"
-                    class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900 active:scale-98"
+                    class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 active:scale-98"
                 >
                     <svg class="size-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -84,7 +78,7 @@
                 <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div class="relative flex-1">
-                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                                 <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
@@ -140,8 +134,8 @@
                                         </svg>
                                     </div>
 
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
-                                        <svg class="size-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
+                                        <svg class="size-3 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                         <span x-text="service.estimated_duration + ' Jam'"></span>
@@ -149,7 +143,7 @@
                                 </div>
 
                                 <h3 class="mt-3 text-sm font-bold text-slate-900 group-hover:text-brand-700 transition" x-text="service.name"></h3>
-                                <p class="text-[11px] text-slate-400">Tarif per kilogram</p>
+                                <p class="text-xs text-slate-500">Tarif per kilogram</p>
                             </div>
 
                             <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
@@ -157,7 +151,7 @@
 
                                 <div class="flex items-center gap-1.5">
                                     <template x-if="getItemInCart(service.id)">
-                                        <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-800">
+                                        <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-800">
                                             <svg class="size-3 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                             </svg>
@@ -184,7 +178,7 @@
                     <button
                         type="button"
                         @click="searchQuery = ''"
-                        class="mt-2 text-xs font-bold text-brand-600 underline hover:text-brand-700"
+                        class="mt-2 text-xs font-bold text-brand-700 underline hover:text-brand-700"
                     >
                         Tampilkan semua layanan
                     </button>
@@ -209,7 +203,8 @@
                     id="transaction-form"
                     method="POST"
                     action="{{ route("{$currentRoutePrefix}.transactions.store") }}"
-                    class="rounded-2xl border border-slate-200/90 bg-white shadow-sm overflow-hidden"
+                    class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs"
+                    @submit="isSubmitting = true"
                 >
                     @csrf
 
@@ -224,7 +219,7 @@
                                 </div>
                                 <h2 class="text-sm font-bold text-slate-900 sm:text-base">Tiket Nota Kasir</h2>
                             </div>
-                            <span class="rounded-md bg-brand-100 px-2 py-0.5 text-[10px] font-bold text-brand-800">
+                            <span class="rounded-md bg-brand-100 px-2 py-0.5 text-xs font-bold text-brand-800">
                                 Draf Baru
                             </span>
                         </div>
@@ -241,7 +236,7 @@
                                     type="button"
                                     id="btn-open-quick-customer"
                                     onclick="openQuickCustomerModal()"
-                                    class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 hover:text-brand-700 hover:underline"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-700 hover:underline"
                                 >
                                     <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -289,14 +284,14 @@
                                         </div>
                                         <div class="min-w-0">
                                             <p class="truncate text-xs font-bold text-slate-900" id="preview-name">-</p>
-                                            <p class="text-[11px] text-slate-600" id="preview-phone">-</p>
-                                            <p class="line-clamp-1 italic text-[11px] text-slate-500" id="preview-address">Alamat belum diisi</p>
+                                            <p class="text-xs text-slate-600" id="preview-phone">-</p>
+                                            <p class="line-clamp-1 italic text-xs text-slate-500" id="preview-address">Alamat belum diisi</p>
                                         </div>
                                     </div>
                                     <button
                                         type="button"
                                         onclick="resetCustomerSelection()"
-                                        class="shrink-0 rounded p-1 text-slate-400 hover:bg-emerald-100 hover:text-slate-700"
+                                        class="shrink-0 rounded p-1 text-slate-500 hover:bg-emerald-100 hover:text-slate-700"
                                         title="Ganti Pelanggan"
                                     >
                                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -314,7 +309,7 @@
                                 <button
                                     type="button"
                                     @click="addItem()"
-                                    class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 hover:text-brand-700 hover:underline"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-700 hover:underline"
                                 >
                                     <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -327,13 +322,13 @@
                                 <template x-for="(item, index) in items" :key="index">
                                     <div class="rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 transition hover:border-slate-300">
                                         <div class="flex items-center justify-between gap-2 mb-2">
-                                            <span class="inline-flex items-center rounded-md bg-brand-100 px-1.5 py-0.5 text-[10px] font-bold text-brand-800" x-text="'Item #' + (index + 1)"></span>
+                                            <span class="inline-flex items-center rounded-md bg-brand-100 px-1.5 py-0.5 text-xs font-bold text-brand-800" x-text="'Item #' + (index + 1)"></span>
                                             <div class="flex items-center gap-2">
                                                 <span class="text-xs font-bold text-brand-700" x-text="formatRupiah(getSubtotal(item))"></span>
                                                 <button
                                                     type="button"
                                                     @click="removeItem(index)"
-                                                    class="rounded p-1 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                                                    class="rounded p-1 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600"
                                                     title="Hapus baris item"
                                                 >
                                                     <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -383,7 +378,7 @@
                                                         placeholder="0.00"
                                                         class="w-full text-center border-0 p-1 text-xs font-bold text-slate-900 focus:outline-none"
                                                     />
-                                                    <span class="pr-2 text-[10px] font-semibold text-slate-400">Kg</span>
+                                                    <span class="pr-2 text-xs font-semibold text-slate-500">Kg</span>
                                                     <button
                                                         type="button"
                                                         @click="stepWeight(index, 0.5)"
@@ -423,32 +418,32 @@
                         <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
                             <div class="flex items-center justify-between">
                                 <label class="text-xs font-bold text-slate-800">Pembayaran Kasir</label>
-                                <span class="text-[10px] font-semibold text-slate-500">Pilih status bayar saat ini</span>
+                                <span class="text-xs font-semibold text-slate-500">Pilih status bayar saat ini</span>
                             </div>
 
                             {{-- Pilihan Opsi Pembayaran --}}
-                            <div class="grid grid-cols-3 gap-1.5 rounded-lg bg-slate-200/70 p-1 text-xs font-semibold">
+                            <div class="grid grid-cols-3 gap-1.5 rounded-lg bg-slate-200/70 p-1 text-xs font-semibold text-slate-600">
                                 <button
                                     type="button"
-                                    @click="paymentChoice = 'unpaid'"
-                                    :class="paymentChoice === 'unpaid' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
-                                    class="rounded-md py-1.5 transition text-center"
+                                    @click="paymentChoice = 'unpaid'; dpAmount = ''"
+                                    :class="paymentChoice === 'unpaid' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'hover:text-slate-900'"
+                                    class="rounded-md py-1.5 text-center transition"
                                 >
                                     Bayar Nanti
                                 </button>
                                 <button
                                     type="button"
-                                    @click="paymentChoice = 'full'"
-                                    :class="paymentChoice === 'full' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
-                                    class="rounded-md py-1.5 transition text-center"
+                                    @click="paymentChoice = 'full'; dpAmount = ''"
+                                    :class="paymentChoice === 'full' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'hover:text-slate-900'"
+                                    class="rounded-md py-1.5 text-center transition"
                                 >
                                     Bayar Lunas
                                 </button>
                                 <button
                                     type="button"
                                     @click="paymentChoice = 'dp'"
-                                    :class="paymentChoice === 'dp' ? 'bg-amber-500 text-white shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
-                                    class="rounded-md py-1.5 transition text-center"
+                                    :class="paymentChoice === 'dp' ? 'bg-amber-500 text-white shadow-2xs font-bold' : 'hover:text-slate-900'"
+                                    class="rounded-md py-1.5 text-center transition"
                                 >
                                     Bayar DP
                                 </button>
@@ -456,11 +451,12 @@
 
                             {{-- Hidden input pay_now --}}
                             <input type="hidden" name="pay_now" :value="paymentChoice !== 'unpaid' ? '1' : '0'" />
+                            <input type="hidden" name="payment_choice" :value="paymentChoice" />
 
                             {{-- Detail Metode Pembayaran jika Bayar Sekarang --}}
                             <div x-show="paymentChoice !== 'unpaid'" x-transition class="space-y-3 pt-1">
                                 <div>
-                                    <label class="block mb-1 text-[11px] font-semibold text-slate-600">Metode Pembayaran</label>
+                                    <label class="block mb-1 text-xs font-semibold text-slate-600">Metode Pembayaran</label>
                                     <div class="grid grid-cols-3 gap-2">
                                         <template x-for="m in ['Tunai', 'QRIS', 'Transfer']" :key="m">
                                             <label
@@ -477,16 +473,18 @@
                                 {{-- Input Nominal DP jika memilih DP --}}
                                 <div x-show="paymentChoice === 'dp'" x-transition>
                                     <div class="flex items-center justify-between mb-1">
-                                        <label for="payment_amount" class="text-[11px] font-semibold text-slate-600">Nominal DP (Uang Muka)</label>
-                                        <span class="text-[10px] text-amber-700 font-bold" x-text="'Maks. ' + formatRupiah(getTotalAmount())"></span>
+                                        <label for="payment_amount" class="text-xs font-semibold text-slate-600">Nominal DP (Uang Muka)</label>
+                                        <span class="text-xs text-amber-700 font-bold" x-text="'Maks. ' + formatRupiah(getTotalAmount())"></span>
                                     </div>
                                     <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-slate-400">Rp</span>
+                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-slate-500">Rp</span>
                                         <input
                                             type="number"
                                             id="payment_amount"
                                             name="payment_amount"
                                             x-model="dpAmount"
+                                            :disabled="paymentChoice !== 'dp'"
+                                            :required="paymentChoice === 'dp'"
                                             min="1000"
                                             :max="getTotalAmount()"
                                             placeholder="Contoh: 20000"
@@ -502,14 +500,19 @@
                             <button
                                 type="submit"
                                 id="btn-submit-transaction"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-brand-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                                :disabled="isSubmitting"
+                                class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-60"
                             >
-                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <svg x-show="isSubmitting" x-cloak class="size-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
+                                <svg x-show="! isSubmitting" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                 </svg>
-                                <span>Simpan Transaksi (Cetak Struk)</span>
+                                <span x-text="isSubmitting ? 'Menyimpan transaksi...' : 'Simpan Transaksi (Cetak Struk)'">Simpan Transaksi (Cetak Struk)</span>
                             </button>
-                            <p class="mt-2 text-center text-[11px] text-slate-400">
+                            <p class="mt-2 text-center text-xs text-slate-500">
                                 Nomor nota unik dan riwayat pengerjaan otomatis dibuat oleh server.
                             </p>
                         </div>
@@ -540,13 +543,13 @@
                                 <h3 class="text-base font-bold text-slate-900" id="modal-quick-customer-title">
                                     Tambah Pelanggan Baru
                                 </h3>
-                                <p class="text-[11px] text-slate-500">Daftarkan pelanggan baru langsung tanpa keluar dari kasir POS.</p>
+                                <p class="text-xs text-slate-500">Daftarkan pelanggan baru langsung tanpa keluar dari kasir POS.</p>
                             </div>
                         </div>
                         <button
                             type="button"
                             onclick="closeQuickCustomerModal()"
-                            class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none"
+                            class="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-600 focus:outline-none"
                             aria-label="Tutup"
                         >
                             <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -572,7 +575,7 @@
                                 Nama Pelanggan <span class="text-rose-500">*</span>
                             </label>
                             <div class="relative mt-1.5">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
@@ -593,10 +596,10 @@
                                 <label for="quick_customer_phone" class="block text-xs font-semibold text-slate-700">
                                     Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
                                 </label>
-                                <span class="text-[11px] text-slate-400">Otomatis format 08xxx</span>
+                                <span class="text-xs text-slate-500">Otomatis format 08xxx</span>
                             </div>
                             <div class="relative mt-1.5">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                                     </svg>
@@ -614,10 +617,10 @@
 
                         <div>
                             <label for="quick_customer_address" class="block text-xs font-semibold text-slate-700">
-                                Alamat <span class="text-slate-400 font-normal">(Opsional)</span>
+                                Alamat <span class="text-slate-500 font-normal">(Opsional)</span>
                             </label>
                             <div class="relative mt-1.5">
-                                <div class="pointer-events-none absolute top-3 left-0 flex items-center pl-3.5 text-slate-400">
+                                <div class="pointer-events-none absolute top-3 left-0 flex items-center pl-3.5 text-slate-500">
                                     <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -637,14 +640,14 @@
                             <button
                                 type="button"
                                 onclick="closeQuickCustomerModal()"
-                                class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                                class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                             >
                                 Batal
                             </button>
                             <button
                                 type="submit"
                                 id="btn-save-quick-customer"
-                                class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
+                                class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
                             >
                                 <svg id="btn-save-quick-customer-spinner" class="hidden size-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -664,12 +667,13 @@
         function posTransactionManager() {
             return {
                 searchQuery: '',
+                isSubmitting: false,
                 items: @json(old('items', [['service_id' => ($services->first()?->id ?? ''), 'weight' => '']])),
                 servicesList: @json($services),
                 servicesMap: @json($services->keyBy('id')),
-                paymentChoice: '{{ old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid' }}',
-                paymentMethod: '{{ old('payment_method', 'Tunai') }}',
-                dpAmount: '{{ old('payment_amount', '') }}',
+                paymentChoice: @js(old('payment_choice', old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid')),
+                paymentMethod: @js(old('payment_method', 'Tunai')),
+                dpAmount: @js(old('payment_amount', '')),
 
                 get filteredServices() {
                     let list = this.servicesList;
@@ -789,11 +793,11 @@
             if (addressEl) {
                 if (cust.address && cust.address.trim() !== '') {
                     addressEl.textContent = cust.address;
-                    addressEl.classList.remove('italic', 'text-slate-400');
+                    addressEl.classList.remove('italic', 'text-slate-500');
                     addressEl.classList.add('text-slate-600');
                 } else {
                     addressEl.textContent = 'Alamat belum diisi';
-                    addressEl.classList.add('italic', 'text-slate-400');
+                    addressEl.classList.add('italic', 'text-slate-500');
                     addressEl.classList.remove('text-slate-600');
                 }
             }

@@ -29,6 +29,7 @@ class CreateTransaction
         $payNow = false;
         $paymentMethod = 'Tunai';
         $paymentAmount = null;
+        $paymentChoice = null;
 
         if (is_array($customerOrData)) {
             $customerId = $customerOrData['customer_id'] ?? null;
@@ -39,6 +40,7 @@ class CreateTransaction
             $paymentAmount = isset($customerOrData['payment_amount']) && $customerOrData['payment_amount'] !== null && $customerOrData['payment_amount'] !== ''
                 ? (float) $customerOrData['payment_amount']
                 : null;
+            $paymentChoice = $customerOrData['payment_choice'] ?? null;
         } else {
             $customerId = $customerOrData;
         }
@@ -51,7 +53,7 @@ class CreateTransaction
             throw new InvalidArgumentException('Created by (user ID Staff) harus diisi.');
         }
 
-        return DB::transaction(function () use ($customerId, $createdBy, $items, $payNow, $paymentMethod, $paymentAmount): Transaction {
+        return DB::transaction(function () use ($customerId, $createdBy, $items, $payNow, $paymentMethod, $paymentAmount, $paymentChoice): Transaction {
             // 1. Pastikan customer ada di database
             $customer = Customer::find($customerId);
             if ($customer === null) {
@@ -96,9 +98,18 @@ class CreateTransaction
 
             // 7. Jika kasir memilih untuk bayar sekarang (Lunas atau DP)
             if ($payNow) {
-                $payAmount = $paymentAmount !== null && $paymentAmount > 0
-                    ? $paymentAmount
-                    : (float) $transaction->total_amount;
+                $total = (float) $transaction->total_amount;
+                $choice = $paymentChoice ?? ($paymentAmount !== null && $paymentAmount > 0 && $paymentAmount < $total ? 'dp' : 'full');
+
+                if ($choice === 'dp') {
+                    if ($paymentAmount === null || $paymentAmount <= 0 || $paymentAmount >= $total) {
+                        throw new InvalidArgumentException('Nominal DP harus lebih dari 0 dan kurang dari total tagihan.');
+                    }
+
+                    $payAmount = $paymentAmount;
+                } else {
+                    $payAmount = $total;
+                }
 
                 RecordPayment::execute(
                     transaction: $transaction,

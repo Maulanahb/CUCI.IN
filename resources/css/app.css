@@ -25,3 +25,23 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* Fokus keyboard yang konsisten untuk seluruh elemen interaktif. */
+@layer base {
+    :where(a, button, [role='button'], summary):focus-visible {
+        outline: 2px solid var(--color-brand-600);
+        outline-offset: 2px;
+    }
+}
+
+/* Hormati preferensi pengguna yang meminta animasi diminimalkan. */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

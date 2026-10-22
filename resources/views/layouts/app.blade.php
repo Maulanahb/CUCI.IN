@@ -36,7 +36,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false }">
+    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false }" x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)">
         {{-- Overlay mobile --}}
         <div x-cloak x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-30 bg-slate-900/40 lg:hidden" @click="sidebarOpen = false"></div>
 
@@ -48,7 +48,7 @@
         >
             <div class="flex h-16 items-center gap-2 border-b border-slate-100 px-5">
                 <x-app-logo class="size-8" />
-                <span class="text-lg font-semibold tracking-tight text-brand-700">CUCI<span class="text-brand-400">.IN</span></span>
+                <span class="text-lg font-semibold tracking-tight text-brand-700">CUCI<span class="text-brand-600">.IN</span></span>
             </div>
 
             <nav class="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
@@ -99,21 +99,23 @@
 
         {{-- Konten utama --}}
         <div class="flex min-h-screen flex-col lg:pl-64">
-            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur sm:px-6">
-                <button type="button" id="sidebar-toggle" class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = true" aria-label="Buka menu">
-                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                        <path d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+            <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
+                <div class="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+                    <button type="button" id="sidebar-toggle" class="rounded-lg p-3 text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = true" aria-label="Buka menu">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                            <path d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
 
-                <h1 class="text-base font-semibold text-slate-900 sm:text-lg">{{ $title ?? config('app.name') }}</h1>
+                    <h1 class="min-w-0 truncate text-base font-semibold text-slate-900 sm:text-lg">{{ $title ?? config('app.name') }}</h1>
 
-                @isset($actions)
-                    <div class="ml-auto flex items-center gap-2">{{ $actions }}</div>
-                @endisset
+                    @isset($actions)
+                        <div class="ml-auto flex items-center gap-2">{{ $actions }}</div>
+                    @endisset
+                </div>
             </header>
 
-            <main class="flex-1 p-4 sm:p-6">
+            <main class="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">
                 @if (session('status'))
                     <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
                         {{ session('status') }}

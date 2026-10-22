@@ -23,9 +23,9 @@ class StorePaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'amount' => ['required', 'numeric', 'min:100'],
+            'amount' => ['required', 'numeric', 'min:1'],
+            'cash_received' => ['nullable', 'numeric', 'min:0', 'gte:amount', 'exclude_unless:method,Tunai'],
             'method' => ['required', 'string', 'in:Tunai,Transfer,QRIS'],
-            'payment_type' => ['nullable', 'string', 'in:Pembayaran Penuh,DP,Pelunasan'],
         ];
     }
 
@@ -39,7 +39,8 @@ class StorePaymentRequest extends FormRequest
         return [
             'amount.required' => 'Nominal pembayaran wajib diisi.',
             'amount.numeric' => 'Nominal pembayaran harus berupa angka.',
-            'amount.min' => 'Nominal pembayaran minimal Rp 100.',
+            'amount.min' => 'Nominal pembayaran minimal Rp 1.',
+            'cash_received.gte' => 'Uang diterima tidak boleh kurang dari nominal pembayaran.',
             'method.required' => 'Metode pembayaran wajib dipilih.',
             'method.in' => 'Metode pembayaran harus berupa Tunai, Transfer, atau QRIS.',
         ];

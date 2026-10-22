@@ -3,17 +3,9 @@
         {{-- Breadcrumb & Header Halaman --}}
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                {{-- Breadcrumb --}}
-                <nav class="flex items-center gap-2 text-xs font-medium text-slate-500 mb-1" aria-label="Breadcrumb">
-                    <span class="text-brand-700 font-semibold">CUCI.IN</span>
-                    <span class="text-slate-300">/</span>
-                    <span>Portal Pelanggan</span>
-                    <span class="text-slate-300">/</span>
-                    <span class="text-slate-700 font-medium">Pengaduan</span>
-                </nav>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Daftar Pengaduan</h1>
 
-                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Daftar Pengaduan</h1>
-                <p class="mt-1 text-xs text-slate-500 sm:text-sm">
+                <p class="text-xs text-slate-500 sm:text-sm">
                     Lacak status laporan keluhan cucian Anda beserta tanggapan dan komitmen penanganan maksimal 2 hari kerja.
                 </p>
             </div>
@@ -22,7 +14,7 @@
             <div class="shrink-0">
                 <a
                     href="{{ route('customer.complaints.create') }}"
-                    class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
+                    class="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
                 >
                     <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -35,9 +27,9 @@
         {{-- Kartu Ringkasan Statistik Pengaduan --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {{-- Kartu 1: Total Pengaduan --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Pengaduan</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Pengaduan</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shrink-0">
                         <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -45,13 +37,13 @@
                     </div>
                 </div>
                 <p class="mt-2 text-2xl font-extrabold text-slate-900 tracking-tight">{{ $stats['total_count'] }} Laporan</p>
-                <p class="mt-1 text-xs text-slate-400">Arsip riwayat seluruh pengaduan</p>
+                <p class="mt-1 text-xs text-slate-500">Arsip riwayat seluruh pengaduan</p>
             </div>
 
             {{-- Kartu 2: Menunggu & Diproses --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-amber-600">Sedang Ditangani</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-amber-600">Sedang Ditangani</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-amber-50 text-amber-700 shrink-0">
                         <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -66,13 +58,13 @@
                         ({{ $stats['pending_count'] }} Menunggu, {{ $stats['in_progress_count'] }} Diproses)
                     </span>
                 </div>
-                <p class="mt-1 text-xs text-slate-400">Sedang ditindaklanjuti oleh staf</p>
+                <p class="mt-1 text-xs text-slate-500">Sedang ditindaklanjuti oleh staf</p>
             </div>
 
             {{-- Kartu 3: Selesai Ditangani --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Terselesaikan</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-emerald-600">Terselesaikan</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 shrink-0">
                         <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -80,17 +72,17 @@
                     </div>
                 </div>
                 <p class="mt-2 text-2xl font-extrabold text-emerald-700 tracking-tight">{{ $stats['resolved_count'] }} Laporan</p>
-                <p class="mt-1 text-xs text-slate-400">Pengaduan tuntas diselesaikan</p>
+                <p class="mt-1 text-xs text-slate-500">Pengaduan tuntas diselesaikan</p>
             </div>
         </div>
 
         {{-- Bar Pencarian & Filter Status --}}
-        <div class="rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs">
+        <div class="rounded-xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs">
             <form method="GET" action="{{ route('customer.complaints.index') }}" class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 {{-- Input Pencarian --}}
                 <div class="relative flex-1">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                        <svg class="size-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                        <svg class="size-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
@@ -119,9 +111,9 @@
 
                     <a
                         href="{{ route('customer.complaints.index') }}"
-                        class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 shadow-xs transition hover:bg-slate-50 hover:text-slate-900"
+                        class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 shadow-xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                     >
-                        <svg class="size-3.5 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg class="size-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                         Reset
@@ -132,10 +124,10 @@
 
         {{-- Tabel Pengaduan --}}
         @if ($complaints->isNotEmpty())
-            <div class="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-xs">
-                <div class="overflow-x-auto">
+            <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-xs">
+                <div class="hidden overflow-x-auto md:block">
                     <table class="w-full text-left text-xs sm:text-sm">
-                        <thead class="border-b border-slate-200/90 bg-slate-50/75 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                        <thead class="border-b border-slate-200/80 bg-slate-50/75 text-xs font-bold uppercase tracking-wider text-slate-500">
                             <tr>
                                 <th class="py-3.5 px-4 sm:px-6">Pengaduan & Nota</th>
                                 <th class="py-3.5 px-4 sm:px-6">Subjek Keluhan</th>
@@ -148,8 +140,8 @@
                             @foreach ($complaints as $complaint)
                                 @php
                                     $statusBadge = match ($complaint->status) {
-                                        'Menunggu' => 'bg-amber-50 border-amber-200 text-amber-800',
-                                        'Diproses' => 'bg-sky-50 border-sky-200 text-sky-800',
+                                        'Menunggu' => 'bg-sky-50 border-sky-200 text-sky-800',
+                                        'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
                                         'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-800',
                                         default => 'bg-slate-100 border-slate-200 text-slate-700',
                                     };
@@ -163,7 +155,7 @@
                                             {{ $complaint->complaint_code }}
                                         </div>
                                         <div class="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
-                                            <span class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] font-medium text-slate-700">
+                                            <span class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs font-medium text-slate-700">
                                                 {{ $complaint->transaction?->transaction_code ?? '-' }}
                                             </span>
                                             <span>•</span>
@@ -176,7 +168,7 @@
                                         <p class="font-semibold text-slate-900">{{ $complaint->subject }}</p>
                                         <p class="mt-1 text-xs text-slate-500 line-clamp-2">{{ $complaint->description }}</p>
                                         @if ($complaint->response)
-                                            <div class="mt-2 inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 border border-emerald-100">
+                                            <div class="mt-2 inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 border border-emerald-100">
                                                 <svg class="size-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                                                 </svg>
@@ -198,18 +190,18 @@
                                             {{ $complaint->deadline_at->translatedFormat('d M Y, H:i') }} WIB
                                         </div>
                                         @if ($complaint->status === 'Selesai')
-                                            <span class="mt-1 inline-block text-[11px] text-emerald-600 font-medium">
+                                            <span class="mt-1 inline-block text-xs text-emerald-600 font-medium">
                                                 ✓ Selesai
                                             </span>
                                         @elseif ($isPastDeadline)
-                                            <span class="mt-1 inline-flex items-center gap-1 text-[11px] font-bold text-rose-600">
+                                            <span class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-rose-600">
                                                 <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                                 </svg>
                                                 Melewati SLA
                                             </span>
                                         @else
-                                            <span class="mt-1 inline-block text-[11px] text-amber-700 font-medium">
+                                            <span class="mt-1 inline-block text-xs text-amber-700 font-medium">
                                                 Maks {{ $complaint->deadline_at->diffForHumans() }}
                                             </span>
                                         @endif
@@ -219,10 +211,10 @@
                                     <td class="py-4 px-4 sm:px-6 align-top text-right whitespace-nowrap">
                                         <a
                                             href="{{ route('customer.complaints.show', $complaint) }}"
-                                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+                                            class="inline-flex items-center gap-1.5 rounded-lg border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 shadow-2xs transition hover:border-brand-300 hover:bg-brand-100 hover:text-brand-800"
                                         >
                                             <span>Rincian</span>
-                                            <svg class="size-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                             </svg>
                                         </a>
@@ -231,6 +223,55 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Kartu (mobile) --}}
+                <div class="divide-y divide-slate-100 md:hidden">
+                    @foreach ($complaints as $complaint)
+                        @php
+                            $statusBadge = match ($complaint->status) {
+                                'Menunggu' => 'bg-sky-50 border-sky-200 text-sky-800',
+                                'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
+                                'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-800',
+                                default => 'bg-slate-100 border-slate-200 text-slate-700',
+                            };
+
+                            $isPastDeadline = $complaint->status !== 'Selesai' && now()->gt($complaint->deadline_at);
+                        @endphp
+
+                        <a href="{{ route('customer.complaints.show', $complaint) }}" class="block p-4 transition-colors hover:bg-slate-50">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <p class="font-bold text-slate-900">{{ $complaint->complaint_code }}</p>
+                                    <p class="mt-0.5 text-xs text-slate-500">
+                                        {{ $complaint->transaction?->transaction_code ?? '-' }} &middot;
+                                        {{ $complaint->created_at->translatedFormat('d M Y') }}
+                                    </p>
+                                </div>
+
+                                <span class="inline-flex shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $statusBadge }}">
+                                    {{ $complaint->status }}
+                                </span>
+                            </div>
+
+                            <p class="mt-3 font-semibold text-slate-900">{{ $complaint->subject }}</p>
+                            <p class="mt-1 line-clamp-2 text-xs text-slate-500">{{ $complaint->description }}</p>
+
+                            <div class="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
+                                @if ($complaint->status === 'Selesai')
+                                    <span class="text-xs font-medium text-emerald-700">Selesai ditangani</span>
+                                @elseif ($isPastDeadline)
+                                    <span class="text-xs font-bold text-rose-700">Melewati SLA</span>
+                                @else
+                                    <span class="text-xs text-slate-500">
+                                        Target {{ $complaint->deadline_at->translatedFormat('d M Y') }}
+                                    </span>
+                                @endif
+
+                                <span class="text-xs font-semibold text-brand-700">Lihat rincian &rarr;</span>
+                            </div>
+                        </a>
+                    @endforeach
                 </div>
 
                 {{-- Pagination --}}
@@ -242,7 +283,7 @@
             </div>
         @else
             {{-- Empty State --}}
-            <div class="rounded-2xl border border-slate-200/90 bg-white p-8 sm:p-12 text-center shadow-xs">
+            <div class="rounded-2xl border border-slate-200/80 bg-white p-8 sm:p-12 text-center shadow-xs">
                 <div class="mx-auto flex size-14 items-center justify-center rounded-full bg-brand-50 text-brand-700 shrink-0">
                     <svg class="size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -256,14 +297,14 @@
                     @if (request()->hasAny(['search', 'status']))
                         <a
                             href="{{ route('customer.complaints.index') }}"
-                            class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 shadow-2xs hover:bg-slate-50"
+                            class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 shadow-2xs hover:bg-slate-100"
                         >
                             Reset Filter
                         </a>
                     @endif
                     <a
                         href="{{ route('customer.complaints.create') }}"
-                        class="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-xs hover:bg-brand-700"
+                        class="inline-flex items-center gap-2 rounded-lg bg-brand-700 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-xs hover:bg-brand-800"
                     >
                         Ajukan Pengaduan Sekarang
                     </a>

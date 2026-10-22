@@ -25,7 +25,7 @@ class PaymentController extends Controller
                 amount: (float) $validated['amount'],
                 method: (string) $validated['method'],
                 userId: (int) auth()->id(),
-                paymentType: $validated['payment_type'] ?? null
+                cashReceived: isset($validated['cash_received']) ? (float) $validated['cash_received'] : null
             );
         } catch (InvalidArgumentException $e) {
             throw ValidationException::withMessages([

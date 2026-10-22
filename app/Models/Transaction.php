@@ -135,8 +135,8 @@ class Transaction extends Model
     public function getTotalPaidAttribute(): float
     {
         $validPayments = $this->relationLoaded('payments')
-            ? $this->payments->filter(fn (Payment $p): bool => in_array($p->verification_status, ['Tidak Diperlukan', 'Terverifikasi'], true))
-            : $this->payments()->whereIn('verification_status', ['Tidak Diperlukan', 'Terverifikasi'])->get();
+            ? $this->payments->filter(fn (Payment $p): bool => in_array($p->verification_status, Payment::PAID_STATUSES, true))
+            : $this->payments()->paid()->get();
 
         return (float) $validPayments->sum('amount');
     }

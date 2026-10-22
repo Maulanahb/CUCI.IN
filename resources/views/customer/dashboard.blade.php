@@ -5,10 +5,6 @@
             <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-100 px-2.5 py-0.5 text-xs font-semibold text-brand-800">
-                            <span class="size-1.5 rounded-full bg-brand-600 animate-pulse"></span>
-                            Pelanggan CUCI.IN
-                        </span>
                         @if ($stats['active_count'] > 0)
                             <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800 border border-amber-200/60">
                                 {{ $stats['active_count'] }} Cucian Sedang Diproses
@@ -26,7 +22,7 @@
                 <div class="flex flex-wrap items-center gap-2.5">
                     <a
                         href="{{ route('customer.transactions.index') }}"
-                        class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
+                        class="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
                     >
                         <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -35,9 +31,9 @@
                     </a>
                     <a
                         href="{{ route('transactions.lookup') }}"
-                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900"
+                        class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                     >
-                        <svg class="size-4 text-slate-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg class="size-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         <span>Cek Kode Nota Fisik</span>
@@ -49,9 +45,9 @@
         {{-- Kartu Ringkasan Statistik --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {{-- Kartu 1: Cucian Berjalan --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Cucian Berjalan</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Cucian Berjalan</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-sky-50 text-sky-700 shrink-0">
                         <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -62,13 +58,13 @@
                     <p class="text-2xl font-extrabold text-brand-700 tracking-tight">{{ $stats['active_count'] }}</p>
                     <span class="text-xs text-slate-500 font-medium">Nota Aktif</span>
                 </div>
-                <p class="mt-1 text-xs text-slate-400">Sedang diproses di workshop</p>
+                <p class="mt-1 text-xs text-slate-500">Sedang diproses di workshop</p>
             </div>
 
             {{-- Kartu 2: Menunggu Pelunasan --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Menunggu Pelunasan</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Menunggu Pelunasan</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-amber-50 text-amber-700 shrink-0">
                         <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -80,15 +76,15 @@
                         Rp {{ number_format($stats['unpaid_amount'], 0, ',', '.') }}
                     </p>
                 </div>
-                <p class="mt-1 text-xs text-slate-400">
+                <p class="mt-1 text-xs text-slate-500">
                     {{ $stats['unpaid_amount'] > 0 ? 'Dapat dilunasi saat pengambilan' : 'Semua tagihan lunas' }}
                 </p>
             </div>
 
             {{-- Kartu 3: Total Transaksi --}}
-            <div class="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs transition hover:shadow-sm">
+            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
                 <div class="flex items-center justify-between">
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Riwayat Transaksi</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Riwayat Transaksi</p>
                     <div class="flex size-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shrink-0">
                         <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -99,12 +95,12 @@
                     <p class="text-2xl font-extrabold text-slate-900 tracking-tight">{{ $stats['total_count'] }}</p>
                     <span class="text-xs text-slate-500 font-medium">Nota Laundry</span>
                 </div>
-                <p class="mt-1 text-xs text-slate-400">Riwayat sejak akun terdaftar</p>
+                <p class="mt-1 text-xs text-slate-500">Riwayat sejak akun terdaftar</p>
             </div>
         </div>
 
         {{-- Section Utama: Cucian Aktif & Status Pelacakan (FR-27) --}}
-        <div class="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs">
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4">
                 <div>
                     <div class="flex items-center gap-2">
@@ -145,7 +141,7 @@
                     <div class="mt-5 flex justify-center gap-3">
                         <a
                             href="{{ route('customer.transactions.index') }}"
-                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 transition"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
                         >
                             <span>Lihat Riwayat Sebelumnya</span>
                             <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -186,7 +182,7 @@
                                         </span>
                                     @elseif ($statusVal === 'Diproses')
                                         <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-                                            <span class="size-1.5 rounded-full bg-amber-600 animate-pulse"></span>
+                                            <span class="size-1.5 rounded-full bg-amber-600"></span>
                                             Sedang Dicuci / Disetrika
                                         </span>
                                     @else
@@ -235,8 +231,8 @@
                                                     1
                                                 @endif
                                             </div>
-                                            <p class="mt-2 text-[11px] font-bold {{ $currentStep >= 1 ? 'text-slate-900' : 'text-slate-400' }}">Diterima</p>
-                                            <p class="text-[10px] text-slate-400 hidden sm:block">Ditimbang di kasir</p>
+                                            <p class="mt-2 text-xs font-bold {{ $currentStep >= 1 ? 'text-slate-900' : 'text-slate-500' }}">Diterima</p>
+                                            <p class="text-xs text-slate-500 hidden sm:block">Ditimbang di kasir</p>
                                         </div>
 
                                         {{-- Step 2: Diproses --}}
@@ -250,23 +246,25 @@
                                                     2
                                                 @endif
                                             </div>
-                                            <p class="mt-2 text-[11px] font-bold {{ $currentStep >= 2 ? 'text-slate-900' : 'text-slate-400' }}">Diproses</p>
-                                            <p class="text-[10px] text-slate-400 hidden sm:block">Dicuci & disetrika</p>
+                                            <p class="mt-2 text-xs font-bold {{ $currentStep >= 2 ? 'text-slate-900' : 'text-slate-500' }}">Diproses</p>
+                                            <p class="text-xs text-slate-500 hidden sm:block">Dicuci & disetrika</p>
                                         </div>
 
                                         {{-- Step 3: Selesai --}}
                                         <div class="flex flex-col items-center text-center">
-                                            <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 3 ? 'bg-emerald-600 text-white ring-4 ring-emerald-100' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
-                                                @if ($currentStep >= 3)
-                                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                                    </svg>
-                                                @else
-                                                    3
-                                                @endif
+                                            <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 3 ? 'bg-emerald-600 text-white ring-4 ring-emerald-100' : 'bg-slate-200' }} text-xs font-bold transition">
+                                                <span class="{{ $currentStep >= 3 ? '' : 'text-slate-500' }}">
+                                                    @if ($currentStep >= 3)
+                                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    @else
+                                                        3
+                                                    @endif
+                                                </span>
                                             </div>
-                                            <p class="mt-2 text-[11px] font-bold {{ $currentStep >= 3 ? 'text-emerald-800' : 'text-slate-400' }}">Selesai</p>
-                                            <p class="text-[10px] {{ $currentStep >= 3 ? 'text-emerald-600 font-medium' : 'text-slate-400' }} hidden sm:block">Siap diambil</p>
+                                            <p class="mt-2 text-xs font-bold {{ $currentStep >= 3 ? 'text-emerald-800' : 'text-slate-500' }}">Selesai</p>
+                                            <p class="text-xs {{ $currentStep >= 3 ? 'text-emerald-600 font-medium' : 'text-slate-500' }} hidden sm:block">Siap diambil</p>
                                         </div>
                                     </div>
                                 </div>
@@ -281,7 +279,7 @@
 
                                 <div class="flex items-center justify-between sm:justify-end gap-3">
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-slate-400">Status Pembayaran:</span>
+                                        <span class="text-slate-500">Status Pembayaran:</span>
                                         @if ($isPaidOff)
                                             <span class="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                                                 Lunas
@@ -295,7 +293,7 @@
 
                                     <a
                                         href="{{ route('customer.transactions.index', ['selected' => $trx->transaction_code]) }}"
-                                        class="inline-flex items-center gap-1 rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 transition"
+                                        class="inline-flex items-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 shadow-2xs transition hover:border-brand-300 hover:bg-brand-100 hover:text-brand-800"
                                     >
                                         <span>Rincian Nota</span>
                                         <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -311,7 +309,7 @@
         </div>
 
         {{-- Section Riwayat Transaksi Terbaru (5 Transaksi Terakhir) --}}
-        <div class="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs">
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
                     <h3 class="text-base font-bold text-slate-900">Riwayat Pesanan Terbaru</h3>
@@ -319,7 +317,7 @@
                 </div>
                 <a
                     href="{{ route('customer.transactions.index') }}"
-                    class="text-xs font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1"
+                    class="text-xs font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-1"
                 >
                     <span>Lihat Semua Riwayat ({{ $stats['total_count'] }})</span>
                     <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -350,28 +348,19 @@
                                 </div>
                                 <div>
                                     <p class="text-xs font-bold font-mono text-slate-900">{{ $transaction->transaction_code }}</p>
-                                    <p class="text-[11px] text-slate-400">{{ $transaction->created_at->translatedFormat('d F Y, H:i') }}</p>
+                                    <p class="text-xs text-slate-500">{{ $transaction->created_at->translatedFormat('d F Y, H:i') }}</p>
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between sm:justify-end gap-3 pl-12 sm:pl-0">
                                 <div class="text-right">
-                                    <p class="text-xs font-bold text-slate-900">Rp {{ number_format((float) $transaction->total_amount, 0, ',', '.') }}</p>
-                                    <span class="text-[10px] {{ $isPaidOff ? 'text-emerald-600 font-semibold' : 'text-amber-600 font-medium' }}">
-                                        {{ $isPaidOff ? 'Lunas' : 'Belum Lunas' }}
-                                    </span>
+                                    <span class="text-xs font-bold text-slate-900">Rp {{ number_format((float) $transaction->total_amount, 0, ',', '.') }}</span>
+                                    <div class="mt-1">
+                                        <x-ui.payment-badge :status="$isPaidOff ? 'Lunas' : 'Belum Bayar'" size="sm" />
+                                    </div>
                                 </div>
 
-                                <span class="rounded-full px-2.5 py-0.5 text-[11px] font-semibold {{ match ($statusVal) {
-                                    'Diterima' => 'bg-sky-50 text-sky-700 border border-sky-200/60',
-                                    'Diproses' => 'bg-amber-50 text-amber-700 border border-amber-200/60',
-                                    'Selesai' => 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
-                                    'Diambil' => 'bg-slate-100 text-slate-700 border border-slate-200/60',
-                                    'Dibatalkan' => 'bg-rose-50 text-rose-700 border border-rose-200/60',
-                                    default => 'bg-slate-100 text-slate-700',
-                                } }}">
-                                    {{ $statusVal }}
-                                </span>
+                                <x-ui.status-badge :status="$transaction->status" size="sm" />
 
                                 <a
                                     href="{{ route('customer.transactions.index', ['selected' => $transaction->transaction_code]) }}"

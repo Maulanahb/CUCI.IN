@@ -2,6 +2,17 @@
 
 ## CUCI.IN — Sistem Manajemen Operasional Laundry Berbasis Web
 
+---
+
+### Riwayat Perubahan Dokumen (Document Change Log)
+
+| Versi | Tanggal | Pengubah | Deskripsi Perubahan |
+| :---: | :---: | :--- | :--- |
+| **v1.0** | 10 Okt 2026 | Tim Pengembang CUCI.IN | Rilis awal dokumen Project Charter untuk validasi ruang lingkup dan arsitektur *Milestone 1*. |
+| **v1.1** | 23 Okt 2026 | Maulana Ahmad Bukhori | Penambahan **Bab 18 (Rencana Pengadaan & Anggaran Proyek)**: penetapan kebijakan pengadaan mandiri hemat biaya, sewa Cloud VPS lokal, dan integrasi dengan [`docs/procurement_plan.md`](./procurement_plan.md). |
+
+---
+
 ### 1. Pendekatan Proyek
 
 **Pendekatan: Hybrid**
@@ -507,3 +518,13 @@ Proyek dinyatakan berhasil apabila:
 6. Tidak terdapat critical bug pada fitur utama.
 7. Sistem dapat diintegrasikan pada environment yang ditentukan.
 8. Dokumentasi dan artefak proyek sesuai dengan implementasi sistem.
+
+---
+
+### 18. Rencana Pengadaan & Anggaran Proyek (Procurement & Budget)
+
+Proyek CUCI.IN merupakan inisiatif mandiri tanpa pendanaan mitra eksternal. Strategi pengadaan dirancang berbasis efisiensi biaya:
+
+1. **Pemanfaatan Fasilitas Pendidikan:** Domain resmi 1 tahun (`.tech` / `.me`), sertifikat SSL/TLS Let's Encrypt, Cloudflare R2 Object Storage (Free Tier 10 GB), serta lisensi repositori GitHub & Notion diperoleh secara gratis (Rp 0).
+2. **Lingkungan Server Cloud:** Disiapkan Cloud VPS lokal (IDCloudHost / Biznet Gio) berbiaya terukur Rp 50.000 – Rp 85.000/bulan yang ditanggung patungan mandiri oleh 5 anggota tim (~Rp 10.000 – Rp 17.000/orang/bulan). Tim juga mengevaluasi kredit pelajar Microsoft Azure for Students ($100) sebagai lingkungan uji coba staging tambahan.
+3. **Dokumentasi Lengkap:** Rincian spesifikasi pengadaan, tabel vendor, komparasi cloud, dan RAB dipelihara terpusat pada dokumen [`docs/procurement_plan.md`](./procurement_plan.md).

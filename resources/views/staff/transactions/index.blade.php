@@ -1,393 +1,245 @@
 @php
     $routePrefix = request()->routeIs('admin.*') ? 'admin' : 'staff';
+    $hasFilters = request()->filled('search') || request()->filled('status');
 @endphp
 
 <x-layouts::app title="Kelola Transaksi">
 
+    <x-slot:actions>
+        <x-ui.button :href="route($routePrefix . '.transactions.create')" size="sm" aria-label="Buka Kasir POS">
+            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span class="hidden sm:inline">Buka Kasir POS</span>
+        </x-ui.button>
+    </x-slot>
+
     <div class="space-y-6">
 
-        {{-- Header --}}
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
-            <div>
-                <div class="flex items-center gap-2">
-                    <a
-                        href="{{ route($routePrefix . '.dashboard') }}"
-                        class="text-sm text-slate-400 hover:text-brand-600"
-                    >
-                        Dashboard
-                    </a>
-
-                    <span class="text-slate-300">/</span>
-
-                    <span class="text-sm font-medium text-slate-600">
-                        Kelola Transaksi
-                    </span>
-                </div>
-
-                <h1 class="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-                    Kelola Transaksi
-                </h1>
-
-                <p class="mt-1 text-sm text-slate-500">
-                    Kelola transaksi laundry dan pantau status pengerjaan cucian.
-                </p>
-            </div>
-
-            <div>
-                <a
-                    href="{{ route($routePrefix . '.transactions.create') }}"
-                    class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 active:scale-98"
-                >
-                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span>Buka Kasir POS Baru</span>
-                </a>
-            </div>
-
-        </div>
-
-
-        {{-- Flash Message --}}
+        {{-- Flash message --}}
         @if (session('success'))
-            <div class="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
                 {{ session('success') }}
             </div>
         @endif
 
-
         {{-- Filter --}}
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-
+        <x-ui.card>
             <form
                 method="GET"
                 action="{{ route($routePrefix . '.transactions.index') }}"
-                class="grid grid-cols-1 gap-4 md:grid-cols-3"
+                class="flex flex-col gap-3 md:flex-row md:items-end"
             >
-
-                {{-- Search --}}
-                <div class="md:col-span-2">
-
-                    <label
-                        for="search"
-                        class="mb-1.5 block text-xs font-medium text-slate-600"
-                    >
-                        Cari Transaksi
+                <div class="flex-1">
+                    <label for="search" class="mb-1.5 block text-xs font-medium text-slate-600">
+                        Cari transaksi
                     </label>
-
                     <input
-                        type="text"
+                        type="search"
                         name="search"
                         id="search"
                         value="{{ request('search') }}"
-                        placeholder="Kode transaksi atau nama pelanggan..."
-                        class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                        placeholder="Kode nota atau nama pelanggan..."
+                        class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 transition placeholder:text-slate-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     >
-
                 </div>
 
-
-                {{-- Status --}}
-                <div>
-
-                    <label
-                        for="status"
-                        class="mb-1.5 block text-xs font-medium text-slate-600"
-                    >
-                        Status Cucian
+                <div class="md:w-56">
+                    <label for="status" class="mb-1.5 block text-xs font-medium text-slate-600">
+                        Status cucian
                     </label>
-
                     <select
                         name="status"
                         id="status"
-                        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                        class="h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     >
-
-                        <option value="">
-                            Semua Status
-                        </option>
-
-                        <option
-                            value="Diterima"
-                            @selected(request('status') === 'Diterima')
-                        >
-                            Diterima
-                        </option>
-
-                        <option
-                            value="Diproses"
-                            @selected(request('status') === 'Diproses')
-                        >
-                            Diproses
-                        </option>
-
-                        <option
-                            value="Selesai"
-                            @selected(request('status') === 'Selesai')
-                        >
-                            Selesai
-                        </option>
-
-                        <option
-                            value="Diambil"
-                            @selected(request('status') === 'Diambil')
-                        >
-                            Diambil
-                        </option>
-
-                        <option
-                            value="Dibatalkan"
-                            @selected(request('status') === 'Dibatalkan')
-                        >
-                            Dibatalkan
-                        </option>
-
+                        <option value="">Semua status</option>
+                        @foreach (['Diterima', 'Diproses', 'Selesai', 'Diambil', 'Dibatalkan'] as $status)
+                            <option value="{{ $status }}" @selected(request('status') === $status)>
+                                {{ $status }}
+                            </option>
+                        @endforeach
                     </select>
-
                 </div>
 
-
-                {{-- Button --}}
-                <div class="md:col-span-3 flex justify-end gap-2">
-
-                    <a
-                        href="{{ route($routePrefix . '.transactions.index') }}"
-                        class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                <div class="flex gap-2">
+                    <x-ui.button
+                        :href="route($routePrefix . '.transactions.index')"
+                        variant="ghost"
+                        class="{{ $hasFilters ? '' : 'pointer-events-none opacity-50' }}"
+                        :aria-disabled="$hasFilters ? 'false' : 'true'"
                     >
                         Reset
-                    </a>
-
-                    <button
-                        type="submit"
-                        class="rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700"
-                    >
-                        Cari Transaksi
-                    </button>
-
+                    </x-ui.button>
+                    <x-ui.button type="submit">
+                        Terapkan
+                    </x-ui.button>
                 </div>
-
             </form>
+        </x-ui.card>
 
-        </div>
-
-
-        {{-- Daftar Transaksi --}}
-        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-
-            {{-- Header Table --}}
-            <div class="border-b border-slate-200 px-5 py-4">
-
-                <div class="flex items-center justify-between">
-
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-900">
-                            Daftar Transaksi
-                        </h2>
-
-                        <p class="mt-1 text-xs text-slate-500">
-                            {{ $transactions->total() }} transaksi ditemukan
-                        </p>
+        {{-- Daftar transaksi --}}
+        <x-ui.card padding="p-0" class="overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5h10M9 12h10M9 19h10M4 5h.01M4 12h.01M4 19h.01" />
+                        </svg>
                     </div>
 
+                    <div>
+                        <h2 class="text-sm font-semibold text-slate-900">Daftar Transaksi</h2>
+                        <p class="mt-0.5 text-xs text-slate-500">
+                            {{ $transactions->total() }} nota ditemukan
+                        </p>
+                    </div>
                 </div>
-
             </div>
 
-
-            {{-- Table --}}
-            <div class="overflow-x-auto">
-
+            {{-- Tabel (desktop) --}}
+            <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-left text-sm">
-
-                    <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-
+                    <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                         <tr>
-
-                            <th class="px-5 py-3 font-semibold">
-                                Kode Transaksi
-                            </th>
-
-                            <th class="px-5 py-3 font-semibold">
-                                Pelanggan
-                            </th>
-
-                            <th class="px-5 py-3 font-semibold">
-                                Total
-                            </th>
-
-                            <th class="px-5 py-3 font-semibold">
-                                Status
-                            </th>
-
-                            <th class="px-5 py-3 text-right font-semibold">
-                                Aksi
-                            </th>
-
+                            <th scope="col" class="px-5 py-3 font-semibold">Kode Nota</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Pelanggan</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Total</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Status</th>
+                            <th scope="col" class="px-5 py-3 text-right font-semibold">Aksi</th>
                         </tr>
-
                     </thead>
 
-
                     <tbody class="divide-y divide-slate-100">
-
                         @forelse ($transactions as $transaction)
-
-                            <tr class="transition hover:bg-slate-50">
-
-                                {{-- Kode --}}
+                            <tr class="transition-colors hover:bg-slate-50/70">
                                 <td class="px-5 py-4">
-
-                                    <p class="font-semibold text-slate-900">
-                                        {{ $transaction->transaction_code }}
+                                    <p class="font-semibold text-slate-900">{{ $transaction->transaction_code }}</p>
+                                    <p class="mt-0.5 text-xs text-slate-500">
+                                        {{ $transaction->created_at?->format('d M Y, H:i') }}
                                     </p>
-
-                                    <p class="mt-0.5 text-xs text-slate-400">
-                                        {{ $transaction->created_at?->format('d M Y H:i') }}
-                                    </p>
-
                                 </td>
 
-
-                                {{-- Customer --}}
                                 <td class="px-5 py-4">
-
                                     <p class="font-medium text-slate-800">
-                                        {{ $transaction->customer?->name ?? 'Guest' }}
+                                        {{ $transaction->customer?->name ?? 'Pelanggan umum' }}
                                     </p>
-
                                     @if ($transaction->customer?->phone)
-                                        <p class="mt-0.5 text-xs text-slate-400">
-                                            {{ $transaction->customer->phone }}
-                                        </p>
+                                        <p class="mt-0.5 text-xs text-slate-500">{{ $transaction->customer->phone }}</p>
                                     @endif
-
                                 </td>
 
-
-                                {{-- Total & Status Bayar --}}
                                 <td class="px-5 py-4">
-                                    <p class="font-semibold text-slate-900">
-                                        Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
-                                    </p>
-
-                                    @php
-                                        $payStatus = $transaction->payment_status;
-                                        $payClasses = match ($payStatus) {
-                                            'Lunas' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                            'DP' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                            default => 'bg-rose-50 text-rose-700 border-rose-200',
-                                        };
-                                    @endphp
+                                    <x-ui.money :value="$transaction->total_amount" class="font-semibold text-slate-900" />
                                     <div class="mt-1">
-                                        <span class="inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold {{ $payClasses }}">
-                                            {{ $payStatus }}
-                                        </span>
+                                        <x-ui.payment-badge :status="$transaction->payment_status" size="sm" />
                                     </div>
                                 </td>
 
-
-                                {{-- Status --}}
                                 <td class="px-5 py-4">
-
-                                    @php
-                                        $statusClasses = match ($transaction->status) {
-                                            'Diterima' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                            'Diproses' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                            'Selesai' => 'bg-green-50 text-green-700 border-green-200',
-                                            'Diambil' => 'bg-slate-100 text-slate-700 border-slate-200',
-                                            'Dibatalkan' => 'bg-red-50 text-red-700 border-red-200',
-                                            default => 'bg-slate-50 text-slate-600 border-slate-200',
-                                        };
-                                    @endphp
-
-                                    <span class="inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold {{ $statusClasses }}">
-                                        {{ $transaction->status }}
-                                    </span>
-
+                                    <x-ui.status-badge :status="$transaction->status" />
                                 </td>
 
-
-                                {{-- Aksi --}}
-                                <td class="px-5 py-4 text-right">
-                                    <div class="inline-flex items-center gap-1.5">
-                                        <a
-                                            href="{{ route($routePrefix . '.transactions.show', $transaction) }}"
-                                            class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900"
+                                <td class="px-5 py-4">
+                                    <div class="flex items-center justify-end gap-1.5">
+                                        <x-ui.button
+                                            :href="route($routePrefix . '.transactions.show', $transaction)"
+                                            variant="soft"
+                                            size="xs"
                                         >
                                             Detail
-                                        </a>
-                                        <a
-                                            href="{{ route($routePrefix . '.transactions.print', $transaction) }}"
+                                        </x-ui.button>
+                                        <x-ui.button
+                                            :href="route($routePrefix . '.transactions.print', $transaction)"
+                                            variant="secondary"
+                                            size="xs"
                                             target="_blank"
-                                            class="inline-flex items-center rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-brand-700 shadow-2xs transition hover:bg-brand-50"
-                                            title="Cetak Struk"
+                                            rel="noopener"
                                         >
                                             Cetak
-                                        </a>
+                                        </x-ui.button>
                                     </div>
                                 </td>
-
                             </tr>
-
                         @empty
-
                             <tr>
-
-                                <td
-                                    colspan="5"
-                                    class="px-5 py-12 text-center"
-                                >
-
-                                    <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100">
-
-                                        <svg
-                                            class="size-6 text-slate-400"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke="currentColor"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                            />
+                                <td colspan="5" class="px-5 py-12 text-center">
+                                    <div class="mx-auto flex size-11 items-center justify-center rounded-full bg-slate-100">
+                                        <svg class="size-5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
-
                                     </div>
-
-                                    <p class="mt-3 text-sm font-medium text-slate-700">
-                                        Belum ada transaksi
+                                    <p class="mt-3 text-sm font-medium text-slate-700">Belum ada transaksi</p>
+                                    <p class="mt-1 text-xs text-slate-500">
+                                        Transaksi baru akan muncul di sini setelah kasir menyimpan nota.
                                     </p>
-
-                                    <p class="mt-1 text-xs text-slate-400">
-                                        Data transaksi yang tersedia akan muncul di sini.
-                                    </p>
-
                                 </td>
-
                             </tr>
-
                         @endforelse
-
                     </tbody>
-
                 </table>
-
             </div>
 
+            {{-- Kartu (mobile) --}}
+            <div class="divide-y divide-slate-100 md:hidden">
+                @forelse ($transactions as $transaction)
+                    <div class="space-y-3 p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div>
+                                <p class="font-semibold text-slate-900">{{ $transaction->transaction_code }}</p>
+                                <p class="mt-0.5 text-xs text-slate-500">
+                                    {{ $transaction->created_at?->format('d M Y, H:i') }}
+                                </p>
+                            </div>
+                            <x-ui.status-badge :status="$transaction->status" size="sm" />
+                        </div>
 
-            {{-- Pagination --}}
+                        <div class="flex items-center justify-between gap-3 text-sm">
+                            <span class="text-slate-600">
+                                {{ $transaction->customer?->name ?? 'Pelanggan umum' }}
+                            </span>
+                            <x-ui.payment-badge :status="$transaction->payment_status" size="sm" />
+                        </div>
+
+                        <div class="flex items-center justify-between gap-3">
+                            <x-ui.money :value="$transaction->total_amount" class="text-sm font-semibold text-slate-900" />
+
+                            <div class="flex items-center gap-1.5">
+                                <x-ui.button
+                                    :href="route($routePrefix . '.transactions.show', $transaction)"
+                                    variant="soft"
+                                    size="xs"
+                                >
+                                    Detail
+                                </x-ui.button>
+                                <x-ui.button
+                                    :href="route($routePrefix . '.transactions.print', $transaction)"
+                                    variant="secondary"
+                                    size="xs"
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    Cetak
+                                </x-ui.button>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="px-5 py-10 text-center">
+                        <p class="text-sm font-medium text-slate-700">Belum ada transaksi</p>
+                        <p class="mt-1 text-xs text-slate-500">
+                            Transaksi baru akan muncul di sini setelah kasir menyimpan nota.
+                        </p>
+                    </div>
+                @endforelse
+            </div>
+
             @if ($transactions->hasPages())
-
                 <div class="border-t border-slate-200 px-5 py-4">
                     {{ $transactions->links() }}
                 </div>
-
             @endif
-
-        </div>
+        </x-ui.card>
 
     </div>
 
