@@ -25,6 +25,25 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Executables & Binaries
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Local Environment Overrides
+.env.local
+.env.*.local
+
+# Temporary & Backup files
+*.bak
+*.tmp
+*~
+*.~lock.*#
+
 # Superpowers & AI plans
 /docs/superpowers/
 /.superpowers/
@@ -40,8 +59,7 @@ Thumbs.db
 /docs/diagram/stitch/
 /scripts/
 
-# Local Agent Credentials
-/.agents/mcp_config.json
-/.agent/mcp_config.json
+# Local Agent Credentials & Caches
+*mcp_config*.json
 /.impeccable/
 .agent/skills/impeccable/scripts/bin/
