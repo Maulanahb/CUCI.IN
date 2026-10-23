@@ -26,15 +26,14 @@
                         class="inline-flex items-center gap-1.5 rounded-xl bg-brand-50 px-3.5 py-2 text-xs font-semibold text-brand-700 transition hover:bg-brand-100/80"
                     >
                         <span>Dashboard</span>
-                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
+                        <x-lucide-arrow-right class="size-3.5" />
                     </a>
                 @else
                     <a
                         href="{{ route('login') }}"
-                        class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
+                        class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
                     >
+                        <x-lucide-log-in class="size-3.5 text-slate-500" />
                         <span>Masuk Sistem</span>
                     </a>
                 @endauth
@@ -46,16 +45,10 @@
     <main class="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
         {{-- Hero & Deskripsi --}}
         <div class="text-center max-w-xl mx-auto space-y-2">
-            <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-100/70 px-3 py-1 text-xs font-semibold text-brand-800">
-                <svg class="size-3.5 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                Pelacakan Cucian Publik
-            </span>
             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
                 Cek Status Cucian Anda
             </h1>
-            <p class="text-xs sm:text-sm text-slate-500">
+            <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed">
                 Masukkan kode transaksi laundry untuk mengetahui progres pengerjaan, estimasi selesai, dan status pembayaran nota Anda.
             </p>
         </div>
@@ -68,10 +61,8 @@
                 </label>
                 <div class="flex flex-col sm:flex-row gap-2.5">
                     <div class="relative flex-1">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
-                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <x-lucide-receipt class="size-4" />
                         </div>
                         <input
                             type="text"
@@ -81,16 +72,14 @@
                             required
                             autofocus
                             placeholder="Contoh: TRX-0001 atau TRK-20261025-046"
-                            class="w-full rounded-xl border border-slate-200 bg-slate-50/60 py-2.5 pl-10 pr-4 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-500 uppercase tracking-wider focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50/60 py-2.5 pl-10 pr-4 text-xs sm:text-sm font-medium text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 tracking-wider [text-transform:uppercase] [&::placeholder]:[text-transform:none] [&::placeholder]:font-normal [&::placeholder]:tracking-normal [&::placeholder]:text-slate-400"
                         >
                     </div>
                     <button
                         type="submit"
                         class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
                     >
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                        <x-lucide-search class="size-4" />
                         <span>Cek Transaksi</span>
                     </button>
                 </div>
@@ -104,9 +93,7 @@
         @if ($searched && ! $transaction)
             <div class="max-w-2xl mx-auto rounded-2xl border border-rose-200 bg-rose-50/80 p-5 text-center space-y-2">
                 <div class="mx-auto flex size-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600">
-                    <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
+                    <x-lucide-alert-triangle class="size-6" />
                 </div>
                 <h3 class="text-sm font-bold text-rose-900">Transaksi Tidak Ditemukan</h3>
                 <p class="text-xs text-rose-700 max-w-md mx-auto">
