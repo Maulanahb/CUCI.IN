@@ -10,6 +10,7 @@
 | :---: | :---: | :--- | :--- |
 | **v1.0** | 10 Okt 2026 | Tim Pengembang CUCI.IN | Rilis awal dokumen Project Charter untuk validasi ruang lingkup dan arsitektur *Milestone 1*. |
 | **v1.1** | 23 Okt 2026 | Maulana Ahmad Bukhori | Penambahan **Bab 18 (Rencana Pengadaan & Anggaran Proyek)**: penetapan kebijakan pengadaan mandiri hemat biaya, sewa Cloud VPS lokal, dan integrasi dengan [`docs/procurement_plan.md`](./procurement_plan.md). |
+| **v1.2** | 23 Okt 2026 | Maulana Ahmad Bukhori | Pembaruan **Bab 18**: Penetapan **AWS Cloud Free Tier (USD 0.00)** sebagai server web & DB utama aktif dengan biaya operasional Rp 0/bulan, serta reposisi Cloud VPS lokal sebagai opsi kontingensi cadangan. |
 
 ---
 
@@ -523,8 +524,9 @@ Proyek dinyatakan berhasil apabila:
 
 ### 18. Rencana Pengadaan & Anggaran Proyek (Procurement & Budget)
 
-Proyek CUCI.IN merupakan inisiatif mandiri tanpa pendanaan mitra eksternal. Strategi pengadaan dirancang berbasis efisiensi biaya:
+Proyek CUCI.IN merupakan inisiatif mandiri tanpa pendanaan mitra eksternal. Strategi pengadaan dirancang berbasis efisiensi biaya maksimal:
 
 1. **Pemanfaatan Fasilitas Pendidikan:** Domain resmi 1 tahun (`.tech` / `.me`), sertifikat SSL/TLS Let's Encrypt, Cloudflare R2 Object Storage (Free Tier 10 GB), serta lisensi repositori GitHub & Notion diperoleh secara gratis (Rp 0).
-2. **Lingkungan Server Cloud:** Disiapkan Cloud VPS lokal (IDCloudHost / Biznet Gio) berbiaya terukur Rp 50.000 – Rp 85.000/bulan yang ditanggung patungan mandiri oleh 5 anggota tim (~Rp 10.000 – Rp 17.000/orang/bulan). Tim juga mengevaluasi kredit pelajar Microsoft Azure for Students ($100) sebagai lingkungan uji coba staging tambahan.
-3. **Dokumentasi Lengkap:** Rincian spesifikasi pengadaan, tabel vendor, komparasi cloud, dan RAB dipelihara terpusat pada dokumen [`docs/procurement_plan.md`](./procurement_plan.md).
+2. **Lingkungan Server Cloud Utama (AWS Free Tier):** Berhasil diaktivasi menggunakan paket **AWS Cloud Free Tier (USD 0.00)** untuk jangka waktu 6 bulan, sehingga biaya sewa server bulanan kelompok terealisasi **Rp 0 / bulan** (iuran tim Rp 0).
+3. **Kontingensi Cadangan (Fallback):** Cloud VPS lokal (IDCloudHost / Biznet Gio, Rp 50.000 – Rp 85.000/bulan) dan Microsoft Azure for Students disiapkan sebagai rencana cadangan jika masa gratis AWS berakhir.
+4. **Dokumentasi Lengkap:** Rincian spesifikasi pengadaan, tabel vendor, evaluasi cloud, dan RAB dipelihara terpusat pada dokumen [`docs/procurement_plan.md`](./procurement_plan.md).
