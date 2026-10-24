@@ -155,7 +155,7 @@ class StaffTransactionPageTest extends TestCase
     }
 
     /**
-     * Link "Transaksi Baru" tampil di sidebar navigasi untuk Staff dan Admin.
+     * Link "Kasir POS" tampil di sidebar navigasi untuk Staff dan Admin.
      */
     public function test_transaksi_baru_sidebar_link_is_visible_for_staff_and_admin(): void
     {
@@ -164,16 +164,16 @@ class StaffTransactionPageTest extends TestCase
         $staff = User::factory()->staff()->create();
         $admin = User::factory()->admin()->create();
 
-        // Staff melihat link Transaksi Baru di sidebar mengarah ke staff.transactions.create
+        // Staff melihat link Kasir POS di sidebar mengarah ke staff.transactions.create
         $responseStaff = $this->actingAs($staff)->get(route('staff.dashboard'));
         $responseStaff->assertOk();
-        $responseStaff->assertSee('Transaksi Baru');
+        $responseStaff->assertSee('Kasir POS');
         $responseStaff->assertSee(route('staff.transactions.create'));
 
-        // Admin melihat link Transaksi Baru di sidebar mengarah ke admin.transactions.create
+        // Admin melihat link Kasir POS di sidebar mengarah ke admin.transactions.create
         $responseAdmin = $this->actingAs($admin)->get(route('admin.dashboard'));
         $responseAdmin->assertOk();
-        $responseAdmin->assertSee('Transaksi Baru');
+        $responseAdmin->assertSee('Kasir POS');
         $responseAdmin->assertSee(route('admin.transactions.create'));
     }
 

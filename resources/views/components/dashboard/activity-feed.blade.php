@@ -12,9 +12,7 @@
     <div class="mb-4 flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2">
             <div class="flex size-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <x-lucide-history class="size-4" aria-hidden="true" />
             </div>
             <div>
                 <div class="flex items-center gap-1.5">
@@ -28,17 +26,16 @@
                 <p class="text-xs text-slate-500">Pembaruan status terbaru oleh tim.</p>
             </div>
         </div>
-        <a href="{{ route($transactionsRoute) }}" class="shrink-0 text-xs font-semibold text-brand-600 hover:text-brand-700">
-            Transaksi &rarr;
+        <a href="{{ route($transactionsRoute) }}" class="inline-flex items-center gap-1 shrink-0 text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline">
+            <span>Transaksi</span>
+            <x-lucide-arrow-right class="size-3" />
         </a>
     </div>
 
     @if ($activities->isEmpty())
         <div class="flex flex-1 flex-col items-center justify-center py-8 text-center">
-            <div class="flex size-11 items-center justify-center rounded-full bg-slate-100 text-slate-500">
-                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div class="flex size-11 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                <x-lucide-clock class="size-5" aria-hidden="true" />
             </div>
             <p class="mt-3 text-xs font-semibold text-slate-700">Belum Ada Aktivitas Status</p>
             <p class="mt-1 max-w-xs text-xs text-slate-500">Pembaruan pengerjaan cucian oleh staf akan tercatat di sini.</p>
@@ -61,9 +58,7 @@
                         @if ($actor)
                             <span class="text-xs font-bold">{{ $initials }}</span>
                         @else
-                            <svg class="size-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
+                            <x-lucide-bot class="size-4 text-slate-500" aria-hidden="true" />
                         @endif
                     </div>
 
@@ -74,7 +69,7 @@
                                 <span>mengubah status</span>
                             </p>
                             <time
-                                class="shrink-0 text-xs text-slate-500"
+                                class="shrink-0 text-2xs text-slate-400"
                                 datetime="{{ $activity->changed_at?->toIso8601String() }}"
                                 title="{{ $activity->changed_at?->locale('id')->translatedFormat('d F Y, H:i') }}"
                             >
@@ -84,11 +79,11 @@
 
                         <p class="mt-0.5 flex min-w-0 flex-wrap items-center gap-1 text-xs text-slate-500">
                             @if ($transaction)
-                                <a href="{{ route("{$prefix}.transactions.show", $transaction) }}" class="font-mono font-bold text-brand-700 hover:underline">
+                                <a href="{{ route("{$prefix}.transactions.show", $transaction) }}" class="font-sans font-bold text-brand-700 hover:underline">
                                     {{ $transaction->transaction_code }}
                                 </a>
                             @else
-                                <span class="font-mono font-bold text-slate-700">-</span>
+                                <span class="font-sans font-bold text-slate-700">-</span>
                             @endif
 
                             @if ($transaction?->customer?->name)
@@ -100,9 +95,7 @@
                         <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
                             @if ($activity->previous_status)
                                 <x-ui.status-badge :status="$activity->previous_status" size="sm" />
-                                <svg class="size-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6" />
-                                </svg>
+                                <x-lucide-arrow-right class="size-3 text-slate-400" aria-hidden="true" />
                             @else
                                 <span class="text-xs font-medium text-slate-500">Status awal</span>
                             @endif
@@ -111,7 +104,7 @@
                         </div>
 
                         @if ($activity->notes)
-                            <p class="mt-1 line-clamp-2 text-xs italic text-slate-500" title="{{ $activity->notes }}">
+                            <p class="mt-1 line-clamp-2 text-2xs italic text-slate-500" title="{{ $activity->notes }}">
                                 "{{ $activity->notes }}"
                             </p>
                         @endif

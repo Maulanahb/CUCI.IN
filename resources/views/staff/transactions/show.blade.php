@@ -111,13 +111,11 @@
                         }"
                     >
                         <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
+                            <x-lucide-receipt class="size-5" />
                         </div>
 
                         <div class="min-w-0">
-                            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Nota</p>
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Nota Kasir</p>
                             <p class="truncate text-xl font-bold tracking-tight text-slate-900 tabular-nums sm:text-2xl">
                                 {{ $transaction->transaction_code }}
                             </p>
@@ -126,15 +124,11 @@
                         <button
                             type="button"
                             @click="copyCode()"
-                            class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
+                            class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 cursor-pointer"
                             :aria-label="copied ? 'Kode nota tersalin' : 'Salin kode nota'"
                         >
-                            <svg x-show="! copied" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V5a2 2 0 012-2h9a2 2 0 012 2v9a2 2 0 01-2 2h-2M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h9a2 2 0 002-2v-3" />
-                            </svg>
-                            <svg x-show="copied" x-cloak class="size-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
+                            <x-lucide-copy x-show="! copied" class="size-4" />
+                            <x-lucide-check x-show="copied" x-cloak class="size-4 text-emerald-600" />
                         </button>
                     </div>
 
@@ -150,8 +144,9 @@
                     </p>
 
                     <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 border-t border-slate-100 pt-3 text-xs">
-                        <p>
-                            <span class="text-slate-500">Estimasi selesai</span>
+                        <p class="flex items-center gap-1.5">
+                            <x-lucide-clock class="size-3.5 text-slate-400" />
+                            <span class="text-slate-500">Estimasi selesai:</span>
                             <span class="font-medium text-slate-700">{{ $transaction->estimated_completed_at?->format('d M Y, H:i') ?? '-' }}</span>
                         </p>
 
@@ -169,7 +164,7 @@
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end lg:flex-col lg:items-end">
                     <div class="sm:text-right">
                         <p class="text-xs font-medium text-slate-500">
-                            {{ $isPaidOff ? 'Pembayaran' : 'Sisa tagihan' }}
+                            {{ $isPaidOff ? 'Status Pembayaran' : 'Sisa Tagihan' }}
                         </p>
 
                         @if ($isCancelled)
@@ -184,73 +179,54 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
-                        @if ($isCancelled)
-                            <x-ui.button
-                                id="btn-print-receipt"
-                                :href="route($currentRoutePrefix . '.transactions.print', $transaction)"
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                Cetak Nota
-                            </x-ui.button>
-                        @elseif ($isPickedUp)
-                            <x-ui.button
-                                id="btn-print-receipt"
-                                :href="route($currentRoutePrefix . '.transactions.print', $transaction)"
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                Cetak Nota
-                            </x-ui.button>
-                        @elseif ($isPaidOff)
-                            <form
-                                method="POST"
-                                action="{{ route("{$currentRoutePrefix}.transactions.status", $transaction) }}"
-                                onsubmit="return confirm('Tandai cucian sudah diambil pelanggan? Status ini tidak dapat diubah lagi.')"
-                            >
-                                @csrf
-                                @method('PATCH')
-                                <input type="hidden" name="status" value="Diambil">
-                                <x-ui.button type="submit" class="w-full sm:w-auto">
-                                    Tandai Diambil
+                        @if (! $isCancelled && ! $isPickedUp)
+                            @if ($isPaidOff)
+                                <form
+                                    method="POST"
+                                    action="{{ route("{$currentRoutePrefix}.transactions.status", $transaction) }}"
+                                    onsubmit="return confirm('Tandai cucian sudah diambil pelanggan? Status ini tidak dapat diubah lagi.')"
+                                >
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="Diambil">
+                                    <x-ui.button type="submit" class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-xs cursor-pointer">
+                                        <x-lucide-check-circle class="size-4" />
+                                        <span>Tandai Diambil</span>
+                                    </x-ui.button>
+                                </form>
+                            @else
+                                <x-ui.button
+                                    type="button"
+                                    x-ref="paymentTrigger"
+                                    @click="openPayment($event)"
+                                    class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-xs cursor-pointer"
+                                >
+                                    <x-lucide-credit-card class="size-4" />
+                                    <span>Catat Pembayaran</span>
                                 </x-ui.button>
-                            </form>
-
-                            <x-ui.button
-                                id="btn-print-receipt"
-                                :href="route($currentRoutePrefix . '.transactions.print', $transaction)"
-                                variant="secondary"
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                Cetak Nota
-                            </x-ui.button>
-                        @else
-                            <x-ui.button
-                                type="button"
-                                x-ref="paymentTrigger"
-                                @click="openPayment($event)"
-                                class="w-full sm:w-auto"
-                            >
-                                Catat Pembayaran
-                            </x-ui.button>
-
-                            <x-ui.button
-                                id="btn-print-receipt"
-                                :href="route($currentRoutePrefix . '.transactions.print', $transaction)"
-                                variant="secondary"
-                                target="_blank"
-                                rel="noopener"
-                            >
-                                Cetak Nota
-                            </x-ui.button>
+                            @endif
                         @endif
+
+                        <x-ui.button
+                            id="btn-print-receipt"
+                            :href="route($currentRoutePrefix . '.transactions.print', $transaction)"
+                            variant="{{ ($isCancelled || $isPickedUp) ? 'primary' : 'secondary' }}"
+                            target="_blank"
+                            rel="noopener"
+                            class="inline-flex items-center gap-1.5 cursor-pointer"
+                        >
+                            <x-lucide-printer class="size-4" />
+                            <span>Cetak Nota</span>
+                            <span class="rounded bg-slate-200/80 px-1 py-0.5 text-xs font-mono text-slate-700">Thermal</span>
+                        </x-ui.button>
 
                         <x-ui.button
                             :href="route($currentRoutePrefix . '.transactions.index')"
                             variant="secondary"
+                            class="inline-flex items-center gap-1.5 cursor-pointer"
                         >
-                            Kembali
+                            <x-lucide-arrow-left class="size-4" />
+                            <span>Kembali</span>
                         </x-ui.button>
                     </div>
                 </div>
@@ -258,48 +234,23 @@
         </div>
 
         {{-- ============================================================
-            FLASH PESAN SUKSES
+            FLASH PESAN SUKSES & ERROR GLOBAL
         ============================================================= --}}
         @if (session('success'))
-            <div class="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
-                <svg
-                    class="mt-0.5 size-5 shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                </svg>
-
-                <p>
-                    {{ session('success') }}
-                </p>
-            </div>
+            <x-ui.alert variant="success" dismissible>
+                {{ session('success') }}
+            </x-ui.alert>
         @endif
 
-
-        {{-- ============================================================
-            ERROR VALIDATION
-        ============================================================= --}}
         @if ($errors->any() && ! ($errors->has('amount') || $errors->has('method') || $errors->has('cash_received') || $errors->has('status') || $errors->has('notes')))
-            <div class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700" role="alert">
-                <p class="font-semibold">
-                    Terjadi kesalahan:
-                </p>
-
-                <ul class="mt-1 list-inside list-disc">
+            <x-ui.alert variant="destructive" title="Terjadi kesalahan input:" dismissible>
+                <ul class="mt-1 list-inside list-disc space-y-0.5">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-            </div>
+            </x-ui.alert>
         @endif
-
 
         {{-- ============================================================
             DETAIL LAYANAN
@@ -308,9 +259,7 @@
             <div class="flex flex-col gap-1 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div class="flex items-center gap-3">
                     <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10" />
-                        </svg>
+                        <x-lucide-layers class="size-4" />
                     </div>
 
                     <div>
@@ -318,8 +267,8 @@
                             Detail Layanan
                         </h2>
 
-                        <p class="mt-1 text-xs text-slate-500">
-                            Layanan yang digunakan dalam transaksi ini.
+                        <p class="mt-0.5 text-xs text-slate-500">
+                            Rincian paket layanan laundry dalam transaksi ini.
                         </p>
                     </div>
                 </div>
@@ -428,9 +377,7 @@
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex items-center gap-3">
                         <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h2m4 0h4M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z" />
-                            </svg>
+                            <x-lucide-credit-card class="size-4" />
                         </div>
 
                         <div>
@@ -440,17 +387,15 @@
                                 </h2>
                                 <x-ui.payment-badge :status="$paymentStatus" size="sm" />
                             </div>
-                            <p class="mt-1 text-sm text-slate-500">
+                            <p class="mt-0.5 text-xs text-slate-500">
                                 Status pembayaran kasir, rincian pelunasan, dan riwayat transaksi keuangan.
                             </p>
                         </div>
                     </div>
 
                     @if (! $transaction->isPaidOff() && ! $isCancelled)
-                        <x-ui.button type="button" @click="openPayment($event)" class="w-full sm:w-auto">
-                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-8-6h16" />
-                            </svg>
+                        <x-ui.button type="button" @click="openPayment($event)" class="w-full sm:w-auto inline-flex items-center gap-1.5 cursor-pointer">
+                            <x-lucide-plus class="size-4" />
                             <span>Catat Pembayaran / Pelunasan</span>
                         </x-ui.button>
                     @endif
@@ -574,181 +519,141 @@
 
             {{-- Modal catat pembayaran --}}
             @if (! $transaction->isPaidOff())
-                <div
-                    x-show="showPaymentModal"
-                    x-cloak
-                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
-                    role="dialog"
-                    aria-modal="true"
-                    aria-labelledby="payment-modal-title"
+                <x-ui.modal
+                    id="payment-modal"
+                    show="showPaymentModal"
+                    title="Catat Pembayaran"
+                    description="Nota {{ $transaction->transaction_code }} • Sisa: Rp {{ number_format($remainingAmount, 0, ',', '.') }}"
+                    maxWidth="md"
                 >
-                    <div
-                        x-show="showPaymentModal"
-                        x-transition:enter="ease-out duration-200"
-                        x-transition:enter-start="opacity-0"
-                        x-transition:enter-end="opacity-100"
-                        x-transition:leave="ease-in duration-150"
-                        x-transition:leave-start="opacity-100"
-                        x-transition:leave-end="opacity-0"
-                        @click="closePayment()"
-                        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
-                    ></div>
-
-                    <div
-                        x-show="showPaymentModal"
-                        x-ref="paymentPanel"
-                        x-transition:enter="ease-out duration-200"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="ease-in duration-150"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-95"
-                        class="relative max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-5 shadow-xl sm:p-6"
+                    <form
+                        action="{{ route("{$currentRoutePrefix}.transactions.payments.store", $transaction) }}"
+                        method="POST"
+                        class="space-y-4"
+                        @submit="submitting = true"
                     >
-                        <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
-                            <div>
-                                <h3 id="payment-modal-title" class="text-base font-semibold text-slate-900">
-                                    Catat Pembayaran
-                                </h3>
-                                <p class="mt-0.5 text-xs text-slate-500">
-                                    Nota {{ $transaction->transaction_code }}
+                        @csrf
+
+                        @if ($errors->has('amount') || $errors->has('method') || $errors->has('cash_received'))
+                            <div id="payment-error" class="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700" role="alert">
+                                {{ $errors->first('amount') ?: ($errors->first('cash_received') ?: $errors->first('method')) }}
+                            </div>
+                        @endif
+
+                        <div>
+                            <label for="payment-method" class="mb-1.5 block text-xs font-semibold text-slate-700">
+                                Metode Pembayaran <span class="text-rose-600">*</span>
+                            </label>
+                            <select
+                                name="method"
+                                id="payment-method"
+                                x-model="method"
+                                required
+                                class="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs sm:text-sm text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                            >
+                                <option value="Tunai">Tunai</option>
+                                <option value="QRIS">QRIS</option>
+                                <option value="Transfer">Transfer Bank</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <div class="mb-1.5 flex items-center justify-between gap-2">
+                                <label for="payment-amount" class="block text-xs font-semibold text-slate-700">
+                                    Nominal Pembayaran (Rp) <span class="text-rose-600">*</span>
+                                </label>
+                                <span class="text-xs text-slate-500">
+                                    Sisa: <x-ui.money :value="$remainingAmount" />
+                                </span>
+                            </div>
+
+                            <div class="mb-2 flex flex-wrap gap-1.5">
+                                <button type="button" @click="paymentAmount = remaining; cashReceived = remaining"
+                                    class="min-h-8 rounded-lg border border-brand-200 bg-brand-50 px-2.5 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100 cursor-pointer">
+                                    Uang Pas
+                                </button>
+                                <button type="button" @click="paymentAmount = Math.min(remaining, 50000); cashReceived = paymentAmount"
+                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer">
+                                    Rp 50.000
+                                </button>
+                                <button type="button" @click="paymentAmount = Math.min(remaining, 100000); cashReceived = paymentAmount"
+                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer">
+                                    Rp 100.000
+                                </button>
+                            </div>
+
+                            <input
+                                type="number"
+                                name="amount"
+                                id="payment-amount"
+                                x-ref="paymentAmount"
+                                x-model="paymentAmount"
+                                @input="syncCashToAmount($event)"
+                                min="1"
+                                max="{{ $remainingAmount }}"
+                                inputmode="numeric"
+                                required
+                                aria-describedby="payment-amount-help"
+                                aria-invalid="{{ $errors->has('amount') ? 'true' : 'false' }}"
+                                class="h-10 w-full rounded-xl border border-slate-300 px-3 text-xs sm:text-sm font-semibold text-slate-900 tabular-nums transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                            />
+                            <p id="payment-amount-help" class="mt-1 text-xs text-slate-500">
+                                Sisa tagihan saat ini: <x-ui.money :value="$remainingAmount" />
+                            </p>
+                        </div>
+
+                        <div x-show="method === 'Tunai'" x-cloak class="space-y-2">
+                            <label for="cash-received" class="block text-xs font-semibold text-slate-700">
+                                Uang Diterima (Rp) <span class="text-rose-600">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                name="cash_received"
+                                id="cash-received"
+                                x-model.number="cashReceived"
+                                x-bind:min="paymentAmount"
+                                :disabled="method !== 'Tunai'"
+                                inputmode="numeric"
+                                aria-describedby="cash-help"
+                                class="h-10 w-full rounded-xl border border-slate-300 px-3 text-xs sm:text-sm font-semibold text-slate-900 tabular-nums transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                            />
+
+                            <div id="cash-help" class="min-h-5" role="status" aria-live="polite">
+                                <p x-show="shortfall > 0" class="text-xs font-medium text-rose-700">
+                                    Kurang Rp <span class="tabular-nums" x-text="formatRupiah(shortfall)"></span>
+                                </p>
+                                <p x-show="hasChange" class="text-xs font-medium text-emerald-700">
+                                    Kembalian Rp <span class="tabular-nums" x-text="formatRupiah(change)"></span>
+                                </p>
+                                <p x-show="isExactCash" class="text-xs text-slate-500">
+                                    Uang pas.
                                 </p>
                             </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
                             <button
                                 type="button"
                                 @click="closePayment()"
-                                aria-label="Tutup dialog pembayaran"
-                                class="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                                class="min-h-[38px] rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                             >
-                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                x-bind:disabled="submitting || (method === 'Tunai' && shortfall > 0) || ! paymentAmount || paymentAmount > remaining"
+                                class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+                            >
+                                <svg x-show="submitting" class="size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true" x-cloak>
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                 </svg>
+                                <x-lucide-check class="size-4" x-show="! submitting" />
+                                <span x-text="submitting ? 'Menyimpan...' : 'Konfirmasi & Simpan'">Konfirmasi & Simpan</span>
                             </button>
                         </div>
-
-                        <form
-                            action="{{ route("{$currentRoutePrefix}.transactions.payments.store", $transaction) }}"
-                            method="POST"
-                            class="mt-5 space-y-4"
-                            @submit="submitting = true"
-                        >
-                            @csrf
-
-                            @if ($errors->has('amount') || $errors->has('method') || $errors->has('cash_received'))
-                                <div id="payment-error" class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700" role="alert">
-                                    {{ $errors->first('amount') ?: ($errors->first('cash_received') ?: $errors->first('method')) }}
-                                </div>
-                            @endif
-
-                            <div>
-                                <label for="payment-method" class="mb-1.5 block text-xs font-medium text-slate-600">
-                                    Metode Pembayaran <span class="text-rose-600">*</span>
-                                </label>
-                                <select
-                                    name="method"
-                                    id="payment-method"
-                                    x-model="method"
-                                    required
-                                    class="h-10 w-full rounded-lg border border-slate-400 bg-white px-3 text-sm text-slate-800 transition focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
-                                >
-                                    <option value="Tunai">Tunai</option>
-                                    <option value="QRIS">QRIS</option>
-                                    <option value="Transfer">Transfer Bank</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <div class="mb-1.5 flex items-center justify-between gap-2">
-                                    <label for="payment-amount" class="block text-xs font-medium text-slate-600">
-                                        Nominal Pembayaran (Rp) <span class="text-rose-600">*</span>
-                                    </label>
-                                    <span class="text-xs text-slate-500">
-                                        Sisa: <x-ui.money :value="$remainingAmount" />
-                                    </span>
-                                </div>
-
-                                <div class="mb-2 flex flex-wrap gap-1.5">
-                                    <button type="button" @click="paymentAmount = remaining; cashReceived = remaining"
-                                        class="min-h-10 rounded-lg border border-brand-200 bg-brand-50 px-3 text-xs font-semibold text-brand-700 transition-colors hover:bg-brand-100">
-                                        Uang Pas
-                                    </button>
-                                    <button type="button" @click="paymentAmount = Math.min(remaining, 50000); cashReceived = paymentAmount"
-                                        class="min-h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100">
-                                        Rp 50.000
-                                    </button>
-                                    <button type="button" @click="paymentAmount = Math.min(remaining, 100000); cashReceived = paymentAmount"
-                                        class="min-h-10 rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100">
-                                        Rp 100.000
-                                    </button>
-                                </div>
-
-                                <input
-                                    type="number"
-                                    name="amount"
-                                    id="payment-amount"
-                                    x-ref="paymentAmount"
-                                    x-model="paymentAmount"
-                                    @input="syncCashToAmount($event)"
-                                    min="1"
-                                    max="{{ $remainingAmount }}"
-                                    inputmode="numeric"
-                                    required
-                                    aria-describedby="payment-amount-help"
-                                    aria-invalid="{{ $errors->has('amount') ? 'true' : 'false' }}"
-                                    class="h-10 w-full rounded-lg border border-slate-400 px-3 text-sm font-semibold text-slate-900 tabular-nums transition focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
-                                />
-                                <p id="payment-amount-help" class="mt-1 text-xs text-slate-500">
-                                    Sisa tagihan saat ini: <x-ui.money :value="$remainingAmount" />
-                                </p>
-                            </div>
-
-                            <div x-show="method === 'Tunai'" x-cloak class="space-y-2">
-                                <label for="cash-received" class="block text-xs font-medium text-slate-600">
-                                    Uang Diterima (Rp) <span class="text-rose-600">*</span>
-                                </label>
-                                <input
-                                    type="number"
-                                    name="cash_received"
-                                    id="cash-received"
-                                    x-model.number="cashReceived"
-                                    x-bind:min="paymentAmount"
-                                    :disabled="method !== 'Tunai'"
-                                    inputmode="numeric"
-                                    aria-describedby="cash-help"
-                                    class="h-10 w-full rounded-lg border border-slate-400 px-3 text-sm font-semibold text-slate-900 tabular-nums transition focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-600/20"
-                                />
-
-                                <div id="cash-help" class="min-h-5" role="status" aria-live="polite">
-                                    <p x-show="shortfall > 0" class="text-xs font-medium text-rose-700">
-                                        Kurang Rp <span class="tabular-nums" x-text="formatRupiah(shortfall)"></span>
-                                    </p>
-                                    <p x-show="hasChange" class="text-xs font-medium text-emerald-700">
-                                        Kembalian Rp <span class="tabular-nums" x-text="formatRupiah(change)"></span>
-                                    </p>
-                                    <p x-show="isExactCash" class="text-xs text-slate-500">
-                                        Uang pas.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-end gap-2 pt-2">
-                                <x-ui.button type="button" variant="secondary" @click="closePayment()">
-                                    Batal
-                                </x-ui.button>
-                                <x-ui.button
-                                    type="submit"
-                                    x-bind:disabled="submitting || (method === 'Tunai' && shortfall > 0) || ! paymentAmount || paymentAmount > remaining"
-                                >
-                                    <svg x-show="submitting" class="size-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true" x-cloak>
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                                    </svg>
-                                    <span x-text="submitting ? 'Menyimpan...' : 'Konfirmasi & Simpan'">Konfirmasi & Simpan</span>
-                                </x-ui.button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                    </form>
+                </x-ui.modal>
             @endif
         </div>
 
@@ -763,9 +668,7 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div class="flex items-center gap-3">
                     <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
+                        <x-lucide-refresh-cw class="size-4" />
                     </div>
 
                     <div>
@@ -773,8 +676,8 @@
                             Status Operasional Cucian
                         </h2>
 
-                        <p class="mt-1 text-xs leading-5 text-slate-500">
-                            Perbarui status transaksi sesuai dengan proses pengerjaan laundry.
+                        <p class="mt-0.5 text-xs text-slate-500">
+                            Pantau dan perbarui tahap pengerjaan cucian pelanggan.
                         </p>
                     </div>
                 </div>
@@ -782,7 +685,7 @@
                 {{-- Status Saat Ini --}}
                 <div>
                     <span class="text-xs text-slate-500">
-                        Status saat ini
+                        Status saat ini:
                     </span>
 
                     <div class="mt-1">
@@ -791,19 +694,107 @@
                 </div>
             </div>
 
+            {{-- Visual Laundry Pipeline Stepper --}}
+            @php
+                $steps = [
+                    ['id' => 'Diterima', 'number' => 1, 'label' => 'Diterima', 'desc' => 'Antrean Kasir'],
+                    ['id' => 'Diproses', 'number' => 2, 'label' => 'Diproses', 'desc' => 'Cuci & Setrika'],
+                    ['id' => 'Selesai', 'number' => 3, 'label' => 'Selesai', 'desc' => 'Siap Diambil'],
+                    ['id' => 'Diambil', 'number' => 4, 'label' => 'Diambil', 'desc' => 'Diserahkan'],
+                ];
+                $currentRank = match($statusValue) {
+                    'Diterima' => 1,
+                    'Diproses' => 2,
+                    'Selesai' => 3,
+                    'Diambil' => 4,
+                    default => 0,
+                };
+                $nextStatus = match($statusValue) {
+                    'Diterima' => 'Diproses',
+                    'Diproses' => 'Selesai',
+                    'Selesai' => 'Diambil',
+                    default => null,
+                };
+            @endphp
+
+            <div class="mt-5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 sm:p-5">
+                <div class="mb-3 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Tahap Pengerjaan Laundry</span>
+                    <span class="text-xs font-medium text-slate-500">Tahap {{ $statusValue === 'Dibatalkan' ? 'Dibatalkan' : ($currentRank > 0 ? "{$currentRank} dari 4" : '-') }}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    @foreach ($steps as $step)
+                        @php
+                            $isPassed = $currentRank > $step['number'];
+                            $isCurrent = $currentRank === $step['number'];
+                        @endphp
+                        <div @class([
+                            'relative flex flex-col justify-between rounded-xl border p-3 transition-all',
+                            'border-emerald-300 bg-emerald-50/60 text-emerald-900 shadow-2xs' => $isPassed,
+                            'border-brand-500 bg-brand-50/70 text-brand-950 ring-2 ring-brand-500/20 shadow-xs' => $isCurrent,
+                            'border-slate-200 bg-white text-slate-400 opacity-60' => ! $isPassed && ! $isCurrent,
+                        ])>
+                            <div class="flex items-center justify-between">
+                                <div @class([
+                                    'flex size-6 items-center justify-center rounded-full text-xs font-bold',
+                                    'bg-emerald-600 text-white' => $isPassed,
+                                    'bg-brand-600 text-white animate-pulse' => $isCurrent,
+                                    'bg-slate-200 text-slate-500' => ! $isPassed && ! $isCurrent,
+                                ])>
+                                    @if ($isPassed)
+                                        <x-lucide-check class="size-3.5" />
+                                    @else
+                                        <span>{{ $step['number'] }}</span>
+                                    @endif
+                                </div>
+                                @if ($isCurrent)
+                                    <span class="rounded bg-brand-600 px-1.5 py-0.5 text-xs font-bold text-white uppercase tracking-wider">Aktif</span>
+                                @elseif ($isPassed)
+                                    <span class="text-xs font-semibold text-emerald-700">Tuntas</span>
+                                @endif
+                            </div>
+                            <div class="mt-2.5">
+                                <p class="text-xs font-bold text-slate-900">{{ $step['label'] }}</p>
+                                <p class="text-xs text-slate-500 leading-tight">{{ $step['desc'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Tombol Pintasan Aksi Cepat ke Status Berikutnya --}}
+                @if ($nextStatus && ! $isTerminal)
+                    <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-slate-200/80 pt-3">
+                        <div class="flex items-center gap-2 text-xs text-slate-600">
+                            <x-lucide-zap class="size-4 text-brand-600 shrink-0" />
+                            <span>Pintasan Cepat: Majukan ke status berikutnya (<strong>{{ $nextStatus }}</strong>)</span>
+                        </div>
+                        <form
+                            method="POST"
+                            action="{{ route("{$currentRoutePrefix}.transactions.status", $transaction) }}"
+                            onsubmit="return confirm('Perbarui status cucian ke {{ $nextStatus }}?')"
+                        >
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="{{ $nextStatus }}">
+                            <x-ui.button type="submit" class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-xs py-1.5 px-3.5 text-xs cursor-pointer">
+                                <span>Majukan ke {{ $nextStatus }}</span>
+                                <x-lucide-arrow-right class="size-3.5" />
+                            </x-ui.button>
+                        </form>
+                    </div>
+                @endif
+            </div>
+
             @if ($isTerminal)
                 {{-- Banner Final / Terminal --}}
                 <div class="mt-6 rounded-xl border p-4 {{ $statusValue === 'Diambil' ? 'border-emerald-200 bg-emerald-50/60 text-emerald-900' : 'border-rose-200 bg-rose-50/60 text-rose-900' }}">
                     <div class="flex items-center gap-3">
                         <div class="flex size-9 shrink-0 items-center justify-center rounded-xl {{ $statusValue === 'Diambil' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600' }}">
                             @if ($statusValue === 'Diambil')
-                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
+                                <x-lucide-check-circle class="size-5" />
                             @else
-                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <x-lucide-x-circle class="size-5" />
                             @endif
                         </div>
                         <div>
@@ -925,9 +916,7 @@
                     >
                         <div class="flex items-start gap-3">
                             <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
-                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
+                                <x-lucide-alert-triangle class="size-4" />
                             </div>
 
                             <div class="flex-1">
@@ -1051,9 +1040,7 @@
             <summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-5 transition-colors hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
                 <div class="flex items-center gap-3">
                     <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                        <x-lucide-history class="size-4" />
                     </div>
 
                     <div>
@@ -1071,9 +1058,7 @@
                         {{ $transaction->statusHistories->count() }} catatan
                     </span>
 
-                    <svg class="size-4 text-slate-500 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <x-lucide-chevron-down class="size-4 text-slate-500 transition-transform group-open:rotate-180" />
                 </div>
             </summary>
 
@@ -1118,9 +1103,7 @@
                                 <td class="px-5 py-3.5 text-xs text-slate-600">
                                     @if ($history->notes)
                                         <span class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800 border border-amber-200">
-                                            <svg class="size-3.5 shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
+                                            <x-lucide-info class="size-3.5 shrink-0 text-amber-600" />
                                             <span>{{ $history->notes }}</span>
                                         </span>
                                     @else

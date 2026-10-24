@@ -63,3 +63,10 @@ desktop.ini
 *mcp_config*.json
 /.impeccable/
 .agent/skills/impeccable/scripts/bin/
+
+# Local Graphify
+/graphify-out/
+/.graphify/
+/.graphifyignore
+.agent/skills/graphify/
+.agents/
