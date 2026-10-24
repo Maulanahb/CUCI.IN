@@ -1,6 +1,7 @@
 @props([
     'status',
     'size' => 'md',
+    'dot' => false,
 ])
 
 @php
@@ -11,6 +12,6 @@
     };
 @endphp
 
-<x-ui.badge :tone="$tone" :size="$size" {{ $attributes }}>
+<x-ui.badge :tone="$tone" :size="$size" :dot="$dot" {{ $attributes }}>
     {{ $status }}
 </x-ui.badge>

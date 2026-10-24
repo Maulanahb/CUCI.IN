@@ -1,107 +1,122 @@
+@php
+    $currentStatus = request('status');
+    $hasFilters = request()->filled('search') || request()->filled('status');
+@endphp
+
 <x-layouts::app title="Daftar Pengaduan">
     <div class="space-y-6">
-        {{-- Breadcrumb & Header Halaman --}}
+        {{-- Header Halaman & Aksi --}}
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">Daftar Pengaduan</h1>
-
-                <p class="text-xs text-slate-500 sm:text-sm">
-                    Lacak status laporan keluhan cucian Anda beserta tanggapan dan komitmen penanganan maksimal 2 hari kerja.
+                <p class="mt-1 text-xs text-slate-500 sm:text-sm">
+                    Lacak status laporan kendala cucian Anda beserta tanggapan dan komitmen penanganan maksimal 2 hari kerja (SLA).
                 </p>
             </div>
 
             {{-- Tombol Aksi: Buat Pengaduan --}}
             <div class="shrink-0">
-                <a
-                    href="{{ route('customer.complaints.create') }}"
-                    class="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
-                >
-                    <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
+                <x-ui.button :href="route('customer.complaints.create')" variant="primary" size="md">
+                    <x-lucide-plus class="size-4" aria-hidden="true" />
                     <span>Ajukan Pengaduan</span>
-                </a>
+                </x-ui.button>
             </div>
         </div>
 
         {{-- Kartu Ringkasan Statistik Pengaduan --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {{-- Kartu 1: Total Pengaduan --}}
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
+            <x-ui.card padding="p-5" class="shadow-xs transition hover:shadow-sm">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Pengaduan</p>
-                    <div class="flex size-9 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shrink-0">
-                        <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                        </svg>
+                    <div class="flex size-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700 shrink-0">
+                        <x-lucide-message-square class="size-5" aria-hidden="true" />
                     </div>
                 </div>
-                <p class="mt-2 text-2xl font-extrabold text-slate-900 tracking-tight">{{ $stats['total_count'] }} Laporan</p>
-                <p class="mt-1 text-xs text-slate-500">Arsip riwayat seluruh pengaduan</p>
-            </div>
+                <p class="mt-2 text-2xl font-bold text-slate-900 tracking-tight">{{ $stats['total_count'] }} Laporan</p>
+                <p class="mt-1 text-xs text-slate-500">Arsip riwayat seluruh pengaduan Anda</p>
+            </x-ui.card>
 
-            {{-- Kartu 2: Menunggu & Diproses --}}
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
+            {{-- Kartu 2: Sedang Ditangani --}}
+            <x-ui.card padding="p-5" class="shadow-xs transition hover:shadow-sm">
                 <div class="flex items-center justify-between">
-                    <p class="text-xs font-bold uppercase tracking-wider text-amber-600">Sedang Ditangani</p>
-                    <div class="flex size-9 items-center justify-center rounded-lg bg-amber-50 text-amber-700 shrink-0">
-                        <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                    <p class="text-xs font-bold uppercase tracking-wider text-amber-700">Sedang Ditangani</p>
+                    <div class="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 shrink-0">
+                        <x-lucide-clock class="size-5" aria-hidden="true" />
                     </div>
                 </div>
                 <div class="mt-2 flex items-baseline gap-2">
-                    <p class="text-2xl font-extrabold text-amber-700 tracking-tight">
+                    <p class="text-2xl font-bold text-amber-700 tracking-tight">
                         {{ $stats['pending_count'] + $stats['in_progress_count'] }}
                     </p>
-                    <span class="text-xs text-slate-500 font-medium">
+                    <span class="text-xs font-medium text-slate-500">
                         ({{ $stats['pending_count'] }} Menunggu, {{ $stats['in_progress_count'] }} Diproses)
                     </span>
                 </div>
-                <p class="mt-1 text-xs text-slate-500">Sedang ditindaklanjuti oleh staf</p>
-            </div>
+                <p class="mt-1 text-xs text-slate-500">Sedang ditindaklanjuti tim operasional</p>
+            </x-ui.card>
 
             {{-- Kartu 3: Selesai Ditangani --}}
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:shadow-md">
+            <x-ui.card padding="p-5" class="shadow-xs transition hover:shadow-sm">
                 <div class="flex items-center justify-between">
-                    <p class="text-xs font-bold uppercase tracking-wider text-emerald-600">Terselesaikan</p>
-                    <div class="flex size-9 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 shrink-0">
-                        <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                    <p class="text-xs font-bold uppercase tracking-wider text-emerald-700">Terselesaikan</p>
+                    <div class="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
+                        <x-lucide-check-circle-2 class="size-5" aria-hidden="true" />
                     </div>
                 </div>
-                <p class="mt-2 text-2xl font-extrabold text-emerald-700 tracking-tight">{{ $stats['resolved_count'] }} Laporan</p>
+                <p class="mt-2 text-2xl font-bold text-emerald-700 tracking-tight">{{ $stats['resolved_count'] }} Laporan</p>
                 <p class="mt-1 text-xs text-slate-500">Pengaduan tuntas diselesaikan</p>
-            </div>
+            </x-ui.card>
         </div>
 
-        {{-- Bar Pencarian & Filter Status --}}
-        <div class="rounded-xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs">
+        {{-- Quick Status Filter Tabs --}}
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none sm:gap-2">
+            @php
+                $statusTabs = [
+                    ['label' => 'Semua Pengaduan', 'status' => null],
+                    ['label' => 'Menunggu Tindak Lanjut', 'status' => 'Menunggu'],
+                    ['label' => 'Sedang Diproses', 'status' => 'Diproses'],
+                    ['label' => 'Tuntas Selesai', 'status' => 'Selesai'],
+                ];
+            @endphp
+
+            @foreach ($statusTabs as $tab)
+                @php
+                    $isActive = ($tab['status'] === null && $currentStatus === null) || ($currentStatus === $tab['status']);
+                @endphp
+                <a
+                    href="{{ route('customer.complaints.index', array_filter(array_merge(request()->except(['page', 'status']), ['status' => $tab['status']]))) }}"
+                    class="inline-flex shrink-0 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition {{ $isActive ? 'border-brand-600 bg-brand-50 text-brand-700 shadow-xs ring-1 ring-brand-200' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900' }}"
+                >
+                    <span>{{ $tab['label'] }}</span>
+                </a>
+            @endforeach
+        </div>
+
+        {{-- Bar Pencarian & Filter Form --}}
+        <x-ui.card padding="p-4 sm:p-5">
             <form method="GET" action="{{ route('customer.complaints.index') }}" class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                 {{-- Input Pencarian --}}
                 <div class="relative flex-1">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
-                        <svg class="size-4 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                        <x-lucide-search class="size-4" aria-hidden="true" />
                     </div>
                     <input
-                        type="text"
+                        type="search"
                         name="search"
+                        id="search"
                         value="{{ request('search') }}"
-                        placeholder="Cari kode komplain (CMP-...), subjek, atau kode transaksi..."
-                        style="padding-left: 2.75rem;"
-                        class="w-full rounded-lg border border-slate-200 bg-slate-50/50 py-2 pr-3 text-xs sm:text-sm text-slate-800 placeholder-slate-400 transition focus:border-brand-500 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
+                        placeholder="Cari kode tiket (CMP-...), subjek keluhan, atau nomor nota (TRK-...)..."
+                        class="h-10 w-full rounded-xl border border-slate-300 bg-slate-50/50 pl-10 pr-4 text-xs sm:text-sm text-slate-900 placeholder-slate-400 transition focus:border-brand-500 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-brand-200"
                     />
                 </div>
 
                 {{-- Dropdown Filter & Reset --}}
-                <div class="flex flex-wrap items-center gap-2.5">
+                <div class="flex flex-wrap items-center gap-2">
                     <select
                         name="status"
                         onchange="this.form.submit()"
-                        class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs sm:text-sm text-slate-700 shadow-xs focus:border-brand-500 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
+                        class="h-10 rounded-xl border border-slate-300 bg-white px-3 text-xs sm:text-sm text-slate-800 shadow-xs focus:border-brand-500 focus:outline-hidden focus:ring-2 focus:ring-brand-200"
                     >
                         <option value="">Semua Status Pengaduan</option>
                         @foreach (['Menunggu', 'Diproses', 'Selesai'] as $st)
@@ -109,115 +124,123 @@
                         @endforeach
                     </select>
 
-                    <a
-                        href="{{ route('customer.complaints.index') }}"
-                        class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 shadow-xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
+                    <x-ui.button
+                        :href="route('customer.complaints.index')"
+                        variant="secondary"
+                        class="{{ $hasFilters ? '' : 'pointer-events-none opacity-50' }}"
+                        :aria-disabled="$hasFilters ? 'false' : 'true'"
                     >
-                        <svg class="size-3.5 text-slate-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        Reset
-                    </a>
+                        <x-lucide-rotate-ccw class="size-3.5" aria-hidden="true" />
+                        <span>Reset</span>
+                    </x-ui.button>
                 </div>
             </form>
-        </div>
+        </x-ui.card>
 
         {{-- Tabel Pengaduan --}}
         @if ($complaints->isNotEmpty())
-            <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white shadow-xs">
+            <x-ui.card padding="p-0" class="overflow-hidden">
                 <div class="hidden overflow-x-auto md:block">
                     <table class="w-full text-left text-xs sm:text-sm">
-                        <thead class="border-b border-slate-200/80 bg-slate-50/75 text-xs font-bold uppercase tracking-wider text-slate-500">
+                        <thead class="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-500">
                             <tr>
-                                <th class="py-3.5 px-4 sm:px-6">Pengaduan & Nota</th>
-                                <th class="py-3.5 px-4 sm:px-6">Subjek Keluhan</th>
-                                <th class="py-3.5 px-4 sm:px-6 text-center">Status</th>
-                                <th class="py-3.5 px-4 sm:px-6">Target SLA 2 Hari</th>
-                                <th class="py-3.5 px-4 sm:px-6 text-right">Aksi</th>
+                                <th scope="col" class="py-3.5 px-5">Tiket & Nota Transaksi</th>
+                                <th scope="col" class="py-3.5 px-5">Subjek Keluhan</th>
+                                <th scope="col" class="py-3.5 px-5 text-center">Status</th>
+                                <th scope="col" class="py-3.5 px-5">Target SLA (Maks 2 Hari)</th>
+                                <th scope="col" class="py-3.5 px-5 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
                             @foreach ($complaints as $complaint)
                                 @php
-                                    $statusBadge = match ($complaint->status) {
-                                        'Menunggu' => 'bg-sky-50 border-sky-200 text-sky-800',
-                                        'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
-                                        'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-800',
-                                        default => 'bg-slate-100 border-slate-200 text-slate-700',
-                                    };
-
                                     $isPastDeadline = $complaint->status !== 'Selesai' && now()->gt($complaint->deadline_at);
                                 @endphp
-                                <tr class="transition-colors hover:bg-slate-50/70">
+                                <tr class="transition-colors hover:bg-slate-50/80">
                                     {{-- Kolom 1: Kode Komplain & Nota --}}
-                                    <td class="py-4 px-4 sm:px-6 align-top">
-                                        <div class="font-bold text-slate-900 tracking-tight">
+                                    <td class="py-4 px-5 align-top">
+                                        <a
+                                            href="{{ route('customer.complaints.show', $complaint) }}"
+                                            class="font-mono font-bold tracking-tight text-brand-700 hover:text-brand-800 hover:underline"
+                                        >
                                             {{ $complaint->complaint_code }}
-                                        </div>
+                                        </a>
                                         <div class="mt-1 flex items-center gap-1.5 text-xs text-slate-500">
-                                            <span class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs font-medium text-slate-700">
+                                            <span class="rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-xs font-semibold text-slate-700">
                                                 {{ $complaint->transaction?->transaction_code ?? '-' }}
                                             </span>
-                                            <span>•</span>
+                                            <span>&middot;</span>
                                             <span>{{ $complaint->created_at->translatedFormat('d M Y') }}</span>
                                         </div>
                                     </td>
 
                                     {{-- Kolom 2: Subjek & Ringkasan Deskripsi --}}
-                                    <td class="py-4 px-4 sm:px-6 align-top max-w-xs sm:max-w-md">
+                                    <td class="py-4 px-5 align-top max-w-xs sm:max-w-md">
                                         <p class="font-semibold text-slate-900">{{ $complaint->subject }}</p>
-                                        <p class="mt-1 text-xs text-slate-500 line-clamp-2">{{ $complaint->description }}</p>
+                                        <p class="mt-1 text-xs text-slate-500 line-clamp-2 leading-relaxed">{{ $complaint->description }}</p>
                                         @if ($complaint->response)
-                                            <div class="mt-2 inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 border border-emerald-100">
-                                                <svg class="size-3 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                                </svg>
-                                                Telah ditanggapi staf
+                                            <div class="mt-2">
+                                                <x-ui.badge tone="success" size="sm" class="gap-1.5">
+                                                    <x-lucide-check-circle-2 class="size-3.5 text-emerald-600 shrink-0" aria-hidden="true" />
+                                                    <span>Telah ditanggapi staf</span>
+                                                </x-ui.badge>
                                             </div>
                                         @endif
                                     </td>
 
                                     {{-- Kolom 3: Status --}}
-                                    <td class="py-4 px-4 sm:px-6 align-top text-center">
-                                        <span class="inline-block rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $statusBadge }}">
-                                            {{ $complaint->status }}
-                                        </span>
+                                    <td class="py-4 px-5 align-top text-center">
+                                        @if ($complaint->status === 'Menunggu')
+                                            <x-ui.badge tone="info" size="sm" dot>
+                                                Menunggu
+                                            </x-ui.badge>
+                                        @elseif ($complaint->status === 'Diproses')
+                                            <x-ui.badge tone="warning" size="sm" dot pulse>
+                                                Diproses
+                                            </x-ui.badge>
+                                        @elseif ($complaint->status === 'Selesai')
+                                            <x-ui.badge tone="success" size="sm" dot>
+                                                Selesai
+                                            </x-ui.badge>
+                                        @else
+                                            <x-ui.badge tone="neutral" size="sm">
+                                                {{ $complaint->status }}
+                                            </x-ui.badge>
+                                        @endif
                                     </td>
 
                                     {{-- Kolom 4: SLA Target --}}
-                                    <td class="py-4 px-4 sm:px-6 align-top">
+                                    <td class="py-4 px-5 align-top">
                                         <div class="text-xs font-medium text-slate-700">
                                             {{ $complaint->deadline_at->translatedFormat('d M Y, H:i') }} WIB
                                         </div>
                                         @if ($complaint->status === 'Selesai')
-                                            <span class="mt-1 inline-block text-xs text-emerald-600 font-medium">
-                                                ✓ Selesai
+                                            <span class="mt-1 inline-flex items-center gap-1 text-xs font-medium text-emerald-700">
+                                                <x-lucide-check-circle-2 class="size-3.5 text-emerald-600" aria-hidden="true" />
+                                                <span>Tuntas Selesai</span>
                                             </span>
                                         @elseif ($isPastDeadline)
                                             <span class="mt-1 inline-flex items-center gap-1 text-xs font-bold text-rose-600">
-                                                <svg class="size-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                </svg>
-                                                Melewati SLA
+                                                <x-lucide-alert-circle class="size-3.5 text-rose-500" aria-hidden="true" />
+                                                <span>Melewati SLA</span>
                                             </span>
                                         @else
-                                            <span class="mt-1 inline-block text-xs text-amber-700 font-medium">
+                                            <span class="mt-1 inline-block text-xs font-medium text-amber-700">
                                                 Maks {{ $complaint->deadline_at->diffForHumans() }}
                                             </span>
                                         @endif
                                     </td>
 
                                     {{-- Kolom 5: Aksi Detail --}}
-                                    <td class="py-4 px-4 sm:px-6 align-top text-right whitespace-nowrap">
-                                        <a
-                                            href="{{ route('customer.complaints.show', $complaint) }}"
-                                            class="inline-flex items-center gap-1.5 rounded-lg border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 shadow-2xs transition hover:border-brand-300 hover:bg-brand-100 hover:text-brand-800"
+                                    <td class="py-4 px-5 align-top text-right whitespace-nowrap">
+                                        <x-ui.button
+                                            :href="route('customer.complaints.show', $complaint)"
+                                            variant="soft"
+                                            size="xs"
                                         >
                                             <span>Rincian</span>
-                                            <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                                            </svg>
-                                        </a>
+                                            <x-lucide-arrow-right class="size-3.5" aria-hidden="true" />
+                                        </x-ui.button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -225,91 +248,102 @@
                     </table>
                 </div>
 
-                {{-- Kartu (mobile) --}}
+                {{-- Kartu Mobile --}}
                 <div class="divide-y divide-slate-100 md:hidden">
                     @foreach ($complaints as $complaint)
                         @php
-                            $statusBadge = match ($complaint->status) {
-                                'Menunggu' => 'bg-sky-50 border-sky-200 text-sky-800',
-                                'Diproses' => 'bg-amber-50 border-amber-200 text-amber-800',
-                                'Selesai' => 'bg-emerald-50 border-emerald-200 text-emerald-800',
-                                default => 'bg-slate-100 border-slate-200 text-slate-700',
-                            };
-
                             $isPastDeadline = $complaint->status !== 'Selesai' && now()->gt($complaint->deadline_at);
                         @endphp
 
-                        <a href="{{ route('customer.complaints.show', $complaint) }}" class="block p-4 transition-colors hover:bg-slate-50">
+                        <a href="{{ route('customer.complaints.show', $complaint) }}" class="block p-4 transition-colors hover:bg-slate-50/70">
                             <div class="flex items-start justify-between gap-3">
-                                <div class="min-w-0">
-                                    <p class="font-bold text-slate-900">{{ $complaint->complaint_code }}</p>
+                                <div>
+                                    <p class="font-mono font-bold tracking-tight text-brand-700">{{ $complaint->complaint_code }}</p>
                                     <p class="mt-0.5 text-xs text-slate-500">
-                                        {{ $complaint->transaction?->transaction_code ?? '-' }} &middot;
+                                        <span class="font-mono font-semibold">{{ $complaint->transaction?->transaction_code ?? '-' }}</span> &middot;
                                         {{ $complaint->created_at->translatedFormat('d M Y') }}
                                     </p>
                                 </div>
 
-                                <span class="inline-flex shrink-0 rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $statusBadge }}">
-                                    {{ $complaint->status }}
-                                </span>
+                                @if ($complaint->status === 'Menunggu')
+                                    <x-ui.badge tone="info" size="sm" dot class="shrink-0">
+                                        Menunggu
+                                    </x-ui.badge>
+                                @elseif ($complaint->status === 'Diproses')
+                                    <x-ui.badge tone="warning" size="sm" dot pulse class="shrink-0">
+                                        Diproses
+                                    </x-ui.badge>
+                                @elseif ($complaint->status === 'Selesai')
+                                    <x-ui.badge tone="success" size="sm" dot class="shrink-0">
+                                        Selesai
+                                    </x-ui.badge>
+                                @else
+                                    <x-ui.badge tone="neutral" size="sm" class="shrink-0">
+                                        {{ $complaint->status }}
+                                    </x-ui.badge>
+                                @endif
                             </div>
 
-                            <p class="mt-3 font-semibold text-slate-900">{{ $complaint->subject }}</p>
-                            <p class="mt-1 line-clamp-2 text-xs text-slate-500">{{ $complaint->description }}</p>
+                            <p class="mt-2.5 font-semibold text-slate-900">{{ $complaint->subject }}</p>
+                            <p class="mt-1 line-clamp-2 text-xs text-slate-500 leading-relaxed">{{ $complaint->description }}</p>
 
                             <div class="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
                                 @if ($complaint->status === 'Selesai')
-                                    <span class="text-xs font-medium text-emerald-700">Selesai ditangani</span>
+                                    <span class="text-xs font-medium text-emerald-700 flex items-center gap-1">
+                                        <x-lucide-check-circle-2 class="size-3.5 text-emerald-600" aria-hidden="true" />
+                                        <span>Tuntas diselesaikan</span>
+                                    </span>
                                 @elseif ($isPastDeadline)
-                                    <span class="text-xs font-bold text-rose-700">Melewati SLA</span>
+                                    <span class="text-xs font-bold text-rose-700 flex items-center gap-1">
+                                        <x-lucide-alert-circle class="size-3.5 text-rose-500" aria-hidden="true" />
+                                        <span>Melewati SLA</span>
+                                    </span>
                                 @else
-                                    <span class="text-xs text-slate-500">
-                                        Target {{ $complaint->deadline_at->translatedFormat('d M Y') }}
+                                    <span class="text-xs text-slate-500 flex items-center gap-1">
+                                        <x-lucide-clock class="size-3.5 text-slate-400" aria-hidden="true" />
+                                        <span>Target: {{ $complaint->deadline_at->translatedFormat('d M Y') }}</span>
                                     </span>
                                 @endif
 
-                                <span class="text-xs font-semibold text-brand-700">Lihat rincian &rarr;</span>
+                                <span class="text-xs font-semibold text-brand-700 inline-flex items-center gap-1">
+                                    <span>Lihat Rincian</span>
+                                    <x-lucide-arrow-right class="size-3" aria-hidden="true" />
+                                </span>
                             </div>
                         </a>
                     @endforeach
                 </div>
 
-                {{-- Pagination --}}
+                {{-- Paginasi --}}
                 @if ($complaints->hasPages())
-                    <div class="border-t border-slate-200 bg-white px-4 py-3 sm:px-6">
+                    <div class="border-t border-slate-200 px-5 py-3.5">
                         {{ $complaints->links() }}
                     </div>
                 @endif
-            </div>
+            </x-ui.card>
         @else
             {{-- Empty State --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-8 sm:p-12 text-center shadow-xs">
-                <div class="mx-auto flex size-14 items-center justify-center rounded-full bg-brand-50 text-brand-700 shrink-0">
-                    <svg class="size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                    </svg>
+            <x-ui.card padding="p-8 sm:p-12" class="text-center">
+                <div class="mx-auto flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-700 shrink-0">
+                    <x-lucide-message-square class="size-7" aria-hidden="true" />
                 </div>
                 <h3 class="mt-4 text-base sm:text-lg font-bold text-slate-900">Belum Ada Pengaduan</h3>
-                <p class="mt-1.5 max-w-md mx-auto text-xs sm:text-sm text-slate-500">
-                    Semua cucian Anda berjalan dengan baik. Jika terdapat ketidaksesuaian pakaian, noda, atau keterlambatan, silakan laporkan melalui formulir pengaduan.
+                <p class="mt-1.5 max-w-md mx-auto text-xs sm:text-sm text-slate-500 leading-relaxed">
+                    Semua cucian Anda berjalan dengan baik. Jika terdapat ketidaksesuaian pakaian, noda, atau kendala pengerjaan, silakan laporkan melalui formulir pengaduan.
                 </p>
-                <div class="mt-5 flex justify-center gap-3">
+                <div class="mt-5 flex flex-wrap justify-center gap-2.5">
                     @if (request()->hasAny(['search', 'status']))
-                        <a
-                            href="{{ route('customer.complaints.index') }}"
-                            class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-700 shadow-2xs hover:bg-slate-100"
-                        >
-                            Reset Filter
-                        </a>
+                        <x-ui.button :href="route('customer.complaints.index')" variant="secondary">
+                            <x-lucide-rotate-ccw class="size-4" aria-hidden="true" />
+                            <span>Reset Filter</span>
+                        </x-ui.button>
                     @endif
-                    <a
-                        href="{{ route('customer.complaints.create') }}"
-                        class="inline-flex items-center gap-2 rounded-lg bg-brand-700 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-xs hover:bg-brand-800"
-                    >
-                        Ajukan Pengaduan Sekarang
-                    </a>
+                    <x-ui.button :href="route('customer.complaints.create')" variant="primary">
+                        <x-lucide-plus class="size-4" aria-hidden="true" />
+                        <span>Ajukan Pengaduan Sekarang</span>
+                    </x-ui.button>
                 </div>
-            </div>
+            </x-ui.card>
         @endif
     </div>
 </x-layouts::app>

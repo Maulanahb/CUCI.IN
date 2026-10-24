@@ -45,12 +45,18 @@ class TransactionController extends Controller
 
         // Filter berdasarkan status cucian
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'unclaimed') {
+                $query->unclaimedStorage(14);
+            } else {
+                $query->where('status', $request->status);
+            }
         }
+
+        $unclaimedCount = Transaction::unclaimedStorage(14)->count();
 
         $transactions = $query->paginate(10)->withQueryString();
 
-        return view('staff.transactions.index', compact('transactions'));
+        return view('staff.transactions.index', compact('transactions', 'unclaimedCount'));
     }
 
     /**
@@ -104,7 +110,7 @@ class TransactionController extends Controller
      *
      * @throws ValidationException
      */
-    public function updateStatus(Request $request, Transaction $transaction): RedirectResponse
+    public function updateStatus(Request $request, Transaction $transaction): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
             'status' => [
@@ -141,6 +147,18 @@ class TransactionController extends Controller
 
             // 2. Cek apakah status baru sama dengan status saat ini
             if ($newStatus === $currentStatus) {
+                if (! empty($notes)) {
+                    LaundryStatusHistory::create([
+                        'transaction_id' => $current->id,
+                        'status' => $currentStatus,
+                        'notes' => $notes,
+                        'changed_by' => auth()->id(),
+                        'changed_at' => now(),
+                    ]);
+
+                    return;
+                }
+
                 throw ValidationException::withMessages([
                     'status' => 'Status yang dipilih sama dengan status saat ini.',
                 ]);
@@ -180,6 +198,21 @@ class TransactionController extends Controller
             ]);
         });
 
+        if ($request->expectsJson()) {
+            $transaction->refresh();
+            $latestNotes = $transaction->statusHistories()->latest('id')->value('notes') ?? '';
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status transaksi berhasil diperbarui.',
+                'transaction' => [
+                    'id' => $transaction->id,
+                    'status' => $transaction->status instanceof TransactionStatus ? $transaction->status->value : (string) $transaction->status,
+                    'notes' => $latestNotes,
+                ],
+            ]);
+        }
+
         return redirect()
             ->back()
             ->with('success', 'Status transaksi berhasil diperbarui.');
@@ -209,8 +242,13 @@ class TransactionController extends Controller
                 'payment_choice' => $validated['payment_choice'] ?? null,
             ]);
         } catch (InvalidArgumentException $e) {
+            $errorMessage = $e->getMessage();
+            $errorKey = str_contains(strtolower($errorMessage), 'dp') || str_contains(strtolower($errorMessage), 'pembayaran')
+                ? 'payment_amount'
+                : 'items';
+
             throw ValidationException::withMessages([
-                'items' => [$e->getMessage()],
+                $errorKey => [$errorMessage],
             ]);
         }
 

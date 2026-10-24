@@ -175,4 +175,23 @@ class Transaction extends Model
     {
         return $this->payment_status === 'Lunas';
     }
+
+    /**
+     * Scope untuk menyaring cucian yang selesai namun belum diambil melebihi ambang hari.
+     */
+    public function scopeUnclaimedStorage($query, int $days = 14)
+    {
+        return $query->where('status', TransactionStatus::Selesai)
+            ->where('updated_at', '<=', now()->subDays($days));
+    }
+
+    /**
+     * Cek apakah cucian selesai disimpan melebihi ambang batas hari.
+     */
+    public function isStorageOverdue(int $days = 14): bool
+    {
+        return $this->status === TransactionStatus::Selesai
+            && $this->updated_at !== null
+            && $this->updated_at <= now()->subDays($days);
+    }
 }

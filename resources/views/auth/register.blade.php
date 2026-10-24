@@ -1,19 +1,19 @@
-<x-layouts::guest title="Daftar Akun Pelanggan">
-    <div class="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-sm sm:p-10">
-        {{-- Header & Logo --}}
+<x-layouts::guest title="Daftar Akun Pelanggan" maxWidth="max-w-lg">
+    <div class="rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-xs backdrop-blur-xs sm:p-8">
+        {{-- Header & Logo Brand --}}
         <div class="flex flex-col items-center text-center">
-            <div class="flex items-center gap-2.5">
-                <x-app-logo class="size-9 drop-shadow-sm" />
+            <a href="{{ route('home') }}" class="flex items-center gap-2.5 transition hover:opacity-90">
+                <x-app-logo class="size-10 drop-shadow-xs" />
                 <span class="text-xl font-bold tracking-tight text-brand-700">CUCI<span class="text-brand-500">.IN</span></span>
-            </div>
+            </a>
 
             <p class="mt-2 text-xs font-medium text-slate-500">
                 Sistem Manajemen Operasional Laundry
             </p>
 
-            <h2 class="mt-6 text-xl font-bold tracking-tight text-slate-900">
+            <h1 class="mt-5 text-xl font-bold tracking-tight text-slate-900">
                 Daftar Akun Pelanggan
-            </h2>
+            </h1>
             <p class="mt-1 text-xs text-slate-500 sm:text-sm">
                 Pantau progres cucian dan histori transaksi laundry Anda secara mudah.
             </p>
@@ -35,9 +35,7 @@
                 <label for="name" class="block text-xs font-semibold text-slate-700">Nama Lengkap</label>
                 <div class="relative mt-1.5">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                        <x-lucide-user class="size-4" />
                     </div>
                     <input
                         id="name"
@@ -46,7 +44,7 @@
                         value="{{ old('name') }}"
                         required
                         autofocus
-                        placeholder="Nama lengkap Anda"
+                        placeholder="Masukkan nama lengkap Anda"
                         @class([
                             'w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
                             'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('name'),
@@ -55,7 +53,10 @@
                     />
                 </div>
                 @error('name')
-                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600">
+                        <x-lucide-alert-circle class="size-3.5" />
+                        <span>{{ $message }}</span>
+                    </p>
                 @enderror
             </div>
 
@@ -64,9 +65,7 @@
                 <label for="phone" class="block text-xs font-semibold text-slate-700">Nomor WhatsApp / HP</label>
                 <div class="relative mt-1.5">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a11.042 11.042 0 005.516 5.516l1.13-2.257a11.042 11.042 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
+                        <x-lucide-phone class="size-4" />
                     </div>
                     <input
                         id="phone"
@@ -76,14 +75,17 @@
                         required
                         placeholder="Contoh: 081234567890"
                         @class([
-                            'w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
+                            'w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm font-mono text-slate-900 placeholder-slate-400 placeholder:font-sans transition focus:outline-none focus:ring-2',
                             'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('phone'),
                             'border-red-400 bg-red-50/30 text-red-900 focus:border-red-500 focus:ring-red-500/20' => $errors->has('phone'),
                         ])
                     />
                 </div>
                 @error('phone')
-                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600">
+                        <x-lucide-alert-circle class="size-3.5" />
+                        <span>{{ $message }}</span>
+                    </p>
                 @enderror
             </div>
 
@@ -92,9 +94,7 @@
                 <label for="email" class="block text-xs font-semibold text-slate-700">Email</label>
                 <div class="relative mt-1.5">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
+                        <x-lucide-mail class="size-4" />
                     </div>
                     <input
                         id="email"
@@ -111,82 +111,77 @@
                     />
                 </div>
                 @error('email')
-                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600">
+                        <x-lucide-alert-circle class="size-3.5" />
+                        <span>{{ $message }}</span>
+                    </p>
                 @enderror
             </div>
 
-            {{-- Password --}}
-            <div x-data="{ show: false }">
-                <label for="password" class="block text-xs font-semibold text-slate-700">Password</label>
-                <div class="relative mt-1.5">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
+            {{-- Grid 2 Kolom Password di Desktop --}}
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {{-- Password --}}
+                <div x-data="{ show: false }">
+                    <label for="password" class="block text-xs font-semibold text-slate-700">Password</label>
+                    <div class="relative mt-1.5">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <x-lucide-lock class="size-4" />
+                        </div>
+                        <input
+                            id="password"
+                            name="password"
+                            :type="show ? 'text' : 'password'"
+                            required
+                            placeholder="Min. 8 karakter"
+                            @class([
+                                'w-full rounded-xl border py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
+                                'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('password'),
+                                'border-red-400 bg-red-50/30 text-red-900 focus:border-red-500 focus:ring-red-500/20' => $errors->has('password'),
+                            ])
+                        />
+                        <button
+                            type="button"
+                            @click="show = !show"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 transition hover:text-slate-600 focus:outline-none cursor-pointer"
+                            :aria-label="show ? 'Sembunyikan password' : 'Lihat password'"
+                        >
+                            <x-lucide-eye x-show="!show" class="size-4" />
+                            <x-lucide-eye-off x-cloak x-show="show" class="size-4" />
+                        </button>
                     </div>
-                    <input
-                        id="password"
-                        name="password"
-                        :type="show ? 'text' : 'password'"
-                        required
-                        placeholder="Minimal 8 karakter"
-                        @class([
-                            'w-full rounded-xl border py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
-                            'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('password'),
-                            'border-red-400 bg-red-50/30 text-red-900 focus:border-red-500 focus:ring-red-500/20' => $errors->has('password'),
-                        ])
-                    />
-                    <button
-                        type="button"
-                        @click="show = !show"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
-                        :aria-label="show ? 'Sembunyikan password' : 'Lihat password'"
-                    >
-                        <svg x-show="!show" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        <svg x-cloak x-show="show" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                        </svg>
-                    </button>
+                    @error('password')
+                        <p class="mt-1 flex items-center gap-1 text-xs text-red-600">
+                            <x-lucide-alert-circle class="size-3.5" />
+                            <span>{{ $message }}</span>
+                        </p>
+                    @enderror
                 </div>
-                @error('password')
-                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                @enderror
-            </div>
 
-            {{-- Konfirmasi Password --}}
-            <div x-data="{ show: false }">
-                <label for="password_confirmation" class="block text-xs font-semibold text-slate-700">Konfirmasi Password</label>
-                <div class="relative mt-1.5">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                        </svg>
+                {{-- Konfirmasi Password --}}
+                <div x-data="{ show: false }">
+                    <label for="password_confirmation" class="block text-xs font-semibold text-slate-700">Konfirmasi Password</label>
+                    <div class="relative mt-1.5">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <x-lucide-shield-check class="size-4" />
+                        </div>
+                        <input
+                            id="password_confirmation"
+                            name="password_confirmation"
+                            :type="show ? 'text' : 'password'"
+                            required
+                            placeholder="Ulangi password"
+                            class="w-full rounded-xl border border-slate-300 py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 transition focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                        />
+                        <button
+                            type="button"
+                            @click="show = !show"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 transition hover:text-slate-600 focus:outline-none cursor-pointer"
+                            :aria-label="show ? 'Sembunyikan password' : 'Lihat password'"
+                        >
+                            <x-lucide-eye x-show="!show" class="size-4" />
+                            <x-lucide-eye-off x-cloak x-show="show" class="size-4" />
+                        </button>
                     </div>
-                    <input
-                        id="password_confirmation"
-                        name="password_confirmation"
-                        :type="show ? 'text' : 'password'"
-                        required
-                        placeholder="Ulangi password"
-                        class="w-full rounded-xl border border-slate-300 py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 transition focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                    />
-                    <button
-                        type="button"
-                        @click="show = !show"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
-                        :aria-label="show ? 'Sembunyikan password' : 'Lihat password'"
-                    >
-                        <svg x-show="!show" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        <svg x-cloak x-show="show" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                        </svg>
-                    </button>
                 </div>
             </div>
 
@@ -194,9 +189,10 @@
             <button
                 type="submit"
                 id="register-submit-button"
-                class="mt-4 w-full rounded-xl bg-brand-600 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 active:scale-[0.99]"
+                class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-2.5 text-center text-sm font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 active:scale-[0.99] cursor-pointer"
             >
-                Daftar Sekarang
+                <x-lucide-user-plus class="size-4" />
+                <span>Daftar Sekarang</span>
             </button>
         </form>
     </div>
@@ -204,7 +200,7 @@
     {{-- Link Masuk Bawah Card --}}
     <div class="mt-6 text-center text-xs text-slate-600">
         Sudah memiliki akun?
-        <a href="{{ route('login') }}" class="font-semibold text-brand-700 hover:text-brand-800 hover:underline">
+        <a href="{{ route('login') }}" class="font-semibold text-brand-700 transition hover:text-brand-800 hover:underline">
             Masuk ke Akun
         </a>
     </div>

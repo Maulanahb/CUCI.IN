@@ -14,26 +14,27 @@
 CUCI.IN dikembangkan sebagai proyek rekayasa perangkat lunak mandiri (*self-funded internal venture*) oleh tim mahasiswa D4 Sistem Informasi Bisnis untuk memecahkan tantangan operasional usaha laundry. Karena proyek ini tidak didanai oleh toko mitra eksternal, strategi pengadaan dirancang dengan prinsip **efisiensi biaya maksimal tanpa mengorbankan stabilitas sistem**.
 
 Kebijakan utama pengadaan proyek:
-1. **Prioritas Fasilitas Akademik:** Memaksimalkan penawaran kemitraan pendidikan aktif (GitHub Student Developer Pack, lisensi institusi Notion, dan repositori organisasi GitHub).
-2. **Penyediaan Server Mandiri yang Terukur:** Menyediakan lingkungan hosting online aktif 24 jam untuk pengujian, staging, dan demonstrasi evaluasi, dengan pembiayaan patungan yang terjangkau bagi mahasiswa.
+1. **Prioritas Fasilitas Akademik & Cloud Free Tier:** Memaksimalkan penawaran kemitraan pendidikan aktif (GitHub Student Developer Pack, lisensi institusi Notion, repositori organisasi GitHub, dan aktivasi AWS Cloud Free Tier).
+2. **Penyediaan Server Mandiri Bebas Biaya (Rp 0):** Menyediakan lingkungan hosting online aktif 24 jam untuk pengujian, staging, dan demonstrasi evaluasi dosen menggunakan akun AWS Free Tier yang telah berhasil diverifikasi aktif (USD 0.00). Skema patungan sewa VPS lokal disiapkan sebagai opsi cadangan (*fallback*).
 3. **Penundaan Perangkat Keras Fisik:** Menunda pembelian alat kasir fisik (printer thermal) selama masa pengembangan, dan memprioritaskan fitur cetak nota digital peramban (*browser print*).
 
 ---
 
 ## 2. Evaluasi Lingkungan Server & Basis Data
 
-Dalam menentukan infrastruktur komputasi untuk menjalankan aplikasi Laravel (PHP 8.4) dan basis data PostgreSQL, tim mengevaluasi dua alternatif lingkungan cloud:
+Dalam menentukan infrastruktur komputasi untuk menjalankan aplikasi Laravel (PHP 8.4) dan basis data PostgreSQL, tim mengevaluasi dan menetapkan alternatif lingkungan cloud sebagai berikut:
 
-### 2.1 Opsi Baseline (Acuan Utama): Cloud VPS Lokal
-- **Penyedia:** IDCloudHost / Biznet Gio (Data Center Indonesia).
-- **Spesifikasi:** 1 vCPU, 1–2 GB RAM, 20–40 GB SSD Storage.
-- **Estimasi Biaya:** Rp 50.000 – Rp 85.000 per bulan.
-- **Justifikasi:** Menjamin latensi rendah untuk akses kasir lokal, tidak memiliki risiko kejutan tagihan di luar kuota (*unforeseen egress billing*), dan memberikan kontrol penuh (*root access*) untuk mengonfigurasi PHP 8.4, PostgreSQL, serta background process (queue worker).
+### 2.1 Lingkungan Utama Terpilih: AWS Cloud Free Tier
+- **Penyedia:** Amazon Web Services (AWS Cloud, Region `us-east-1`).
+- **Status Akun:** Berhasil Diaktivasi & Terverifikasi Aktif (Billing Total: **USD 0.00**).
+- **Spesifikasi:** 1 vCPU, 1–2 GB RAM, 20–40 GB SSD Storage (paket AWS Free Tier / Lightsail / EC2).
+- **Estimasi Biaya:** **Rp 0 / bulan** (selama masa free plan 6 bulan).
+- **Justifikasi Teknis:** Menghilangkan 100% beban biaya server kelompok selama masa pengerjaan dan penilaian PBL. Menyediakan akses *root* penuh pada sistem operasi Linux (Ubuntu 24.04 LTS) untuk mengonfigurasi stack Laravel (Nginx, PHP 8.4-FPM, PostgreSQL 15+, dan background queue worker) secara optimal.
 
-### 2.2 Opsi Uji Coba (Staging): Microsoft Azure for Students
-- **Penyedia:** Microsoft Azure (didukung kredit $100 via GitHub Student Developer Pack).
-- **Justifikasi Evaluasi:** Kredit $100 dapat dimanfaatkan untuk hosting uji coba dan staging secara gratis selama kredit masih aktif dan memenuhi ketentuan kelayakan akun pelajar.
-- **Batasan & Mitigasi Risiko:** Layanan terkelola seperti *Azure Database for PostgreSQL Flexible Server* dapat menguras kredit dengan cepat jika tidak dikonfigurasi secara cermat, serta memiliki batasan waktu aktif. Oleh sebab itu, Azure for Students diposisikan sebagai **calon lingkungan uji coba tambahan**, sementara skema patungan VPS lokal tetap disiapkan sebagai cadangan agar operasional sistem tidak terputus.
+### 2.2 Opsi Cadangan (Contingency / Fallback): Cloud VPS Lokal & Azure
+- **Penyedia:** IDCloudHost / Biznet Gio (Data Center Indonesia) atau Microsoft Azure for Students ($100 credit).
+- **Estimasi Biaya:** Rp 50.000 – Rp 85.000 per bulan (jika menyewa VPS lokal).
+- **Justifikasi:** Disiapkan sebagai skema kontingensi apabila masa gratis AWS berakhir atau jika diperlukan latensi domestik ultra-rendah pasca-milestone evaluasi.
 
 ---
 
@@ -41,7 +42,7 @@ Dalam menentukan infrastruktur komputasi untuk menjalankan aplikasi Laravel (PHP
 
 | No | Kebutuhan Pengadaan | Kategori | Sifat Kebutuhan | Status Pengadaan | Rekomendasi Vendor | Estimasi Biaya | Alasan Kebutuhan & Justifikasi Teknis |
 | :-: | :--- | :--- | :---: | :---: | :--- | :--- | :--- |
-| 1 | **Cloud VPS (1 vCPU, 1–2 GB RAM, 20–40 GB SSD)** | Server Web | Wajib | Perlu Disewa (Opsi Uji Coba: Azure) | IDCloudHost / Biznet Gio *(Alternatif: Azure for Students)* | Rp 50.000 – Rp 85.000 / bulan | Menjalankan aplikasi Laravel dan database PostgreSQL agar web bisa diakses online kapan saja untuk pengujian dan demo. Kredit $100 Azure for Students dievaluasi untuk staging; namun VPS lokal tetap disiapkan sebagai acuan utama agar kebutuhan stack tidak terbentur batasan kuota. |
+| 1 | **Cloud VPS (1 vCPU, 1–2 GB RAM, 20–40 GB SSD)** | Server Web & DB | Wajib | **Berhasil Diaktifkan (Free Tier)** | **Amazon Web Services (AWS)** *(Cadangan: IDCloudHost / Biznet / Azure)* | **Rp 0 (AWS Free Plan 6 Bulan)** | Menjalankan aplikasi Laravel dan database PostgreSQL agar web bisa diakses online 24/7 untuk pengujian dan demo dosen. Akun AWS Free Tier telah diverifikasi aktif dengan tagihan USD 0.00, membebaskan tim dari biaya sewa server. |
 | 2 | **Domain Kustom (`cuci-in.tech` atau `cuci-in.me`)** | Alamat Web | Wajib | Gratis (GitHub Education) | Radix (.tech) / Namecheap (.me) | Rp 0 (1 tahun pertama) | Alamat web resmi agar pengujian sistem dan pemasangan sertifikat SSL lebih mudah. Menggunakan voucher domain gratis 1 tahun dari GitHub Student Developer Pack. |
 | 3 | **Sertifikat SSL/TLS (HTTPS)** | Keamanan | Wajib | Gratis | Let's Encrypt / Certbot | Rp 0 | Protokol HTTPS untuk mengamankan data transaksi dan kredensial akun pengguna secara gratis. |
 | 4 | **Notion & GitHub Organization** | Kolaborasi | Wajib | Gratis (Lisensi Edukasi) | Notion Labs & GitHub Inc. | Rp 0 | Manajemen proyek kelompok, dokumentasi jobsheet, pelacakan RACI, dan repositori kode tim. |
@@ -54,17 +55,20 @@ Dalam menentukan infrastruktur komputasi untuk menjalankan aplikasi Laravel (PHP
 ## 4. Rincian Anggaran Biaya (RAB) & Sumber Pendanaan
 
 ### 4.1 Rekapitulasi Biaya Pengadaan
+- **Biaya Server Web & Basis Data:** **Rp 0** (didukung penuh oleh AWS Cloud Free Tier selama 6 bulan).
 - **Biaya Awal (Domain & Setup):** Rp 0 (memanfaatkan jatah domain gratis mahasiswa 1 tahun dari GitHub Education).
-- **Biaya Operasional Bulanan:** Rp 50.000 – Rp 85.000 per bulan untuk sewa Cloud VPS lokal (dapat menjadi Rp 0 jika kredit Azure for Students berhasil dimanfaatkan penuh selama masa uji coba).
 - **Biaya Layanan Penunjang (SSL, Storage R2, Tool Kolaborasi):** Rp 0 (menggunakan tier gratis dan lisensi pendidikan kampus).
 - **Biaya Perangkat Kasir Fisik:** Rp 0 saat ini (pengadaan ditunda / meminjam unit lab kampus jika diperlukan untuk demonstrasi).
+- **Total Pengeluaran Riil Tim:** **Rp 0 / bulan**.
 
 ### 4.2 Skema Pendanaan Mandiri Tim
-Biaya operasional sewa VPS cloud lokal ditanggung secara patungan bersama oleh 5 anggota tim pengembang:
-$$\text{Iuran per Anggota} = \frac{\text{Rp } 50.000 \text{ s.d. Rp } 85.000}{5 \text{ orang}} \approx \text{\textbf{Rp 10.000 – Rp 17.000 per orang / bulan}}$$
+Karena server utama berhasil diperoleh secara gratis melalui aktivasi akun AWS Free Tier:
+$$\text{Iuran Riil per Anggota} = \frac{\text{Rp 0}}{5 \text{ orang}} = \text{\textbf{Rp 0 (Hemat 100\%)}}$$
+
+*(Catatan Kontingensi: Apabila di masa mendatang server AWS habis masa promonya dan tim memutuskan migrasi ke VPS lokal berbayar, skema iuran patungan cadangan adalah Rp 10.000 – Rp 17.000 / orang / bulan).*
 
 ---
 
 ## 5. Kesimpulan Kelayakan Pengadaan (*Procurement Feasibility*)
 
-Rencana pengadaan ini dinilai sangat realistis dan layak (*feasible*) untuk kapasitas tim mahasiswa. Kebutuhan utama berupa server produksi online aktif 24/7 dan domain publik resmi dapat terpenuhi dengan baik. Pengeluaran kelompok dapat ditekan seminimal mungkin dengan mengoptimalkan fasilitas gratis akun mahasiswa, serta menunda pembelian perangkat keras fisik kasir yang belum mendesak pada tahap pengembangan saat ini.
+Rencana pengadaan ini dinilai **sangat unggul, realistis, dan layak (*highly feasible*)** untuk kapasitas tim mahasiswa. Seluruh kebutuhan utama sistem (server online 24/7, database PostgreSQL terisolasi, sertifikat keamanan SSL, dan domain publik) berhasil dipenuhi dengan **biaya aktual Rp 0**. Keberhasilan mengaktivasi fasilitas AWS Free Tier membuktikan inisiatif tim dalam manajemen biaya proyek (*cost management*) yang efisien tanpa mengorbankan kualitas dan ketersediaan sistem aplikasi CUCI.IN.
