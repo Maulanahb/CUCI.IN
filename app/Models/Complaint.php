@@ -20,6 +20,7 @@ class Complaint extends Model
         'transaction_id',
         'subject',
         'description',
+        'photo_path',
         'status',
         'response',
         'deadline_at',
@@ -54,5 +55,17 @@ class Complaint extends Model
     public function handler(): BelongsTo
     {
         return $this->belongsTo(User::class, 'handled_by');
+    }
+
+    /**
+     * URL publik untuk foto bukti kendala.
+     */
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if (! $this->photo_path) {
+            return null;
+        }
+
+        return asset('storage/'.$this->photo_path);
     }
 }

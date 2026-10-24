@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\StoreComplaintRequest;
+use App\Jobs\CompressComplaintPhoto;
 use App\Models\Complaint;
 use App\Models\Customer;
 use App\Models\Transaction;
@@ -133,14 +134,24 @@ class ComplaintController extends Controller
     {
         $validated = $request->validated();
 
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('complaints', 'public');
+        }
+
         $complaint = Complaint::create([
             'complaint_code' => ComplaintCodeGenerator::generate(),
             'transaction_id' => $validated['transaction_id'],
             'subject' => $validated['subject'],
             'description' => $validated['description'],
+            'photo_path' => $photoPath,
             'status' => 'Menunggu',
             'deadline_at' => now()->addDays(2),
         ]);
+
+        if ($photoPath) {
+            CompressComplaintPhoto::dispatch($complaint);
+        }
 
         return redirect()
             ->route('customer.complaints.show', $complaint)
