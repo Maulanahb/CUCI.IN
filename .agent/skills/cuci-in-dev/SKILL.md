@@ -95,3 +95,27 @@ Sebelum cabang fitur digabung ke `develop`:
 - [ ] Tidak ada berkas sampah atau kredensial rahasia (.env) yang terikut ke Git.
 - [ ] Riwayat komit memiliki author yang sesuai dengan anggota tim.
 - [ ] Buat Pull Request ke cabang `develop` untuk di-review oleh Maulana / Dawamul.
+
+---
+
+## 4. Standar Arsitektur Pengolahan Data, Ekspor, & Queue (Materi P9)
+
+Bila mendampingi pengembang pada modul pelaporan, ekspor dokumen, upload media, atau pemrosesan antrean, pastikan menerapkan aturan berikut:
+
+1. **Filter Tanggal & Agregasi Laporan (Zaky & Maulana):**
+   - Wajib gunakan `$request->date('to')->endOfDay()` agar transaksi di akhir hari tidak terpotong.
+   - Hitung nilai rekap/agregasi di database (`selectRaw('SUM(...)')` / `count()`), bukan di memori PHP.
+   - Pastikan tabel `transactions` dan `payments` memiliki indeks pada kolom filter tanggal dan status.
+
+2. **Ekspor Laporan (Ayin):**
+   - **PDF:** Gunakan `laravel-dompdf` hanya untuk nota cetak atau dokumen ringkas (1–2 halaman).
+   - **Excel:** Gunakan `FromQuery` pada Laravel Excel (`maatwebsite/excel`).
+   - **CSV (Dataset Besar):** Wajib gunakan pola aliran (*streaming*) `response()->streamDownload()` + `lazyById()` untuk menjaga memori RAM server tetap stabil.
+
+3. **Background Job / Queue (Maulana, Nora, Daysyani):**
+   - Tugas berat (kompresi foto bukti transfer, kompresi foto komplain noda, notifikasi status cucian) wajib dikirim ke Queue Job (`make:job`).
+   - Terapkan properti: `public int $tries = 3;`, `public array $backoff = [10, 60];`, `public int $timeout = 60;`.
+   - Hanya bawa ID model atau path file pada constructor job.
+   - Gunakan `->afterCommit()` saat men-dispatch job di dalam transaksi basis data.
+   - Panduan alokasi modul tim dan standar arsitektur tersedia di [rules_milestone_2.md](file:///c:/laragon/www/cuci-in/docs/rules_milestone_2.md) dan [prd.md](file:///c:/laragon/www/cuci-in/docs/prd.md) (Seksi 24).
+

@@ -891,3 +891,39 @@ Feature dinyatakan selesai apabila:
 * Feature telah diuji.
 * Tidak terdapat critical bug.
 * Feature siap diintegrasikan ke `develop`.
+
+---
+
+# 24. Technical Architecture: Data Processing, Export & Background Queue
+
+Mengadopsi materi perkuliahan Pemrograman Web Lanjut (Pertemuan 9) mengenai ETL, pemrosesan dataset besar, efisiensi memori, ekspor/impor, dan sistem antrean (*queue*), seluruh modul sistem CUCI.IN wajib mengikuti standar teknis berikut:
+
+### 24.1 Kueri Agregasi Laporan & Penanganan Batas Hari (PIC: Zaky Dawamul & Maulana)
+1. **Pencegahan Tanggal Terpotong (*Cut-off Date Trap*):** Filter rentang tanggal pada laporan transaksi/keuangan wajib menggunakan `$request->date('to')->endOfDay()` (23:59:59). Filter tanpa `endOfDay()` memotong data pada pukul 00:00:00 dan menghilangkan seluruh transaksi hari terakhir.
+2. **Kueri Agregasi di Tingkat Database (PostgreSQL):** Hindari kalkulasi total di memori PHP seperti `Transaction::all()->sum(...)`. Gunakan kueri agregasi SQL langsung via Eloquent (`selectRaw('COUNT(*), COALESCE(SUM(grand_total), 0)')`) guna mencegah galat *out-of-memory* pada server VPS berkapasitas RAM 1–2 GB.
+3. **Strategi Indeks Basis Data:** Kolom yang sering dijadikan filter atau pengurutan wajib memiliki indeks pada migrasi: `transactions(created_at, status)`, `transactions(customer_id)`, dan `payments(paid_at, payment_status)`.
+
+### 24.2 Standar Mesin Ekspor Dokumen Laporan (PIC: Ayin)
+1. **PDF (DomPDF):** Dikhususkan untuk dokumen ringkas bernilai cetak (nota transaksi individual kasir, slip pembayaran, dan ringkasan eksekutif 1–2 halaman). Dilarang untuk ekspor riwayat ribuan baris karena DomPDF merender seluruh struktur dokumen ke memori RAM.
+2. **Excel (.xlsx via Laravel Excel):** Digunakan untuk rekapitulasi analitis keuangan bulanan Owner dengan interface `FromQuery`, `WithHeadings`, `WithMapping`, dan `WithChunkReading`.
+3. **CSV Streaming (Dataset Besar):** Untuk arsip transaksi ribuan baris, wajib menggunakan pola aliran (*streaming*) `response()->streamDownload()` dikombinasikan dengan `lazyById()` agar penggunaan RAM server tetap datar/stabil.
+
+### 24.3 Eksekusi Asynchronous / Queue Background Jobs (PIC: Nora, Daysyani, & Maulana)
+1. **Pekerjaan yang Wajib Masuk Queue:** 
+   - Kompresi dan penyesuaian ukuran berkas gambar (foto bukti transfer bank/QRIS oleh Nora dan foto noda/kerusakan komplain pakaian oleh Daysyani).
+   - Pengiriman notifikasi pembaruan status cucian (WhatsApp/Email) untuk mencegah latensi pemanggilan API eksternal menghambat alur kasir POS.
+2. **Aturan Class Job Laravel:**
+   - Properti ketahanan: `public int $tries = 3;`, `public array $backoff = [10, 60];`, `public int $timeout = 60;`.
+   - Payload konstruktor hanya membawa ID model atau path file, bukan objek request/session.
+   - Menggunakan `->afterCommit()` saat men-dispatch job di dalam blok transaksi basis data (`DB::transaction`).
+3. **Infrastruktur Produksi:** Menggunakan koneksi antrean `QUEUE_CONNECTION=database` (tabel migrasi `jobs`), dipantau oleh Supervisor daemon di server AWS Free Tier, dan dijalankan perintah `php artisan queue:restart` saat rilis kode baru.
+
+---
+
+# 25. Document Changelog
+
+| Versi | Tanggal | Penulis | Deskripsi Perubahan |
+| :---: | :---: | :--- | :--- |
+| **v1.0** | Oktober 2026 | Tim CUCI.IN | Inisialisasi Product Requirements Document (PRD) mencakup Scope, User Stories, Data Models, Functional Requirements, dan Definition of Done. |
+| **v1.1** | 24 Oktober 2026 | Maulana Ahmad Bukhori | **Penambahan Seksi 24 (Technical Architecture: Data Processing, Export & Queue):** Integrasi standar materi Pertemuan 9 PWL (pencegahan cut-off date `endOfDay`, agregasi SQL PostgreSQL, pola streaming CSV, kompresi upload foto & notifikasi asynchronous via Laravel Queue). |
+
