@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\TransactionStatus;
+use App\Models\Complaint;
 use App\Models\Customer;
 use App\Models\LaundryStatusHistory;
 use App\Models\Payment;
@@ -491,10 +492,12 @@ class DashboardController extends Controller
                 'customer' => null,
                 'activeTransactions' => collect(),
                 'recentTransactions' => collect(),
+                'activeComplaints' => collect(),
                 'stats' => [
                     'active_count' => 0,
                     'unpaid_amount' => 0.0,
                     'total_count' => 0,
+                    'active_complaints_count' => 0,
                 ],
             ]);
         }
@@ -514,7 +517,7 @@ class DashboardController extends Controller
         // 2. Transaksi Terakhir (5 transaksi terbaru)
         $recentTransactions = $allTransactions->take(5);
 
-        // 3. Kalkulasi statistik ringkasan
+        // 3. Kalkulasi statistik ringkasan transaksi
         $unpaidAmount = 0.0;
         foreach ($allTransactions as $trx) {
             $status = $trx->status instanceof TransactionStatus ? $trx->status->value : (string) $trx->status;
@@ -529,16 +532,31 @@ class DashboardController extends Controller
             }
         }
 
+        // 4. Data Pengaduan Customer (Sesuai FR-27)
+        $customerComplaints = Complaint::query()
+            ->whereHas('transaction', function ($q) use ($customer) {
+                $q->where('customer_id', $customer->id);
+            })
+            ->with(['transaction', 'handler'])
+            ->latest('id')
+            ->get();
+
+        $activeComplaints = $customerComplaints->whereIn('status', ['Menunggu', 'Diproses'])->values();
+
         $stats = [
             'active_count' => $activeTransactions->count(),
             'unpaid_amount' => $unpaidAmount,
             'total_count' => $allTransactions->count(),
+            'active_complaints_count' => $activeComplaints->count(),
+            'total_complaints_count' => $customerComplaints->count(),
         ];
 
         return view('customer.dashboard', [
             'customer' => $customer,
             'activeTransactions' => $activeTransactions,
             'recentTransactions' => $recentTransactions,
+            'activeComplaints' => $activeComplaints,
+            'recentComplaints' => $customerComplaints->take(3),
             'stats' => $stats,
         ]);
     }
