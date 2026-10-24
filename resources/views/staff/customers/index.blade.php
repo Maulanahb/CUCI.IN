@@ -5,46 +5,23 @@
 <x-layouts::app title="Data Pelanggan">
     <div
         class="space-y-6"
-        x-data="{
-            createModalOpen: false,
-            editModalOpen: false,
-            deleteModalOpen: false,
-            editForm: { id: '', name: '', phone: '', address: '' },
-            deleteForm: { id: '', name: '' },
-            formatPhone(val) {
-                if (!val) return '';
-                let cleaned = val.toString().trim().replace(/[^\d+]/g, '');
-                if (cleaned.startsWith('+62')) {
-                    let rest = cleaned.substring(3).replace(/^0+/, '');
-                    return '0' + rest;
-                } else if (cleaned.startsWith('62')) {
-                    let rest = cleaned.substring(2).replace(/^0+/, '');
-                    return '0' + rest;
-                } else if (cleaned.startsWith('8')) {
-                    return '0' + cleaned;
-                }
-                return cleaned.replace(/^\+/, '');
-            },
-            openEditModal(data) {
-                this.editForm = { ...data };
-                this.editModalOpen = true;
-            },
-            openDeleteModal(data) {
-                this.deleteForm = { ...data };
-                this.deleteModalOpen = true;
-            }
-        }"
-        @keydown.escape.window="createModalOpen = false; editModalOpen = false; deleteModalOpen = false"
+        x-data="customerManager({{ Js::from($customersPayloadMap) }}, @js($autoOpenCustomerId))"
     >
-        {{-- Sub-deskripsi & aksi halaman --}}
+        {{-- Sub-deskripsi & Aksi Utama Halaman --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm text-slate-500">
-                Kelola direktori kontak pelanggan, riwayat cucian, serta pemantauan status order laundry secara terpadu.
-            </p>
+            <div>
+                <p class="text-xs text-slate-500 sm:text-sm">
+                    Kelola direktori kontak pelanggan, riwayat transaksi cucian, dan buat pesanan POS secara instan.
+                </p>
+            </div>
 
-            <x-ui.button type="button" @click="createModalOpen = true" class="w-full sm:w-auto shadow-xs">
+            <x-ui.button
+                type="button"
+                @click="openCreate()"
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-98"
+            >
                 <x-lucide-user-plus class="size-4" />
-                <span>Tambah Pelanggan</span>
+                <span>+ Tambah Pelanggan</span>
             </x-ui.button>
         </div>
 
@@ -56,7 +33,7 @@
         @endif
 
         @if ($errors->any())
-            <x-ui.alert variant="destructive" title="Terjadi kesalahan saat memproses data pelanggan:" dismissible>
+            <x-ui.alert variant="destructive" title="Terjadi kendala saat memproses data pelanggan:" dismissible>
                 <ul class="list-inside list-disc space-y-0.5 pl-1 font-normal text-xs">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -65,1099 +42,956 @@
             </x-ui.alert>
         @endif
 
-        {{-- Card Metrik Ringkasan --}}
+        {{-- Card Metrik Ringkasan Pelanggan --}}
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-slate-300">
+            <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs transition hover:border-slate-300">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-medium text-slate-500">Total Pelanggan</span>
-                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
+                    <span class="text-xs font-semibold text-slate-500">Total Pelanggan</span>
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shadow-2xs">
                         <x-lucide-users class="size-4" />
                     </div>
                 </div>
-                <p class="mt-2 text-2xl font-extrabold tabular-nums text-slate-900">{{ $totalCustomersCount }}</p>
-                <p class="mt-0.5 text-2xs text-slate-400">Akun terdaftar</p>
+                <p class="mt-2 text-2xl font-black font-mono tabular-nums tracking-tight text-slate-900">{{ $totalCustomersCount }}</p>
+                <p class="mt-0.5 text-2xs text-slate-400 font-medium">Akun terdaftar</p>
             </div>
 
-            <div class="rounded-2xl border border-amber-100 bg-white p-4 shadow-xs transition hover:border-amber-200">
+            <div class="rounded-2xl border border-amber-100 bg-white p-4 shadow-2xs transition hover:border-amber-200">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-medium text-slate-500">Sedang Proses</span>
-                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+                    <span class="text-xs font-semibold text-slate-500">Sedang Proses</span>
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-700 shadow-2xs">
                         <x-lucide-clock class="size-4" />
                     </div>
                 </div>
-                <p class="mt-2 text-2xl font-extrabold tabular-nums text-amber-600">{{ $counts['processing'] }}</p>
-                <p class="mt-0.5 text-2xs text-slate-400">Sedang dikerjakan</p>
+                <p class="mt-2 text-2xl font-black font-mono tabular-nums tracking-tight text-amber-600">{{ $counts['processing'] }}</p>
+                <p class="mt-0.5 text-2xs text-slate-400 font-medium">Sedang dicuci / disetrika</p>
             </div>
 
-            <div class="rounded-2xl border border-sky-100 bg-white p-4 shadow-xs transition hover:border-sky-200">
+            <div class="rounded-2xl border border-sky-100 bg-white p-4 shadow-2xs transition hover:border-sky-200">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-medium text-slate-500">Siap Diambil</span>
-                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
+                    <span class="text-xs font-semibold text-slate-500">Siap Diambil</span>
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-700 shadow-2xs">
                         <x-lucide-package-check class="size-4" />
                     </div>
                 </div>
-                <p class="mt-2 text-2xl font-extrabold tabular-nums text-sky-600">{{ $counts['ready'] }}</p>
-                <p class="mt-0.5 text-2xs text-slate-400">Menunggu diambil</p>
+                <p class="mt-2 text-2xl font-black font-mono tabular-nums tracking-tight text-sky-600">{{ $counts['ready'] }}</p>
+                <p class="mt-0.5 text-2xs text-slate-400 font-medium">Selesai di rak simpan</p>
             </div>
 
-            <div class="rounded-2xl border border-emerald-100 bg-white p-4 shadow-xs transition hover:border-emerald-200">
+            <div class="rounded-2xl border border-emerald-100 bg-white p-4 shadow-2xs transition hover:border-emerald-200">
                 <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-medium text-slate-500">Selesai / Diambil</span>
-                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                    <span class="text-xs font-semibold text-slate-500">Selesai / Diambil</span>
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700 shadow-2xs">
                         <x-lucide-check-circle-2 class="size-4" />
                     </div>
                 </div>
-                <p class="mt-2 text-2xl font-extrabold tabular-nums text-emerald-600">{{ $counts['completed'] }}</p>
-                <p class="mt-0.5 text-2xs text-slate-400">Sudah diserahkan</p>
+                <p class="mt-2 text-2xl font-black font-mono tabular-nums tracking-tight text-emerald-600">{{ $counts['completed'] }}</p>
+                <p class="mt-0.5 text-2xs text-slate-400 font-medium">Sudah diserahkan</p>
             </div>
         </div>
 
-        {{-- Kontainer Utama --}}
-        @if (! $selectedCustomer)
-            {{-- VIEW A: Full Data Table (Saat Belum Ada Pelanggan Yang Dipilih) --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white shadow-xs">
-                {{-- Header Tabel & Kontrol Pencarian/Filter --}}
-                <div class="border-b border-slate-100 p-4 sm:p-5">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <h2 class="text-base font-bold text-slate-900">Daftar Pelanggan</h2>
-                            <p class="text-xs text-slate-500">Pilih pelanggan untuk melihat rincian nota atau kelola data melalui tombol aksi.</p>
-                        </div>
-
-                        {{-- Search Input Form --}}
-                        <form method="GET" action="{{ route("{$currentRoutePrefix}.customers.index") }}" class="w-full sm:w-72">
-                            @if ($statusFilter !== 'all')
-                                <input type="hidden" name="status" value="{{ $statusFilter }}">
-                            @endif
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <x-lucide-search class="size-4 text-slate-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    name="q"
-                                    value="{{ $search }}"
-                                    placeholder="Cari nama atau telepon..."
-                                    class="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2 pr-9 pl-9 text-xs text-slate-900 transition placeholder:text-slate-400 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                                >
-                                @if ($search !== '')
-                                    <a
-                                        href="{{ route("{$currentRoutePrefix}.customers.index", ['status' => $statusFilter]) }}"
-                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition"
-                                        title="Hapus pencarian"
-                                    >
-                                        <x-lucide-x class="size-4" />
-                                    </a>
-                                @endif
-                            </div>
-                        </form>
+        {{-- TABEL UTAMA PELANGGAN (KONSISTEN SELALU FULL-WIDTH) --}}
+        <div class="rounded-2xl border border-slate-200/90 bg-white shadow-2xs overflow-hidden">
+            {{-- Header Tabel & Kontrol Pencarian / Filter --}}
+            <div class="border-b border-slate-100 p-4 sm:p-5">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900 tracking-tight">Daftar Pelanggan Laundry</h2>
+                        <p class="text-xs text-slate-500">Klik baris pelanggan untuk membuka riwayat nota dan kelola data di panel samping.</p>
                     </div>
 
-                    {{-- Tab Status Pills (Pines UI Segmented Control) --}}
-                    <x-ui.tabs variant="segmented" class="mt-4">
-                        <x-ui.tab
-                            :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'all']))"
-                            :active="$statusFilter === 'all'"
-                            :badge="$counts['all']"
-                        >
-                            Semua
-                        </x-ui.tab>
-                        <x-ui.tab
-                            :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'processing']))"
-                            :active="$statusFilter === 'processing'"
-                            :badge="$counts['processing']"
-                        >
-                            Sedang Proses
-                        </x-ui.tab>
-                        <x-ui.tab
-                            :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'ready']))"
-                            :active="$statusFilter === 'ready'"
-                            :badge="$counts['ready']"
-                        >
-                            Siap Diambil
-                        </x-ui.tab>
-                        <x-ui.tab
-                            :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'completed']))"
-                            :active="$statusFilter === 'completed'"
-                            :badge="$counts['completed']"
-                        >
-                            Selesai
-                        </x-ui.tab>
-                    </x-ui.tabs>
-                </div>
-
-                {{-- Desktop Table View --}}
-                <div class="hidden md:block overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="border-b border-slate-100 bg-slate-50/60 text-xs font-bold tracking-wider text-slate-500 uppercase">
-                            <tr>
-                                <th class="px-5 py-3.5">Pelanggan</th>
-                                <th class="px-5 py-3.5">Kontak / WhatsApp</th>
-                                <th class="px-5 py-3.5">Alamat</th>
-                                <th class="px-5 py-3.5">Total Nota</th>
-                                <th class="px-5 py-3.5 text-right">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 text-slate-700">
-                            @forelse ($customers as $customer)
-                                @php
-                                    $initials = collect(explode(' ', $customer->name))
-                                        ->map(fn($part) => mb_substr($part, 0, 1))
-                                        ->take(2)
-                                        ->implode('');
-                                @endphp
-                                <tr class="transition hover:bg-slate-50/70">
-                                    {{-- Pelanggan --}}
-                                    <td class="px-5 py-3.5">
-                                        <div class="flex items-center gap-3">
-                                            <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-xs font-bold text-brand-800">
-                                                {{ $initials ?: 'CU' }}
-                                            </div>
-                                            <div>
-                                                <span class="font-bold text-slate-900">{{ $customer->name }}</span>
-                                                <p class="text-xs text-slate-500">
-                                                    Terdaftar {{ $customer->created_at ? $customer->created_at->translatedFormat('d M Y') : '-' }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    {{-- Kontak --}}
-                                    <td class="px-5 py-3.5">
-                                        @if ($customer->phone)
-                                            <a
-                                                href="{{ $customer->whatsapp_url }}"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="inline-flex items-center gap-1.5 font-medium text-slate-800 hover:text-emerald-700 transition group"
-                                                title="Buka obrolan WhatsApp ke {{ $customer->name }}"
-                                            >
-                                                <x-lucide-message-circle class="size-3.5 text-emerald-600 transition group-hover:scale-110" />
-                                                <span class="group-hover:underline underline-offset-2 tabular-nums">{{ $customer->phone }}</span>
-                                            </a>
-                                        @else
-                                            <span class="text-slate-500">-</span>
-                                        @endif
-                                    </td>
-
-                                    {{-- Alamat --}}
-                                    <td class="px-5 py-3.5">
-                                        <span class="line-clamp-1 max-w-[220px] text-slate-600" title="{{ $customer->address ?: '-' }}">
-                                            {{ $customer->address ?: '-' }}
-                                        </span>
-                                    </td>
-
-                                    {{-- Total Nota & Loyalty --}}
-                                    <td class="px-5 py-3.5">
-                                        @if ($customer->transactions_count >= 10)
-                                            <x-ui.badge tone="warning" size="sm" class="gap-1 font-semibold">
-                                                <x-lucide-crown class="size-3 text-amber-500" />
-                                                <span class="tabular-nums">{{ $customer->transactions_count }}</span> Nota (Loyal)
-                                            </x-ui.badge>
-                                        @elseif ($customer->transactions_count >= 5)
-                                            <x-ui.badge tone="brand" size="sm" class="gap-1 font-semibold">
-                                                <x-lucide-sparkles class="size-3 text-brand-500" />
-                                                <span class="tabular-nums">{{ $customer->transactions_count }}</span> Nota (Reguler)
-                                            </x-ui.badge>
-                                        @elseif ($customer->transactions_count > 0)
-                                            <x-ui.badge tone="neutral" size="sm">
-                                                <span class="tabular-nums">{{ $customer->transactions_count }}</span> Nota
-                                            </x-ui.badge>
-                                        @else
-                                            <x-ui.badge tone="neutral" size="sm" class="text-slate-500">
-                                                Belum Ada Nota
-                                            </x-ui.badge>
-                                        @endif
-                                    </td>
-
-                                    {{-- Tombol Aksi --}}
-                                    <td class="px-5 py-3.5 text-right">
-                                        <div class="flex items-center justify-end gap-1.5">
-                                            {{-- 1. Tombol Detail --}}
-                                            <x-ui.button
-                                                :href="route($currentRoutePrefix . '.customers.index', array_filter([
-                                                    'customer_id' => $customer->id,
-                                                    'q' => $search,
-                                                    'status' => $statusFilter !== 'all' ? $statusFilter : null,
-                                                    'page' => request('page'),
-                                                ]))"
-                                                variant="soft"
-                                                size="row"
-                                                title="Lihat profil dan riwayat nota"
-                                            >
-                                                <x-lucide-eye class="size-3.5" />
-                                                <span>Detail</span>
-                                            </x-ui.button>
-
-                                            {{-- 2. Tombol Edit --}}
-                                            <x-ui.button
-                                                type="button"
-                                                variant="soft-warning"
-                                                size="row"
-                                                @click="openEditModal({{ json_encode([
-                                                    'id' => $customer->id,
-                                                    'name' => $customer->name,
-                                                    'phone' => $customer->phone,
-                                                    'address' => $customer->address ?? '',
-                                                ]) }})"
-                                                title="Edit data pelanggan"
-                                            >
-                                                <x-lucide-pencil class="size-3.5 text-amber-600" />
-                                                <span>Edit</span>
-                                            </x-ui.button>
-
-                                            {{-- 3. Tombol Hapus / Terkunci --}}
-                                            @if ($customer->transactions_count > 0)
-                                                <x-ui.button
-                                                    as="span"
-                                                    variant="muted"
-                                                    size="row"
-                                                    class="cursor-not-allowed"
-                                                    title="Pelanggan memiliki {{ $customer->transactions_count }} riwayat nota dan tidak dapat dihapus."
-                                                >
-                                                    <x-lucide-lock class="size-3.5" />
-                                                    <span>Terkunci</span>
-                                                </x-ui.button>
-                                            @else
-                                                <x-ui.button
-                                                    type="button"
-                                                    variant="danger-outline"
-                                                    size="row"
-                                                    @click="openDeleteModal({{ json_encode([
-                                                        'id' => $customer->id,
-                                                        'name' => $customer->name,
-                                                    ]) }})"
-                                                    title="Hapus data pelanggan"
-                                                >
-                                                    <x-lucide-trash-2 class="size-3.5 text-rose-600" />
-                                                    <span>Hapus</span>
-                                                </x-ui.button>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="p-8 text-center">
-                                        <div class="mx-auto flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
-                                            <x-lucide-users class="size-6 text-slate-400" />
-                                        </div>
-                                        <p class="mt-3 text-sm font-bold text-slate-900">Data Pelanggan Tidak Ditemukan</p>
-                                        <p class="mt-0.5 text-xs text-slate-500">Silakan sesuaikan kata kunci atau filter status pencarian Anda.</p>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Mobile Card List View --}}
-                <div class="md:hidden divide-y divide-slate-100">
-                    @forelse ($customers as $customer)
-                        @php
-                            $initials = collect(explode(' ', $customer->name))
-                                ->map(fn($part) => mb_substr($part, 0, 1))
-                                ->take(2)
-                                ->implode('');
-                        @endphp
-                        <div class="p-4 space-y-3">
-                            <div class="flex items-start justify-between gap-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-xs font-bold text-brand-800">
-                                        {{ $initials ?: 'CU' }}
-                                    </div>
-                                    <div>
-                                        <h3 class="font-bold text-slate-900">{{ $customer->name }}</h3>
-                                        <p class="text-xs text-slate-500 tabular-nums">{{ $customer->phone ?: '-' }}</p>
-                                    </div>
-                                </div>
-                                <span class="rounded bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">
-                                    <span class="tabular-nums">{{ $customer->transactions_count }}</span> Nota
-                                </span>
+                    {{-- Search Input Form --}}
+                    <form method="GET" action="{{ route("{$currentRoutePrefix}.customers.index") }}" class="w-full sm:w-72">
+                        @if ($statusFilter !== 'all')
+                            <input type="hidden" name="status" value="{{ $statusFilter }}">
+                        @endif
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <x-lucide-search class="size-4 text-slate-400" />
                             </div>
-
-                            @if ($customer->address)
-                                <p class="text-xs text-slate-600 line-clamp-1">
-                                    {{ $customer->address }}
-                                </p>
+                            <input
+                                type="text"
+                                name="q"
+                                value="{{ $search }}"
+                                placeholder="Cari nama, telepon, alamat..."
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2 pr-9 pl-9 text-xs text-slate-900 transition placeholder:text-slate-400 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                            >
+                            @if ($search !== '')
+                                <a
+                                    href="{{ route("{$currentRoutePrefix}.customers.index", ['status' => $statusFilter]) }}"
+                                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition"
+                                    title="Hapus pencarian"
+                                >
+                                    <x-lucide-x class="size-4" />
+                                </a>
                             @endif
-
-                            {{-- Mobile Actions Bar --}}
-                            <div class="flex items-center gap-2 pt-1 border-t border-slate-100">
-                                <x-ui.button
-                                    :href="route($currentRoutePrefix . '.customers.index', array_filter([
-                                        'customer_id' => $customer->id,
-                                        'q' => $search,
-                                        'status' => $statusFilter !== 'all' ? $statusFilter : null,
-                                        'page' => request('page'),
-                                    ]))"
-                                    variant="soft"
-                                    size="xs"
-                                    class="flex-1"
-                                >
-                                    <x-lucide-eye class="mr-1 size-3" />
-                                    <span>Detail</span>
-                                </x-ui.button>
-                                <x-ui.button
-                                    type="button"
-                                    variant="soft-warning"
-                                    size="xs"
-                                    class="flex-1"
-                                    @click="openEditModal({{ json_encode([
-                                        'id' => $customer->id,
-                                        'name' => $customer->name,
-                                        'phone' => $customer->phone,
-                                        'address' => $customer->address ?? '',
-                                    ]) }})"
-                                >
-                                    <x-lucide-pencil class="mr-1 size-3 text-amber-600" />
-                                    <span>Edit</span>
-                                </x-ui.button>
-                                @if ($customer->transactions_count === 0)
-                                    <x-ui.button
-                                        type="button"
-                                        variant="danger-outline"
-                                        size="xs"
-                                        class="flex-1"
-                                        @click="openDeleteModal({{ json_encode([
-                                            'id' => $customer->id,
-                                            'name' => $customer->name,
-                                        ]) }})"
-                                    >
-                                        <x-lucide-trash-2 class="mr-1 size-3 text-rose-600" />
-                                        <span>Hapus</span>
-                                    </x-ui.button>
-                                @endif
-                            </div>
                         </div>
-                    @empty
-                        <div class="p-6 text-center text-xs text-slate-500">
-                            Data Tidak Ditemukan.
-                        </div>
-                    @endforelse
+                    </form>
                 </div>
 
-                {{-- Pagination Footer --}}
-                @if ($customers->hasPages())
-                    <div class="border-t border-slate-100 p-4">
-                        {{ $customers->links() }}
-                    </div>
-                @endif
+                {{-- Tab Filter Status (Pines UI Segmented Control) --}}
+                <x-ui.tabs variant="segmented" class="mt-4">
+                    <x-ui.tab
+                        :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'all']))"
+                        :active="$statusFilter === 'all'"
+                        :badge="$counts['all']"
+                    >
+                        Semua
+                    </x-ui.tab>
+                    <x-ui.tab
+                        :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'processing']))"
+                        :active="$statusFilter === 'processing'"
+                        :badge="$counts['processing']"
+                    >
+                        Sedang Proses
+                    </x-ui.tab>
+                    <x-ui.tab
+                        :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'ready']))"
+                        :active="$statusFilter === 'ready'"
+                        :badge="$counts['ready']"
+                    >
+                        Siap Diambil
+                    </x-ui.tab>
+                    <x-ui.tab
+                        :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'completed']))"
+                        :active="$statusFilter === 'completed'"
+                        :badge="$counts['completed']"
+                    >
+                        Selesai
+                    </x-ui.tab>
+                </x-ui.tabs>
             </div>
 
-        @else
-            {{-- VIEW B: Split Master-Detail Layout (Saat Pelanggan Tertentu Sedang Dipilih) --}}
-            <div class="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
+            {{-- Desktop Table View --}}
+            <div class="hidden md:block overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="border-b border-slate-100 bg-slate-50/60 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                        <tr>
+                            <th class="w-3/12 px-5 py-3.5">Pelanggan</th>
+                            <th class="w-2/12 px-5 py-3.5">Kontak / WhatsApp</th>
+                            <th class="w-3/12 px-5 py-3.5">Alamat Domisili</th>
+                            <th class="w-2/12 px-5 py-3.5">Total Nota</th>
+                            <th class="w-2/12 px-5 py-3.5 text-right">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        @forelse ($customers as $customer)
+                            @php
+                                $cData = $customersPayloadMap[$customer->id] ?? null;
+                            @endphp
+                            <tr
+                                @click="openDetail({{ $customer->id }})"
+                                class="transition hover:bg-slate-50/70 cursor-pointer group"
+                            >
+                                {{-- Pelanggan --}}
+                                <td class="px-5 py-3.5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 border border-brand-200/60 text-xs font-mono font-bold text-brand-800 shadow-2xs">
+                                            {{ $cData['initials'] ?? 'CU' }}
+                                        </div>
+                                        <div>
+                                            <span class="font-bold text-slate-900 group-hover:text-brand-700 transition">{{ $customer->name }}</span>
+                                            <p class="text-xs text-slate-500">
+                                                Terdaftar {{ $cData['registered_at'] ?? '-' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </td>
 
-                {{-- Kolom Kiri (Master List): Daftar Pelanggan Kompak --}}
-                <div class="lg:col-span-5 xl:col-span-4 rounded-2xl border border-slate-200/80 bg-white shadow-xs">
-                    {{-- Header List Pelanggan --}}
-                    <div class="border-b border-slate-100 p-4">
-                        <div class="flex items-center justify-between">
-                            <h2 class="text-sm font-bold text-slate-900">Daftar Pelanggan</h2>
-                            <span class="rounded-lg bg-slate-100 px-2 py-0.5 text-xs font-semibold tabular-nums text-slate-600">
-                                {{ $totalCustomersCount }} Total
+                                {{-- Kontak --}}
+                                <td class="px-5 py-3.5" @click.stop>
+                                    @if ($customer->phone)
+                                        <a
+                                            href="{{ $customer->whatsapp_url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="inline-flex items-center gap-1.5 font-bold font-mono tabular-nums text-slate-800 hover:text-emerald-700 transition group/wa"
+                                            title="Buka obrolan WhatsApp ke {{ $customer->name }}"
+                                        >
+                                            <x-lucide-message-circle class="size-3.5 text-emerald-600 transition group-hover/wa:scale-110" />
+                                            <span class="group-hover/wa:underline underline-offset-2">{{ $customer->phone }}</span>
+                                        </a>
+                                    @else
+                                        <span class="text-slate-400 font-mono">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- Alamat --}}
+                                <td class="px-5 py-3.5">
+                                    <span class="line-clamp-1 max-w-[240px] text-slate-600" title="{{ $customer->address ?: '-' }}">
+                                        {{ $customer->address ?: '-' }}
+                                    </span>
+                                </td>
+
+                                {{-- Total Nota & Status --}}
+                                <td class="px-5 py-3.5">
+                                    <div class="flex items-center gap-1.5">
+                                        @if ($customer->transactions_count > 0)
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-sky-50 border border-sky-200/80 px-2 py-0.5 text-2xs font-bold font-mono tabular-nums text-sky-800 shadow-2xs">
+                                                {{ $customer->transactions_count }} Nota
+                                            </span>
+                                            @if ($customer->transactions_count >= 10)
+                                                <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 border border-amber-200/90 px-1.5 py-0.5 text-[10px] font-bold text-amber-800 shadow-2xs" title="Pelanggan loyal (>10 transaksi)">
+                                                    <x-lucide-crown class="size-3 text-amber-600 shrink-0" />
+                                                    <span>Loyal</span>
+                                                </span>
+                                            @endif
+                                        @else
+                                            <span class="inline-flex items-center rounded-md bg-slate-50 border border-slate-200/60 px-2 py-0.5 text-2xs font-medium text-slate-400">
+                                                Belum Ada Nota
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+
+                                {{-- Aksi Tombol (Segmented Button Group Pines UI - Sejajar Presisi) --}}
+                                <td class="px-5 py-3.5 text-right" @click.stop>
+                                    <div class="inline-flex items-center rounded-xl border border-slate-200/90 bg-slate-100/60 p-0.5 shadow-2xs gap-0.5">
+                                        {{-- Tombol Detail: Aqua Cyan / Brand --}}
+                                        <button
+                                            type="button"
+                                            @click="openDetail({{ $customer->id }})"
+                                            class="group/act inline-flex items-center justify-center gap-1 rounded-lg border border-brand-200/80 bg-brand-50/90 px-2 py-1 text-2xs font-bold text-brand-800 shadow-2xs transition-all duration-150 hover:bg-brand-600 hover:text-white hover:border-brand-600 active:scale-95 cursor-pointer"
+                                            title="Buka panel profil dan riwayat cucian"
+                                        >
+                                            <x-lucide-eye class="size-3.5 text-brand-700 transition-colors duration-150 group-hover/act:text-white" />
+                                            <span>Detail</span>
+                                        </button>
+
+                                        {{-- Tombol Edit: Warm Amber --}}
+                                        <button
+                                            type="button"
+                                            @click="openEdit({{ $customer->id }})"
+                                            class="group/act inline-flex items-center justify-center gap-1 rounded-lg border border-amber-200/80 bg-amber-50/90 px-2 py-1 text-2xs font-bold text-amber-900 shadow-2xs transition-all duration-150 hover:bg-amber-500 hover:text-white hover:border-amber-500 active:scale-95 cursor-pointer"
+                                            title="Edit data kontak dan alamat domisili"
+                                        >
+                                            <x-lucide-pencil class="size-3.5 text-amber-700 transition-colors duration-150 group-hover/act:text-white" />
+                                            <span>Edit</span>
+                                        </button>
+
+                                        {{-- Tombol Hapus (Jika 0 Transaksi) atau Indikator Terkunci (Fixed Width: w-[76px]) --}}
+                                        @if ($customer->transactions_count === 0)
+                                            <button
+                                                type="button"
+                                                @click="openDelete({{ json_encode($cData) }})"
+                                                class="group/act inline-flex w-[76px] items-center justify-center gap-1 rounded-lg border border-rose-200/80 bg-rose-50/90 px-2 py-1 text-2xs font-bold text-rose-900 shadow-2xs transition-all duration-150 hover:bg-rose-600 hover:text-white hover:border-rose-600 active:scale-95 cursor-pointer"
+                                                title="Hapus pelanggan (hanya diperbolehkan untuk yang belum memiliki riwayat transaksi)"
+                                            >
+                                                <x-lucide-trash-2 class="size-3.5 text-rose-700 transition-colors duration-150 group-hover/act:text-white" />
+                                                <span>Hapus</span>
+                                            </button>
+                                        @else
+                                            <span
+                                                class="inline-flex w-[76px] items-center justify-center gap-1 rounded-lg border border-slate-200/80 bg-slate-100/90 px-2 py-1 text-2xs font-semibold text-slate-500 select-none cursor-not-allowed"
+                                                title="Terkunci: Pelanggan memiliki riwayat transaksi aktif/selesai"
+                                            >
+                                                <x-lucide-lock class="size-3.5 text-slate-400" />
+                                                <span>Terkunci</span>
+                                            </span>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-5 py-12 text-center text-slate-500">
+                                    <div class="mx-auto flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 shadow-2xs">
+                                        <x-lucide-users class="size-6" />
+                                    </div>
+                                    <p class="mt-3 text-sm font-bold text-slate-800">Tidak ada pelanggan ditemukan</p>
+                                    <p class="text-xs text-slate-500 mt-0.5">
+                                        @if ($search !== '')
+                                            Tidak ada hasil untuk kata kunci "{{ $search }}". Coba periksa ejaan nama atau nomor telepon.
+                                        @else
+                                            Belum ada pelanggan terdaftar dalam filter ini.
+                                        @endif
+                                    </p>
+                                    <button
+                                        type="button"
+                                        @click="openCreate()"
+                                        class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-brand-700 transition cursor-pointer"
+                                    >
+                                        <x-lucide-user-plus class="size-4" />
+                                        <span>Daftarkan Pelanggan Baru</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Mobile Card List View (Layar Kecil) --}}
+            <div class="divide-y divide-slate-100 md:hidden">
+                @forelse ($customers as $customer)
+                    @php
+                        $cData = $customersPayloadMap[$customer->id] ?? null;
+                    @endphp
+                    <div
+                        @click="openDetail({{ $customer->id }})"
+                        class="p-4 transition space-y-3 cursor-pointer hover:bg-slate-50/70"
+                    >
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 border border-brand-200/60 font-mono font-bold text-brand-800 text-sm shadow-2xs">
+                                    {{ $cData['initials'] ?? 'CU' }}
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="font-bold text-sm text-slate-900 truncate">{{ $customer->name }}</p>
+                                    <p class="text-xs text-slate-500 font-mono tabular-nums">{{ $customer->phone ?: 'Tanpa nomor' }}</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex shrink-0 items-center rounded-md bg-slate-100 px-2 py-0.5 text-2xs font-bold font-mono text-slate-700">
+                                {{ $customer->transactions_count }} Nota
                             </span>
                         </div>
 
-                        {{-- Form Pencarian Singkat --}}
-                        <form method="GET" action="{{ route("{$currentRoutePrefix}.customers.index") }}" class="mt-3">
-                            @if ($statusFilter !== 'all')
-                                <input type="hidden" name="status" value="{{ $statusFilter }}">
-                            @endif
-                            <div class="relative">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <x-lucide-search class="size-3.5 text-slate-400" />
-                                </div>
-                                <input
-                                    type="text"
-                                    name="q"
-                                    value="{{ $search }}"
-                                    placeholder="Cari nama atau telepon..."
-                                    class="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-2 pr-8 pl-8 text-xs text-slate-900 transition placeholder:text-slate-400 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                        <p class="text-xs text-slate-600 line-clamp-1">
+                            <x-lucide-map-pin class="inline size-3.5 text-slate-400 mr-1" />
+                            {{ $customer->address ?: 'Alamat belum dicatat' }}
+                        </p>
+
+                        <div class="flex items-center justify-between border-t border-slate-100 pt-2.5" @click.stop>
+                            <span class="text-2xs text-slate-400 font-medium">Terdaftar {{ $cData['registered_at'] ?? '-' }}</span>
+                            <div class="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    @click="openEdit({{ $customer->id }})"
+                                    class="inline-flex items-center gap-1 rounded-lg border border-amber-200/80 bg-amber-50/80 px-2.5 py-1 text-2xs font-bold text-amber-800 shadow-2xs hover:bg-amber-500 hover:text-white transition cursor-pointer active:scale-95"
                                 >
+                                    <x-lucide-pencil class="size-3 text-amber-600" />
+                                    <span>Edit</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    @click="openDetail({{ $customer->id }})"
+                                    class="inline-flex items-center gap-1 rounded-lg bg-brand-600 px-3 py-1 text-2xs font-bold text-white shadow-2xs hover:bg-brand-700 transition cursor-pointer active:scale-95"
+                                >
+                                    <x-lucide-eye class="size-3 text-brand-200" />
+                                    <span>Buka Panel &rarr;</span>
+                                </button>
                             </div>
-                        </form>
-
-                        {{-- Tab Filter Pills (Pines UI Segmented Control) --}}
-                        <x-ui.tabs variant="segmented" class="mt-3">
-                            <x-ui.tab
-                                :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'all']))"
-                                :active="$statusFilter === 'all'"
-                                :badge="$counts['all']"
-                            >
-                                Semua
-                            </x-ui.tab>
-                            <x-ui.tab
-                                :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'processing']))"
-                                :active="$statusFilter === 'processing'"
-                                :badge="$counts['processing']"
-                            >
-                                Proses
-                            </x-ui.tab>
-                            <x-ui.tab
-                                :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'ready']))"
-                                :active="$statusFilter === 'ready'"
-                                :badge="$counts['ready']"
-                            >
-                                Siap
-                            </x-ui.tab>
-                        </x-ui.tabs>
-                    </div>
-
-                    {{-- List Item Pelanggan --}}
-                    <div class="divide-y divide-slate-100">
-                        @forelse ($customers as $customer)
-                            @php
-                                $isSelected = $selectedCustomer->id === $customer->id;
-                                $initials = collect(explode(' ', $customer->name))
-                                    ->map(fn($part) => mb_substr($part, 0, 1))
-                                    ->take(2)
-                                    ->implode('');
-                            @endphp
-                            <div
-                                @class([
-                                    'p-3.5 transition space-y-2',
-                                    'bg-brand-50/60 ring-1 ring-inset ring-brand-100' => $isSelected,
-                                    'hover:bg-slate-50/70' => ! $isSelected,
-                                ])
-                            >
-                                <div class="flex items-start justify-between gap-2">
-                                    <div class="flex items-center gap-2.5 min-w-0">
-                                        <div @class([
-                                            'flex size-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold uppercase transition',
-                                            'bg-brand-200 text-brand-900 ring-2 ring-brand-500/30' => $isSelected,
-                                            'bg-brand-100 text-brand-800' => ! $isSelected,
-                                        ])>
-                                            {{ $initials ?: 'CU' }}
-                                        </div>
-                                        <div class="min-w-0 flex-1">
-                                            <h3 class="truncate text-xs font-bold text-slate-900 sm:text-sm">{{ $customer->name }}</h3>
-                                            <p class="truncate text-xs text-slate-500 tabular-nums">{{ $customer->phone ?: '-' }}</p>
-                                        </div>
-                                    </div>
-                                    <span class="shrink-0 rounded-md bg-slate-100 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-slate-600">
-                                        {{ $customer->transactions_count }} Nota
-                                    </span>
-                                </div>
-
-                                {{-- Action Bar on Each Card in Master List --}}
-                                <div class="flex items-center justify-end gap-1.5 pt-1.5 border-t border-slate-100/70">
-                                    <x-ui.button
-                                        :href="route($currentRoutePrefix . '.customers.index', array_filter([
-                                            'customer_id' => $customer->id,
-                                            'q' => $search,
-                                            'status' => $statusFilter !== 'all' ? $statusFilter : null,
-                                            'page' => request('page'),
-                                        ]))"
-                                        :variant="$isSelected ? 'primary' : 'soft'"
-                                        size="xs"
-                                    >
-                                        {{ $isSelected ? 'Terpilih' : 'Detail' }}
-                                    </x-ui.button>
-
-                                    <x-ui.button
-                                        type="button"
-                                        variant="soft-warning"
-                                        size="xs"
-                                        @click="openEditModal({{ json_encode([
-                                            'id' => $customer->id,
-                                            'name' => $customer->name,
-                                            'phone' => $customer->phone,
-                                            'address' => $customer->address ?? '',
-                                        ]) }})"
-                                        title="Edit Pelanggan"
-                                    >
-                                        Edit
-                                    </x-ui.button>
-
-                                    @if ($customer->transactions_count === 0)
-                                        <x-ui.button
-                                            type="button"
-                                            variant="danger-outline"
-                                            size="xs"
-                                            @click="openDeleteModal({{ json_encode([
-                                                'id' => $customer->id,
-                                                'name' => $customer->name,
-                                            ]) }})"
-                                            title="Hapus Pelanggan"
-                                        >
-                                            Hapus
-                                        </x-ui.button>
-                                    @endif
-                                </div>
-                            </div>
-                        @empty
-                            <div class="p-6 text-center text-xs text-slate-500">
-                                Data Tidak Ditemukan.
-                            </div>
-                        @endforelse
-                    </div>
-
-                    {{-- Pagination Footer --}}
-                    @if ($customers->hasPages())
-                        <div class="border-t border-slate-100 p-3">
-                            {{ $customers->links() }}
                         </div>
-                    @endif
+                    </div>
+                @empty
+                    <div class="p-8 text-center text-slate-500">
+                        <p class="text-sm font-semibold">Tidak ada pelanggan ditemukan.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            {{-- Pagination Footer --}}
+            @if ($customers->hasPages())
+                <div class="border-t border-slate-100 p-4">
+                    {{ $customers->links() }}
+                </div>
+            @endif
+        </div>
+
+        {{-- ========================================================================= --}}
+        {{-- UNIFIED SLIDE-OVER SHEET DRAWER (PINES UI COMPONENT)                      --}}
+        {{-- Mode: 'detail' (Profil & Riwayat) | 'edit' (Inline Edit) | 'create' (Baru)--}}
+        {{-- ========================================================================= --}}
+        <x-ui.sheet
+            show="drawerOpen"
+            maxWidth="xl"
+            @close="closeDrawer()"
+        >
+            {{-- Custom Docked Header --}}
+            <x-slot:header>
+                <div class="flex items-center justify-between gap-3 w-full pr-2">
+                    {{-- Judul Mode Detail --}}
+                    <div x-show="drawerMode === 'detail'" class="flex items-center gap-3 min-w-0">
+                        <div
+                            class="size-9 rounded-xl bg-brand-50 border border-brand-200/60 text-brand-700 font-bold text-xs flex items-center justify-center font-mono shrink-0 shadow-2xs"
+                            x-text="selectedCustomer?.initials || 'CU'"
+                        ></div>
+                        <div class="min-w-0">
+                            <h2 class="text-sm sm:text-base font-bold text-slate-900 truncate" x-text="selectedCustomer?.name || 'Profil Pelanggan'"></h2>
+                            <p class="text-2xs text-slate-500 font-mono tabular-nums" x-text="selectedCustomer?.phone || '-'"></p>
+                        </div>
+                    </div>
+
+                    {{-- Judul Mode Edit --}}
+                    <div x-show="drawerMode === 'edit'" class="flex items-center gap-2.5 min-w-0">
+                        <div class="size-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                            <x-lucide-pencil class="size-4" />
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-900">Edit Data Pelanggan</h2>
+                            <p class="text-2xs text-slate-500">Perbarui kontak dan alamat domisili</p>
+                        </div>
+                    </div>
+
+                    {{-- Judul Mode Tambah Baru --}}
+                    <div x-show="drawerMode === 'create'" class="flex items-center gap-2.5 min-w-0">
+                        <div class="size-8 rounded-lg bg-brand-50 text-brand-700 flex items-center justify-center shrink-0">
+                            <x-lucide-user-plus class="size-4" />
+                        </div>
+                        <div>
+                            <h2 class="text-sm font-bold text-slate-900">Tambah Pelanggan Baru</h2>
+                            <p class="text-2xs text-slate-500">Daftarkan pelanggan ke direktori kasir</p>
+                        </div>
+                    </div>
+
+                    {{-- Badge Status Order Terkini (Hanya tampil di Mode Detail) --}}
+                    <div x-show="drawerMode === 'detail'" class="shrink-0">
+                        <template x-if="selectedCustomer?.active_status === 'Diproses' || selectedCustomer?.active_status === 'Diterima'">
+                            <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-2xs font-bold text-amber-800">
+                                <span class="size-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                Sedang Dicuci
+                            </span>
+                        </template>
+                        <template x-if="selectedCustomer?.active_status === 'Selesai'">
+                            <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 border border-sky-200 px-2 py-0.5 text-2xs font-bold text-sky-800">
+                                <span class="size-1.5 rounded-full bg-sky-500"></span>
+                                Siap Diambil
+                            </span>
+                        </template>
+                        <template x-if="!selectedCustomer?.active_status">
+                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-2xs font-medium text-slate-500">
+                                Tidak Ada Cucian Aktif
+                            </span>
+                        </template>
+                    </div>
+                </div>
+            </x-slot:header>
+
+            {{-- ============================================================= --}}
+            {{-- ISI BODY 1: MODE DETAIL & RIWAYAT NOTA                         --}}
+            {{-- ============================================================= --}}
+            <div x-show="drawerMode === 'detail'" class="space-y-5">
+                {{-- Hero Quick Actions Bar --}}
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <a
+                        :href="selectedCustomer?.create_order_url"
+                        class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-brand-800 transition active:scale-98 cursor-pointer"
+                        title="Buka Kasir POS untuk membuat nota cucian baru bagi pelanggan ini"
+                    >
+                        <x-lucide-plus-circle class="size-4 text-brand-200" />
+                        <span>+ Buka Kasir POS</span>
+                    </a>
+
+                    <template x-if="selectedCustomer?.whatsapp_url">
+                        <a
+                            :href="selectedCustomer?.whatsapp_url"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition active:scale-98 cursor-pointer shadow-2xs shrink-0"
+                            title="Buka obrolan WhatsApp"
+                        >
+                            <x-lucide-message-circle class="size-4 text-emerald-600" />
+                            <span>Chat WhatsApp</span>
+                        </a>
+                    </template>
                 </div>
 
-                {{-- Kolom Kanan (Detail Panel): Profil & Riwayat Cucian --}}
-                <div class="lg:col-span-7 xl:col-span-8 space-y-5">
-                    @php
-                        $selectedInitials = collect(explode(' ', $selectedCustomer->name))
-                            ->map(fn($part) => mb_substr($part, 0, 1))
-                            ->take(2)
-                            ->implode('');
-                        $hasTransactions = $selectedCustomer->transactions()->exists();
-                    @endphp
-
-                    {{-- 1. Kartu Info Profil Pelanggan Terpilih --}}
-                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
-                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div class="flex items-center gap-3.5">
-                                <div class="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-brand-100 text-sm font-bold text-brand-800">
-                                    {{ $selectedInitials ?: 'CU' }}
-                                </div>
-                                <div>
-                                    <h2 class="text-base font-bold text-slate-900 sm:text-lg">{{ $selectedCustomer->name }}</h2>
-                                    <div class="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-                                        @if ($selectedCustomer->phone)
-                                             <a
-                                                href="{{ $selectedCustomer->whatsapp_url }}"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="inline-flex items-center gap-1.5 text-emerald-700 font-semibold hover:text-emerald-800 transition group"
-                                                title="Buka obrolan WhatsApp ke {{ $selectedCustomer->name }}"
-                                            >
-                                                <x-lucide-message-circle class="size-3.5 text-emerald-600" />
-                                                <span class="group-hover:underline underline-offset-2 tabular-nums">WhatsApp: {{ $selectedCustomer->phone }}</span>
-                                            </a>
-                                        @else
-                                            <span class="text-xs text-slate-500">WhatsApp: -</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Tombol Aksi Panel Detail --}}
-                            <div class="flex items-center gap-2">
-                                <x-ui.button
+                {{-- Kartu Ringkasan Informasi Profil Pelanggan --}}
+                <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs space-y-3.5">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <span class="text-xs font-bold text-slate-800 uppercase tracking-wider">Informasi Kontak</span>
+                        <div class="flex items-center gap-2">
+                            <button
+                                type="button"
+                                @click="openEdit(selectedCustomerId)"
+                                class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-2xs font-bold text-slate-700 shadow-2xs hover:border-amber-500 hover:bg-amber-50 hover:text-amber-800 transition cursor-pointer active:scale-95"
+                            >
+                                <x-lucide-pencil class="size-3 text-slate-400" />
+                                <span>Edit Profil</span>
+                            </button>
+                            <template x-if="!selectedCustomer?.has_transactions">
+                                <button
                                     type="button"
-                                    variant="soft-warning"
-                                    size="row"
-                                    @click="openEditModal({{ json_encode([
-                                        'id' => $selectedCustomer->id,
-                                        'name' => $selectedCustomer->name,
-                                        'phone' => $selectedCustomer->phone,
-                                        'address' => $selectedCustomer->address,
-                                    ]) }})"
-                                    title="Edit data pelanggan"
+                                    @click="openDelete(selectedCustomer)"
+                                    class="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50/70 px-2 py-1 text-2xs font-bold text-rose-700 shadow-2xs hover:bg-rose-100 transition cursor-pointer"
+                                    title="Hapus data pelanggan"
                                 >
-                                    <x-lucide-pencil class="size-3.5 text-amber-600" />
-                                    <span>Edit</span>
-                                </x-ui.button>
-
-                                @if ($hasTransactions)
-                                    <x-ui.button
-                                        as="span"
-                                        variant="muted"
-                                        size="row"
-                                        class="cursor-not-allowed"
-                                        title="Pelanggan memiliki riwayat transaksi dan tidak dapat dihapus."
-                                    >
-                                        <x-lucide-lock class="size-3.5" />
-                                        <span>Terkunci</span>
-                                    </x-ui.button>
-                                @else
-                                    <x-ui.button
-                                        type="button"
-                                        variant="danger-outline"
-                                        size="row"
-                                        @click="openDeleteModal({{ json_encode([
-                                            'id' => $selectedCustomer->id,
-                                            'name' => $selectedCustomer->name,
-                                        ]) }})"
-                                        title="Hapus data pelanggan"
-                                    >
-                                        <x-lucide-trash-2 class="size-3.5 text-rose-600" />
-                                        <span>Hapus</span>
-                                    </x-ui.button>
-                                @endif
-
-                                {{-- Tutup Detail (Kembali ke Tampilan Penuh) --}}
-                                <x-ui.button
-                                    :href="route($currentRoutePrefix . '.customers.index', array_filter([
-                                        'q' => $search,
-                                        'status' => $statusFilter !== 'all' ? $statusFilter : null,
-                                        'page' => request('page'),
-                                    ]))"
-                                    variant="secondary"
-                                    size="icon"
-                                    title="Tutup Detail dan Kembali ke Tabel"
-                                >
-                                    <x-lucide-x class="size-4" />
-                                </x-ui.button>
-                            </div>
-                        </div>
-
-                        {{-- Metadata Pelanggan --}}
-                        <div class="mt-4 grid grid-cols-2 gap-4 border-t border-slate-100 pt-3 sm:grid-cols-3">
-                            <div>
-                                <p class="text-xs font-bold tracking-wider text-slate-500 uppercase">Terdaftar Sejak</p>
-                                <p class="mt-0.5 text-xs font-bold text-slate-800">
-                                    {{ $selectedCustomer->created_at ? $selectedCustomer->created_at->translatedFormat('d M Y') : '-' }}
-                                </p>
-                            </div>
-                            <div>
-                                <p class="text-xs font-bold tracking-wider text-slate-500 uppercase">Total Transaksi</p>
-                                <p class="mt-0.5 text-xs font-bold text-slate-800 tabular-nums">
-                                    {{ $selectedCustomer->transactions_count ?? $selectedCustomer->transactions()->count() }} Nota
-                                    <span class="font-normal text-slate-500">(Rp {{ number_format($totalSpent, 0, ',', '.') }})</span>
-                                </p>
-                            </div>
-                            <div class="col-span-2 sm:col-span-1">
-                                <p class="text-xs font-bold tracking-wider text-slate-500 uppercase">Alamat</p>
-                                <p class="mt-0.5 truncate text-xs font-semibold text-slate-700" title="{{ $selectedCustomer->address ?: '-' }}">
-                                    {{ $selectedCustomer->address ?: '-' }}
-                                </p>
-                            </div>
+                                    <x-lucide-trash-2 class="size-3" />
+                                    <span>Hapus</span>
+                                </button>
+                            </template>
                         </div>
                     </div>
 
-                    {{-- 2. Kartu Rincian Transaksi Terpilih (Muncul jika nota di riwayat diklik) --}}
-                    @if ($activeTransaction)
-                        @php
-                            $firstDetail = $activeTransaction->details->first();
-                            $service = $firstDetail?->service;
-                            $latestPayment = $activeTransaction->payments->last();
-                            $isPaid = $latestPayment && in_array($latestPayment->verification_status, ['Tidak Diperlukan', 'Terverifikasi']);
-                        @endphp
-                        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
-                            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <span class="text-sm font-bold text-slate-900 sm:text-base tabular-nums">{{ $activeTransaction->transaction_code }}</span>
-                                    <p class="text-xs text-slate-500">
-                                        Diterima: {{ $activeTransaction->created_at->translatedFormat('d M Y, H:i') }} WIB
-                                        @if ($latestPayment && $latestPayment->creator)
-                                            oleh {{ $latestPayment->creator->name }}
-                                        @endif
-                                    </p>
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 text-xs">
+                        <div>
+                            <span class="text-slate-400 text-2xs uppercase tracking-wider font-semibold">Nomor WhatsApp</span>
+                            <p class="mt-0.5 font-bold font-mono tabular-nums text-slate-800 text-sm" x-text="selectedCustomer?.phone || '-'"></p>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 text-2xs uppercase tracking-wider font-semibold">Terdaftar Sejak</span>
+                            <p class="mt-0.5 font-semibold text-slate-800" x-text="selectedCustomer?.registered_at || '-'"></p>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <span class="text-slate-400 text-2xs uppercase tracking-wider font-semibold">Alamat Domisili</span>
+                            <p class="mt-0.5 font-medium text-slate-700" x-text="selectedCustomer?.address || 'Alamat domisili belum dicatat'"></p>
+                        </div>
+                    </div>
+
+                    {{-- Metric Pengeluaran & Total Nota --}}
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
+                        <div class="rounded-xl bg-slate-50 p-2.5">
+                            <span class="text-2xs text-slate-500 font-medium">Total Pesanan</span>
+                            <p class="mt-0.5 font-black text-slate-900 font-mono tabular-nums text-sm">
+                                <span x-text="selectedCustomer?.total_transactions || 0"></span> Nota
+                            </p>
+                        </div>
+                        <div class="rounded-xl bg-slate-50 p-2.5">
+                            <span class="text-2xs text-slate-500 font-medium">Total Belanja (Akumulasi)</span>
+                            <p class="mt-0.5 font-black text-brand-700 font-mono tabular-nums text-sm" x-text="selectedCustomer?.total_spent_formatted || 'Rp 0'"></p>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Daftar Riwayat Transaksi Nota Cucian --}}
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-1.5">
+                            <x-lucide-receipt class="size-4 text-brand-600" />
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Riwayat Nota Cucian Terakhir</h3>
+                        </div>
+                        <span class="text-2xs text-slate-400 font-medium" x-text="(selectedCustomer?.transactions?.length || 0) + ' Transaksi'"></span>
+                    </div>
+
+                    {{-- List Item Transaksi --}}
+                    <div class="space-y-2">
+                        <template x-for="trx in selectedCustomer?.transactions" :key="trx.id">
+                            <div class="rounded-xl border border-slate-200/90 bg-white p-3 shadow-2xs hover:border-slate-300 transition">
+                                <div class="flex items-center justify-between gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono font-bold text-xs text-slate-900" x-text="trx.code"></span>
+                                        <span
+                                            class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ring-1 ring-inset"
+                                            :class="{
+                                                'bg-sky-50 text-sky-800 ring-sky-300': trx.status === 'Selesai',
+                                                'bg-amber-50 text-amber-800 ring-amber-300': trx.status === 'Diproses',
+                                                'bg-slate-50 text-slate-700 ring-slate-300': trx.status === 'Diterima',
+                                                'bg-emerald-50 text-emerald-800 ring-emerald-300': trx.status === 'Diambil',
+                                                'bg-rose-50 text-rose-800 ring-rose-300': trx.status === 'Dibatalkan'
+                                            }"
+                                            x-text="trx.status"
+                                        ></span>
+                                    </div>
+                                    <span class="font-mono font-extrabold text-xs text-slate-900 tabular-nums" x-text="trx.total_formatted"></span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <x-ui.payment-badge :status="$isPaid ? 'Lunas' : 'Belum Bayar'" size="sm" />
 
-                                    @if ($latestPayment)
-                                        <span class="text-xs text-slate-500">{{ $latestPayment->method }}</span>
-                                    @endif
+                                <div class="mt-1 flex items-center justify-between text-2xs text-slate-500">
+                                    <span class="truncate max-w-[200px]" x-text="trx.services_summary"></span>
+                                    <span class="tabular-nums shrink-0" x-text="trx.date"></span>
+                                </div>
 
-                                    {{-- Tombol Tutup Rincian Transaksi --}}
+                                <div class="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2">
+                                    <span
+                                        class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold"
+                                        :class="trx.payment_status === 'Lunas' ? 'bg-emerald-50 text-emerald-700' : (trx.payment_status === 'DP' ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700')"
+                                        x-text="trx.payment_status"
+                                    ></span>
+
                                     <a
-                                        href="{{ route("{$currentRoutePrefix}.customers.index", array_filter([
-                                            'customer_id' => $selectedCustomer->id,
-                                            'q' => $search,
-                                            'status' => $statusFilter !== 'all' ? $statusFilter : null,
-                                            'page' => request('page'),
-                                        ])) }}"
-                                        class="inline-flex size-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-                                        title="Tutup rincian transaksi ini"
+                                        :href="trx.show_url"
+                                        class="inline-flex items-center gap-1 text-2xs font-bold text-brand-700 hover:text-brand-800 hover:underline transition"
                                     >
-                                        <x-lucide-x class="size-3.5" />
+                                        <span>Buka Detail Nota</span>
+                                        <x-lucide-arrow-right class="size-3" />
                                     </a>
                                 </div>
                             </div>
+                        </template>
 
-                            {{-- Box Detail Transaksi --}}
-                            <div class="mt-4 rounded-xl border border-slate-100 bg-slate-50/80 p-4">
-                                <p class="text-xs font-bold tracking-wider text-slate-500 uppercase">Detail Transaksi</p>
-
-                                <div class="mt-2.5 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                                    <div>
-                                        <div class="flex items-center gap-2">
-                                            <h4 class="text-xs font-bold text-slate-900 sm:text-sm">
-                                                {{ $service?->name ?? 'Cuci Komplit Reguler' }}
-                                            </h4>
-                                            <span class="rounded bg-sky-100 px-1.5 py-0.5 text-xs font-bold text-sky-700 uppercase">
-                                                Kategori Reguler
-                                            </span>
-                                        </div>
-                                        <p class="mt-0.5 text-xs text-slate-500">
-                                            Berat: <strong class="text-slate-700 tabular-nums">{{ $firstDetail?->weight ?? 1 }} kg</strong>
-                                            @if ($firstDetail?->unit_price)
-                                                <span class="tabular-nums">× Rp {{ number_format($firstDetail->unit_price, 0, ',', '.') }}</span>
-                                            @endif
-                                            @if ($service?->description)
-                                                • {{ $service->description }}
-                                            @endif
-                                        </p>
-                                    </div>
-                                    <div class="text-left sm:text-right">
-                                        <p class="text-sm font-extrabold text-slate-900 tabular-nums">
-                                            Rp {{ number_format($activeTransaction->total_amount, 0, ',', '.') }}
-                                        </p>
-                                        <span class="mt-0.5 inline-block rounded bg-sky-50 px-1.5 py-0.5 text-xs font-semibold text-sky-700">
-                                            Selesai {{ $service?->estimated_duration ?? 3 }} Hari
-                                        </span>
-                                    </div>
+                        {{-- Empty State Transaksi --}}
+                        <template x-if="!selectedCustomer?.transactions || selectedCustomer?.transactions?.length === 0">
+                            <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-slate-500 space-y-2">
+                                <div class="mx-auto flex size-10 items-center justify-center rounded-xl bg-white border border-slate-200/90 text-slate-400 shadow-2xs">
+                                    <x-lucide-inbox class="size-5" />
                                 </div>
-
-                                {{-- Baris Estimasi & Status Cucian --}}
-                                <div class="mt-3 flex flex-col gap-2 rounded-lg bg-white p-2.5 sm:flex-row sm:items-center sm:justify-between">
-                                    <div class="flex items-center gap-2 text-xs text-slate-600">
-                                        <x-lucide-clock class="size-3.5 text-sky-600" />
-                                        <span>
-                                            Estimasi Pengambilan:
-                                            <strong class="text-slate-800">
-                                                {{ $activeTransaction->estimated_completed_at ? $activeTransaction->estimated_completed_at->translatedFormat('d M Y, H:i') . ' WIB' : 'Menunggu update' }}
-                                            </strong>
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <x-ui.status-badge :status="$activeTransaction->status" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {{-- Footer Total Akhir --}}
-                            <div class="mt-3.5 flex items-center justify-between border-t border-slate-100 pt-3">
-                                <span class="text-xs font-bold tracking-wider text-slate-500 uppercase">Total Akhir :</span>
-                                <span class="text-lg font-extrabold text-slate-900 tabular-nums">
-                                    Rp {{ number_format($activeTransaction->total_amount, 0, ',', '.') }}
-                                </span>
-                            </div>
-                        </div>
-                    @endif
-
-                    {{-- 3. Tabel Riwayat Transaksi Cucian Sebelumnya --}}
-                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xs font-bold tracking-wider text-slate-900 uppercase">
-                                Riwayat Transaksi Cucian Sebelumnya
-                            </h3>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-semibold text-brand-700">
-                                    {{ $previousTransactions->count() }} Transaksi
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="mt-3 hidden overflow-x-auto md:block">
-                            <table class="w-full text-left text-xs">
-                                <thead>
-                                    <tr class="border-b border-slate-100 text-xs font-bold text-slate-500 uppercase">
-                                        <th scope="col" class="pb-2.5 font-semibold">No. Nota</th>
-                                        <th scope="col" class="pb-2.5 font-semibold">Tgl Masuk</th>
-                                        <th scope="col" class="pb-2.5 font-semibold">Kategori Layanan</th>
-                                        <th scope="col" class="pb-2.5 font-semibold">Durasi</th>
-                                        <th scope="col" class="pb-2.5 font-semibold">Total Biaya</th>
-                                        <th scope="col" class="pb-2.5 text-right font-semibold">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 text-slate-700">
-                                    @forelse ($previousTransactions as $prevTrx)
-                                        @php
-                                            $detail = $prevTrx->details->first();
-                                            $prevService = $detail?->service;
-                                            $isRowSelected = $activeTransaction && $activeTransaction->id === $prevTrx->id;
-                                        @endphp
-                                        <tr
-                                            onclick="window.location.href='{{ route("{$currentRoutePrefix}.customers.index", array_filter([
-                                                'customer_id' => $selectedCustomer->id,
-                                                'transaction_id' => $prevTrx->id,
-                                                'q' => $search,
-                                                'status' => $statusFilter !== 'all' ? $statusFilter : null,
-                                                'page' => request('page'),
-                                            ])) }}'"
-                                            @class([
-                                                'group cursor-pointer transition',
-                                                'bg-brand-50/70 font-semibold ring-1 ring-inset ring-brand-500/20' => $isRowSelected,
-                                                'hover:bg-slate-50/80' => ! $isRowSelected,
-                                            ])
-                                            title="Klik untuk melihat detail nota {{ $prevTrx->transaction_code }}"
-                                        >
-                                            <td class="py-2.5 font-bold text-slate-900 group-hover:text-brand-700 tabular-nums">
-                                                <div class="flex items-center gap-1.5">
-                                                    @if ($isRowSelected)
-                                                        <span class="size-1.5 rounded-full bg-brand-600"></span>
-                                                    @endif
-                                                    <span>{{ $prevTrx->transaction_code }}</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-2.5 text-slate-500 tabular-nums">
-                                                {{ $prevTrx->created_at->translatedFormat('d M Y') }}
-                                            </td>
-                                            <td class="py-2.5">
-                                                {{ $prevService?->name ?? 'Cuci Komplit' }}
-                                            </td>
-                                            <td class="py-2.5">
-                                                <span class="rounded bg-sky-50 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-sky-700">
-                                                    {{ $prevService?->estimated_duration ?? 3 }} Hari
-                                                </span>
-                                            </td>
-                                            <td class="py-2.5 font-semibold text-slate-900 tabular-nums">
-                                                Rp {{ number_format($prevTrx->total_amount, 0, ',', '.') }}
-                                            </td>
-                                            <td class="py-2.5 text-right">
-                                                <x-ui.status-badge :status="$prevTrx->status" size="sm" />
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="6" class="py-5 text-center text-xs text-slate-500">
-                                                Belum ada riwayat transaksi lampau untuk pelanggan ini.
-                                            </td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
-
-                        {{-- Kartu riwayat (mobile) --}}
-                        <div class="mt-3 space-y-2 md:hidden">
-                            @forelse ($previousTransactions as $prevTrx)
-                                @php
-                                    $detail = $prevTrx->details->first();
-                                    $prevService = $detail?->service;
-                                    $isRowSelected = $activeTransaction && $activeTransaction->id === $prevTrx->id;
-                                    $transactionUrl = route("{$currentRoutePrefix}.customers.index", array_filter([
-                                        'customer_id' => $selectedCustomer->id,
-                                        'transaction_id' => $prevTrx->id,
-                                        'q' => $search,
-                                        'status' => $statusFilter !== 'all' ? $statusFilter : null,
-                                        'page' => request('page'),
-                                    ]));
-                                @endphp
-
-                                <a
-                                    href="{{ $transactionUrl }}"
-                                    @class([
-                                        'block rounded-xl border border-slate-200 p-3.5 transition-colors',
-                                        'border-brand-200 bg-brand-50/60' => $isRowSelected,
-                                        'hover:bg-slate-50' => ! $isRowSelected,
-                                    ])
-                                >
-                                    <div class="flex items-start justify-between gap-3">
-                                        <div class="min-w-0">
-                                            <p class="font-bold text-slate-900 tabular-nums">{{ $prevTrx->transaction_code }}</p>
-                                            <p class="mt-0.5 text-xs text-slate-500">
-                                                <span class="tabular-nums">{{ $prevTrx->created_at->translatedFormat('d M Y') }}</span> &middot;
-                                                {{ $prevService?->name ?? 'Cuci Komplit' }}
-                                            </p>
-                                        </div>
-
-                                        <x-ui.status-badge :status="$prevTrx->status" size="sm" />
-                                    </div>
-
-                                    <div class="mt-3 flex items-center justify-between border-t border-slate-100 pt-3">
-                                        <span class="text-xs text-slate-500 tabular-nums">{{ $prevService?->estimated_duration ?? 3 }} hari</span>
-                                        <span class="text-sm font-semibold text-slate-900 tabular-nums">
-                                            <x-ui.money :value="$prevTrx->total_amount" />
-                                        </span>
-                                    </div>
-                                </a>
-                            @empty
-                                <p class="rounded-xl border border-slate-200 px-4 py-6 text-center text-xs text-slate-500">
-                                    Belum ada riwayat transaksi lampau untuk pelanggan ini.
+                                <p class="text-xs font-bold text-slate-800">Belum Ada Riwayat Cucian</p>
+                                <p class="text-2xs text-slate-500 max-w-xs mx-auto">
+                                    Pelanggan ini belum pernah melakukan pemesanan. Klik tombol "+ Buka Kasir POS" di atas untuk membuat nota pertama.
                                 </p>
-                            @endforelse
-                        </div>
-
-                        <div class="mt-3 border-t border-slate-100 pt-2.5 text-xs text-slate-500">
-                            Total riwayat tersimpan: <span class="tabular-nums font-semibold">{{ $selectedCustomer->transactions_count ?? $selectedCustomer->transactions()->count() }}</span> transaksi. Klik baris untuk melihat detail nota di atas.
-                        </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
-        @endif
 
-        {{-- Modal Tambah Pelanggan Baru --}}
-        {{-- ============================================================
-            MODAL 1: TAMBAH PELANGGAN BARU
-        ============================================================= --}}
-        <x-ui.modal
-            show="createModalOpen"
-            title="Tambah Pelanggan Baru"
-            description="Daftarkan kontak pelanggan baru ke dalam sistem laundry."
-            maxWidth="md"
-        >
-            <form method="POST" action="{{ route("{$currentRoutePrefix}.customers.store") }}" class="space-y-4">
-                @csrf
-                <div>
-                    <x-ui.label for="create_name" required>Nama Lengkap</x-ui.label>
-                    <div class="mt-1.5">
-                        <x-ui.input
-                            id="create_name"
-                            type="text"
-                            name="name"
-                            required
-                            placeholder="Contoh: Nama Lengkap Pelanggan"
-                        />
+            {{-- ============================================================= --}}
+            {{-- ISI BODY 2: MODE EDIT DATA PELANGGAN (INLINE DI DRAWER)       --}}
+            {{-- ============================================================= --}}
+            <div x-show="drawerMode === 'edit'" class="space-y-4">
+                <form
+                    id="form-edit-customer"
+                    method="POST"
+                    :action="selectedCustomer?.update_url"
+                    target="_self"
+                    class="space-y-4"
+                    @submit="isSubmitting = true"
+                >
+                    @csrf
+                    @method('PUT')
+
+                    <div>
+                        <label for="edit_customer_name" class="block text-xs font-bold text-slate-700">
+                            Nama Pelanggan <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative mt-1.5">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                <x-lucide-user class="size-4" />
+                            </div>
+                            <input
+                                type="text"
+                                id="edit_customer_name"
+                                name="name"
+                                required
+                                maxlength="100"
+                                x-model="editForm.name"
+                                placeholder="Masukkan nama lengkap pelanggan"
+                                class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm font-semibold"
+                            />
+                        </div>
                     </div>
-                </div>
 
-                <div>
-                    <x-ui.label for="create_phone" required>Nomor Telepon / WhatsApp</x-ui.label>
-                    <div class="mt-1.5">
-                        <x-ui.input
-                            id="create_phone"
-                            type="text"
-                            name="phone"
-                            required
-                            placeholder="Contoh: 081234567890"
-                            @blur="$event.target.value = formatPhone($event.target.value)"
-                            class="tabular-nums"
-                        />
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <label for="edit_customer_phone" class="block text-xs font-bold text-slate-700">
+                                Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
+                            </label>
+                            <span class="text-[11px] text-slate-400">Format: 08xxx</span>
+                        </div>
+                        <div class="relative mt-1.5">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                <x-lucide-phone class="size-4" />
+                            </div>
+                            <input
+                                type="tel"
+                                id="edit_customer_phone"
+                                name="phone"
+                                required
+                                maxlength="20"
+                                x-model="editForm.phone"
+                                @input="editForm.phone = formatPhone($event.target.value)"
+                                placeholder="081234567890"
+                                class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs font-mono font-bold tabular-nums text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                            />
+                        </div>
+                        <p class="mt-1 text-2xs text-slate-400">Nomor ini otomatis digunakan untuk link WhatsApp struk dan notifikasi cucian.</p>
                     </div>
-                    <p class="mt-1 text-2xs text-slate-500">
-                        Otomatis diformat ke standar lokal <code class="font-semibold text-slate-700">08...</code> (misal <code class="text-slate-600">+628...</code> otomatis disesuaikan).
-                    </p>
-                </div>
 
-                <div>
-                    <x-ui.label for="create_address" optional>Alamat Lengkap</x-ui.label>
-                    <textarea
-                        id="create_address"
-                        name="address"
-                        rows="3"
-                        placeholder="Contoh: Jl. Merpati No. 12, RT 02/04"
-                        class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
-                    ></textarea>
-                </div>
+                    <div>
+                        <label for="edit_customer_address" class="block text-xs font-bold text-slate-700">
+                            Alamat Domisili <span class="text-slate-400 font-normal">(Opsional)</span>
+                        </label>
+                        <div class="relative mt-1.5">
+                            <textarea
+                                id="edit_customer_address"
+                                name="address"
+                                rows="3"
+                                maxlength="500"
+                                x-model="editForm.address"
+                                placeholder="Contoh: Jl. Merpati No. 12, Nganjuk"
+                                class="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 resize-none sm:text-sm"
+                            ></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-                <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
-                    <x-ui.button
+            {{-- ============================================================= --}}
+            {{-- ISI BODY 3: MODE TAMBAH PELANGGAN BARU (DI DALAM DRAWER)       --}}
+            {{-- ============================================================= --}}
+            <div x-show="drawerMode === 'create'" class="space-y-4">
+                <form
+                    id="form-create-customer"
+                    method="POST"
+                    action="{{ route("{$currentRoutePrefix}.customers.store") }}"
+                    target="_self"
+                    class="space-y-4"
+                    @submit="isSubmitting = true"
+                >
+                    @csrf
+
+                    <div>
+                        <label for="create_customer_name" class="block text-xs font-bold text-slate-700">
+                            Nama Pelanggan <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative mt-1.5">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                <x-lucide-user class="size-4" />
+                            </div>
+                            <input
+                                type="text"
+                                id="create_customer_name"
+                                name="name"
+                                required
+                                maxlength="100"
+                                x-model="createForm.name"
+                                placeholder="Masukkan nama lengkap pelanggan"
+                                class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm font-semibold"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between">
+                            <label for="create_customer_phone" class="block text-xs font-bold text-slate-700">
+                                Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
+                            </label>
+                            <span class="text-[11px] text-slate-400">Format: 08xxx</span>
+                        </div>
+                        <div class="relative mt-1.5">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                                <x-lucide-phone class="size-4" />
+                            </div>
+                            <input
+                                type="tel"
+                                id="create_customer_phone"
+                                name="phone"
+                                required
+                                maxlength="20"
+                                x-model="createForm.phone"
+                                @input="createForm.phone = formatPhone($event.target.value)"
+                                placeholder="081234567890"
+                                class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs font-mono font-bold tabular-nums text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                            />
+                        </div>
+                        <p class="mt-1 text-2xs text-slate-400">Format otomatis 08xxx untuk pembuatan link WhatsApp nota.</p>
+                    </div>
+
+                    <div>
+                        <label for="create_customer_address" class="block text-xs font-bold text-slate-700">
+                            Alamat Domisili <span class="text-slate-400 font-normal">(Opsional)</span>
+                        </label>
+                        <div class="relative mt-1.5">
+                            <textarea
+                                id="create_customer_address"
+                                name="address"
+                                rows="3"
+                                maxlength="500"
+                                x-model="createForm.address"
+                                placeholder="Contoh: Jl. Merpati No. 12, Nganjuk"
+                                class="w-full rounded-xl border border-slate-300 bg-white p-3 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 resize-none sm:text-sm"
+                            ></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Custom Docked Sticky Footer --}}
+            <x-slot:footer>
+                {{-- Footer Mode Detail --}}
+                <div x-show="drawerMode === 'detail'" class="flex items-center justify-between w-full">
+                    <span class="text-2xs text-slate-400 font-mono">Tekan Esc untuk tutup</span>
+                    <button
                         type="button"
-                        variant="secondary"
-                        size="sm"
-                        @click="createModalOpen = false"
+                        @click="closeDrawer()"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer active:scale-98"
+                    >
+                        Tutup Panel
+                    </button>
+                </div>
+
+                {{-- Footer Mode Edit --}}
+                <div x-show="drawerMode === 'edit'" class="flex items-center justify-end gap-2 w-full">
+                    <button
+                        type="button"
+                        @click="drawerMode = 'detail'"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer active:scale-98"
                     >
                         Batal
-                    </x-ui.button>
-                    <x-ui.button
-                        type="submit"
-                        size="sm"
-                        class="shadow-xs"
-                    >
-                        <x-lucide-plus class="size-4" />
-                        <span>Simpan Pelanggan</span>
-                    </x-ui.button>
-                </div>
-            </form>
-        </x-ui.modal>
-
-        {{-- ============================================================
-            MODAL 2: EDIT DATA PELANGGAN
-        ============================================================= --}}
-        <x-ui.modal
-            show="editModalOpen"
-            title="Edit Data Pelanggan"
-            description="Perbarui informasi profil dan nomor kontak pelanggan."
-            maxWidth="md"
-        >
-            <form method="POST" :action="'/' + '{{ $currentRoutePrefix }}' + '/customers/' + editForm.id" class="space-y-4">
-                @csrf
-                @method('PUT')
-                <div>
-                    <x-ui.label for="edit_name" required>Nama Lengkap</x-ui.label>
-                    <div class="mt-1.5">
-                        <x-ui.input
-                            id="edit_name"
-                            type="text"
-                            name="name"
-                            x-model="editForm.name"
-                            required
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <x-ui.label for="edit_phone" required>Nomor Telepon / WhatsApp</x-ui.label>
-                    <div class="mt-1.5">
-                        <x-ui.input
-                            id="edit_phone"
-                            type="text"
-                            name="phone"
-                            x-model="editForm.phone"
-                            required
-                            @blur="editForm.phone = formatPhone(editForm.phone)"
-                            class="tabular-nums"
-                        />
-                    </div>
-                    <p class="mt-1 text-2xs text-slate-500">
-                        Otomatis diformat ke standar lokal <code class="font-semibold text-slate-700">08...</code> (misal <code class="text-slate-600">+628...</code> otomatis disesuaikan).
-                    </p>
-                </div>
-
-                <div>
-                    <x-ui.label for="edit_address" optional>Alamat Lengkap</x-ui.label>
-                    <textarea
-                        id="edit_address"
-                        name="address"
-                        x-model="editForm.address"
-                        rows="3"
-                        class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
-                    ></textarea>
-                </div>
-
-                <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
-                    <x-ui.button
+                    </button>
+                    <button
                         type="button"
-                        variant="secondary"
-                        size="sm"
-                        @click="editModalOpen = false"
+                        @click="const f = document.getElementById('form-edit-customer'); if (f?.reportValidity()) { isSubmitting = true; f.submit(); }"
+                        :disabled="isSubmitting"
+                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-800 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                    >
+                        <x-lucide-check class="size-3.5" />
+                        <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'">Simpan Perubahan</span>
+                        <kbd class="hidden sm:inline-block rounded-md bg-brand-800/90 px-1.5 py-0.5 text-[10px] font-mono font-medium text-brand-100 border border-brand-600/50 ml-0.5">Ctrl+Enter</kbd>
+                    </button>
+                </div>
+
+                {{-- Footer Mode Tambah Baru --}}
+                <div x-show="drawerMode === 'create'" class="flex items-center justify-end gap-2 w-full">
+                    <button
+                        type="button"
+                        @click="closeDrawer()"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer active:scale-98"
                     >
                         Batal
-                    </x-ui.button>
-                    <x-ui.button
-                        type="submit"
-                        size="sm"
-                        class="shadow-xs"
+                    </button>
+                    <button
+                        type="button"
+                        @click="const f = document.getElementById('form-create-customer'); if (f?.reportValidity()) { isSubmitting = true; f.submit(); }"
+                        :disabled="isSubmitting"
+                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-800 transition active:scale-98 cursor-pointer disabled:opacity-50"
                     >
-                        <x-lucide-check class="size-4" />
-                        <span>Simpan Perubahan</span>
-                    </x-ui.button>
+                        <x-lucide-check class="size-3.5" />
+                        <span x-text="isSubmitting ? 'Mendaftarkan...' : 'Daftarkan Pelanggan'">Daftarkan Pelanggan</span>
+                        <kbd class="hidden sm:inline-block rounded-md bg-brand-800/90 px-1.5 py-0.5 text-[10px] font-mono font-medium text-brand-100 border border-brand-600/50 ml-0.5">Ctrl+Enter</kbd>
+                    </button>
                 </div>
-            </form>
-        </x-ui.modal>
+            </x-slot:footer>
+        </x-ui.sheet>
 
-        {{-- ============================================================
-            MODAL 3: KONFIRMASI HAPUS PELANGGAN
-        ============================================================= --}}
+        {{-- Dialog Modal Konfirmasi Hapus Pelanggan --}}
         <x-ui.modal
             show="deleteModalOpen"
+            title="Konfirmasi Hapus Pelanggan"
+            description="Tindakan ini permanen dan akan menghapus kontak pelanggan dari sistem."
             maxWidth="sm"
-            :title="null"
         >
-            <div>
-                <div class="flex size-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
-                    <x-lucide-trash-2 class="size-6" />
-                </div>
-                <h3 class="mt-4 text-base font-bold text-slate-900">Hapus Data Pelanggan?</h3>
-                <p class="mt-2 text-xs leading-relaxed text-slate-600">
-                    Apakah Anda yakin ingin menghapus pelanggan <span class="font-semibold text-slate-900" x-text="'&ldquo;' + deleteForm.name + '&rdquo;'"></span>? Tindakan ini bersifat permanen dan tidak dapat dibatalkan.
+            <div class="space-y-3">
+                <p class="text-xs text-slate-600">
+                    Apakah Anda yakin ingin menghapus pelanggan <span class="font-bold text-slate-900" x-text="deleteForm.name"></span>?
                 </p>
-                <form method="POST" :action="'/' + '{{ $currentRoutePrefix }}' + '/customers/' + deleteForm.id" class="mt-6 flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
+                <div class="rounded-xl bg-amber-50 border border-amber-200 p-2.5 text-2xs text-amber-800 flex items-start gap-2">
+                    <x-lucide-alert-triangle class="size-4 shrink-0 text-amber-600 mt-0.5" />
+                    <span>Penghapusan hanya diperbolehkan untuk pelanggan yang belum memiliki riwayat transaksi cucian apapun.</span>
+                </div>
+
+                <form method="POST" :action="deleteForm.actionUrl" class="mt-4 flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
                     @csrf
                     @method('DELETE')
-                    <x-ui.button
+                    <button
                         type="button"
-                        variant="secondary"
-                        size="sm"
                         @click="deleteModalOpen = false"
+                        class="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
                     >
                         Batal
-                    </x-ui.button>
-                    <x-ui.button
+                    </button>
+                    <button
                         type="submit"
-                        variant="danger"
-                        size="sm"
-                        class="shadow-xs"
+                        class="inline-flex items-center gap-1.5 rounded-xl bg-rose-600 px-3.5 py-2 text-xs font-bold text-white hover:bg-rose-700 transition cursor-pointer shadow-2xs"
                     >
-                        <x-lucide-trash-2 class="size-4" />
+                        <x-lucide-trash-2 class="size-3.5" />
                         <span>Ya, Hapus Pelanggan</span>
-                    </x-ui.button>
+                    </button>
                 </form>
             </div>
         </x-ui.modal>
     </div>
+
+    <script>
+        (function() {
+            function registerCustomerManager() {
+                if (typeof Alpine === 'undefined') return;
+
+                Alpine.data('customerManager', (customersMap = {}, autoOpenId = null) => ({
+                    drawerOpen: false,
+                    drawerMode: 'detail',
+                    selectedCustomerId: null,
+                    customersMap: customersMap,
+                    editForm: { id: '', name: '', phone: '', address: '' },
+                    createForm: { name: '', phone: '', address: '' },
+                    deleteModalOpen: false,
+                    deleteForm: { id: '', name: '', actionUrl: '' },
+                    isSubmitting: false,
+
+                    get selectedCustomer() {
+                        return this.selectedCustomerId ? (this.customersMap[this.selectedCustomerId] || null) : null;
+                    },
+
+                    formatPhone(val) {
+                        if (!val) return '';
+                        let cleaned = val.toString().trim().replace(/[^\d+]/g, '');
+                        if (cleaned.startsWith('+62')) {
+                            let rest = cleaned.substring(3).replace(/^0+/, '');
+                            return '0' + rest;
+                        } else if (cleaned.startsWith('62')) {
+                            let rest = cleaned.substring(2).replace(/^0+/, '');
+                            return '0' + rest;
+                        } else if (cleaned.startsWith('8')) {
+                            return '0' + cleaned;
+                        }
+                        return cleaned.replace(/^\+/, '');
+                    },
+
+                    openDetail(id) {
+                        if (!this.customersMap[id]) return;
+                        this.selectedCustomerId = id;
+                        this.drawerMode = 'detail';
+                        this.drawerOpen = true;
+                    },
+
+                    openEdit(id) {
+                        const c = this.customersMap[id];
+                        if (!c) return;
+                        this.selectedCustomerId = id;
+                        this.editForm = {
+                            id: c.id,
+                            name: c.name,
+                            phone: c.phone,
+                            address: c.address === '-' ? '' : c.address
+                        };
+                        this.drawerMode = 'edit';
+                        this.drawerOpen = true;
+                    },
+
+                    openCreate() {
+                        this.createForm = { name: '', phone: '', address: '' };
+                        this.drawerMode = 'create';
+                        this.drawerOpen = true;
+                        setTimeout(() => {
+                            const el = document.getElementById('create_customer_name');
+                            if (el) el.focus();
+                        }, 150);
+                    },
+
+                    openDelete(customer) {
+                        this.deleteForm = {
+                            id: customer.id,
+                            name: customer.name,
+                            actionUrl: customer.delete_url
+                        };
+                        this.deleteModalOpen = true;
+                    },
+
+                    closeDrawer() {
+                        if (this.isSubmitting) return;
+                        this.drawerOpen = false;
+                        setTimeout(() => {
+                            this.drawerMode = 'detail';
+                        }, 250);
+                    },
+
+                    init() {
+                        if (autoOpenId && this.customersMap[autoOpenId]) {
+                            this.openDetail(autoOpenId);
+                        }
+
+                        window.addEventListener('keydown', (e) => {
+                            if (e.key === 'Escape' && this.drawerOpen) {
+                                this.closeDrawer();
+                                return;
+                            }
+
+                            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && this.drawerOpen) {
+                                e.preventDefault();
+                                e.stopPropagation();
+
+                                if (this.drawerMode === 'edit') {
+                                    const form = document.getElementById('form-edit-customer');
+                                    if (form && form.reportValidity()) {
+                                        this.isSubmitting = true;
+                                        form.submit();
+                                    }
+                                } else if (this.drawerMode === 'create') {
+                                    const form = document.getElementById('form-create-customer');
+                                    if (form && form.reportValidity()) {
+                                        this.isSubmitting = true;
+                                        form.submit();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }));
+            }
+
+            if (typeof Alpine === 'undefined') {
+                document.addEventListener('alpine:init', registerCustomerManager);
+            } else {
+                registerCustomerManager();
+            }
+        })();
+    </script>
 </x-layouts::app>
