@@ -12,16 +12,15 @@
 
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-slate-900">Ajukan Pengaduan Laundry</h1>
-                    <p class="mt-1 text-xs text-slate-500 sm:text-sm">
+                    <p class="text-xs text-slate-500 sm:text-sm">
                         Laporkan kendala cucian Anda untuk ditindaklanjuti staf kami dalam batas waktu maksimal 2 hari kerja.
                     </p>
                 </div>
                 <a
                     href="{{ route('customer.complaints.index') }}"
-                    class="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 transition"
+                    class="hidden sm:inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100"
                 >
-                    <svg class="size-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg class="size-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
                     </svg>
                     <span>Kembali</span>
@@ -47,7 +46,7 @@
         </div>
 
         {{-- Form Pengaduan --}}
-        <div class="rounded-2xl border border-slate-200/90 bg-white p-6 sm:p-8 shadow-xs">
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs">
             @if ($eligibleTransactions->isEmpty())
                 <div class="text-center py-6">
                     <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-amber-50 text-amber-600 mb-3">
@@ -62,7 +61,7 @@
                     <div class="mt-4">
                         <a
                             href="{{ route('customer.complaints.index') }}"
-                            class="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-slate-800"
+                            class="inline-flex items-center gap-2 rounded-lg bg-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800"
                         >
                             Lihat Pengaduan Terdaftar
                         </a>
@@ -159,13 +158,13 @@
                     <div class="flex items-center justify-end gap-3 border-t border-slate-100 pt-5">
                         <a
                             href="{{ route('customer.complaints.index') }}"
-                            class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 transition"
+                            class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs sm:text-sm font-semibold text-slate-700 shadow-2xs hover:bg-slate-100 transition"
                         >
                             Batal
                         </a>
                         <button
                             type="submit"
-                            class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
+                            class="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-5 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-hidden focus:ring-2 focus:ring-brand-500/20"
                         >
                             <svg class="size-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />

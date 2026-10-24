@@ -33,7 +33,7 @@
                 @else
                     <a
                         href="{{ route('login') }}"
-                        class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900"
+                        class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900"
                     >
                         <span>Masuk Sistem</span>
                     </a>
@@ -61,14 +61,14 @@
         </div>
 
         {{-- Form Pencarian Nota --}}
-        <div class="max-w-2xl mx-auto rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-sm">
+        <div class="max-w-2xl mx-auto rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
             <form method="GET" action="{{ route('transactions.lookup') }}" class="space-y-3">
                 <label for="code" class="block text-xs font-semibold text-slate-700">
                     Masukkan Kode Transaksi
                 </label>
                 <div class="flex flex-col sm:flex-row gap-2.5">
                     <div class="relative flex-1">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                             <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
@@ -81,12 +81,12 @@
                             required
                             autofocus
                             placeholder="Contoh: TRX-0001 atau TRK-20261025-046"
-                            class="w-full rounded-xl border border-slate-200 bg-slate-50/60 py-2.5 pl-10 pr-4 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 uppercase tracking-wider focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50/60 py-2.5 pl-10 pr-4 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-500 uppercase tracking-wider focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                         >
                     </div>
                     <button
                         type="submit"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
                     >
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -94,7 +94,7 @@
                         <span>Cek Transaksi</span>
                     </button>
                 </div>
-                <p class="text-[11px] text-slate-400">
+                <p class="text-xs text-slate-500">
                     *Kode transaksi tercantum pada struk fisik atau pesan konfirmasi yang diberikan saat penyerahan pakaian.
                 </p>
             </form>
@@ -125,19 +125,19 @@
 
             <div class="max-w-3xl mx-auto space-y-6">
                 {{-- 1. Stepper Timeline Status Laundry --}}
-                <div class="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs">
+                <div class="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
                         <div>
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Status Cucian</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Status Cucian</span>
                             <div class="mt-0.5 flex items-center gap-2">
                                 <h2 class="text-lg font-extrabold text-slate-900">{{ $transaction->status->value }}</h2>
                                 @if ($isCanceled)
-                                    <span class="rounded bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 uppercase">Dibatalkan</span>
+                                    <span class="rounded bg-rose-100 px-2 py-0.5 text-xs font-bold text-rose-700 uppercase">Dibatalkan</span>
                                 @endif
                             </div>
                         </div>
                         <div class="text-left sm:text-right">
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Estimasi Selesai</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Estimasi Selesai</span>
                             <p class="text-xs sm:text-sm font-bold text-slate-800">
                                 {{ $transaction->estimated_completed_at ? $transaction->estimated_completed_at->translatedFormat('d F Y, H:i') . ' WIB' : 'Menunggu update kasir' }}
                             </p>
@@ -151,7 +151,7 @@
                                 {{-- Connecting Line --}}
                                 <div class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-slate-200 -z-0">
                                     <div
-                                        class="h-full bg-brand-600 transition-all duration-500"
+                                        class="h-full bg-brand-700 transition-all duration-500"
                                         style="width: {{ match($currentStep) { 1 => '0%', 2 => '33.33%', 3 => '66.66%', 4 => '100%', default => '0%' } }};"
                                     ></div>
                                 </div>
@@ -160,7 +160,7 @@
                                 <div class="flex flex-col items-center text-center relative z-10">
                                     <div @class([
                                         'size-8 rounded-full flex items-center justify-center text-xs font-bold transition',
-                                        'bg-brand-600 text-white ring-4 ring-brand-100' => $currentStep >= 1,
+                                        'bg-brand-700 text-white ring-4 ring-brand-100' => $currentStep >= 1,
                                         'bg-slate-200 text-slate-500' => $currentStep < 1,
                                     ])>
                                         1
@@ -169,7 +169,7 @@
                                         'mt-2 text-xs font-semibold',
                                         'text-brand-900 font-bold' => $currentStep === 1,
                                         'text-slate-700' => $currentStep > 1,
-                                        'text-slate-400' => $currentStep < 1,
+                                        'text-slate-500' => $currentStep < 1,
                                     ])>
                                         Diterima
                                     </span>
@@ -179,7 +179,7 @@
                                 <div class="flex flex-col items-center text-center relative z-10">
                                     <div @class([
                                         'size-8 rounded-full flex items-center justify-center text-xs font-bold transition',
-                                        'bg-brand-600 text-white ring-4 ring-brand-100' => $currentStep >= 2,
+                                        'bg-brand-700 text-white ring-4 ring-brand-100' => $currentStep >= 2,
                                         'bg-slate-200 text-slate-500' => $currentStep < 2,
                                     ])>
                                         2
@@ -188,7 +188,7 @@
                                         'mt-2 text-xs font-semibold',
                                         'text-brand-900 font-bold' => $currentStep === 2,
                                         'text-slate-700' => $currentStep > 2,
-                                        'text-slate-400' => $currentStep < 2,
+                                        'text-slate-500' => $currentStep < 2,
                                     ])>
                                         Diproses
                                     </span>
@@ -198,7 +198,7 @@
                                 <div class="flex flex-col items-center text-center relative z-10">
                                     <div @class([
                                         'size-8 rounded-full flex items-center justify-center text-xs font-bold transition',
-                                        'bg-brand-600 text-white ring-4 ring-brand-100' => $currentStep >= 3,
+                                        'bg-brand-700 text-white ring-4 ring-brand-100' => $currentStep >= 3,
                                         'bg-slate-200 text-slate-500' => $currentStep < 3,
                                     ])>
                                         3
@@ -207,7 +207,7 @@
                                         'mt-2 text-xs font-semibold',
                                         'text-brand-900 font-bold' => $currentStep === 3,
                                         'text-slate-700' => $currentStep > 3,
-                                        'text-slate-400' => $currentStep < 3,
+                                        'text-slate-500' => $currentStep < 3,
                                     ])>
                                         Selesai
                                     </span>
@@ -217,7 +217,7 @@
                                 <div class="flex flex-col items-center text-center relative z-10">
                                     <div @class([
                                         'size-8 rounded-full flex items-center justify-center text-xs font-bold transition',
-                                        'bg-brand-600 text-white ring-4 ring-brand-100' => $currentStep >= 4,
+                                        'bg-brand-700 text-white ring-4 ring-brand-100' => $currentStep >= 4,
                                         'bg-slate-200 text-slate-500' => $currentStep < 4,
                                     ])>
                                         4
@@ -225,7 +225,7 @@
                                     <span @class([
                                         'mt-2 text-xs font-semibold',
                                         'text-brand-900 font-bold' => $currentStep === 4,
-                                        'text-slate-400' => $currentStep < 4,
+                                        'text-slate-500' => $currentStep < 4,
                                     ])>
                                         Diambil
                                     </span>
@@ -236,30 +236,31 @@
                 </div>
 
                 {{-- 2. Detail Rincian Nota & Pelanggan --}}
-                <div class="rounded-2xl border border-slate-200/90 bg-white p-5 sm:p-6 shadow-xs space-y-6">
+                <div class="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs space-y-6">
                     {{-- Header Info Transaksi --}}
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
                         <div>
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Kode Transaksi</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Kode Transaksi</span>
                             <div class="mt-0.5 flex items-center gap-2">
                                 <h3 class="text-base sm:text-lg font-extrabold text-slate-900 font-mono">{{ $transaction->transaction_code }}</h3>
-                                <span class="rounded bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700">Terdaftar</span>
+                                <span class="rounded bg-brand-50 px-2 py-0.5 text-xs font-bold text-brand-700">Terdaftar</span>
                             </div>
                         </div>
                         <div>
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Customer</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Pelanggan</span>
                             <p class="mt-0.5 text-xs sm:text-sm font-bold text-slate-800">
-                                {{ $transaction->customer?->name ?? 'Pelanggan Umum' }}
+                                {{ $maskedCustomerName }}
                             </p>
+                            <p class="mt-0.5 text-xs text-slate-500">Nama disamarkan untuk privasi.</p>
                         </div>
                     </div>
 
                     {{-- Tabel Layanan & Berat --}}
                     <div>
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Detail Layanan & Berat</h4>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Detail Layanan & Berat</h4>
                         <div class="overflow-x-auto rounded-xl border border-slate-100">
                             <table class="w-full text-left text-xs">
-                                <thead class="bg-slate-50/70 border-b border-slate-100 text-[10px] font-bold uppercase text-slate-400">
+                                <thead class="bg-slate-50/70 border-b border-slate-100 text-xs font-bold uppercase text-slate-500">
                                     <tr>
                                         <th class="p-3">Layanan</th>
                                         <th class="p-3">Berat</th>
@@ -273,7 +274,7 @@
                                             <td class="p-3 font-semibold text-slate-900">
                                                 {{ $detail->service?->name ?? 'Layanan Laundry' }}
                                                 @if ($detail->service?->description)
-                                                    <p class="text-[10px] text-slate-400 font-normal">{{ $detail->service->description }}</p>
+                                                    <p class="text-xs text-slate-500 font-normal">{{ $detail->service->description }}</p>
                                                 @endif
                                             </td>
                                             <td class="p-3">{{ (float) $detail->weight }} kg</td>
@@ -282,7 +283,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="4" class="p-4 text-center text-xs text-slate-400">
+                                            <td colspan="4" class="p-4 text-center text-xs text-slate-500">
                                                 Detail layanan belum dimasukkan.
                                             </td>
                                         </tr>
@@ -304,14 +305,7 @@
                         <div class="flex items-center justify-between border-t border-slate-200/60 pt-2.5">
                             <span class="text-xs font-semibold text-slate-600">Status Pembayaran</span>
                             <div>
-                                <span @class([
-                                    'rounded-full px-2.5 py-0.5 text-xs font-bold uppercase',
-                                    'bg-emerald-100 text-emerald-800' => $paymentSummary['status'] === 'Lunas',
-                                    'bg-amber-100 text-amber-800' => $paymentSummary['status'] === 'DP',
-                                    'bg-rose-100 text-rose-800' => $paymentSummary['status'] === 'Belum Bayar',
-                                ])>
-                                    {{ $paymentSummary['status'] }}
-                                </span>
+                                <x-ui.payment-badge :status="$paymentSummary['status']" size="sm" />
                             </div>
                         </div>
 
@@ -327,7 +321,7 @@
                         @endif
 
                         @if ($paymentSummary['latest_payment'])
-                            <div class="text-[11px] text-slate-400 border-t border-slate-200/40 pt-2">
+                            <div class="text-xs text-slate-500 border-t border-slate-200/40 pt-2">
                                 Metode: <strong class="text-slate-600">{{ $paymentSummary['latest_payment']->method }}</strong>
                                 • Dibayar: {{ $paymentSummary['latest_payment']->paid_at ? $paymentSummary['latest_payment']->paid_at->translatedFormat('d M Y, H:i') . ' WIB' : '-' }}
                             </div>
@@ -353,7 +347,7 @@
     </main>
 
     {{-- Footer Publik --}}
-    <footer class="border-t border-slate-200/80 bg-white py-6 text-center text-xs text-slate-400">
+    <footer class="border-t border-slate-200/80 bg-white py-6 text-center text-xs text-slate-500">
         <div class="max-w-4xl mx-auto px-4">
             &copy; {{ date('Y') }} CUCI.IN — Sistem Manajemen Operasional Laundry.
         </div>

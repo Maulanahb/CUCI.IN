@@ -104,18 +104,13 @@ class Transaction extends Model
     }
 
     /**
-     * TODO: Relasi ke Payment (one-to-many).
-     * Dikelola oleh rekan tim (Nayla).
+     * Relasi ke Payment (one-to-many).
      */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, 'transaction_id');
     }
 
-    /**
-     * TODO: Relasi ke LaundryStatusHistory (one-to-many).
-     * Dikelola oleh rekan tim (Nayla).
-     */
     public function payment(): HasOne
     {
         return $this->hasOne(Payment::class);
@@ -127,10 +122,57 @@ class Transaction extends Model
     }
 
     /**
-     * TODO: Relasi ke Complaint (one-to-many).
+     * Relasi ke Complaint (one-to-many).
      */
     public function complaints(): HasMany
     {
         return $this->hasMany(Complaint::class, 'transaction_id');
+    }
+
+    /**
+     * Hitung total pembayaran yang valid (tidak ditolak).
+     */
+    public function getTotalPaidAttribute(): float
+    {
+        $validPayments = $this->relationLoaded('payments')
+            ? $this->payments->filter(fn (Payment $p): bool => in_array($p->verification_status, Payment::PAID_STATUSES, true))
+            : $this->payments()->paid()->get();
+
+        return (float) $validPayments->sum('amount');
+    }
+
+    /**
+     * Hitung sisa tagihan yang belum dibayar.
+     */
+    public function getRemainingAmountAttribute(): float
+    {
+        return max(0.0, (float) $this->total_amount - $this->total_paid);
+    }
+
+    /**
+     * Status pembayaran dinamis: 'Lunas', 'DP', atau 'Belum Bayar'.
+     */
+    public function getPaymentStatusAttribute(): string
+    {
+        $totalPaid = $this->total_paid;
+        $totalAmount = (float) $this->total_amount;
+
+        if ($totalPaid >= $totalAmount && $totalAmount > 0) {
+            return 'Lunas';
+        }
+
+        if ($totalPaid > 0) {
+            return 'DP';
+        }
+
+        return 'Belum Bayar';
+    }
+
+    /**
+     * Cek apakah transaksi sudah lunas 100%.
+     */
+    public function isPaidOff(): bool
+    {
+        return $this->payment_status === 'Lunas';
     }
 }

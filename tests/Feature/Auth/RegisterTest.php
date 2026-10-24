@@ -144,7 +144,7 @@ class RegisterTest extends TestCase
         $response = $this->actingAs($user)->get('/customer/dashboard');
 
         $response->assertStatus(200);
-        $response->assertSee('Pelanggan CUCI.IN');
+        $response->assertSee('Selamat Datang');
         $response->assertSee($user->name);
     }
 

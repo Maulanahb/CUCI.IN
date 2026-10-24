@@ -1,9 +1,9 @@
 <x-layouts::guest title="Masuk">
-    <div class="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-sm sm:p-10">
+    <div class="rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xs sm:p-10">
         {{-- Header & Logo --}}
         <div class="flex flex-col items-center text-center">
             <div class="flex items-center gap-2.5">
-                <x-app-logo class="size-9 drop-shadow-sm" />
+                <x-app-logo class="size-9 drop-shadow-xs" />
                 <span class="text-xl font-bold tracking-tight text-brand-700">CUCI<span class="text-brand-500">.IN</span></span>
             </div>
 
@@ -34,7 +34,7 @@
             <div>
                 <label for="email" class="block text-xs font-semibold text-slate-700">Email</label>
                 <div class="relative mt-1.5">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
@@ -63,7 +63,7 @@
             <div x-data="{ show: false }">
                 <label for="password" class="block text-xs font-semibold text-slate-700">Password</label>
                 <div class="relative mt-1.5">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
                         <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
@@ -83,7 +83,7 @@
                     <button
                         type="button"
                         @click="show = !show"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600 focus:outline-none"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-500 hover:text-slate-600 focus:outline-none"
                         :aria-label="show ? 'Sembunyikan password' : 'Lihat password'"
                     >
                         <svg x-show="!show" class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -116,7 +116,7 @@
             <button
                 type="submit"
                 id="login-submit-button"
-                class="mt-2 w-full rounded-xl bg-brand-600 py-2.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 active:scale-[0.99]"
+                class="mt-2 w-full rounded-xl bg-brand-700 py-2.5 text-center text-sm font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/30 active:scale-[0.99]"
             >
                 Masuk
             </button>

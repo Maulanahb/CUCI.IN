@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CustomerRequest;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -123,9 +124,22 @@ class CustomerController extends Controller
     /**
      * Simpan data pelanggan baru ke database.
      */
-    public function store(CustomerRequest $request): RedirectResponse
+    public function store(CustomerRequest $request): RedirectResponse|JsonResponse
     {
         $customer = Customer::create($request->validated());
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data pelanggan berhasil ditambahkan.',
+                'customer' => [
+                    'id' => $customer->id,
+                    'name' => $customer->name,
+                    'phone' => $customer->phone,
+                    'address' => $customer->address,
+                ],
+            ], 201);
+        }
 
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
 

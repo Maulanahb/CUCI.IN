@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\TransactionStatus;
 use App\Models\Customer;
+use App\Models\LaundryStatusHistory;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use Illuminate\Support\Facades\DB;
@@ -25,10 +26,21 @@ class CreateTransaction
         int|string|null $createdBy = null,
         array $items = []
     ): Transaction {
+        $payNow = false;
+        $paymentMethod = 'Tunai';
+        $paymentAmount = null;
+        $paymentChoice = null;
+
         if (is_array($customerOrData)) {
             $customerId = $customerOrData['customer_id'] ?? null;
             $createdBy = $customerOrData['created_by'] ?? $createdBy;
             $items = $customerOrData['items'] ?? $customerOrData['details'] ?? $items;
+            $payNow = (bool) ($customerOrData['pay_now'] ?? false);
+            $paymentMethod = (string) ($customerOrData['payment_method'] ?? 'Tunai');
+            $paymentAmount = isset($customerOrData['payment_amount']) && $customerOrData['payment_amount'] !== null && $customerOrData['payment_amount'] !== ''
+                ? (float) $customerOrData['payment_amount']
+                : null;
+            $paymentChoice = $customerOrData['payment_choice'] ?? null;
         } else {
             $customerId = $customerOrData;
         }
@@ -41,7 +53,7 @@ class CreateTransaction
             throw new InvalidArgumentException('Created by (user ID Staff) harus diisi.');
         }
 
-        return DB::transaction(function () use ($customerId, $createdBy, $items): Transaction {
+        return DB::transaction(function () use ($customerId, $createdBy, $items, $payNow, $paymentMethod, $paymentAmount, $paymentChoice): Transaction {
             // 1. Pastikan customer ada di database
             $customer = Customer::find($customerId);
             if ($customer === null) {
@@ -76,8 +88,39 @@ class CreateTransaction
                 ]);
             }
 
-            // 6. Muat relasi details & customer dan kembalikan model Transaction
-            $transaction->load(['details', 'customer']);
+            // 6. Catat log riwayat status pertama kali (Diterima)
+            LaundryStatusHistory::create([
+                'transaction_id' => $transaction->id,
+                'status' => TransactionStatus::Diterima,
+                'changed_by' => $createdBy,
+                'changed_at' => now(),
+            ]);
+
+            // 7. Jika kasir memilih untuk bayar sekarang (Lunas atau DP)
+            if ($payNow) {
+                $total = (float) $transaction->total_amount;
+                $choice = $paymentChoice ?? ($paymentAmount !== null && $paymentAmount > 0 && $paymentAmount < $total ? 'dp' : 'full');
+
+                if ($choice === 'dp') {
+                    if ($paymentAmount === null || $paymentAmount <= 0 || $paymentAmount >= $total) {
+                        throw new InvalidArgumentException('Nominal DP harus lebih dari 0 dan kurang dari total tagihan.');
+                    }
+
+                    $payAmount = $paymentAmount;
+                } else {
+                    $payAmount = $total;
+                }
+
+                RecordPayment::execute(
+                    transaction: $transaction,
+                    amount: $payAmount,
+                    method: $paymentMethod,
+                    userId: (int) $createdBy
+                );
+            }
+
+            // 8. Muat relasi details, customer, statusHistories & payments dan kembalikan model Transaction
+            $transaction->load(['details', 'customer', 'statusHistories', 'payments']);
 
             return $transaction;
         });
