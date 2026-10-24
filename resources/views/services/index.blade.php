@@ -78,22 +78,11 @@
         ============================================================= --}}
         <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
-                        Katalog Layanan Laundry
-                    </h1>
-                    @if ($isAdmin)
-                        <span class="inline-flex items-center rounded-full bg-brand-100 px-2.5 py-0.5 text-2xs font-semibold text-brand-800">
-                            Mode Administrator
-                        </span>
-                    @else
-                        <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-2xs font-semibold text-slate-700">
-                            Katalog Kasir / Staff
-                        </span>
-                    @endif
-                </div>
+                <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                    Katalog Layanan Laundry
+                </h1>
                 <p class="mt-1 text-xs text-slate-500 sm:text-sm">
-                    Kelola tarif pencucian, durasi estimasi pengerjaan, dan ketersediaan layanan operasional CUCI.IN.
+                    Kelola tarif pencucian, durasi estimasi pengerjaan, dan ketersediaan layanan operasional CUCI.IN ({{ $isAdmin ? 'Mode Administrator' : 'Katalog Kasir / Staff' }}).
                 </p>
             </div>
 
@@ -202,61 +191,38 @@
         </div>
 
         {{-- ============================================================
-            FILTER & SEARCH TOOLBAR (Shadcn Segmented Tabs & Input)
+            FILTER & SEARCH TOOLBAR (Pines UI Segmented Tabs & Input)
         ============================================================= --}}
         <div class="flex flex-col gap-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs sm:flex-row sm:items-center sm:justify-between">
-            {{-- Tab Filter Status (Shadcn Segmented Control) --}}
-            <div class="inline-flex items-center rounded-xl bg-slate-100 p-1 text-slate-500">
-                <a
-                    href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['status', 'page']), ['status' => 'all'])) }}"
-                    @class([
-                        'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition',
-                        'bg-white text-slate-900 shadow-2xs' => $statusFilter === 'all',
-                        'text-slate-600 hover:text-slate-900' => $statusFilter !== 'all',
-                    ])
+            {{-- Tab Filter Status (Pines UI Segmented Control) --}}
+            <x-ui.tabs variant="segmented">
+                <x-ui.tab
+                    :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'all']))"
+                    :active="$statusFilter === 'all'"
+                    :badge="$stats['total']"
+                    :badgeTone="$statusFilter === 'all' ? 'brand' : 'neutral'"
                 >
-                    <span>Semua</span>
-                    <span @class([
-                        'rounded-md px-1.5 py-0.5 text-2xs font-bold tabular-nums',
-                        'bg-brand-50 text-brand-700' => $statusFilter === 'all',
-                        'bg-slate-200/60 text-slate-600' => $statusFilter !== 'all',
-                    ])>{{ $stats['total'] }}</span>
-                </a>
-
-                <a
-                    href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['status', 'page']), ['status' => 'active'])) }}"
-                    @class([
-                        'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition',
-                        'bg-white text-slate-900 shadow-2xs' => $statusFilter === 'active',
-                        'text-slate-600 hover:text-slate-900' => $statusFilter !== 'active',
-                    ])
+                    Semua
+                </x-ui.tab>
+                <x-ui.tab
+                    :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'active']))"
+                    :active="$statusFilter === 'active'"
+                    :badge="$stats['active']"
+                    :badgeTone="$statusFilter === 'active' ? 'emerald' : 'neutral'"
                 >
-                    <span>Aktif</span>
-                    <span @class([
-                        'rounded-md px-1.5 py-0.5 text-2xs font-bold tabular-nums',
-                        'bg-emerald-50 text-emerald-700' => $statusFilter === 'active',
-                        'bg-slate-200/60 text-slate-600' => $statusFilter !== 'active',
-                    ])>{{ $stats['active'] }}</span>
-                </a>
-
-                <a
-                    href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['status', 'page']), ['status' => 'inactive'])) }}"
-                    @class([
-                        'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition',
-                        'bg-white text-slate-900 shadow-2xs' => $statusFilter === 'inactive',
-                        'text-slate-600 hover:text-slate-900' => $statusFilter !== 'inactive',
-                    ])
+                    Aktif
+                </x-ui.tab>
+                <x-ui.tab
+                    :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'inactive']))"
+                    :active="$statusFilter === 'inactive'"
+                    :badge="$stats['inactive']"
+                    :badgeTone="$statusFilter === 'inactive' ? 'neutral' : 'neutral'"
                 >
-                    <span>Nonaktif</span>
-                    <span @class([
-                        'rounded-md px-1.5 py-0.5 text-2xs font-bold tabular-nums',
-                        'bg-slate-200 text-slate-700' => $statusFilter === 'inactive',
-                        'bg-slate-200/60 text-slate-600' => $statusFilter !== 'inactive',
-                    ])>{{ $stats['inactive'] }}</span>
-                </a>
-            </div>
+                    Nonaktif
+                </x-ui.tab>
+            </x-ui.tabs>
 
-            {{-- Form Pencarian (Shadcn Input Style) --}}
+            {{-- Form Pencarian --}}
             <form method="GET" action="{{ route("{$currentRoutePrefix}.services.index") }}" class="relative w-full sm:w-72">
                 @if ($statusFilter !== 'all')
                     <input type="hidden" name="status" value="{{ $statusFilter }}">
@@ -347,32 +313,21 @@
                                                 type="submit"
                                                 title="Klik untuk mengubah status ketersediaan"
                                                 @class([
-                                                    'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold transition hover:opacity-85 cursor-pointer',
-                                                    'border-emerald-200 bg-emerald-50 text-emerald-700' => $service->is_active,
-                                                    'border-slate-200 bg-slate-100 text-slate-600' => ! $service->is_active,
+                                                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset transition cursor-pointer select-none active:scale-95',
+                                                    'bg-emerald-50 text-emerald-700 ring-emerald-600/20 hover:bg-emerald-100/70' => $service->is_active,
+                                                    'bg-slate-50 text-slate-600 ring-slate-600/15 hover:bg-slate-100' => ! $service->is_active,
                                                 ])
                                             >
-                                                <span @class([
-                                                    'size-1.5 rounded-full',
-                                                    'bg-emerald-500' => $service->is_active,
-                                                    'bg-slate-400' => ! $service->is_active,
-                                                ])></span>
+                                                <svg class="size-1.5 shrink-0 {{ $service->is_active ? 'fill-emerald-500' : 'fill-slate-400' }}" viewBox="0 0 6 6" aria-hidden="true">
+                                                    <circle cx="3" cy="3" r="3" />
+                                                </svg>
                                                 <span>{{ $service->is_active ? 'Tersedia' : 'Nonaktif' }}</span>
                                             </button>
                                         </form>
                                     @else
-                                        <span @class([
-                                            'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold',
-                                            'border-emerald-200 bg-emerald-50 text-emerald-700' => $service->is_active,
-                                            'border-slate-200 bg-slate-100 text-slate-600' => ! $service->is_active,
-                                        ])>
-                                            <span @class([
-                                                'size-1.5 rounded-full',
-                                                'bg-emerald-500' => $service->is_active,
-                                                'bg-slate-400' => ! $service->is_active,
-                                            ])></span>
-                                            <span>{{ $service->is_active ? 'Tersedia' : 'Nonaktif' }}</span>
-                                        </span>
+                                        <x-ui.badge :tone="$service->is_active ? 'success' : 'neutral'" size="md" dot>
+                                            {{ $service->is_active ? 'Tersedia' : 'Nonaktif' }}
+                                        </x-ui.badge>
                                     @endif
                                 </td>
 

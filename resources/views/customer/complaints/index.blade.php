@@ -179,9 +179,11 @@
                                         <p class="font-semibold text-slate-900">{{ $complaint->subject }}</p>
                                         <p class="mt-1 text-xs text-slate-500 line-clamp-2 leading-relaxed">{{ $complaint->description }}</p>
                                         @if ($complaint->response)
-                                            <div class="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200">
-                                                <x-lucide-check-circle-2 class="size-3.5 text-emerald-600 shrink-0" aria-hidden="true" />
-                                                <span>Telah ditanggapi staf</span>
+                                            <div class="mt-2">
+                                                <x-ui.badge tone="success" size="sm" class="gap-1.5">
+                                                    <x-lucide-check-circle-2 class="size-3.5 text-emerald-600 shrink-0" aria-hidden="true" />
+                                                    <span>Telah ditanggapi staf</span>
+                                                </x-ui.badge>
                                             </div>
                                         @endif
                                     </td>
@@ -189,21 +191,21 @@
                                     {{-- Kolom 3: Status --}}
                                     <td class="py-4 px-5 align-top text-center">
                                         @if ($complaint->status === 'Menunggu')
-                                            <span class="inline-flex items-center rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-800">
+                                            <x-ui.badge tone="info" size="sm" dot>
                                                 Menunggu
-                                            </span>
+                                            </x-ui.badge>
                                         @elseif ($complaint->status === 'Diproses')
-                                            <span class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
+                                            <x-ui.badge tone="warning" size="sm" dot pulse>
                                                 Diproses
-                                            </span>
+                                            </x-ui.badge>
                                         @elseif ($complaint->status === 'Selesai')
-                                            <span class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
+                                            <x-ui.badge tone="success" size="sm" dot>
                                                 Selesai
-                                            </span>
+                                            </x-ui.badge>
                                         @else
-                                            <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
+                                            <x-ui.badge tone="neutral" size="sm">
                                                 {{ $complaint->status }}
-                                            </span>
+                                            </x-ui.badge>
                                         @endif
                                     </td>
 
@@ -264,21 +266,21 @@
                                 </div>
 
                                 @if ($complaint->status === 'Menunggu')
-                                    <span class="inline-flex shrink-0 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-800">
+                                    <x-ui.badge tone="info" size="sm" dot class="shrink-0">
                                         Menunggu
-                                    </span>
+                                    </x-ui.badge>
                                 @elseif ($complaint->status === 'Diproses')
-                                    <span class="inline-flex shrink-0 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
+                                    <x-ui.badge tone="warning" size="sm" dot pulse class="shrink-0">
                                         Diproses
-                                    </span>
+                                    </x-ui.badge>
                                 @elseif ($complaint->status === 'Selesai')
-                                    <span class="inline-flex shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
+                                    <x-ui.badge tone="success" size="sm" dot class="shrink-0">
                                         Selesai
-                                    </span>
+                                    </x-ui.badge>
                                 @else
-                                    <span class="inline-flex shrink-0 rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700">
+                                    <x-ui.badge tone="neutral" size="sm" class="shrink-0">
                                         {{ $complaint->status }}
-                                    </span>
+                                    </x-ui.badge>
                                 @endif
                             </div>
 

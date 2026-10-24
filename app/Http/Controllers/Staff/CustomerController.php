@@ -40,9 +40,12 @@ class CustomerController extends Controller
             })->count(),
         ];
 
-        // Query daftar pelanggan
+        // Query daftar pelanggan dengan eager load transaksi terbaru untuk drawer instan (0ms)
         $customersQuery = Customer::query()
-            ->with(['user'])
+            ->with([
+                'user',
+                'transactions' => fn ($q) => $q->latest()->take(10)->with(['details.service', 'payments']),
+            ])
             ->withCount('transactions');
 
         // Pencarian case-insensitive berdasarkan Nama, No. Telepon, atau Alamat
@@ -70,53 +73,61 @@ class CustomerController extends Controller
             });
         }
 
-        // Urutkan berdasarkan transaksi terbaru atau id
+        // Urutkan berdasarkan id desc
         $customers = $customersQuery
             ->latest('id')
             ->paginate(10)
             ->withQueryString();
 
-        // Tentukan pelanggan yang sedang aktif / dilihat detailnya (hanya jika ada permintaan customer_id)
-        $selectedCustomer = null;
-        if ($selectedId) {
-            $selectedCustomer = Customer::with(['user'])->find($selectedId);
-        }
+        // Siapkan payload Map untuk Alpine drawer agar 0ms latency tanpa extra network request
+        $customersPayloadMap = $customers->getCollection()->keyBy('id')->map(function ($c) use ($routePrefix) {
+            $initials = collect(explode(' ', $c->name))
+                ->map(fn ($part) => mb_substr($part, 0, 1))
+                ->take(2)
+                ->implode('');
 
-        // Siapkan data transaksi untuk pelanggan terpilih
-        $activeTransaction = null;
-        $previousTransactions = collect();
-        $totalSpent = 0;
+            $activeTrx = $c->transactions->first(fn ($t) => in_array($t->status?->value ?? (string) $t->status, ['Diterima', 'Diproses', 'Selesai'], true));
+            $totalSpent = (float) $c->transactions->sum('total_amount');
 
-        if ($selectedCustomer) {
-            // Muat seluruh transaksi untuk kalkulasi total pengeluaran
-            $totalSpent = (float) $selectedCustomer->transactions()->sum('total_amount');
+            return [
+                'id' => $c->id,
+                'name' => $c->name,
+                'phone' => $c->phone,
+                'address' => $c->address ?: '-',
+                'initials' => strtoupper($initials ?: 'CU'),
+                'registered_at' => $c->created_at?->translatedFormat('d M Y') ?? '-',
+                'whatsapp_url' => $c->whatsapp_url,
+                'total_transactions' => $c->transactions_count,
+                'total_spent_formatted' => 'Rp '.number_format($totalSpent, 0, ',', '.'),
+                'create_order_url' => route("{$routePrefix}.transactions.create", ['customer_id' => $c->id]),
+                'update_url' => route("{$routePrefix}.customers.update", $c),
+                'delete_url' => route("{$routePrefix}.customers.destroy", $c),
+                'has_transactions' => $c->transactions_count > 0,
+                'active_status' => $activeTrx ? ($activeTrx->status?->value ?? (string) $activeTrx->status) : null,
+                'transactions' => $c->transactions->map(fn ($t) => [
+                    'id' => $t->id,
+                    'code' => $t->transaction_code,
+                    'date' => $t->created_at?->translatedFormat('d M Y, H:i') ?? '-',
+                    'status' => $t->status?->value ?? (string) $t->status,
+                    'payment_status' => $t->payment_status?->value ?? (string) $t->payment_status,
+                    'total_formatted' => 'Rp '.number_format((float) $t->total_amount, 0, ',', '.'),
+                    'show_url' => route("{$routePrefix}.transactions.show", $t),
+                    'services_summary' => $t->details->map(fn ($d) => $d->service?->name)->filter()->implode(', ') ?: 'Layanan Laundry',
+                ])->values()->all(),
+            ];
+        });
 
-            // Detail riwayat order HANYA muncul jika salah satu baris transaksi di tabel diklik
-            $selectedTransactionId = $request->input('transaction_id');
-            if ($selectedTransactionId) {
-                $activeTransaction = $selectedCustomer->transactions()
-                    ->with(['details.service', 'payments.creator'])
-                    ->find($selectedTransactionId);
-            }
-
-            // Seluruh daftar riwayat transaksi pelanggan untuk tabel
-            $previousTransactions = $selectedCustomer->transactions()
-                ->with(['details.service', 'payments'])
-                ->latest()
-                ->take(15)
-                ->get();
-        }
+        // Ambil ID pelanggan jika ada parameter customer_id (untuk auto-open drawer jika dibuka via direct link)
+        $autoOpenCustomerId = $selectedId && $customersPayloadMap->has((int) $selectedId) ? (int) $selectedId : null;
 
         return view('staff.customers.index', compact(
             'customers',
-            'selectedCustomer',
-            'activeTransaction',
-            'previousTransactions',
+            'customersPayloadMap',
+            'autoOpenCustomerId',
             'totalCustomersCount',
             'counts',
             'search',
             'statusFilter',
-            'totalSpent',
             'routePrefix'
         ));
     }

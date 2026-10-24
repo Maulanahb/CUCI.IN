@@ -21,21 +21,23 @@
 
             <div class="flex items-center gap-2 sm:gap-3">
                 @auth
-                    <a
-                        href="{{ route('dashboard') }}"
-                        class="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl bg-brand-50 px-3.5 py-2 text-xs font-semibold text-brand-700 transition hover:bg-brand-100/80"
+                    <x-ui.button
+                        :href="route('dashboard')"
+                        variant="soft"
+                        size="sm"
                     >
                         <span>Dashboard</span>
                         <x-lucide-arrow-right class="size-3.5" />
-                    </a>
+                    </x-ui.button>
                 @else
-                    <a
-                        href="{{ route('login') }}"
-                        class="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-slate-200/90 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                    <x-ui.button
+                        :href="route('login')"
+                        variant="secondary"
+                        size="sm"
                     >
                         <x-lucide-log-in class="size-3.5 text-slate-500" />
                         <span>Masuk Sistem</span>
-                    </a>
+                    </x-ui.button>
                 @endauth
             </div>
         </div>
@@ -49,14 +51,14 @@
                 Cek Status Cucian Anda
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed px-2">
-                Pantau progres pengerjaan pakaianmu secara langsung. Ketik nomor nota transaksi untuk melihat perkiraan selesai dan rincian pembayaran.
+                Pantau progres pengerjaan pakaianmu secara langsung. Cukup masukkan nomor nota untuk melihat perkiraan selesai dan rincian pembayaran.
             </p>
         </div>
 
         {{-- Form Pencarian Nota --}}
-        <div class="max-w-2xl mx-auto rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-xs print:hidden">
-            <form method="GET" action="{{ route('transactions.lookup') }}" class="space-y-3">
-                <label for="code" class="block text-xs font-semibold text-slate-700">
+        <div class="max-w-2xl mx-auto rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs print:hidden">
+            <form method="GET" action="{{ route('transactions.lookup') }}" class="space-y-3.5">
+                <label for="code" class="block text-xs font-bold text-slate-700">
                     Masukkan Kode Transaksi / Nomor Nota
                 </label>
                 <div class="flex flex-col sm:flex-row gap-2.5">
@@ -72,16 +74,17 @@
                             required
                             autofocus
                             placeholder="Contoh: TRX-0001 atau TRK-20261025-046"
-                            class="w-full rounded-xl border border-slate-200 bg-slate-50/60 py-3 sm:py-2.5 pl-10 pr-4 text-xs sm:text-sm font-medium text-slate-900 focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 tracking-wider [text-transform:uppercase] [&::placeholder]:[text-transform:none] [&::placeholder]:font-normal [&::placeholder]:tracking-normal [&::placeholder]:text-slate-400 min-h-[44px]"
+                            class="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-3 sm:py-2.5 pl-10 pr-4 text-xs sm:text-sm font-semibold font-mono text-slate-900 transition placeholder:text-slate-400 placeholder:font-sans placeholder:font-normal focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 uppercase tracking-wider min-h-[44px]"
                         >
                     </div>
-                    <button
+                    <x-ui.button
                         type="submit"
-                        class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-brand-700 px-6 py-3 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
+                        variant="primary"
+                        class="w-full sm:w-auto h-11 px-6 shadow-xs"
                     >
                         <x-lucide-search class="size-4" />
                         <span>Cek Transaksi</span>
-                    </button>
+                    </x-ui.button>
                 </div>
                 <p class="text-xs text-slate-500">
                     *Nomor nota tercantum di bagian atas struk fisik atau pesan WhatsApp konfirmasi saat penyerahan pakaian.
@@ -117,13 +120,14 @@
                     </p>
                 </div>
                 <div class="pt-1 flex items-center justify-center gap-3 text-xs">
-                    <a
-                        href="{{ route('transactions.lookup') }}"
-                        class="inline-flex min-h-[44px] items-center gap-1.5 rounded-xl border border-rose-300 bg-white px-3.5 py-2 font-semibold text-rose-700 shadow-2xs hover:bg-rose-50 transition"
+                    <x-ui.button
+                        :href="route('transactions.lookup')"
+                        variant="secondary"
+                        size="sm"
                     >
                         <x-lucide-search class="size-3.5" />
                         <span>Coba Nomor Lain</span>
-                    </a>
+                    </x-ui.button>
                 </div>
             </div>
         @endif
@@ -138,7 +142,7 @@
 
             <div class="max-w-3xl mx-auto space-y-6">
                 {{-- 1. Stepper Timeline Status Laundry --}}
-                <div class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-xs">
+                <div class="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
                     <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 border-b border-slate-100 pb-4">
                         <div>
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Status Cucian</span>
@@ -151,16 +155,16 @@
                             <p class="mt-1 text-xs text-slate-500">
                                 @switch($transaction->status->value)
                                     @case('Diterima')
-                                        Pakaian sudah ditimbang dan masuk antrean pengerjaan.
+                                        Pakaian sudah ditimbang & antre masuk mesin cuci.
                                         @break
                                     @case('Diproses')
-                                        Pakaian sedang dicuci, dikeringkan, atau disetrika.
+                                        Pakaianmu sedang dicuci, dikeringkan, atau disetrika rapi.
                                         @break
                                     @case('Selesai')
-                                        Cucianmu sudah selesai & wangi! Siap diambil di outlet.
+                                        Cucian sudah beres & wangi! Siap diambil di outlet.
                                         @break
                                     @case('Diambil')
-                                        Cucian sudah diserahkan kepada pelanggan. Terima kasih!
+                                        Pakaian sudah diserahkan. Terima kasih telah mempercayakan pakaianmu di CUCI.IN!
                                         @break
                                     @case('Dibatalkan')
                                         Pesanan cucian ini telah dibatalkan.
@@ -172,16 +176,18 @@
                         </div>
                         <div class="text-left sm:text-right shrink-0">
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Perkiraan Selesai</span>
-                            <p class="text-xs sm:text-sm font-bold text-slate-800">
+                            <p class="text-xs sm:text-sm font-bold text-slate-800 tabular-nums">
                                 {{ $transaction->estimated_completed_at ? $transaction->estimated_completed_at->translatedFormat('d F Y, H:i') . ' WIB' : 'Sedang dijadwalkan kasir' }}
                             </p>
                             @if ($transaction->estimated_completed_at)
                                 @if (in_array($transaction->status->value, ['Selesai', 'Diambil']))
                                     <p class="mt-0.5 text-xs font-semibold text-emerald-600">Pakaian sudah siap diambil</p>
                                 @elseif ($transaction->estimated_completed_at->isPast())
-                                    <p class="mt-0.5 inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/80">
-                                        Sedang dipercepat kasir (~terlewat {{ $transaction->estimated_completed_at->diffForHumans(null, true) }})
-                                    </p>
+                                    <div class="mt-0.5">
+                                        <x-ui.badge tone="warning" size="xs" dot pulse>
+                                            Sedang dipercepat kasir (~terlewat {{ $transaction->estimated_completed_at->diffForHumans(null, true) }})
+                                        </x-ui.badge>
+                                    </div>
                                 @else
                                     <p class="mt-0.5 text-xs text-brand-700 font-medium">
                                         {{ $transaction->estimated_completed_at->diffForHumans() }}
@@ -191,105 +197,24 @@
                         </div>
                     </div>
 
-                    {{-- Visual Stepper --}}
-                    @if (! $isCanceled)
-                        <div class="pt-6 pb-2">
-                            <div class="grid grid-cols-4 relative">
-                                {{-- Connecting Line --}}
-                                <div class="absolute top-4 left-[12.5%] right-[12.5%] h-0.5 bg-slate-200 -z-0">
-                                    <div
-                                        class="h-full bg-brand-700 transition-all duration-500"
-                                        style="width: {{ match($currentStep) { 1 => '0%', 2 => '33.33%', 3 => '66.66%', 4 => '100%', default => '0%' } }};"
-                                    ></div>
-                                </div>
-
-                                {{-- Step 1: Diterima --}}
-                                <div class="flex flex-col items-center text-center relative z-10 px-0.5">
-                                    <div @class([
-                                        'size-8 rounded-full flex items-center justify-center text-xs font-bold transition',
-                                        'bg-brand-700 text-white ring-4 ring-brand-100' => $currentStep >= 1,
-                                        'bg-slate-200 text-slate-500' => $currentStep < 1,
-                                    ])>
-                                        1
-                                    </div>
-                                    <span @class([
-                                        'mt-2 text-xs font-semibold leading-tight text-center',
-                                        'text-brand-900 font-bold' => $currentStep === 1,
-                                        'text-slate-700' => $currentStep > 1,
-                                        'text-slate-500' => $currentStep < 1,
-                                    ])>
-                                        Diterima
-                                    </span>
-                                </div>
-
-                                {{-- Step 2: Diproses --}}
-                                <div class="flex flex-col items-center text-center relative z-10 px-0.5">
-                                    <div @class([
-                                        'size-8 rounded-full flex items-center justify-center text-xs font-bold transition',
-                                        'bg-brand-700 text-white ring-4 ring-brand-100' => $currentStep >= 2,
-                                        'bg-slate-200 text-slate-500' => $currentStep < 2,
-                                    ])>
-                                        2
-                                    </div>
-                                    <span @class([
-                                        'mt-2 text-xs font-semibold leading-tight text-center',
-                                        'text-brand-900 font-bold' => $currentStep === 2,
-                                        'text-slate-700' => $currentStep > 2,
-                                        'text-slate-500' => $currentStep < 2,
-                                    ])>
-                                        Diproses
-                                    </span>
-                                </div>
-
-                                {{-- Step 3: Selesai --}}
-                                <div class="flex flex-col items-center text-center relative z-10 px-0.5">
-                                    <div @class([
-                                        'size-8 rounded-full flex items-center justify-center text-xs font-bold transition',
-                                        'bg-brand-700 text-white ring-4 ring-brand-100' => $currentStep >= 3,
-                                        'bg-slate-200 text-slate-500' => $currentStep < 3,
-                                    ])>
-                                        3
-                                    </div>
-                                    <span @class([
-                                        'mt-2 text-xs font-semibold leading-tight text-center',
-                                        'text-brand-900 font-bold' => $currentStep === 3,
-                                        'text-slate-700' => $currentStep > 3,
-                                        'text-slate-500' => $currentStep < 3,
-                                    ])>
-                                        Selesai
-                                    </span>
-                                </div>
-
-                                {{-- Step 4: Diambil --}}
-                                <div class="flex flex-col items-center text-center relative z-10 px-0.5">
-                                    <div @class([
-                                        'size-8 rounded-full flex items-center justify-center text-xs font-bold transition',
-                                        'bg-brand-700 text-white ring-4 ring-brand-100' => $currentStep >= 4,
-                                        'bg-slate-200 text-slate-500' => $currentStep < 4,
-                                    ])>
-                                        4
-                                    </div>
-                                    <span @class([
-                                        'mt-2 text-xs font-semibold leading-tight text-center',
-                                        'text-brand-900 font-bold' => $currentStep === 4,
-                                        'text-slate-500' => $currentStep < 4,
-                                    ])>
-                                        Diambil
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+                    {{-- Visual Stepper Component --}}
+                    <div class="pt-5 pb-1">
+                        <x-ui.stepper
+                            :steps="['Diterima', 'Diproses', 'Selesai', 'Diambil']"
+                            :current="$currentStep"
+                            :isCanceled="$isCanceled"
+                        />
+                    </div>
                 </div>
 
                 {{-- 2. Detail Rincian Nota & Pelanggan --}}
-                <div class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-xs space-y-6">
+                <div class="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs space-y-6">
                     {{-- Header Info Transaksi --}}
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-4">
                         <div>
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Nomor Nota Transaksi</span>
                             <div class="mt-0.5 flex flex-wrap items-center gap-2">
-                                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 font-mono">{{ $transaction->transaction_code }}</h3>
+                                <h3 class="text-base sm:text-lg font-extrabold text-slate-900 font-mono tracking-tight tabular-nums">{{ $transaction->transaction_code }}</h3>
                                 <button
                                     type="button"
                                     id="btn-copy-link"
@@ -332,13 +257,13 @@
                                                 </p>
                                             @endif
                                         </div>
-                                        <span class="text-xs font-bold text-slate-900 shrink-0">
+                                        <span class="text-xs font-bold text-slate-900 shrink-0 tabular-nums">
                                             Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
                                         </span>
                                     </div>
                                     <div class="flex items-center justify-between text-xs text-slate-500 pt-0.5">
-                                        <span>{{ (float) $detail->weight }} kg</span>
-                                        <span>@ Rp {{ number_format($detail->unit_price, 0, ',', '.') }}/kg</span>
+                                        <span class="tabular-nums">{{ (float) $detail->weight }} kg</span>
+                                        <span class="tabular-nums">@ Rp {{ number_format($detail->unit_price, 0, ',', '.') }}/kg</span>
                                     </div>
                                 </div>
                             @empty
@@ -368,9 +293,9 @@
                                                     <p class="text-xs text-slate-500 font-normal">{{ $detail->service->description }}</p>
                                                 @endif
                                             </td>
-                                            <td class="p-3">{{ (float) $detail->weight }} kg</td>
-                                            <td class="p-3 text-slate-500">Rp {{ number_format($detail->unit_price, 0, ',', '.') }}</td>
-                                            <td class="p-3 text-right font-bold text-slate-900">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
+                                            <td class="p-3 tabular-nums">{{ (float) $detail->weight }} kg</td>
+                                            <td class="p-3 text-slate-500 tabular-nums">Rp {{ number_format($detail->unit_price, 0, ',', '.') }}</td>
+                                            <td class="p-3 text-right font-bold text-slate-900 tabular-nums">Rp {{ number_format($detail->subtotal, 0, ',', '.') }}</td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -388,7 +313,7 @@
                     <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-4 space-y-3">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-semibold text-slate-600">Total Tagihan</span>
-                            <span class="text-base sm:text-lg font-extrabold text-slate-900">
+                            <span class="text-base sm:text-lg font-extrabold text-slate-900 tabular-nums">
                                 Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
                             </span>
                         </div>
@@ -403,66 +328,73 @@
                         @if ($paymentSummary['status'] === 'DP')
                             <div class="flex items-center justify-between text-xs text-slate-500">
                                 <span>Uang Muka (DP):</span>
-                                <span class="font-semibold text-slate-700">Rp {{ number_format($paymentSummary['total_paid'], 0, ',', '.') }}</span>
+                                <span class="font-semibold text-slate-700 tabular-nums">Rp {{ number_format($paymentSummary['total_paid'], 0, ',', '.') }}</span>
                             </div>
                             <div class="flex items-center justify-between text-xs text-rose-600 font-semibold">
                                 <span>Sisa Tagihan yang Harus Dibayar:</span>
-                                <span>Rp {{ number_format($paymentSummary['remaining_amount'], 0, ',', '.') }}</span>
+                                <span class="tabular-nums">Rp {{ number_format($paymentSummary['remaining_amount'], 0, ',', '.') }}</span>
                             </div>
                         @elseif ($paymentSummary['status'] === 'Belum Bayar')
                             <div class="text-xs text-slate-500 pt-0.5">
                                 Belum ada pembayaran tercatat. Pelunasan dapat diselesaikan di meja kasir saat pengambilan pakaian.
+                            </div>
+                        @elseif ($paymentSummary['status'] === 'Lunas')
+                            <div class="text-xs text-emerald-700 font-medium pt-0.5">
+                                Tagihan telah lunas. Kamu bisa langsung mengambil pakaian tanpa transaksi tambahan.
                             </div>
                         @endif
 
                         @if ($paymentSummary['latest_payment'])
                             <div class="text-xs text-slate-500 border-t border-slate-200/40 pt-2">
                                 Metode Pembayaran: <strong class="text-slate-600">{{ $paymentSummary['latest_payment']->method }}</strong>
-                                • Waktu Bayar: {{ $paymentSummary['latest_payment']->paid_at ? $paymentSummary['latest_payment']->paid_at->translatedFormat('d M Y, H:i') . ' WIB' : '-' }}
+                                • Waktu Bayar: <span class="tabular-nums">{{ $paymentSummary['latest_payment']->paid_at ? $paymentSummary['latest_payment']->paid_at->translatedFormat('d M Y, H:i') . ' WIB' : '-' }}</span>
                             </div>
                         @endif
                     </div>
                 </div>
 
                 {{-- Aksi Bantuan Kasir & Pengaduan Kendala Cucian (Milestone 2) --}}
-                <div class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
+                <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4 print:hidden">
                     <div class="space-y-1 text-center sm:text-left">
-                        <p class="text-xs font-bold text-slate-900">Ada kendala atau pertanyaan seputar cucianmu?</p>
-                        <p class="text-xs text-slate-500">Keluhan noda pakaian, keterlambatan waktu, atau ingin konfirmasi ke outlet laundry.</p>
+                        <p class="text-xs font-bold text-slate-900">Ada kendala atau pertanyaan seputar pakaianmu?</p>
+                        <p class="text-xs text-slate-500">Pakaian ada noda khusus, butuh konfirmasi kilat, atau ingin menghubungi outlet? Beri tahu tim kami langsung.</p>
                     </div>
 
                     <div class="flex items-center gap-2.5 w-full sm:w-auto shrink-0 justify-center">
                         @if (Route::has('customer.complaints.create'))
-                            <a
-                                href="{{ route('customer.complaints.create', ['transaction_code' => $transaction->transaction_code]) }}"
-                                class="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-3.5 py-2 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 shadow-2xs"
+                            <x-ui.button
+                                :href="route('customer.complaints.create', ['transaction_code' => $transaction->transaction_code])"
+                                variant="soft-warning"
+                                size="sm"
                             >
                                 <x-lucide-alert-triangle class="size-3.5 text-amber-600" />
                                 <span>Ajukan Pengaduan</span>
-                            </a>
+                            </x-ui.button>
                         @endif
 
-                        <a
-                            href="https://wa.me/?text={{ rawurlencode('Halo Kasir CUCI.IN, saya ingin menanyakan status cucian untuk nomor nota: ' . $transaction->transaction_code) }}"
+                        <x-ui.button
+                            :href="'https://wa.me/?text=' . rawurlencode('Halo Kasir CUCI.IN, saya ingin menanyakan status cucian untuk nomor nota: ' . $transaction->transaction_code)"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50 hover:text-slate-900 shadow-2xs"
+                            variant="secondary"
+                            size="sm"
                         >
-                            <x-lucide-receipt class="size-3.5 text-slate-500" />
+                            <x-lucide-message-circle class="size-3.5 text-emerald-600" />
                             <span>Tanya Kasir</span>
-                        </a>
+                        </x-ui.button>
                     </div>
                 </div>
 
                 {{-- Navigasi Kembali --}}
                 <div class="flex items-center justify-center text-xs text-slate-500 pt-1 print:hidden">
-                    <a
-                        href="{{ route('transactions.lookup') }}"
-                        class="inline-flex min-h-[44px] items-center gap-1.5 font-semibold text-brand-700 hover:text-brand-800 transition py-2 px-3 rounded-xl hover:bg-brand-50 active:bg-brand-100"
+                    <x-ui.button
+                        :href="route('transactions.lookup')"
+                        variant="ghost"
+                        size="sm"
                     >
-                        <x-lucide-arrow-right class="size-4 rotate-180" />
+                        <x-lucide-arrow-left class="size-4" />
                         <span>Cek Nomor Nota Lainnya</span>
-                    </a>
+                    </x-ui.button>
                 </div>
             </div>
         @endif

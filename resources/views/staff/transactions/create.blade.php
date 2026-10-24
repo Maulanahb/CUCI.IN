@@ -21,47 +21,49 @@
         {{-- Top Bar Navigasi Kasir --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <p class="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Kasir POS — Transaksi Baru</p>
+                <h1 class="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Kasir POS — Transaksi Baru</h1>
                 <p class="mt-0.5 text-xs text-slate-500 sm:text-sm">
                     Pilih layanan di katalog kiri, sesuaikan timbangan, dan simpan nota kasir secara instan.
                 </p>
             </div>
 
             <div class="flex items-center gap-2">
-                <a
+                <x-ui.button
+                    variant="secondary"
+                    size="sm"
                     href="{{ $transactionIndexRoute }}"
-                    class="inline-flex min-h-[40px] items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 active:scale-98"
+                    class="gap-1.5"
                 >
                     <x-lucide-arrow-left class="size-4 text-slate-500" />
                     <span>Daftar Transaksi</span>
-                </a>
+                </x-ui.button>
             </div>
         </div>
 
         {{-- Bar Pintasan Keyboard POS --}}
-        <div class="hidden sm:flex flex-wrap items-center gap-3 rounded-xl border border-slate-200/80 bg-white px-3.5 py-2 text-xs text-slate-600 shadow-2xs">
-            <span class="font-bold text-slate-700 flex items-center gap-1.5">
-                <x-lucide-zap class="size-3.5 text-brand-600" />
-                <span>Pintasan Kasir:</span>
+        <div class="hidden sm:flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200/90 bg-white px-4 py-2.5 text-xs text-slate-600 shadow-2xs">
+            <span class="font-bold text-slate-800 flex items-center gap-1.5">
+                <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" />
+                <span>Pintasan Cepat:</span>
             </span>
-            <div class="flex items-center gap-1">
-                <kbd class="rounded bg-slate-100 border border-slate-200 px-1.5 py-0.5 text-xs font-mono font-bold text-slate-800">/</kbd>
-                <span>Cari Layanan</span>
+            <div class="flex items-center gap-1.5">
+                <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-800 shadow-2xs">/</kbd>
+                <span class="text-slate-600">Cari Layanan</span>
             </div>
             <span class="text-slate-300">•</span>
-            <div class="flex items-center gap-1">
-                <kbd class="rounded bg-slate-100 border border-slate-200 px-1.5 py-0.5 text-xs font-mono font-bold text-slate-800">Alt + P</kbd>
-                <span>Pelanggan Baru</span>
+            <div class="flex items-center gap-1.5">
+                <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-800 shadow-2xs">Alt + P</kbd>
+                <span class="text-slate-600">Pelanggan Baru</span>
             </div>
             <span class="text-slate-300">•</span>
-            <div class="flex items-center gap-1">
-                <kbd class="rounded bg-slate-100 border border-slate-200 px-1.5 py-0.5 text-xs font-mono font-bold text-slate-800">Alt + T</kbd>
-                <span>Tambah Baris</span>
+            <div class="flex items-center gap-1.5">
+                <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-800 shadow-2xs">Alt + T</kbd>
+                <span class="text-slate-600">Tambah Baris</span>
             </div>
             <span class="text-slate-300">•</span>
-            <div class="flex items-center gap-1">
-                <kbd class="rounded bg-slate-100 border border-slate-200 px-1.5 py-0.5 text-xs font-mono font-bold text-slate-800">Ctrl + Enter</kbd>
-                <span>Simpan Transaksi</span>
+            <div class="flex items-center gap-1.5">
+                <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-800 shadow-2xs">Ctrl + Enter</kbd>
+                <span class="text-slate-600">Simpan Transaksi</span>
             </div>
         </div>
 
@@ -75,7 +77,7 @@
         {{-- Alert Error Global --}}
         @if ($errors->any())
             <x-ui.alert variant="destructive" title="Terdapat kesalahan pada input transaksi:" dismissible>
-                <ul class="list-inside list-disc space-y-0.5 pl-1 font-normal">
+                <ul class="list-inside list-disc space-y-0.5 pl-1 font-normal text-xs">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
@@ -91,7 +93,7 @@
             {{-- ======================================================== --}}
             <div class="space-y-4 lg:col-span-7">
                 {{-- Search Bar & Filter Layanan --}}
-                <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+                <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div class="relative flex-1">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
@@ -102,32 +104,52 @@
                                 id="service-search-input"
                                 x-model="searchQuery"
                                 placeholder="Cari layanan laundry (Tekan / untuk fokus)..."
-                                class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 transition focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-9 py-2.5 text-xs text-slate-800 placeholder-slate-400 transition focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
                             />
+                            <button
+                                type="button"
+                                x-show="searchQuery"
+                                @click="searchQuery = ''; document.getElementById('service-search-input').focus()"
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                title="Hapus pencarian"
+                            >
+                                <x-lucide-x class="size-4" />
+                            </button>
                         </div>
 
+                        {{-- Category Filter Pills --}}
                         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
                             <button
                                 type="button"
                                 @click="searchQuery = ''"
-                                :class="searchQuery === '' ? 'bg-brand-600 text-white font-semibold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                class="rounded-lg px-3 py-1.5 text-xs transition cursor-pointer"
+                                :class="searchQuery === '' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
                                 Semua
                             </button>
                             <button
                                 type="button"
                                 @click="searchQuery = 'Komplit'"
-                                class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-600 transition hover:bg-slate-200 cursor-pointer"
+                                :class="searchQuery === 'Komplit' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
                                 Komplit
                             </button>
                             <button
                                 type="button"
                                 @click="searchQuery = 'Kering'"
-                                class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-600 transition hover:bg-slate-200 cursor-pointer"
+                                :class="searchQuery === 'Kering' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
                                 Kering
+                            </button>
+                            <button
+                                type="button"
+                                @click="searchQuery = 'Setrika'"
+                                :class="searchQuery === 'Setrika' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
+                            >
+                                Setrika
                             </button>
                         </div>
                     </div>
@@ -138,19 +160,22 @@
                     <template x-for="service in filteredServices" :key="service.id">
                         <div
                             @click="selectServiceCard(service)"
-                            class="group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all duration-150 active:scale-95 select-none"
-                            :class="getItemInCart(service.id) ? 'border-brand-400 bg-brand-50/50 shadow-xs ring-2 ring-brand-200' : 'border-slate-200/90 bg-white hover:border-brand-300 hover:shadow-md'"
+                            class="group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all duration-150 active:scale-[0.98] select-none"
+                            :class="getItemInCart(service.id) ? 'border-brand-500 bg-brand-50/40 shadow-xs ring-2 ring-brand-200/80' : 'border-slate-200/90 bg-white hover:border-brand-300 hover:shadow-md'"
                         >
                             <div>
                                 <div class="flex items-start justify-between gap-2">
-                                    <div class="flex size-9 items-center justify-center rounded-xl transition" :class="getItemInCart(service.id) ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-700 group-hover:bg-brand-100'">
+                                    <div
+                                        class="flex size-9 items-center justify-center rounded-xl transition"
+                                        :class="getItemInCart(service.id) ? 'bg-brand-600 text-white shadow-2xs' : 'bg-brand-50 text-brand-700 group-hover:bg-brand-100'"
+                                    >
                                         <x-lucide-shirt class="size-5" />
                                     </div>
 
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600">
-                                        <x-lucide-clock class="size-3 text-slate-500" />
+                                    <x-ui.badge tone="neutral" size="sm" class="gap-1 font-mono tabular-nums text-slate-600">
+                                        <x-lucide-clock class="size-3 text-slate-400" />
                                         <span x-text="service.estimated_duration + ' Jam'"></span>
-                                    </span>
+                                    </x-ui.badge>
                                 </div>
 
                                 <h3 class="mt-3 text-sm font-bold text-slate-900 group-hover:text-brand-700 transition" x-text="service.name"></h3>
@@ -158,11 +183,11 @@
                             </div>
 
                             <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-                                <span class="text-sm font-extrabold text-brand-700 sm:text-base" x-text="formatRupiah(service.price)"></span>
+                                <span class="text-sm font-extrabold text-brand-700 font-mono tabular-nums sm:text-base" x-text="formatRupiah(service.price)"></span>
 
                                 <div class="flex items-center gap-1.5">
                                     <template x-if="getItemInCart(service.id)">
-                                        <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-100 px-2 py-1 text-xs font-bold text-emerald-800">
+                                        <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-100/90 px-2 py-1 text-xs font-bold font-mono tabular-nums text-emerald-800 shadow-2xs">
                                             <x-lucide-check class="size-3 text-emerald-700" />
                                             <span x-text="(parseFloat(getItemInCart(service.id).weight) || 0).toFixed(1) + ' kg'"></span>
                                         </span>
@@ -180,14 +205,18 @@
                 </div>
 
                 {{-- Fallback: Empty search result --}}
-                <div x-show="filteredServices.length === 0" class="rounded-2xl border border-slate-200/80 bg-white p-8 text-center shadow-xs">
-                    <p class="text-xs font-semibold text-slate-500">Tidak ada layanan yang sesuai dengan pencarian "<span x-text="searchQuery"></span>".</p>
+                <div x-show="filteredServices.length === 0" class="rounded-2xl border border-slate-200/90 bg-white p-8 text-center shadow-2xs">
+                    <x-lucide-search-x class="mx-auto size-10 text-slate-300" />
+                    <p class="mt-2 text-xs font-semibold text-slate-600">
+                        Tidak ada layanan yang cocok dengan kata kunci "<span class="font-bold text-slate-900" x-text="searchQuery"></span>".
+                    </p>
                     <button
                         type="button"
                         @click="searchQuery = ''"
-                        class="mt-2 text-xs font-bold text-brand-700 underline hover:text-brand-700"
+                        class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline cursor-pointer"
                     >
-                        Tampilkan semua layanan
+                        <x-lucide-rotate-ccw class="size-3.5" />
+                        <span>Tampilkan semua layanan</span>
                     </button>
                 </div>
 
@@ -205,12 +234,13 @@
             {{-- ======================================================== --}}
             {{-- KOLOM KANAN (5/12): NOTA KASIR TRANSAKSI POS (STICKY)    --}}
             {{-- ======================================================== --}}
-            <div id="kasir-ticket-panel" class="lg:col-span-5">
+            <div id="kasir-ticket-panel" class="lg:col-span-5 lg:sticky lg:top-4">
                 <form
                     id="transaction-form"
                     method="POST"
+                    target="_self"
                     action="{{ route("{$currentRoutePrefix}.transactions.store") }}"
-                    class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs"
+                    class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xs"
                     @submit="isSubmitting = true"
                 >
                     @csrf
@@ -219,14 +249,14 @@
                     <div class="border-b border-slate-100 bg-slate-50/70 p-4 sm:p-5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="flex size-7 items-center justify-center rounded-lg bg-brand-600 text-white">
+                                <div class="flex size-7 items-center justify-center rounded-lg bg-brand-600 text-white shadow-2xs">
                                     <x-lucide-receipt class="size-4" />
                                 </div>
                                 <h2 class="text-sm font-bold text-slate-900 sm:text-base">Tiket Nota Kasir</h2>
                             </div>
-                            <span class="rounded-md bg-brand-100 px-2 py-0.5 text-xs font-bold text-brand-800">
+                            <x-ui.badge tone="brand" size="sm" class="font-bold">
                                 Draf Baru
-                            </span>
+                            </x-ui.badge>
                         </div>
                     </div>
 
@@ -234,19 +264,19 @@
                         {{-- Section 1: Data Pelanggan --}}
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
-                                <label for="customer_id" class="text-xs font-bold text-slate-700">
+                                <label for="customer_id" class="text-xs font-bold text-slate-800">
                                     Data Pelanggan <span class="text-rose-500">*</span>
                                 </label>
                                 <button
                                     type="button"
                                     id="btn-open-quick-customer"
-                                    @click="openQuickCustomerModal()"
-                                    class="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline cursor-pointer"
+                                    @click="openCustomerModal()"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline cursor-pointer transition"
                                     title="Pintasan keyboard: Alt + P"
                                 >
                                     <x-lucide-user-plus class="size-3.5" />
                                     <span>Pelanggan Baru</span>
-                                    <kbd class="hidden sm:inline-block ml-1 rounded bg-slate-100 border border-slate-200 px-1 py-0.5 text-xs font-mono text-slate-500">Alt+P</kbd>
+                                    <kbd class="hidden sm:inline-block ml-1 rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500">Alt+P</kbd>
                                 </button>
                             </div>
 
@@ -254,6 +284,7 @@
                                 <select
                                     id="customer_id"
                                     name="customer_id"
+                                    required
                                     onchange="onCustomerSelectChange(this.value)"
                                     @class([
                                         'w-full rounded-xl border bg-white px-3 py-2 text-xs text-slate-800 transition focus:outline-none focus:ring-2 sm:text-sm',
@@ -280,23 +311,23 @@
                             {{-- Preview Pelanggan Terpilih --}}
                             <div
                                 id="customer-preview-card"
-                                class="mt-2.5 hidden rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 transition-all duration-200"
+                                class="mt-2.5 hidden rounded-xl border border-emerald-200/90 bg-emerald-50/70 p-3 transition-all duration-200"
                             >
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="flex items-start gap-2.5">
-                                        <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 font-bold text-xs text-emerald-800" id="preview-avatar">
+                                        <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 font-bold text-xs text-emerald-800 shadow-2xs" id="preview-avatar">
                                             PL
                                         </div>
                                         <div class="min-w-0">
                                             <p class="truncate text-xs font-bold text-slate-900" id="preview-name">-</p>
-                                            <p class="text-xs text-slate-600" id="preview-phone">-</p>
+                                            <p class="text-xs text-slate-600 font-mono tabular-nums" id="preview-phone">-</p>
                                             <p class="line-clamp-1 italic text-xs text-slate-500" id="preview-address">Alamat belum diisi</p>
                                         </div>
                                     </div>
                                     <button
                                         type="button"
                                         onclick="resetCustomerSelection()"
-                                        class="shrink-0 rounded p-1 text-slate-500 hover:bg-emerald-100 hover:text-slate-700 cursor-pointer"
+                                        class="shrink-0 rounded-lg p-1 text-slate-400 hover:bg-emerald-100 hover:text-slate-700 cursor-pointer transition"
                                         title="Ganti Pelanggan"
                                     >
                                         <x-lucide-x class="size-4" />
@@ -308,30 +339,30 @@
                         {{-- Section 2: Daftar Item Cucian Nota --}}
                         <div>
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-700">Item Cucian</span>
+                                <span class="text-xs font-bold text-slate-800">Item Cucian</span>
                                 <button
                                     type="button"
                                     @click="addItem()"
-                                    class="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline cursor-pointer"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline cursor-pointer transition"
                                     title="Pintasan keyboard: Alt + T"
                                 >
                                     <x-lucide-plus class="size-3.5" />
                                     <span>Tambah Baris</span>
-                                    <kbd class="hidden sm:inline-block ml-1 rounded bg-slate-100 border border-slate-200 px-1 py-0.5 text-xs font-mono text-slate-500">Alt+T</kbd>
+                                    <kbd class="hidden sm:inline-block ml-1 rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500">Alt+T</kbd>
                                 </button>
                             </div>
 
                             <div class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
                                 <template x-for="(item, index) in items" :key="index">
-                                    <div class="rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 transition hover:border-slate-300">
+                                    <div class="rounded-xl border border-slate-200/90 bg-slate-50/60 p-3 transition hover:border-slate-300">
                                         <div class="flex items-center justify-between gap-2 mb-2">
-                                            <span class="inline-flex items-center rounded-md bg-brand-100 px-1.5 py-0.5 text-xs font-bold text-brand-800" x-text="'Item #' + (index + 1)"></span>
+                                            <x-ui.badge tone="brand" size="sm" class="font-bold" x-text="'Item #' + (index + 1)"></x-ui.badge>
                                             <div class="flex items-center gap-2">
-                                                <span class="text-xs font-bold text-brand-700" x-text="formatRupiah(getSubtotal(item))"></span>
+                                                <span class="text-xs font-extrabold text-brand-700 font-mono tabular-nums" x-text="formatRupiah(getSubtotal(item))"></span>
                                                 <button
                                                     type="button"
                                                     @click="removeItem(index)"
-                                                    class="rounded p-1 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600 cursor-pointer"
+                                                    class="rounded-lg p-1 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 cursor-pointer"
                                                     title="Hapus baris item"
                                                 >
                                                     <x-lucide-trash-2 class="size-3.5" />
@@ -364,6 +395,7 @@
                                                     <button
                                                         type="button"
                                                         @click="stepWeight(index, -0.5)"
+                                                        aria-label="Kurangi berat 0.5 kg"
                                                         class="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 active:bg-slate-200 cursor-pointer"
                                                         title="Kurangi 0.5 kg"
                                                     >
@@ -373,17 +405,19 @@
                                                         type="number"
                                                         step="0.01"
                                                         min="0.01"
+                                                        inputmode="decimal"
                                                         :id="index === 0 ? 'weight' : null"
                                                         :name="'items[' + index + '][weight]'"
                                                         x-model="item.weight"
                                                         required
                                                         placeholder="0.00"
-                                                        class="w-full text-center border-0 p-1 text-xs font-bold text-slate-900 focus:outline-none"
+                                                        class="w-full text-center border-0 p-1 text-xs font-bold font-mono tabular-nums text-slate-900 focus:outline-none"
                                                     />
                                                     <span class="pr-2 text-xs font-semibold text-slate-500">Kg</span>
                                                     <button
                                                         type="button"
                                                         @click="stepWeight(index, 0.5)"
+                                                        aria-label="Tambah berat 0.5 kg"
                                                         class="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 active:bg-slate-200 cursor-pointer"
                                                         title="Tambah 0.5 kg"
                                                     >
@@ -397,7 +431,7 @@
                                                         <button
                                                             type="button"
                                                             @click="stepWeight(index, w)"
-                                                            class="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-600 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition active:scale-95 cursor-pointer"
+                                                            class="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-bold font-mono tabular-nums text-slate-600 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition active:scale-95 cursor-pointer shadow-2xs"
                                                             :title="'Tambah ' + w + ' kg'"
                                                         >
                                                             <span x-text="'+' + w + 'k'"></span>
@@ -416,18 +450,18 @@
                         </div>
 
                         {{-- Section 3: Ringkasan Kalkulasi & Total --}}
-                        <div class="rounded-xl border border-brand-100 bg-brand-50/50 p-4 space-y-2">
+                        <div class="rounded-xl border border-brand-100 bg-brand-50/40 p-4 space-y-2">
                             <div class="flex items-center justify-between text-xs text-slate-600">
                                 <span>Total Berat Cucian:</span>
-                                <span class="font-bold text-slate-900" x-text="getTotalWeight().toFixed(2) + ' kg'">0.00 kg</span>
+                                <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getTotalWeight().toFixed(2) + ' kg'">0.00 kg</span>
                             </div>
                             <div class="flex items-center justify-between text-xs text-slate-600">
                                 <span>Estimasi Pengerjaan:</span>
-                                <span class="font-bold text-slate-900" x-text="getMaxDuration() + ' Jam'">0 Jam</span>
+                                <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getMaxDuration() + ' Jam'">0 Jam</span>
                             </div>
-                            <div class="border-t border-brand-200/80 pt-2 flex items-center justify-between">
+                            <div class="border-t border-brand-200/80 pt-2.5 flex items-center justify-between">
                                 <span class="text-xs font-extrabold text-slate-800">Total Tagihan:</span>
-                                <span class="text-xl font-black text-brand-700" x-text="formatRupiah(getTotalAmount())">Rp 0</span>
+                                <span class="text-xl font-black text-brand-700 font-mono tabular-nums sm:text-2xl" x-text="formatRupiah(getTotalAmount())">Rp 0</span>
                             </div>
                         </div>
 
@@ -435,16 +469,16 @@
                         <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
                             <div class="flex items-center justify-between">
                                 <label class="text-xs font-bold text-slate-800">Pembayaran Kasir</label>
-                                <span class="text-xs font-semibold text-slate-500">Pilih status bayar saat ini</span>
+                                <span class="text-xs font-semibold text-slate-500">Pilih status bayar</span>
                             </div>
 
                             {{-- Pilihan Opsi Pembayaran --}}
-                            <div class="grid grid-cols-3 gap-1.5 rounded-lg bg-slate-200/70 p-1 text-xs font-semibold text-slate-600">
+                            <div class="grid grid-cols-3 gap-1.5 rounded-xl bg-slate-200/70 p-1 text-xs font-semibold text-slate-600">
                                 <button
                                     type="button"
                                     @click="paymentChoice = 'unpaid'; dpAmount = ''"
                                     :class="paymentChoice === 'unpaid' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'hover:text-slate-900'"
-                                    class="rounded-md py-1.5 text-center transition"
+                                    class="rounded-lg py-1.5 text-center transition cursor-pointer"
                                 >
                                     Bayar Nanti
                                 </button>
@@ -452,7 +486,7 @@
                                     type="button"
                                     @click="paymentChoice = 'full'; dpAmount = ''"
                                     :class="paymentChoice === 'full' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'hover:text-slate-900'"
-                                    class="rounded-md py-1.5 text-center transition"
+                                    class="rounded-lg py-1.5 text-center transition cursor-pointer"
                                 >
                                     Bayar Lunas
                                 </button>
@@ -460,13 +494,13 @@
                                     type="button"
                                     @click="paymentChoice = 'dp'"
                                     :class="paymentChoice === 'dp' ? 'bg-amber-500 text-white shadow-2xs font-bold' : 'hover:text-slate-900'"
-                                    class="rounded-md py-1.5 text-center transition"
+                                    class="rounded-lg py-1.5 text-center transition cursor-pointer"
                                 >
                                     Bayar DP
                                 </button>
                             </div>
 
-                            {{-- Hidden input pay_now --}}
+                            {{-- Hidden input pay_now & payment_choice --}}
                             <input type="hidden" name="pay_now" :value="paymentChoice !== 'unpaid' ? '1' : '0'" />
                             <input type="hidden" name="payment_choice" :value="paymentChoice" />
 
@@ -477,7 +511,7 @@
                                     <div class="grid grid-cols-3 gap-2">
                                         <template x-for="m in ['Tunai', 'QRIS', 'Transfer']" :key="m">
                                             <label
-                                                class="flex items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-bold cursor-pointer transition"
+                                                class="flex items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-bold cursor-pointer transition select-none"
                                                 :class="paymentMethod === m ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-2xs' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'"
                                             >
                                                 <input type="radio" name="payment_method" :value="m" x-model="paymentMethod" class="sr-only" />
@@ -491,7 +525,7 @@
                                 <div x-show="paymentChoice === 'dp'" x-transition>
                                     <div class="flex items-center justify-between mb-1">
                                         <label for="payment_amount" class="text-xs font-semibold text-slate-600">Nominal DP (Uang Muka)</label>
-                                        <span class="text-xs text-amber-700 font-bold" x-text="'Maks. ' + formatRupiah(getTotalAmount())"></span>
+                                        <span class="text-xs text-amber-700 font-bold font-mono tabular-nums" x-text="'Maks. ' + formatRupiah(getTotalAmount())"></span>
                                     </div>
                                     <div class="relative">
                                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-slate-500">Rp</span>
@@ -499,13 +533,14 @@
                                             type="number"
                                             id="payment_amount"
                                             name="payment_amount"
+                                            inputmode="numeric"
                                             x-model="dpAmount"
                                             :disabled="paymentChoice !== 'dp'"
                                             :required="paymentChoice === 'dp'"
                                             min="1000"
-                                            :max="getTotalAmount()"
+                                            :max="Math.max(0, getTotalAmount() - 1000)"
                                             placeholder="Contoh: 20000"
-                                            class="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 py-1.5 text-xs font-semibold text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                            class="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 py-1.5 text-xs font-bold font-mono tabular-nums text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                         />
                                     </div>
                                 </div>
@@ -518,7 +553,8 @@
                                 type="submit"
                                 id="btn-submit-transaction"
                                 :disabled="isSubmitting"
-                                class="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-60 cursor-pointer shadow-sm active:scale-[0.99]"
+                                @click="if ($event.ctrlKey || $event.metaKey) { $event.preventDefault(); $event.stopPropagation(); const f = document.getElementById('transaction-form'); if (f?.reportValidity()) { isSubmitting = true; f.submit(); } }"
+                                class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-60 cursor-pointer shadow-sm active:scale-[0.99]"
                             >
                                 <svg x-show="isSubmitting" x-cloak class="size-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -526,10 +562,10 @@
                                 </svg>
                                 <x-lucide-check-circle x-show="! isSubmitting" class="size-5 text-brand-200" />
                                 <span x-text="isSubmitting ? 'Menyimpan transaksi...' : 'Simpan Transaksi (Cetak Struk)'">Simpan Transaksi (Cetak Struk)</span>
-                                <kbd class="hidden sm:inline-block rounded bg-brand-800/80 px-2 py-0.5 text-xs font-mono font-medium text-brand-100 border border-brand-600/40 ml-1">Ctrl + Enter</kbd>
+                                <kbd class="hidden sm:inline-block rounded-md bg-brand-800/90 px-2 py-0.5 text-xs font-mono font-medium text-brand-100 border border-brand-600/50 ml-1">Ctrl + Enter</kbd>
                             </button>
                             <p class="mt-2 text-center text-xs text-slate-500">
-                                Nomor nota unik dan riwayat pengerjaan otomatis dibuat oleh server.
+                                Nomor nota unik dan riwayat pengerjaan otomatis dibuat oleh sistem.
                             </p>
                         </div>
                     </div>
@@ -554,9 +590,9 @@
                     <div class="flex items-center gap-1.5 text-xs text-slate-500">
                         <span class="font-medium text-slate-700" x-text="items.filter(i => i.service_id).length + ' Layanan'"></span>
                         <span>•</span>
-                        <span x-text="getTotalWeight().toFixed(2) + ' Kg'"></span>
+                        <span class="font-mono tabular-nums font-semibold" x-text="getTotalWeight().toFixed(2) + ' Kg'"></span>
                     </div>
-                    <p class="text-base font-extrabold text-brand-700 tracking-tight" x-text="formatRupiah(getTotalAmount())"></p>
+                    <p class="text-base font-black text-brand-700 font-mono tabular-nums tracking-tight" x-text="formatRupiah(getTotalAmount())"></p>
                 </div>
                 <a
                     href="#kasir-ticket-panel"
@@ -587,7 +623,7 @@
 
             <form id="form-quick-customer" onsubmit="submitQuickCustomer(event)" class="space-y-4">
                 <div>
-                    <label for="quick_customer_name" class="block text-xs font-semibold text-slate-700">
+                    <label for="quick_customer_name" class="block text-xs font-bold text-slate-700">
                         Nama Pelanggan <span class="text-rose-500">*</span>
                     </label>
                     <div class="relative mt-1.5">
@@ -607,10 +643,10 @@
 
                 <div>
                     <div class="flex items-center justify-between">
-                        <label for="quick_customer_phone" class="block text-xs font-semibold text-slate-700">
+                        <label for="quick_customer_phone" class="block text-xs font-bold text-slate-700">
                             Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
                         </label>
-                        <span class="text-xs text-slate-400">Otomatis format 08xxx</span>
+                        <span class="text-[11px] text-slate-400">Format: 08xxx</span>
                     </div>
                     <div class="relative mt-1.5">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
@@ -622,13 +658,13 @@
                             name="phone"
                             required
                             placeholder="081234567890"
-                            class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                            class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs font-mono tabular-nums text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label for="quick_customer_address" class="block text-xs font-semibold text-slate-700">
+                    <label for="quick_customer_address" class="block text-xs font-bold text-slate-700">
                         Alamat <span class="text-slate-400 font-normal">(Opsional)</span>
                     </label>
                     <div class="relative mt-1.5">
@@ -656,7 +692,7 @@
                     <button
                         type="submit"
                         id="btn-save-quick-customer"
-                        class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98 cursor-pointer"
+                        class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-2xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98 cursor-pointer"
                     >
                         <svg id="btn-save-quick-customer-spinner" class="hidden size-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -700,12 +736,27 @@
                             return;
                         }
 
-                        // Ctrl + Enter atau Cmd + Enter -> Simpan Transaksi POS
+                        // Ctrl + Enter atau Cmd + Enter -> Simpan Transaksi POS (tetap di tab saat ini)
                         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
                             e.preventDefault();
+                            e.stopPropagation();
+
+                            // Jika modal tambah pelanggan sedang terbuka, simpan data pelanggan baru
+                            if (this.showCustomerModal) {
+                                const custBtn = document.getElementById('btn-save-quick-customer');
+                                if (custBtn && !custBtn.disabled) {
+                                    custBtn.click();
+                                }
+                                return;
+                            }
+
                             const form = document.getElementById('transaction-form');
                             if (form && !this.isSubmitting) {
-                                form.requestSubmit();
+                                if (typeof form.reportValidity === 'function' && !form.reportValidity()) {
+                                    return;
+                                }
+                                this.isSubmitting = true;
+                                form.submit();
                             }
                             return;
                         }

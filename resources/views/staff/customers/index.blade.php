@@ -153,49 +153,37 @@
                         </form>
                     </div>
 
-                    {{-- Tab Status Pills (Segmented Shadcn style) --}}
-                    <div class="no-scrollbar mt-4 inline-flex items-center gap-1 rounded-xl bg-slate-100/90 p-1 text-xs">
-                        <a
-                            href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'all'])) }}"
-                            @class([
-                                'shrink-0 rounded-lg px-3 py-1.5 font-medium transition',
-                                'bg-white font-bold text-slate-900 shadow-xs' => $statusFilter === 'all',
-                                'text-slate-600 hover:text-slate-900' => $statusFilter !== 'all',
-                            ])
+                    {{-- Tab Status Pills (Pines UI Segmented Control) --}}
+                    <x-ui.tabs variant="segmented" class="mt-4">
+                        <x-ui.tab
+                            :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'all']))"
+                            :active="$statusFilter === 'all'"
+                            :badge="$counts['all']"
                         >
-                            Semua <span class="tabular-nums">({{ $counts['all'] }})</span>
-                        </a>
-                        <a
-                            href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'processing'])) }}"
-                            @class([
-                                'shrink-0 rounded-lg px-3 py-1.5 font-medium transition',
-                                'bg-white font-bold text-slate-900 shadow-xs' => $statusFilter === 'processing',
-                                'text-slate-600 hover:text-slate-900' => $statusFilter !== 'processing',
-                            ])
+                            Semua
+                        </x-ui.tab>
+                        <x-ui.tab
+                            :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'processing']))"
+                            :active="$statusFilter === 'processing'"
+                            :badge="$counts['processing']"
                         >
-                            Sedang Proses <span class="tabular-nums">({{ $counts['processing'] }})</span>
-                        </a>
-                        <a
-                            href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'ready'])) }}"
-                            @class([
-                                'shrink-0 rounded-lg px-3 py-1.5 font-medium transition',
-                                'bg-white font-bold text-slate-900 shadow-xs' => $statusFilter === 'ready',
-                                'text-slate-600 hover:text-slate-900' => $statusFilter !== 'ready',
-                            ])
+                            Sedang Proses
+                        </x-ui.tab>
+                        <x-ui.tab
+                            :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'ready']))"
+                            :active="$statusFilter === 'ready'"
+                            :badge="$counts['ready']"
                         >
-                            Siap Diambil <span class="tabular-nums">({{ $counts['ready'] }})</span>
-                        </a>
-                        <a
-                            href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'completed'])) }}"
-                            @class([
-                                'shrink-0 rounded-lg px-3 py-1.5 font-medium transition',
-                                'bg-white font-bold text-slate-900 shadow-xs' => $statusFilter === 'completed',
-                                'text-slate-600 hover:text-slate-900' => $statusFilter !== 'completed',
-                            ])
+                            Siap Diambil
+                        </x-ui.tab>
+                        <x-ui.tab
+                            :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'completed']))"
+                            :active="$statusFilter === 'completed'"
+                            :badge="$counts['completed']"
                         >
-                            Selesai <span class="tabular-nums">({{ $counts['completed'] }})</span>
-                        </a>
-                    </div>
+                            Selesai
+                        </x-ui.tab>
+                    </x-ui.tabs>
                 </div>
 
                 {{-- Desktop Table View --}}
@@ -262,23 +250,23 @@
                                     {{-- Total Nota & Loyalty --}}
                                     <td class="px-5 py-3.5">
                                         @if ($customer->transactions_count >= 10)
-                                            <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-bold text-amber-700 border border-amber-200/80">
+                                            <x-ui.badge tone="warning" size="sm" class="gap-1 font-semibold">
                                                 <x-lucide-crown class="size-3 text-amber-500" />
                                                 <span class="tabular-nums">{{ $customer->transactions_count }}</span> Nota (Loyal)
-                                            </span>
+                                            </x-ui.badge>
                                         @elseif ($customer->transactions_count >= 5)
-                                            <span class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200/80">
+                                            <x-ui.badge tone="brand" size="sm" class="gap-1 font-semibold">
                                                 <x-lucide-sparkles class="size-3 text-brand-500" />
                                                 <span class="tabular-nums">{{ $customer->transactions_count }}</span> Nota (Reguler)
-                                            </span>
+                                            </x-ui.badge>
                                         @elseif ($customer->transactions_count > 0)
-                                            <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-700">
+                                            <x-ui.badge tone="neutral" size="sm">
                                                 <span class="tabular-nums">{{ $customer->transactions_count }}</span> Nota
-                                            </span>
+                                            </x-ui.badge>
                                         @else
-                                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
+                                            <x-ui.badge tone="neutral" size="sm" class="text-slate-500">
                                                 Belum Ada Nota
-                                            </span>
+                                            </x-ui.badge>
                                         @endif
                                     </td>
 
@@ -491,39 +479,30 @@
                             </div>
                         </form>
 
-                        {{-- Tab Filter Pills (Segmented Shadcn style) --}}
-                        <div class="no-scrollbar mt-3 inline-flex items-center gap-1 rounded-xl bg-slate-100/90 p-1 text-xs">
-                            <a
-                                href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'all'])) }}"
-                                @class([
-                                    'shrink-0 rounded-lg px-2.5 py-1 font-medium transition',
-                                    'bg-white font-bold text-slate-900 shadow-xs' => $statusFilter === 'all',
-                                    'text-slate-600 hover:text-slate-900' => $statusFilter !== 'all',
-                                ])
+                        {{-- Tab Filter Pills (Pines UI Segmented Control) --}}
+                        <x-ui.tabs variant="segmented" class="mt-3">
+                            <x-ui.tab
+                                :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'all']))"
+                                :active="$statusFilter === 'all'"
+                                :badge="$counts['all']"
                             >
-                                Semua <span class="tabular-nums">({{ $counts['all'] }})</span>
-                            </a>
-                            <a
-                                href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'processing'])) }}"
-                                @class([
-                                    'shrink-0 rounded-lg px-2.5 py-1 font-medium transition',
-                                    'bg-white font-bold text-slate-900 shadow-xs' => $statusFilter === 'processing',
-                                    'text-slate-600 hover:text-slate-900' => $statusFilter !== 'processing',
-                                ])
+                                Semua
+                            </x-ui.tab>
+                            <x-ui.tab
+                                :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'processing']))"
+                                :active="$statusFilter === 'processing'"
+                                :badge="$counts['processing']"
                             >
-                                Proses <span class="tabular-nums">({{ $counts['processing'] }})</span>
-                            </a>
-                            <a
-                                href="{{ route("{$currentRoutePrefix}.customers.index", array_filter(['q' => $search, 'status' => 'ready'])) }}"
-                                @class([
-                                    'shrink-0 rounded-lg px-2.5 py-1 font-medium transition',
-                                    'bg-white font-bold text-slate-900 shadow-xs' => $statusFilter === 'ready',
-                                    'text-slate-600 hover:text-slate-900' => $statusFilter !== 'ready',
-                                ])
+                                Proses
+                            </x-ui.tab>
+                            <x-ui.tab
+                                :href="route($currentRoutePrefix . '.customers.index', array_filter(['q' => $search, 'status' => 'ready']))"
+                                :active="$statusFilter === 'ready'"
+                                :badge="$counts['ready']"
                             >
-                                Siap <span class="tabular-nums">({{ $counts['ready'] }})</span>
-                            </a>
-                        </div>
+                                Siap
+                            </x-ui.tab>
+                        </x-ui.tabs>
                     </div>
 
                     {{-- List Item Pelanggan --}}

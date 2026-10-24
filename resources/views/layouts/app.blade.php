@@ -52,6 +52,14 @@
         @livewireStyles
     </head>
     <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false }" x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)">
+        {{-- Skip to main content link (Aksesibilitas Keyboard WCAG 2.2 AA) --}}
+        <a
+            href="#main-content"
+            class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-brand-700 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+        >
+            Lewati ke konten utama
+        </a>
+
         {{-- Overlay mobile --}}
         <div x-cloak x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-30 bg-slate-900/40 lg:hidden" @click="sidebarOpen = false"></div>
 
@@ -130,11 +138,11 @@
                 </div>
             </header>
 
-            <main class="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">
+            <main id="main-content" class="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">
                 @if (session('status'))
-                    <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
+                    <x-ui.alert variant="success" dismissible class="mb-5 shadow-2xs">
                         {{ session('status') }}
-                    </div>
+                    </x-ui.alert>
                 @endif
 
                 {{ $slot }}

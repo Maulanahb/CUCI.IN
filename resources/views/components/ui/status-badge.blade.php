@@ -1,6 +1,7 @@
 @props([
     'status',
     'size' => 'md',
+    'dot' => true,
 ])
 
 @php
@@ -14,8 +15,10 @@
         'Dibatalkan' => 'danger',
         default => 'neutral',
     };
+
+    $pulse = $value === 'Diproses';
 @endphp
 
-<x-ui.badge :tone="$tone" :size="$size" {{ $attributes }}>
+<x-ui.badge :tone="$tone" :size="$size" :dot="$dot" :pulse="$pulse" {{ $attributes }}>
     {{ $value }}
 </x-ui.badge>

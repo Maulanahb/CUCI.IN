@@ -39,7 +39,7 @@
             <p class="mt-1 max-w-xs text-xs text-slate-500">Data customer laundry baru akan ditampilkan di sini.</p>
         </div>
     @else
-        <ul class="space-y-4">
+        <ul class="space-y-3.5">
             @foreach ($customers as $customer)
                 @php
                     $initials = collect(preg_split('/\s+/u', trim((string) $customer->name)))
@@ -49,14 +49,14 @@
                         ->implode('');
                 @endphp
 
-                <li class="flex items-center gap-2.5">
-                    <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-700">
+                <li class="flex items-center gap-3">
+                    <div class="flex size-8.5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-700 ring-1 ring-emerald-600/15">
                         {{ $initials !== '' ? $initials : '?' }}
                     </div>
 
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center justify-between gap-2">
-                            <p class="min-w-0 truncate text-xs font-bold text-slate-900">{{ $customer->name }}</p>
+                            <p class="min-w-0 truncate text-sm font-semibold text-slate-900">{{ $customer->name }}</p>
 
                             @if ($customer->transactions_count > 0)
                                 <x-ui.badge tone="neutral" size="sm" class="shrink-0">
@@ -69,10 +69,10 @@
                             @endif
                         </div>
 
-                        <p class="mt-0.5 min-w-0 truncate text-2xs text-slate-500">
-                            <span class="font-sans tabular-nums">{{ $customer->phone ?? 'Tanpa nomor HP' }}</span>
-                            <span class="text-slate-300">&bull;</span>
-                            Terdaftar {{ $customer->created_at?->locale('id')->diffForHumans() ?? '-' }}
+                        <p class="mt-0.5 min-w-0 truncate text-xs text-slate-500">
+                            <span class="font-medium text-slate-600 tabular-nums">{{ $customer->phone ?? 'Tanpa nomor HP' }}</span>
+                            <span class="mx-1 text-slate-300">&bull;</span>
+                            <span class="text-slate-400">Terdaftar {{ $customer->created_at?->locale('id')->diffForHumans() ?? '-' }}</span>
                         </p>
                     </div>
                 </li>

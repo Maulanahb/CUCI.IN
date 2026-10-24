@@ -4,6 +4,7 @@
         x-data="{
             initShortcuts() {
                 window.addEventListener('keydown', (e) => {
+                    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
                     if (e.key === 'F2') {
                         e.preventDefault();
                         window.location.href = '{{ route('staff.transactions.create') }}';
@@ -17,20 +18,11 @@
         <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
-                            <span class="size-1.5 rounded-full bg-brand-600 animate-pulse"></span>
-                            Shift Aktif
-                        </span>
-                        <span class="text-xs text-slate-500">
-                            {{ now()->locale('id')->translatedFormat('l, d F Y') }}
-                        </span>
-                    </div>
-                    <h1 class="mt-2 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                    <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
                         Selamat Datang, {{ auth()->user()->name }}!
                     </h1>
                     <p class="mt-1 text-xs text-slate-500 sm:text-sm">
-                        Kelola antrean cucian hari ini: input nota baru, perbarui tahapan cuci, dan serahkan cucian yang telah tuntas.
+                        {{ now()->locale('id')->translatedFormat('l, d F Y') }} &bull; Kelola antrean cucian hari ini: input nota baru, perbarui tahapan cuci, dan serahkan cucian yang telah tuntas.
                     </p>
                 </div>
 
@@ -38,7 +30,7 @@
                     <x-ui.button :href="route('staff.transactions.create')" size="sm" class="shadow-xs">
                         <x-lucide-plus class="size-4" aria-hidden="true" />
                         <span>Buka Kasir POS</span>
-                        <kbd class="hidden rounded bg-brand-700/60 px-1.5 py-0.5 text-2xs font-sans text-white sm:inline">F2</kbd>
+                        <kbd class="hidden rounded-md border border-brand-500/40 bg-brand-800/80 px-1.5 py-0.5 text-[10px] font-mono font-bold text-white sm:inline shadow-2xs">F2</kbd>
                     </x-ui.button>
                     <x-ui.button :href="route('staff.customers.index')" variant="secondary" size="sm">
                         <x-lucide-users class="size-4 text-slate-500" aria-hidden="true" />
@@ -317,14 +309,13 @@
                                             {{-- Estimasi --}}
                                             <td class="py-3.5 px-4">
                                                 @if ($trx->queue_is_overdue)
-                                                    <span class="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-2xs font-bold text-rose-800">
-                                                        <span class="size-1 rounded-full bg-rose-600 animate-pulse"></span>
+                                                    <x-ui.badge tone="danger" size="xs" dot pulse>
                                                         Terlambat {{ $trx->queue_hours }}j
-                                                    </span>
+                                                    </x-ui.badge>
                                                 @elseif ($trx->status !== \App\Enums\TransactionStatus::Selesai && $trx->estimated_completed_at)
-                                                    <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-2xs font-medium text-slate-600">
+                                                    <x-ui.badge tone="neutral" size="xs">
                                                         Sisa {{ $trx->queue_hours }} jam
-                                                    </span>
+                                                    </x-ui.badge>
                                                 @endif
                                                 @if ($trx->estimated_completed_at)
                                                     <p class="mt-0.5 text-2xs text-slate-500 tabular-nums">{{ $trx->estimated_completed_at->format('d/m, H:i') }}</p>

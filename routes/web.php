@@ -37,7 +37,7 @@ Route::get('/', function () {
         }
     }
 
-    return redirect()->route('login');
+    return view('welcome');
 })->name('home');
 
 // Rute Autentikasi Pengguna Tamu (Guest)
