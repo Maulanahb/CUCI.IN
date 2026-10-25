@@ -476,4 +476,61 @@ class StoreTransactionTest extends TestCase
             'method' => 'QRIS',
         ]);
     }
+
+    public function test_full_payment_choice_ignores_leftover_payment_amount(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $service = Service::create([
+            'name' => 'Cuci Komplit',
+            'price' => 10000.00,
+            'estimated_duration' => 24,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($staff)->post(route('staff.transactions.store'), [
+            'customer_id' => $customer->id,
+            'items' => [
+                ['service_id' => $service->id, 'weight' => 2],
+            ],
+            'pay_now' => true,
+            'payment_choice' => 'full',
+            'payment_method' => 'Tunai',
+            'payment_amount' => 10000,
+        ]);
+
+        $response->assertRedirect();
+        $transaction = Transaction::latest('id')->first();
+        $this->assertEquals('Lunas', $transaction->payment_status);
+        $this->assertDatabaseHas('payments', [
+            'transaction_id' => $transaction->id,
+            'amount' => 20000,
+            'payment_type' => 'Pembayaran Penuh',
+        ]);
+    }
+
+    public function test_dp_choice_requires_payment_amount(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $service = Service::create([
+            'name' => 'Cuci Komplit',
+            'price' => 10000.00,
+            'estimated_duration' => 24,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($staff)->post(route('staff.transactions.store'), [
+            'customer_id' => $customer->id,
+            'items' => [
+                ['service_id' => $service->id, 'weight' => 2],
+            ],
+            'pay_now' => true,
+            'payment_choice' => 'dp',
+            'payment_method' => 'Tunai',
+        ]);
+
+        $response->assertSessionHasErrors(['payment_amount']);
+        $this->assertDatabaseCount('transactions', 0);
+    }
 }

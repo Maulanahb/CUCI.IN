@@ -2,25 +2,16 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StorePaymentRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return auth()->check();
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -33,11 +24,7 @@ class StorePaymentRequest extends FormRequest
             'method' => [
                 'required',
                 'string',
-                Rule::in([
-                    'Tunai',
-                    'Transfer',
-                    'QRIS',
-                ]),
+                Rule::in(['Tunai', 'Transfer', 'QRIS']),
             ],
 
             'payment_type' => [
@@ -50,12 +37,14 @@ class StorePaymentRequest extends FormRequest
                 ]),
             ],
 
-            /*
-             * Bukti pembayaran:
-             * - Tunai      -> tidak wajib
-             * - Transfer   -> wajib
-             * - QRIS       -> wajib
-             */
+            'cash_received' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'gte:amount',
+                'exclude_unless:method,Tunai',
+            ],
+
             'proof_file' => [
                 'nullable',
                 'file',
@@ -67,41 +56,27 @@ class StorePaymentRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get custom error messages.
-     */
     public function messages(): array
     {
         return [
-            'amount.required' =>
-                'Nominal pembayaran wajib diisi.',
+            'amount.required' => 'Nominal pembayaran wajib diisi.',
+            'amount.numeric' => 'Nominal pembayaran harus berupa angka.',
+            'amount.min' => 'Nominal pembayaran minimal Rp 100.',
 
-            'amount.numeric' =>
-                'Nominal pembayaran harus berupa angka.',
+            'method.required' => 'Metode pembayaran wajib dipilih.',
+            'method.in' => 'Metode pembayaran harus berupa Tunai, Transfer, atau QRIS.',
 
-            'amount.min' =>
-                'Nominal pembayaran minimal Rp 100.',
+            'payment_type.in' => 'Jenis pembayaran tidak valid.',
 
-            'method.required' =>
-                'Metode pembayaran wajib dipilih.',
+            'cash_received.numeric' => 'Uang diterima harus berupa angka.',
+            'cash_received.min' => 'Uang diterima tidak boleh negatif.',
+            'cash_received.gte' => 'Uang diterima tidak boleh kurang dari nominal pembayaran.',
 
-            'method.in' =>
-                'Metode pembayaran harus berupa Tunai, Transfer, atau QRIS.',
-
-            'proof_file.required_if' =>
-                'Bukti pembayaran wajib diunggah untuk pembayaran Transfer atau QRIS.',
-
-            'proof_file.file' =>
-                'Bukti pembayaran harus berupa berkas.',
-
-            'proof_file.image' =>
-                'Bukti pembayaran harus berupa gambar.',
-
-            'proof_file.mimes' =>
-                'Bukti pembayaran harus berformat JPG, JPEG, PNG, atau WEBP.',
-
-            'proof_file.max' =>
-                'Ukuran bukti pembayaran maksimal 5 MB.',
+            'proof_file.required_if' => 'Bukti pembayaran wajib diunggah untuk pembayaran Transfer atau QRIS.',
+            'proof_file.file' => 'Bukti pembayaran harus berupa berkas.',
+            'proof_file.image' => 'Bukti pembayaran harus berupa gambar.',
+            'proof_file.mimes' => 'Bukti pembayaran harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'proof_file.max' => 'Ukuran bukti pembayaran maksimal 5 MB.',
         ];
     }
 }

@@ -220,3 +220,17 @@ Setiap agen AI di IDE AGY wajib memandu pengerjaan dengan alur terstandar beriku
    - Pastikan seluruh test lulus dengan menjalankan: `php artisan test`.
    - Jalankan pemformat kode otomatis sebelum selesai: `vendor/bin/pint --format agent`.
 
+---
+
+## 3. Standar Arsitektur Pengolahan Data, Ekspor/Impor & Queue (Materi P9)
+
+Setiap agen AI di AGY wajib menerapkan standar berikut saat membantu modul terkait:
+1. **Laporan & Kueri (Zaky & Maulana):** Wajib cegah jebakan tanggal terpotong dengan `$request->date('to')->endOfDay()`, hitung agregasi di database (`selectRaw('SUM(...)')`), dan gunakan indeks komposit tabel `transactions` & `payments`.
+2. **Ekspor Berkas (Ayin):** Batasi DomPDF hanya untuk cetak nota/dokumen ringkas (1–2 halaman). Untuk dataset transaksi besar, wajib gunakan pola aliran (*streaming*) `response()->streamDownload()` + `lazyById()` agar RAM server tetap stabil.
+3. **Queue Job (Maulana, Nora, Daysyani):** Tugas lambat/berat (kompresi foto bukti transfer, kompresi foto komplain noda, notifikasi status cucian) wajib menggunakan Job (`make:job`) dengan `$tries = 3`, `$backoff = [10, 60]`, `$timeout = 60`, hanya membawa ID model/path, dan dispatch dengan `->afterCommit()`.
+4. Rujukan detail aturan pengerjaan tim dan arsitektur ada pada [rules_milestone_2.md](file:///c:/laragon/www/cuci-in/docs/rules_milestone_2.md) dan [prd.md](file:///c:/laragon/www/cuci-in/docs/prd.md) (Seksi 24).
+
+
+
+
+

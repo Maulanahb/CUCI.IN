@@ -9,16 +9,31 @@
 
     $navigation = match ($role) {
         'customer' => [
-            ['label' => 'Dashboard', 'route' => 'customer.dashboard', 'active' => 'customer.dashboard', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
+            ['label' => 'Beranda', 'route' => 'customer.dashboard', 'active' => 'customer.dashboard', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
             ['label' => 'Riwayat Transaksi', 'route' => 'customer.transactions.index', 'active' => 'customer.transactions.*', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01'],
             ['label' => 'Pengaduan', 'route' => 'customer.complaints.index', 'active' => 'customer.complaints.*', 'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+            ['label' => 'Lacak Nota Fisik', 'route' => 'transactions.lookup', 'active' => 'transactions.lookup', 'icon' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'],
+        ],
+        'staff' => [
+            ['label' => 'Dashboard', 'route' => 'staff.dashboard', 'active' => 'staff.dashboard', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
+            ['label' => 'Kasir POS', 'route' => 'staff.transactions.create', 'active' => 'staff.transactions.create', 'icon' => 'M12 4v16m8-8H4'],
+            ['label' => 'Kelola Transaksi', 'route' => 'staff.transactions.index', 'active' => ['staff.transactions.index', 'staff.transactions.show', 'staff.transactions.print'], 'icon' => 'M9 5h10M9 12h10M9 19h10M4 5h.01M4 12h.01M4 19h.01'],
+            ['label' => 'Data Pelanggan', 'route' => 'staff.customers.index', 'active' => 'staff.customers.*', 'icon' => 'M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 10a4 4 0 100-8 4 4 0 000 8zM21 20v-2a4 4 0 00-3-3.87M16 2.13a4 4 0 010 7.75'],
+            ['label' => 'Katalog Layanan', 'route' => 'staff.services.index', 'active' => 'staff.services.*', 'icon' => 'M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2'],
+            ['label' => 'Pengaduan', 'route' => 'staff.complaints.index', 'active' => 'staff.complaints.*', 'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+        ],
+        'admin' => [
+            ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
+            ['label' => 'Kasir POS', 'route' => 'admin.transactions.create', 'active' => 'admin.transactions.create', 'icon' => 'M12 4v16m8-8H4'],
+            ['label' => 'Kelola Transaksi', 'route' => 'admin.transactions.index', 'active' => ['admin.transactions.index', 'admin.transactions.show', 'admin.transactions.print'], 'icon' => 'M9 5h10M9 12h10M9 19h10M4 5h.01M4 12h.01M4 19h.01'],
+            ['label' => 'Data Pelanggan', 'route' => 'admin.customers.index', 'active' => 'admin.customers.*', 'icon' => 'M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 10a4 4 0 100-8 4 4 0 000 8zM21 20v-2a4 4 0 00-3-3.87M16 2.13a4 4 0 010 7.75'],
+            ['label' => 'Master Layanan', 'route' => 'admin.services.index', 'active' => 'admin.services.*', 'icon' => 'M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2'],
+            ['label' => 'Pengaduan', 'route' => 'admin.complaints.index', 'active' => 'admin.complaints.*', 'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+            ['label' => 'Laporan', 'route' => 'admin.reports.index', 'active' => 'admin.reports.*', 'icon' => 'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+            ['label' => 'Kelola Pengguna', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z'],
         ],
         default => [
             ['label' => 'Dashboard', 'route' => 'dashboard', 'active' => '*dashboard*', 'icon' => 'M3 12l9-9 9 9M5 10v10h5v-6h4v6h5V10'],
-            ['label' => 'Transaksi Baru', 'route' => ($role && Route::has("{$role}.transactions.create")) ? "{$role}.transactions.create" : 'transactions.create', 'active' => '*transactions.create*', 'icon' => 'M12 4v16m8-8H4'],
-            ['label' => 'Transaksi', 'route' => ($role && Route::has("{$role}.transactions.index")) ? "{$role}.transactions.index" : 'transactions.index', 'active' => '*transactions*', 'icon' => 'M9 5h10M9 12h10M9 19h10M4 5h.01M4 12h.01M4 19h.01'],
-            ['label' => 'Pelanggan', 'route' => ($role && Route::has("{$role}.customers.index")) ? "{$role}.customers.index" : 'customers.index', 'active' => '*customers*', 'icon' => 'M17 20v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2M10 10a4 4 0 100-8 4 4 0 000 8zM21 20v-2a4 4 0 00-3-3.87M16 2.13a4 4 0 010 7.75'],
-            ['label' => 'Layanan', 'route' => ($role && Route::has("{$role}.services.index")) ? "{$role}.services.index" : 'services.index', 'active' => '*services*', 'icon' => 'M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2'],
         ],
     };
 @endphp
@@ -36,7 +51,15 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false }">
+    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false }" x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)">
+        {{-- Skip to main content link (Aksesibilitas Keyboard WCAG 2.2 AA) --}}
+        <a
+            href="#main-content"
+            class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-xl focus:bg-brand-700 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-white focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+        >
+            Lewati ke konten utama
+        </a>
+
         {{-- Overlay mobile --}}
         <div x-cloak x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 z-30 bg-slate-900/40 lg:hidden" @click="sidebarOpen = false"></div>
 
@@ -48,13 +71,13 @@
         >
             <div class="flex h-16 items-center gap-2 border-b border-slate-100 px-5">
                 <x-app-logo class="size-8" />
-                <span class="text-lg font-semibold tracking-tight text-brand-700">CUCI<span class="text-brand-400">.IN</span></span>
+                <span class="text-lg font-semibold tracking-tight text-brand-700">CUCI<span class="text-brand-600">.IN</span></span>
             </div>
 
             <nav class="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
                 @foreach ($navigation as $item)
                     @if (Route::has($item['route']))
-                        @php($isActive = request()->routeIs($item['active']))
+                        @php($isActive = is_array($item['active']) ? request()->routeIs(...$item['active']) : request()->routeIs($item['active']))
                         <a
                             href="{{ route($item['route']) }}"
                             wire:navigate
@@ -99,25 +122,27 @@
 
         {{-- Konten utama --}}
         <div class="flex min-h-screen flex-col lg:pl-64">
-            <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur sm:px-6">
-                <button type="button" id="sidebar-toggle" class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = true" aria-label="Buka menu">
-                    <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-                        <path d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+            <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
+                <div class="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
+                    <button type="button" id="sidebar-toggle" class="rounded-lg p-3 text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = true" aria-label="Buka menu">
+                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                            <path d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
 
-                <h1 class="text-base font-semibold text-slate-900 sm:text-lg">{{ $title ?? config('app.name') }}</h1>
+                    <h1 class="min-w-0 truncate text-base font-semibold text-slate-900 sm:text-lg">{{ $title ?? config('app.name') }}</h1>
 
-                @isset($actions)
-                    <div class="ml-auto flex items-center gap-2">{{ $actions }}</div>
-                @endisset
+                    @isset($actions)
+                        <div class="ml-auto flex items-center gap-2">{{ $actions }}</div>
+                    @endisset
+                </div>
             </header>
 
-            <main class="flex-1 p-4 sm:p-6">
+            <main id="main-content" class="mx-auto w-full max-w-7xl flex-1 p-4 sm:p-6">
                 @if (session('status'))
-                    <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
+                    <x-ui.alert variant="success" dismissible class="mb-5 shadow-2xs">
                         {{ session('status') }}
-                    </div>
+                    </x-ui.alert>
                 @endif
 
                 {{ $slot }}

@@ -74,32 +74,27 @@ class StaffCustomerManagementTest extends TestCase
             'created_by' => $staff->id,
         ]);
 
-        // Saat pertama dibuka tanpa memilih customer, detail belum muncul
+        // Halaman index pelanggan berhasil dimuat dan menampilkan daftar pelanggan beserta payload riwayat
         $response = $this->actingAs($staff)->get(route('staff.customers.index'));
         $response->assertOk();
         $response->assertSee('Data Pelanggan');
         $response->assertSee('Hendra Wijaya');
         $response->assertSee('0812-9842-1102');
-        $response->assertDontSee('TRK-20261025-046');
+        // Kode transaksi tersedia di payload drawer untuk instant slide-over tanpa latency
+        $response->assertSee('TRK-20261025-046');
 
-        // Saat customer dipilih, kartu profil dan tabel riwayat muncul tapi kartu detail transaksi belum muncul sebelum baris diklik
+        // Saat customer_id diberikan (direct link), halaman memuat dan auto-open drawer pelanggan tersebut
         $responseSelected = $this->actingAs($staff)->get(route('staff.customers.index', ['customer_id' => $customer->id]));
         $responseSelected->assertOk();
         $responseSelected->assertSee('Hendra Wijaya');
-        $responseSelected->assertSee('Riwayat Transaksi Cucian Sebelumnya');
         $responseSelected->assertSee('TRK-20261025-046');
-        $responseSelected->assertDontSee('Estimasi Pengambilan');
 
-        // Saat baris riwayat transaksi diklik (dengan transaction_id), kartu detail riwayat order baru muncul
-        $responseTransaction = $this->actingAs($staff)->get(route('staff.customers.index', [
-            'customer_id' => $customer->id,
-            'transaction_id' => $transaction->id,
-        ]));
+        // Saat transaksi diklik dari drawer pelanggan, diarahkan ke halaman detail transaksi terpusat
+        $responseTransaction = $this->actingAs($staff)->get(route('staff.transactions.show', $transaction));
         $responseTransaction->assertOk();
         $responseTransaction->assertSee('Detail Transaksi');
-        $responseTransaction->assertSee('Estimasi Pengambilan');
         $responseTransaction->assertSee('Cuci Komplit Reguler');
-        $responseTransaction->assertSee('52.000');
+        $responseTransaction->assertSee('Rp 52.000');
         $responseTransaction->assertSee('Lunas');
     }
 

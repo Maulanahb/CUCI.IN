@@ -1,502 +1,498 @@
 @php
     $currentRoutePrefix = $routePrefix ?? (request()->routeIs('admin.*') ? 'admin' : 'staff');
     $statusValue = $transaction->status instanceof \App\Enums\TransactionStatus ? $transaction->status->value : (string) $transaction->status;
-    $statusClasses = match ($statusValue) {
-        'Diterima' => 'bg-blue-50 text-blue-700 border-blue-200',
-        'Diproses' => 'bg-amber-50 text-amber-700 border-amber-200',
-        'Selesai' => 'bg-green-50 text-green-700 border-green-200',
-        'Diambil' => 'bg-slate-100 text-slate-700 border-slate-200',
-        'Dibatalkan' => 'bg-red-50 text-red-700 border-red-200',
-        default => 'bg-slate-50 text-slate-600 border-slate-200',
-    };
+    $paymentStatus = $transaction->payment_status;
+    $isCancelled = $statusValue === 'Dibatalkan';
+    $isPaidOff = $transaction->isPaidOff();
+    $isPickedUp = $statusValue === 'Diambil';
+    $remainingAmount = (float) $transaction->remaining_amount;
+    $totalWeight = (float) $transaction->details->sum('weight');
+    $itemCount = $transaction->details->count();
 @endphp
 
-<x-layouts::app title="Detail Transaksi {{ $transaction->transaction_code }}">
+<x-layouts::app title="Detail Transaksi">
 
-    <div class="space-y-6">
+    <div
+        class="space-y-6"
+        x-data="{
+            showPaymentModal: {{ $errors->has('amount') || $errors->has('method') || $errors->has('cash_received') ? 'true' : 'false' }},
+            submitting: false,
+            method: @js(old('method', 'Tunai')),
+            paymentAmount: @js(old('amount', $remainingAmount)),
+            cashReceived: @js(old('cash_received', $remainingAmount)),
+            remaining: {{ $remainingAmount }},
+            triggerEl: null,
+            formatRupiah(value) {
+                return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(Number(value) || 0);
+            },
+            get shortfall() {
+                return Math.max(0, (Number(this.paymentAmount) || 0) - (Number(this.cashReceived) || 0));
+            },
+            get change() {
+                return Math.max(0, (Number(this.cashReceived) || 0) - (Number(this.paymentAmount) || 0));
+            },
+            get hasChange() {
+                return this.method === 'Tunai' && this.change > 0;
+            },
+            get isExactCash() {
+                return this.method === 'Tunai' && Number(this.cashReceived) > 0 && Number(this.cashReceived) === Number(this.paymentAmount);
+            },
+            openPayment(event) {
+                this.triggerEl = event?.currentTarget ?? null;
+                this.showPaymentModal = true;
+                setTimeout(() => this.$refs.paymentAmount?.focus(), 80);
+            },
+            closePayment() {
+                if (this.submitting) {
+                    return;
+                }
+                this.showPaymentModal = false;
+                setTimeout(() => this.triggerEl?.focus(), 50);
+            },
+            syncCashToAmount(event) {
+                this.paymentAmount = event.target.value;
+                this.cashReceived = event.target.value;
+            },
+            trapFocus(event) {
+                if (! this.showPaymentModal) {
+                    return;
+                }
+                const panel = this.$refs.paymentPanel;
+                if (! panel) {
+                    return;
+                }
+                const focusable = panel.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex=\'-1\'])');
+                if (focusable.length === 0) {
+                    return;
+                }
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (! event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            submitPayment() {
+                if (this.submitting || (this.method === 'Tunai' && this.shortfall > 0) || !this.paymentAmount || this.paymentAmount > this.remaining) {
+                    return;
+                }
+                const form = document.getElementById('payment-form');
+                if (form && typeof form.reportValidity === 'function' && !form.reportValidity()) {
+                    return;
+                }
+                this.submitting = true;
+                form?.submit();
+            }
+        }"
+        @keydown.escape.window="closePayment()"
+        @keydown.window="if (($event.ctrlKey || $event.metaKey) && $event.key === 'Enter' && showPaymentModal) { $event.preventDefault(); $event.stopPropagation(); submitPayment(); }"
+        @keydown.tab="trapFocus($event)"
+        x-effect="document.body.classList.toggle('overflow-hidden', showPaymentModal)"
+    >
 
-        {{-- ============================================================
-            HEADER & ACTIONS
-        ============================================================= --}}
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        {{-- Identitas nota & aksi utama --}}
+        <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs sm:p-6">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <x-ui.status-badge :status="$transaction->status" />
+                        <x-ui.payment-badge :status="$paymentStatus" size="sm" />
 
-            <div>
-                {{-- Breadcrumb --}}
-                <div class="flex items-center gap-2 text-sm">
-                    <a
-                        href="{{ route('staff.dashboard') }}"
-                        class="text-slate-400 transition hover:text-brand-600"
-                    >
-                        Dashboard
-                    </a>
-
-                    <span class="text-slate-300">/</span>
-
-                    <a
-                        href="{{ route('staff.transactions.index') }}"
-                        class="text-slate-400 transition hover:text-brand-600"
-                    >
-                        Kelola Transaksi
-                    </a>
-
-                    <span class="text-slate-300">/</span>
-
-                    <span class="font-medium text-slate-600">
-                        Detail
-                    </span>
-                </div>
-
-                <div class="mt-2">
-                    <div class="flex flex-wrap items-center gap-3">
-                        <h1 class="text-2xl font-bold tracking-tight text-slate-900">
-                            {{ $transaction->transaction_code }}
-                        </h1>
-
-                        <span class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold {{ $statusClasses }}">
-                            {{ $statusValue }}
+                        <span class="text-xs text-slate-500 font-medium">
+                            Dibuat {{ $transaction->created_at?->diffForHumans() ?? '-' }}
                         </span>
                     </div>
 
-                    <p class="mt-1 text-sm text-slate-500">
-                        Detail transaksi dan proses operasional cucian pelanggan.
+                    <div
+                        class="mt-2.5 flex items-start gap-3"
+                        x-data="{
+                            copied: false,
+                            copyCode() {
+                                const code = @js($transaction->transaction_code);
+                                if (! navigator.clipboard) {
+                                    return;
+                                }
+                                navigator.clipboard.writeText(code).then(() => {
+                                    this.copied = true;
+                                    setTimeout(() => this.copied = false, 1500);
+                                }).catch(() => {});
+                            }
+                        }"
+                    >
+                        <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-700 shadow-2xs">
+                            <x-lucide-receipt class="size-5" />
+                        </div>
+
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Nota Kasir</p>
+                            <p class="truncate text-xl font-bold tracking-tight text-slate-900 font-mono tabular-nums sm:text-2xl">
+                                {{ $transaction->transaction_code }}
+                            </p>
+                        </div>
+
+                        <button
+                            type="button"
+                            @click="copyCode()"
+                            class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-2xs transition-colors hover:bg-slate-50 hover:text-slate-700 cursor-pointer active:scale-95"
+                            :aria-label="copied ? 'Kode nota tersalin' : 'Salin kode nota'"
+                            title="Salin kode nota"
+                        >
+                            <x-lucide-copy x-show="! copied" class="size-4" />
+                            <x-lucide-check x-show="copied" x-cloak class="size-4 text-emerald-600" />
+                        </button>
+                    </div>
+
+                    <p class="mt-1.5 break-words text-sm font-semibold text-slate-700">
+                        {{ $transaction->customer?->name ?? 'Pelanggan umum' }}
+
+                        @if ($transaction->customer?->phone)
+                            <span class="text-slate-300 mx-1" aria-hidden="true">&middot;</span>
+                            <a href="tel:{{ $transaction->customer->phone }}" class="font-bold font-mono tabular-nums text-brand-700 hover:underline">
+                                {{ $transaction->customer->phone }}
+                            </a>
+                        @endif
                     </p>
+
+                    <div class="mt-3.5 flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-slate-100 pt-3 text-xs text-slate-600">
+                        <p class="flex items-center gap-1.5">
+                            <x-lucide-clock class="size-3.5 text-slate-400" />
+                            <span class="text-slate-500">Estimasi selesai:</span>
+                            <span class="font-semibold text-slate-800 font-mono tabular-nums">{{ $transaction->estimated_completed_at?->format('d M Y, H:i') ?? '-' }}</span>
+                        </p>
+
+                        @if ($transaction->customer?->email)
+                            <p class="flex items-center gap-1.5 min-w-0">
+                                <x-lucide-mail class="size-3.5 text-slate-400" />
+                                <span class="text-slate-500">Email:</span>
+                                <a href="mailto:{{ $transaction->customer->email }}" class="break-all font-medium text-brand-700 hover:underline">
+                                    {{ $transaction->customer->email }}
+                                </a>
+                            </p>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end lg:flex-col lg:items-end">
+                    <div class="sm:text-right">
+                        <p class="text-xs font-bold uppercase tracking-wider text-slate-500">
+                            {{ $isPaidOff ? 'Status Pembayaran' : 'Sisa Tagihan' }}
+                        </p>
+
+                        @if ($isCancelled)
+                            <p class="text-lg font-bold text-slate-500">Transaksi dibatalkan</p>
+                        @elseif ($isPaidOff)
+                            <p class="text-2xl font-black text-emerald-700 tracking-tight sm:text-3xl">Lunas</p>
+                        @else
+                            <p class="text-2xl font-black text-rose-700 font-mono tabular-nums tracking-tight sm:text-3xl">
+                                <x-ui.money :value="$remainingAmount" />
+                            </p>
+                        @endif
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        @if (! $isCancelled && ! $isPickedUp)
+                            @if ($isPaidOff)
+                                <form
+                                    method="POST"
+                                    action="{{ route("{$currentRoutePrefix}.transactions.status", $transaction) }}"
+                                    onsubmit="return confirm('Tandai cucian sudah diambil pelanggan? Status ini tidak dapat diubah lagi.')"
+                                >
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="status" value="Diambil">
+                                    <x-ui.button type="submit" variant="primary" size="sm" class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98">
+                                        <x-lucide-check-circle class="size-4" />
+                                        <span>Tandai Diambil</span>
+                                    </x-ui.button>
+                                </form>
+                            @else
+                                <x-ui.button
+                                    type="button"
+                                    variant="primary"
+                                    size="sm"
+                                    x-ref="paymentTrigger"
+                                    @click="openPayment($event)"
+                                    class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98"
+                                >
+                                    <x-lucide-credit-card class="size-4" />
+                                    <span>Catat Pembayaran</span>
+                                </x-ui.button>
+                            @endif
+                        @endif
+
+                        <x-ui.button
+                            id="btn-print-receipt"
+                            :href="route($currentRoutePrefix . '.transactions.print', $transaction)"
+                            variant="{{ ($isCancelled || $isPickedUp) ? 'primary' : 'secondary' }}"
+                            size="sm"
+                            target="_blank"
+                            rel="noopener"
+                            class="inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98"
+                        >
+                            <x-lucide-printer class="size-4 text-slate-500" />
+                            <span>Cetak Nota</span>
+                            <span class="rounded bg-slate-200/80 px-1 py-0.5 text-[10px] font-mono font-bold text-slate-700">Thermal</span>
+                        </x-ui.button>
+
+                        <x-ui.button
+                            :href="route($currentRoutePrefix . '.transactions.index')"
+                            variant="secondary"
+                            size="sm"
+                            class="inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98"
+                        >
+                            <x-lucide-arrow-left class="size-4 text-slate-500" />
+                            <span>Kembali</span>
+                        </x-ui.button>
+                    </div>
                 </div>
             </div>
-
-            {{-- Tombol Aksi Header --}}
-            <div class="flex flex-wrap items-center gap-2">
-                <a
-                    id="btn-print-receipt"
-                    href="{{ route("{$currentRoutePrefix}.transactions.print", $transaction) }}"
-                    target="_blank"
-                    class="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
-                >
-                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                    </svg>
-                    <span>Cetak Nota</span>
-                </a>
-
-                <a
-                    id="btn-back-to-create"
-                    href="{{ route("{$currentRoutePrefix}.transactions.create") }}"
-                    class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700"
-                >
-                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span>Transaksi Baru</span>
-                </a>
-
-                <a
-                    href="{{ route('staff.transactions.index') }}"
-                    class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
-                >
-                    <svg
-                        class="size-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                        />
-                    </svg>
-                    Kembali
-                </a>
-            </div>
-
         </div>
 
-
         {{-- ============================================================
-            FLASH PESAN SUKSES
+            FLASH PESAN SUKSES & ERROR GLOBAL
         ============================================================= --}}
         @if (session('success'))
-            <div class="flex items-start gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-                <svg
-                    class="mt-0.5 size-5 shrink-0"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                </svg>
-
-                <p>
-                    {{ session('success') }}
-                </p>
-            </div>
+            <x-ui.alert variant="success" dismissible>
+                {{ session('success') }}
+            </x-ui.alert>
         @endif
 
-
-        {{-- ============================================================
-            ERROR VALIDATION
-        ============================================================= --}}
-        @if ($errors->any())
-            <div class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                <p class="font-semibold">
-                    Terjadi kesalahan:
-                </p>
-
-                <ul class="mt-1 list-inside list-disc">
+        @if ($errors->any() && ! ($errors->has('amount') || $errors->has('method') || $errors->has('cash_received') || $errors->has('status') || $errors->has('notes')))
+            <x-ui.alert variant="destructive" title="Terjadi kesalahan input:" dismissible>
+                <ul class="mt-1 list-inside list-disc space-y-0.5 text-xs font-normal">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-            </div>
+            </x-ui.alert>
         @endif
-
-
-        {{-- ============================================================
-            INFORMASI UTAMA
-        ============================================================= --}}
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-
-            {{-- Informasi Customer --}}
-            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-1">
-                <div class="flex items-center gap-3">
-                    <div class="flex size-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                        <svg
-                            class="size-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                            />
-                        </svg>
-                    </div>
-
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-900">
-                            Informasi Pelanggan
-                        </h2>
-
-                        <p class="text-xs text-slate-400">
-                            Data customer transaksi
-                        </p>
-                    </div>
-                </div>
-
-                <div class="mt-6 space-y-4">
-                    {{-- Nama --}}
-                    <div>
-                        <p class="text-xs text-slate-400">
-                            Nama Pelanggan
-                        </p>
-
-                        <p class="mt-1 text-sm font-semibold text-slate-900">
-                            {{ $transaction->customer?->name ?? 'Guest' }}
-                        </p>
-                    </div>
-
-                    {{-- Telepon --}}
-                    @if ($transaction->customer?->phone)
-                        <div>
-                            <p class="text-xs text-slate-400">
-                                Nomor Telepon
-                            </p>
-
-                            <p class="mt-1 text-sm font-medium text-slate-700">
-                                {{ $transaction->customer->phone }}
-                            </p>
-                        </div>
-                    @endif
-
-                    {{-- Email --}}
-                    @if ($transaction->customer?->email)
-                        <div>
-                            <p class="text-xs text-slate-400">
-                                Email
-                            </p>
-
-                            <p class="mt-1 break-all text-sm font-medium text-slate-700">
-                                {{ $transaction->customer->email }}
-                            </p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Informasi Transaksi --}}
-            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-                <div class="flex items-center gap-3">
-                    <div class="flex size-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                        <svg
-                            class="size-5"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                        </svg>
-                    </div>
-
-                    <div>
-                        <h2 class="text-sm font-semibold text-slate-900">
-                            Informasi Transaksi
-                        </h2>
-
-                        <p class="text-xs text-slate-400">
-                            Informasi utama transaksi laundry
-                        </p>
-                    </div>
-                </div>
-
-                <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    {{-- Kode Transaksi --}}
-                    <div>
-                        <p class="text-xs text-slate-400">
-                            Kode Transaksi
-                        </p>
-
-                        <p class="mt-1 text-sm font-semibold text-slate-900">
-                            {{ $transaction->transaction_code }}
-                        </p>
-                    </div>
-
-                    {{-- Tanggal --}}
-                    <div>
-                        <p class="text-xs text-slate-400">
-                            Tanggal Transaksi
-                        </p>
-
-                        <p class="mt-1 text-sm font-medium text-slate-700">
-                            {{ $transaction->created_at?->format('d F Y, H:i') ?? '-' }}
-                        </p>
-                    </div>
-
-                    {{-- Estimasi --}}
-                    <div>
-                        <p class="text-xs text-slate-400">
-                            Estimasi Selesai
-                        </p>
-
-                        <p class="mt-1 text-sm font-medium text-slate-700">
-                            {{ $transaction->estimated_completed_at?->format('d F Y, H:i') ?? '-' }}
-                        </p>
-                    </div>
-
-                    {{-- Total --}}
-                    <div>
-                        <p class="text-xs text-slate-400">
-                            Total Transaksi
-                        </p>
-
-                        <p class="mt-1 text-lg font-bold text-brand-600">
-                            Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
 
         {{-- ============================================================
             DETAIL LAYANAN
         ============================================================= --}}
-        <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div class="border-b border-slate-200 px-6 py-5">
-                <h2 class="text-sm font-semibold text-slate-900">
-                    Detail Layanan
-                </h2>
+        <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xs">
+            <div class="flex flex-col gap-1 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between bg-slate-50/50">
+                <div class="flex items-center gap-3">
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shadow-2xs">
+                        <x-lucide-layers class="size-4" />
+                    </div>
 
-                <p class="mt-1 text-xs text-slate-500">
-                    Layanan yang digunakan dalam transaksi ini.
-                </p>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">
+                            Detail Layanan
+                        </h2>
+
+                        <p class="mt-0.5 text-xs text-slate-500">
+                            Rincian paket layanan laundry dalam transaksi ini.
+                        </p>
+                    </div>
+                </div>
+
+                <x-ui.badge tone="neutral" size="sm" class="font-mono tabular-nums self-start sm:self-auto">
+                    {{ $itemCount }} layanan &middot; {{ number_format($totalWeight, 2, ',', '.') }} kg
+                </x-ui.badge>
             </div>
 
-            <div class="overflow-x-auto">
+            {{-- Tabel (desktop) --}}
+            <div class="hidden overflow-x-auto md:block">
                 <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-xs uppercase text-slate-500">
+                    <thead class="bg-slate-50/80 text-xs uppercase font-bold text-slate-500 border-b border-slate-100">
                         <tr>
-                            <th class="px-6 py-3 font-semibold">
-                                Layanan
-                            </th>
-                            <th class="px-6 py-3 font-semibold">
-                                Berat
-                            </th>
-                            <th class="px-6 py-3 font-semibold">
-                                Harga / Unit
-                            </th>
-                            <th class="px-6 py-3 text-right font-semibold">
-                                Subtotal
-                            </th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Layanan</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Berat</th>
+                            <th scope="col" class="px-5 py-3 font-semibold">Harga / Unit</th>
+                            <th scope="col" class="px-5 py-3 text-right font-semibold">Subtotal</th>
                         </tr>
                     </thead>
 
                     <tbody class="divide-y divide-slate-100">
                         @forelse ($transaction->details as $detail)
-                            <tr class="hover:bg-slate-50">
-                                {{-- Service --}}
-                                <td class="px-6 py-4">
-                                    <p class="font-medium text-slate-900">
+                            <tr class="hover:bg-slate-50/60 transition-colors">
+                                <td class="px-5 py-4">
+                                    <p class="font-bold text-slate-900">
                                         {{ $detail->service?->name ?? 'Layanan' }}
                                     </p>
                                 </td>
 
-                                {{-- Weight --}}
-                                <td class="px-6 py-4 text-slate-600">
-                                    {{ number_format((float) $detail->weight, 2, ',', '.') }} {{ $detail->unit ?? 'kg' }}
+                                <td class="px-5 py-4 text-slate-600">
+                                    <span class="tabular-nums font-mono font-medium">{{ number_format((float) $detail->weight, 2, ',', '.') }} {{ $detail->unit ?? 'kg' }}</span>
                                 </td>
 
-                                {{-- Unit Price --}}
-                                <td class="px-6 py-4 text-slate-600">
-                                    Rp {{ number_format($detail->unit_price, 0, ',', '.') }}
+                                <td class="px-5 py-4 text-slate-600">
+                                    <x-ui.money :value="$detail->unit_price" class="font-mono tabular-nums" />
                                 </td>
 
-                                {{-- Subtotal --}}
-                                <td class="px-6 py-4 text-right font-semibold text-slate-900">
-                                    Rp {{ number_format($detail->subtotal, 0, ',', '.') }}
+                                <td class="px-5 py-4 text-right font-bold text-slate-900 font-mono tabular-nums">
+                                    <x-ui.money :value="$detail->subtotal" class="font-bold text-slate-900 font-mono tabular-nums" />
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td
-                                    colspan="4"
-                                    class="px-6 py-10 text-center"
-                                >
-                                    <p class="text-sm font-medium text-slate-600">
+                                <td colspan="4" class="px-5 py-10 text-center">
+                                    <p class="text-sm font-medium text-slate-500">
                                         Belum ada detail layanan.
                                     </p>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
+
+                    @if ($transaction->details->isNotEmpty())
+                        <tfoot class="border-t border-slate-200/90 bg-slate-50/80">
+                            <tr>
+                                <td colspan="3" class="px-5 py-3 text-xs font-bold text-slate-600 font-mono tabular-nums">
+                                    Total {{ number_format($totalWeight, 2, ',', '.') }} kg
+                                </td>
+                                <td class="px-5 py-3 text-right">
+                                    <x-ui.money :value="$transaction->total_amount" class="text-sm font-black text-slate-900 font-mono tabular-nums" />
+                                </td>
+                            </tr>
+                        </tfoot>
+                    @endif
                 </table>
             </div>
-        </div>
 
+            {{-- Kartu (mobile) --}}
+            <div class="divide-y divide-slate-100 md:hidden">
+                @forelse ($transaction->details as $detail)
+                    <div class="flex items-start justify-between gap-3 px-5 py-4">
+                        <div class="min-w-0">
+                            <p class="font-bold text-slate-900">
+                                {{ $detail->service?->name ?? 'Layanan' }}
+                            </p>
+                            <p class="mt-0.5 text-xs text-slate-500">
+                                <span class="tabular-nums font-mono">{{ number_format((float) $detail->weight, 2, ',', '.') }} {{ $detail->unit ?? 'kg' }}</span>
+                                &times; <x-ui.money :value="$detail->unit_price" class="font-mono tabular-nums" />
+                            </p>
+                        </div>
+
+                        <x-ui.money :value="$detail->subtotal" class="shrink-0 text-sm font-bold text-slate-900 font-mono tabular-nums" />
+                    </div>
+                @empty
+                    <p class="px-5 py-8 text-center text-sm text-slate-500">
+                        Belum ada detail layanan.
+                    </p>
+                @endforelse
+
+                @if ($transaction->details->isNotEmpty())
+                    <div class="flex items-center justify-between bg-slate-50 px-5 py-3">
+                        <span class="text-sm font-bold text-slate-700">Total</span>
+                        <x-ui.money :value="$transaction->total_amount" class="text-sm font-black text-slate-900 font-mono tabular-nums" />
+                    </div>
+                @endif
+            </div>
+        </div>
 
         {{-- ============================================================
             INFORMASI & RIWAYAT PEMBAYARAN (MVP-07)
         ============================================================= --}}
-        @php
-            $paymentStatus = $transaction->payment_status;
-            $paymentBadgeClasses = match ($paymentStatus) {
-                'Lunas' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                'DP' => 'bg-amber-50 text-amber-700 border-amber-200',
-                default => 'bg-rose-50 text-rose-700 border-rose-200',
-            };
-        @endphp
-
-        <div
-            x-data="{ showPaymentModal: false, paymentAmount: {{ (int) $transaction->remaining_amount }} }"
-            class="space-y-4"
-        >
-            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div id="pembayaran" class="space-y-4">
+            <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs sm:p-6">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <div class="flex items-center gap-2.5">
-                            <h2 class="text-sm font-semibold text-slate-900">
-                                Informasi & Riwayat Pembayaran
-                            </h2>
-                            <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $paymentBadgeClasses }}">
-                                {{ $paymentStatus }}
-                            </span>
+                    <div class="flex items-center gap-3">
+                        <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shadow-2xs">
+                            <x-lucide-credit-card class="size-4" />
                         </div>
-                        <p class="mt-1 text-xs text-slate-500">
-                            Status pembayaran kasir, rincian pelunasan, dan riwayat transaksi keuangan.
-                        </p>
+
+                        <div>
+                            <div class="flex items-center gap-2.5">
+                                <h2 class="text-sm font-bold text-slate-900">
+                                    Informasi & Riwayat Pembayaran
+                                </h2>
+                                <x-ui.payment-badge :status="$paymentStatus" size="sm" />
+                            </div>
+                            <p class="mt-0.5 text-xs text-slate-500">
+                                Status pembayaran kasir, rincian pelunasan, dan riwayat transaksi keuangan.
+                            </p>
+                        </div>
                     </div>
 
-                    @if (! $transaction->isPaidOff())
-                        <button
+                    @if (! $transaction->isPaidOff() && ! $isCancelled)
+                        <x-ui.button
                             type="button"
-                            @click="showPaymentModal = true"
-                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                            variant="primary"
+                            size="sm"
+                            @click="openPayment($event)"
+                            class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98"
                         >
-                            <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-8-6h16" />
-                            </svg>
+                            <x-lucide-plus class="size-4" />
                             <span>Catat Pembayaran / Pelunasan</span>
-                        </button>
+                        </x-ui.button>
                     @endif
                 </div>
 
-                {{-- Summary Cards --}}
-                <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-4">
-                        <span class="text-xs font-medium text-slate-500">Total Tagihan</span>
-                        <p class="mt-1 text-base font-bold text-slate-900">
-                            Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}
+                {{-- Ringkasan tagihan --}}
+                <div class="mt-6 grid grid-cols-1 gap-3 {{ $remainingAmount > 0 ? 'sm:grid-cols-3' : 'sm:grid-cols-2' }}">
+                    <div class="rounded-xl border border-slate-200/90 bg-slate-50/70 p-4 shadow-2xs">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Tagihan</span>
+                        <p class="mt-1 text-lg font-black text-slate-900 font-mono tabular-nums">
+                            <x-ui.money :value="$transaction->total_amount" />
                         </p>
                     </div>
 
-                    <div class="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
-                        <span class="text-xs font-medium text-emerald-800">Total Sudah Dibayar</span>
-                        <p class="mt-1 text-base font-bold text-emerald-600">
-                            Rp {{ number_format($transaction->total_paid, 0, ',', '.') }}
+                    <div class="rounded-xl border border-emerald-200/90 bg-emerald-50/70 p-4 shadow-2xs">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-800">Sudah Dibayar</span>
+                        <p class="mt-1 text-lg font-black text-emerald-700 font-mono tabular-nums">
+                            <x-ui.money :value="$transaction->total_paid" />
                         </p>
                     </div>
 
-                    <div class="rounded-xl border border-rose-100 bg-rose-50/50 p-4">
-                        <span class="text-xs font-medium text-rose-800">Sisa Tagihan</span>
-                        <p class="mt-1 text-base font-bold {{ $transaction->remaining_amount > 0 ? 'text-rose-600' : 'text-slate-600' }}">
-                            Rp {{ number_format($transaction->remaining_amount, 0, ',', '.') }}
-                        </p>
-                    </div>
+                    @if ($remainingAmount > 0)
+                        <div class="rounded-xl border border-rose-200/90 bg-rose-50/70 p-4 shadow-2xs">
+                            <span class="text-xs font-bold uppercase tracking-wider text-rose-800">Sisa Tagihan</span>
+                            <p class="mt-1 text-lg font-black text-rose-700 font-mono tabular-nums">
+                                <x-ui.money :value="$remainingAmount" />
+                            </p>
+                        </div>
+                    @endif
                 </div>
 
-                {{-- Payment History Table --}}
+                {{-- Riwayat pembayaran --}}
                 <div class="mt-6">
-                    <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                    <h3 class="mb-3 text-xs font-bold uppercase tracking-wider text-slate-500">
                         Catatan Transaksi Pembayaran
                     </h3>
-                    <div class="overflow-x-auto rounded-xl border border-slate-100">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-50 uppercase text-slate-500">
+
+                    {{-- Tabel (desktop) --}}
+                    <div class="hidden overflow-x-auto rounded-xl border border-slate-200/90 md:block">
+                        <table class="w-full min-w-[620px] text-left text-xs">
+                            <thead class="bg-slate-50/80 text-xs uppercase tracking-wider font-bold text-slate-500 border-b border-slate-100">
                                 <tr>
-                                    <th class="px-4 py-3 font-semibold">Waktu</th>
-                                    <th class="px-4 py-3 font-semibold">Jenis</th>
-                                    <th class="px-4 py-3 font-semibold">Metode</th>
-                                    <th class="px-4 py-3 font-semibold">Kasir</th>
-                                    <th class="px-4 py-3 text-right font-semibold">Jumlah</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold">Waktu</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold">Jenis</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold">Metode</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold">Kasir</th>
+                                    <th scope="col" class="px-4 py-3 text-right font-semibold">Jumlah</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
-                                @forelse ($transaction->payments as $payment)
-                                    <tr class="hover:bg-slate-50/60">
-                                        <td class="px-4 py-3 font-medium text-slate-700">
+                                @forelse ($transaction->payments->sortByDesc('id') as $payment)
+                                    <tr class="hover:bg-slate-50/60 transition-colors">
+                                        <td class="px-4 py-3 font-semibold text-slate-700 font-mono tabular-nums">
                                             {{ $payment->paid_at?->format('d M Y, H:i') ?? '-' }}
                                         </td>
                                         <td class="px-4 py-3 text-slate-600">
-                                            <span class="inline-flex rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700">
+                                            <span class="inline-flex rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 text-xs font-bold text-slate-700">
                                                 {{ $payment->payment_type ?? 'Pembayaran' }}
                                             </span>
                                         </td>
-                                        <td class="px-4 py-3 text-slate-600">
-                                            {{ $payment->method }}
-                                        </td>
-                                        <td class="px-4 py-3 text-slate-600">
-                                            {{ $payment->creator?->name ?? 'Kasir' }}
-                                        </td>
-                                        <td class="px-4 py-3 text-right font-bold text-emerald-600">
-                                            Rp {{ number_format($payment->amount, 0, ',', '.') }}
+                                        <td class="px-4 py-3 font-semibold text-slate-700">{{ $payment->method }}</td>
+                                        <td class="px-4 py-3 text-slate-600 font-medium">{{ $payment->creator?->name ?? 'Kasir' }}</td>
+                                        <td class="px-4 py-3 text-right font-black text-emerald-700 font-mono tabular-nums text-sm">
+                                            <x-ui.money :value="$payment->amount" />
+
+                                            @if ($payment->cash_received !== null)
+                                                <span class="mt-0.5 block text-xs font-normal text-slate-500 font-mono tabular-nums">
+                                                    Diterima <x-ui.money :value="$payment->cash_received" /> &middot; Kembali <x-ui.money :value="$payment->change_amount" />
+                                                </span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-4 py-8 text-center text-slate-400">
+                                        <td colspan="5" class="px-4 py-8 text-center text-sm text-slate-500 font-medium">
                                             Belum ada riwayat pembayaran untuk transaksi ini.
                                         </td>
                                     </tr>
@@ -504,128 +500,186 @@
                             </tbody>
                         </table>
                     </div>
+
+                    {{-- Kartu (mobile) --}}
+                    <div class="space-y-2 md:hidden">
+                        @forelse ($transaction->payments->sortByDesc('id') as $payment)
+                            <div class="rounded-xl border border-slate-200/90 p-4 shadow-2xs">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div>
+                                        <p class="text-base font-black text-slate-900 font-mono tabular-nums">
+                                            <x-ui.money :value="$payment->amount" />
+                                        </p>
+                                        <p class="mt-0.5 text-xs text-slate-500 font-mono tabular-nums">
+                                            {{ $payment->paid_at?->format('d M Y, H:i') ?? '-' }} &middot; {{ $payment->method }}
+                                        </p>
+                                    </div>
+
+                                    <span class="shrink-0 rounded-md bg-slate-100 border border-slate-200 px-2 py-0.5 text-xs font-bold text-slate-700">
+                                        {{ $payment->payment_type ?? 'Pembayaran' }}
+                                    </span>
+                                </div>
+
+                                <p class="mt-2 text-xs text-slate-500 font-medium">
+                                    Kasir: {{ $payment->creator?->name ?? 'Kasir' }}
+                                </p>
+
+                                @if ($payment->cash_received !== null)
+                                    <p class="mt-1 text-xs text-slate-500 font-mono tabular-nums">
+                                        Diterima <x-ui.money :value="$payment->cash_received" /> &middot; Kembali <x-ui.money :value="$payment->change_amount" />
+                                    </p>
+                                @endif
+                            </div>
+                        @empty
+                            <p class="rounded-xl border border-slate-200/90 px-4 py-6 text-center text-sm text-slate-500 font-medium">
+                                Belum ada riwayat pembayaran untuk transaksi ini.
+                            </p>
+                        @endforelse
+                    </div>
                 </div>
             </div>
 
-            {{-- Modal Catat Pembayaran / Pelunasan --}}
+            {{-- Modal catat pembayaran --}}
             @if (! $transaction->isPaidOff())
-                <div
-                    x-show="showPaymentModal"
-                    x-cloak
-                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
-                    role="dialog"
-                    aria-modal="true"
+                <x-ui.modal
+                    id="payment-modal"
+                    show="showPaymentModal"
+                    title="Catat Pembayaran"
+                    description="Nota {{ $transaction->transaction_code }} • Sisa: Rp {{ number_format($remainingAmount, 0, ',', '.') }}"
+                    maxWidth="md"
                 >
-                    <div
-                        x-show="showPaymentModal"
-                        x-transition:enter="ease-out duration-200"
-                        x-transition:enter-start="opacity-0"
-                        x-transition:enter-end="opacity-100"
-                        x-transition:leave="ease-in duration-150"
-                        x-transition:leave-start="opacity-100"
-                        x-transition:leave-end="opacity-0"
-                        @click="showPaymentModal = false"
-                        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm"
-                    ></div>
-
-                    <div
-                        x-show="showPaymentModal"
-                        x-transition:enter="ease-out duration-200"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="ease-in duration-150"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-95"
-                        class="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+                    <form
+                        id="payment-form"
+                        target="_self"
+                        action="{{ route("{$currentRoutePrefix}.transactions.payments.store", $transaction) }}"
+                        method="POST"
+                        class="space-y-4"
+                        @submit="submitting = true"
                     >
-                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-                            <div>
-                                <h3 class="text-base font-semibold text-slate-900">
-                                    Catat Pembayaran
-                                </h3>
-                                <p class="text-xs text-slate-500">
-                                    Transaksi: {{ $transaction->transaction_code }}
-                                </p>
+                        @csrf
+
+                        @if ($errors->has('amount') || $errors->has('method') || $errors->has('cash_received'))
+                            <div id="payment-error" class="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-700" role="alert">
+                                {{ $errors->first('amount') ?: ($errors->first('cash_received') ?: $errors->first('method')) }}
                             </div>
-                            <button
-                                type="button"
-                                @click="showPaymentModal = false"
-                                class="rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                        @endif
+
+                        <div>
+                            <label for="payment-method" class="mb-1.5 block text-xs font-bold text-slate-700">
+                                Metode Pembayaran <span class="text-rose-600">*</span>
+                            </label>
+                            <select
+                                name="method"
+                                id="payment-method"
+                                x-model="method"
+                                required
+                                class="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs sm:text-sm text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
                             >
-                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                                <option value="Tunai">Tunai</option>
+                                <option value="QRIS">QRIS</option>
+                                <option value="Transfer">Transfer Bank</option>
+                            </select>
                         </div>
 
-                        <form
-                            action="{{ route("{$currentRoutePrefix}.transactions.payments.store", $transaction) }}"
-                            method="POST"
-                            class="mt-5 space-y-4"
-                        >
-                            @csrf
-
-                            <div>
-                                <label class="mb-1.5 block text-xs font-medium text-slate-600">
-                                    Metode Pembayaran <span class="text-rose-500">*</span>
+                        <div>
+                            <div class="mb-1.5 flex items-center justify-between gap-2">
+                                <label for="payment-amount" class="block text-xs font-bold text-slate-700">
+                                    Nominal Pembayaran (Rp) <span class="text-rose-600">*</span>
                                 </label>
-                                <select
-                                    name="method"
-                                    required
-                                    class="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                                >
-                                    <option value="Tunai">Tunai (Cash)</option>
-                                    <option value="QRIS">QRIS</option>
-                                    <option value="Transfer Bank">Transfer Bank</option>
-                                    <option value="Kartu Debit">Kartu Debit</option>
-                                </select>
+                                <span class="text-xs text-slate-500 font-semibold font-mono tabular-nums">
+                                    Sisa: <x-ui.money :value="$remainingAmount" />
+                                </span>
                             </div>
 
-                            <div>
-                                <div class="mb-1.5 flex items-center justify-between">
-                                    <label class="block text-xs font-medium text-slate-600">
-                                        Nominal Pembayaran (Rp) <span class="text-rose-500">*</span>
-                                    </label>
-                                    <button
-                                        type="button"
-                                        @click="paymentAmount = {{ (int) $transaction->remaining_amount }}"
-                                        class="text-[11px] font-semibold text-brand-600 hover:underline"
-                                    >
-                                        Lunas Penuh (Rp {{ number_format($transaction->remaining_amount, 0, ',', '.') }})
-                                    </button>
-                                </div>
-                                <input
-                                    type="number"
-                                    name="amount"
-                                    x-model="paymentAmount"
-                                    min="1"
-                                    max="{{ (int) $transaction->remaining_amount }}"
-                                    required
-                                    class="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs font-semibold text-slate-900 transition focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                                />
-                                <p class="mt-1 text-[11px] text-slate-400">
-                                    Sisa tagihan saat ini: Rp {{ number_format($transaction->remaining_amount, 0, ',', '.') }}
+                            <div class="mb-2 flex flex-wrap gap-1.5">
+                                <button type="button" @click="paymentAmount = remaining; cashReceived = remaining"
+                                    class="min-h-8 rounded-lg border border-brand-200 bg-brand-50 px-2.5 text-xs font-bold text-brand-700 transition-colors hover:bg-brand-100 cursor-pointer shadow-2xs active:scale-95">
+                                    Uang Pas
+                                </button>
+                                <button type="button" @click="paymentAmount = Math.min(remaining, 50000); cashReceived = paymentAmount"
+                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs active:scale-95">
+                                    Rp 50.000
+                                </button>
+                                <button type="button" @click="paymentAmount = Math.min(remaining, 100000); cashReceived = paymentAmount"
+                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs active:scale-95">
+                                    Rp 100.000
+                                </button>
+                            </div>
+
+                            <input
+                                type="number"
+                                name="amount"
+                                id="payment-amount"
+                                x-ref="paymentAmount"
+                                x-model="paymentAmount"
+                                @input="syncCashToAmount($event)"
+                                min="1"
+                                max="{{ $remainingAmount }}"
+                                inputmode="numeric"
+                                required
+                                aria-describedby="payment-amount-help"
+                                aria-invalid="{{ $errors->has('amount') ? 'true' : 'false' }}"
+                                class="h-10 w-full rounded-xl border border-slate-300 px-3 text-xs sm:text-sm font-bold text-slate-900 font-mono tabular-nums transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                            />
+                            <p id="payment-amount-help" class="mt-1 text-xs text-slate-500 font-mono tabular-nums">
+                                Sisa tagihan saat ini: <x-ui.money :value="$remainingAmount" />
+                            </p>
+                        </div>
+
+                        <div x-show="method === 'Tunai'" x-cloak class="space-y-2">
+                            <label for="cash-received" class="block text-xs font-bold text-slate-700">
+                                Uang Diterima (Rp) <span class="text-rose-600">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                name="cash_received"
+                                id="cash-received"
+                                x-model.number="cashReceived"
+                                x-bind:min="paymentAmount"
+                                :disabled="method !== 'Tunai'"
+                                inputmode="numeric"
+                                aria-describedby="cash-help"
+                                class="h-10 w-full rounded-xl border border-slate-300 px-3 text-xs sm:text-sm font-bold text-slate-900 font-mono tabular-nums transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                            />
+
+                            <div id="cash-help" class="min-h-5" role="status" aria-live="polite">
+                                <p x-show="shortfall > 0" class="text-xs font-bold text-rose-700 font-mono tabular-nums">
+                                    Kurang Rp <span class="tabular-nums" x-text="formatRupiah(shortfall)"></span>
+                                </p>
+                                <p x-show="hasChange" class="text-xs font-bold text-emerald-700 font-mono tabular-nums">
+                                    Kembalian Rp <span class="tabular-nums" x-text="formatRupiah(change)"></span>
+                                </p>
+                                <p x-show="isExactCash" class="text-xs font-semibold text-slate-500">
+                                    Uang pas.
                                 </p>
                             </div>
+                        </div>
 
-                            <div class="mt-6 flex items-center justify-end gap-2.5 pt-2">
-                                <button
-                                    type="button"
-                                    @click="showPaymentModal = false"
-                                    class="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50"
-                                >
-                                    Batal
-                                </button>
-                                <button
-                                    type="submit"
-                                    class="rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-700"
-                                >
-                                    Konfirmasi & Simpan
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                        <div class="flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
+                            <button
+                                type="button"
+                                @click="closePayment()"
+                                class="min-h-[38px] rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="submit"
+                                x-bind:disabled="submitting || (method === 'Tunai' && shortfall > 0) || ! paymentAmount || paymentAmount > remaining"
+                                @click="if ($event.ctrlKey || $event.metaKey) { $event.preventDefault(); $event.stopPropagation(); submitPayment(); }"
+                                class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-bold text-white shadow-2xs transition hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-50 cursor-pointer active:scale-98"
+                            >
+                                <svg x-show="submitting" class="size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true" x-cloak>
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
+                                <x-lucide-check class="size-4" x-show="! submitting" />
+                                <span x-text="submitting ? 'Menyimpan...' : 'Konfirmasi & Simpan'">Konfirmasi & Simpan</span>
+                                <kbd class="hidden sm:inline-block rounded-md bg-brand-800/90 px-1.5 py-0.5 text-[10px] font-mono font-medium text-brand-100 border border-brand-600/50 ml-1">Ctrl+Enter</kbd>
+                            </button>
+                        </div>
+                    </form>
+                </x-ui.modal>
             @endif
         </div>
 
@@ -636,52 +690,145 @@
             $isTerminal = in_array($statusValue, ['Diambil', 'Dibatalkan']);
         @endphp
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs sm:p-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                    <h2 class="text-sm font-semibold text-slate-900">
-                        Status Operasional Cucian
-                    </h2>
+                <div class="flex items-center gap-3">
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shadow-2xs">
+                        <x-lucide-refresh-cw class="size-4" />
+                    </div>
 
-                    <p class="mt-1 text-xs leading-5 text-slate-500">
-                        Perbarui status transaksi sesuai dengan proses pengerjaan laundry.
-                    </p>
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">
+                            Status Operasional Cucian
+                        </h2>
+
+                        <p class="mt-0.5 text-xs text-slate-500">
+                            Pantau dan perbarui tahap pengerjaan cucian pelanggan.
+                        </p>
+                    </div>
                 </div>
 
                 {{-- Status Saat Ini --}}
                 <div>
-                    <span class="text-xs text-slate-400">
-                        Status saat ini
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        Status saat ini:
                     </span>
 
                     <div class="mt-1">
-                        <span class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold {{ $statusClasses }}">
-                            {{ $statusValue }}
-                        </span>
+                        <x-ui.status-badge :status="$transaction->status" />
                     </div>
                 </div>
             </div>
 
+            {{-- Visual Laundry Pipeline Stepper --}}
+            @php
+                $steps = [
+                    ['id' => 'Diterima', 'number' => 1, 'label' => 'Diterima', 'desc' => 'Antrean Kasir'],
+                    ['id' => 'Diproses', 'number' => 2, 'label' => 'Diproses', 'desc' => 'Cuci & Setrika'],
+                    ['id' => 'Selesai', 'number' => 3, 'label' => 'Selesai', 'desc' => 'Siap Diambil'],
+                    ['id' => 'Diambil', 'number' => 4, 'label' => 'Diambil', 'desc' => 'Diserahkan'],
+                ];
+                $currentRank = match($statusValue) {
+                    'Diterima' => 1,
+                    'Diproses' => 2,
+                    'Selesai' => 3,
+                    'Diambil' => 4,
+                    default => 0,
+                };
+                $nextStatus = match($statusValue) {
+                    'Diterima' => 'Diproses',
+                    'Diproses' => 'Selesai',
+                    'Selesai' => 'Diambil',
+                    default => null,
+                };
+            @endphp
+
+            <div class="mt-5 rounded-xl border border-slate-200/90 bg-slate-50/60 p-4 sm:p-5">
+                <div class="mb-3 flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-600">Tahap Pengerjaan Laundry</span>
+                    <span class="text-xs font-bold text-slate-600 font-mono tabular-nums">Tahap {{ $statusValue === 'Dibatalkan' ? 'Dibatalkan' : ($currentRank > 0 ? "{$currentRank} dari 4" : '-') }}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    @foreach ($steps as $step)
+                        @php
+                            $isPassed = $currentRank > $step['number'];
+                            $isCurrent = $currentRank === $step['number'];
+                        @endphp
+                        <div @class([
+                            'relative flex flex-col justify-between rounded-xl border p-3.5 transition-all select-none',
+                            'border-emerald-300 bg-emerald-50/70 text-emerald-950 shadow-2xs' => $isPassed,
+                            'border-brand-500 bg-brand-50/80 text-brand-950 ring-2 ring-brand-500/20 shadow-xs' => $isCurrent,
+                            'border-slate-200 bg-white text-slate-400 opacity-60' => ! $isPassed && ! $isCurrent,
+                        ])>
+                            <div class="flex items-center justify-between">
+                                <div @class([
+                                    'flex size-6 items-center justify-center rounded-full text-xs font-bold shadow-2xs',
+                                    'bg-emerald-600 text-white' => $isPassed,
+                                    'bg-brand-600 text-white animate-pulse' => $isCurrent,
+                                    'bg-slate-200 text-slate-500' => ! $isPassed && ! $isCurrent,
+                                ])>
+                                    @if ($isPassed)
+                                        <x-lucide-check class="size-3.5" />
+                                    @else
+                                        <span>{{ $step['number'] }}</span>
+                                    @endif
+                                </div>
+
+                                @if ($isCurrent)
+                                    <span class="rounded bg-brand-600 px-1.5 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider shadow-2xs">Aktif</span>
+                                @elseif ($isPassed)
+                                    <span class="text-xs font-bold text-emerald-700">Tuntas</span>
+                                @endif
+                            </div>
+                            <div class="mt-2.5">
+                                <p class="text-xs font-bold text-slate-900">{{ $step['label'] }}</p>
+                                <p class="text-[11px] text-slate-500 leading-tight mt-0.5">{{ $step['desc'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Tombol Pintasan Aksi Cepat ke Status Berikutnya --}}
+                @if ($nextStatus && ! $isTerminal)
+                    <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-slate-200/90 pt-3">
+                        <div class="flex items-center gap-2 text-xs text-slate-700">
+                            <x-lucide-zap class="size-4 text-amber-500 fill-amber-500 shrink-0" />
+                            <span>Pintasan Cepat: Majukan ke status berikutnya (<strong>{{ $nextStatus }}</strong>)</span>
+                        </div>
+                        <form
+                            method="POST"
+                            action="{{ route("{$currentRoutePrefix}.transactions.status", $transaction) }}"
+                            onsubmit="return confirm('Perbarui status cucian ke {{ $nextStatus }}?')"
+                        >
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="{{ $nextStatus }}">
+                            <x-ui.button type="submit" variant="primary" size="sm" class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98">
+                                <span>Majukan ke {{ $nextStatus }}</span>
+                                <x-lucide-arrow-right class="size-3.5" />
+                            </x-ui.button>
+                        </form>
+                    </div>
+                @endif
+            </div>
+
             @if ($isTerminal)
                 {{-- Banner Final / Terminal --}}
-                <div class="mt-6 rounded-xl border p-4 {{ $statusValue === 'Diambil' ? 'border-emerald-200 bg-emerald-50/60 text-emerald-900' : 'border-rose-200 bg-rose-50/60 text-rose-900' }}">
+                <div class="mt-6 rounded-xl border p-4 {{ $statusValue === 'Diambil' ? 'border-emerald-200 bg-emerald-50/70 text-emerald-950 shadow-2xs' : 'border-rose-200 bg-rose-50/70 text-rose-950 shadow-2xs' }}">
                     <div class="flex items-center gap-3">
-                        <div class="flex size-9 shrink-0 items-center justify-center rounded-xl {{ $statusValue === 'Diambil' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600' }}">
+                        <div class="flex size-9 shrink-0 items-center justify-center rounded-xl {{ $statusValue === 'Diambil' ? 'bg-emerald-100 text-emerald-600 shadow-2xs' : 'bg-rose-100 text-rose-600 shadow-2xs' }}">
                             @if ($statusValue === 'Diambil')
-                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                </svg>
+                                <x-lucide-check-circle class="size-5" />
                             @else
-                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <x-lucide-x-circle class="size-5" />
                             @endif
                         </div>
                         <div>
                             <h3 class="text-xs font-bold">
                                 {{ $statusValue === 'Diambil' ? 'Transaksi Telah Selesai & Cucian Diambil' : 'Transaksi Dibatalkan' }}
                             </h3>
-                            <p class="mt-0.5 text-xs {{ $statusValue === 'Diambil' ? 'text-emerald-700' : 'text-rose-700' }}">
+                            <p class="mt-0.5 text-xs {{ $statusValue === 'Diambil' ? 'text-emerald-800' : 'text-rose-800' }}">
                                 {{ $statusValue === 'Diambil' ? 'Cucian fisik telah diserahkan kepada pelanggan. Status transaksi ini telah ditutup permanen.' : 'Transaksi ini telah dibatalkan dan tidak dapat diproses lebih lanjut.' }}
                             </p>
                         </div>
@@ -691,40 +838,43 @@
                 {{-- Form Update dengan Alpine.js Guard --}}
                 <form
                     x-data="{
-                        currentStatus: '{{ $statusValue }}',
-                        selectedStatus: '{{ old('status', $statusValue) }}',
-                        notes: '{{ old('notes', '') }}',
+                        submitting: false,
+                        showStatusHint: false,
+                        currentStatus: @js($statusValue),
+                        selectedStatus: @js(old('status', '')),
+                        notes: @js(old('notes', '')),
                         rank(s) {
                             return { 'Diterima': 1, 'Diproses': 2, 'Selesai': 3, 'Diambil': 4, 'Dibatalkan': 0 }[s] ?? 0;
                         },
                         isRollback() {
-                            if (this.selectedStatus === 'Dibatalkan' || this.selectedStatus === this.currentStatus) return false;
+                            if (! this.selectedStatus || this.selectedStatus === this.currentStatus) return false;
                             return this.rank(this.selectedStatus) < this.rank(this.currentStatus);
                         },
                         needsNotes() {
-                            return this.isRollback() || this.selectedStatus === 'Dibatalkan';
+                            return this.isRollback();
                         }
                     }"
                     method="POST"
                     action="{{ route("{$currentRoutePrefix}.transactions.status", $transaction) }}"
                     class="mt-6 space-y-4"
+                    @submit="submitting = true"
                 >
                     @csrf
                     @method('PATCH')
 
                     {{-- Error validation alerts --}}
-                    @if ($errors->has('status') || $errors->has('notes'))
-                        <div class="rounded-xl border border-rose-200 bg-rose-50/70 p-3.5 text-xs text-rose-700">
-                            <p class="font-semibold">{{ $errors->first('status') ?: $errors->first('notes') }}</p>
+                    @if ($errors->has('status'))
+                        <div class="rounded-xl border border-rose-200 bg-rose-50/70 p-3.5 text-xs text-rose-700 font-semibold" role="alert">
+                            <p>{{ $errors->first('status') }}</p>
                         </div>
                     @endif
 
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
                         {{-- Select Status --}}
-                        <div class="md:col-span-2">
+                        <div class="flex-1">
                             <label
                                 for="status"
-                                class="mb-1.5 block text-xs font-medium text-slate-600"
+                                class="mb-1.5 block text-xs font-bold text-slate-700"
                             >
                                 Ubah Status
                             </label>
@@ -733,77 +883,82 @@
                                 name="status"
                                 id="status"
                                 x-model="selectedStatus"
-                                class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
+                                x-ref="statusSelect"
+                                required
+                                :class="showStatusHint && (! selectedStatus || selectedStatus === currentStatus) ? 'border-rose-300 ring-2 ring-rose-500/20' : ''"
+                                class="h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs sm:text-sm text-slate-800 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                             >
-                                <option value="Diterima" @selected($statusValue === 'Diterima')>
+                                <option value="" disabled @selected(! old('status'))>
+                                    Pilih status berikutnya...
+                                </option>
+                                <option value="Diterima" @selected(old('status') === 'Diterima')>
                                     1. Diterima (Antrean Masuk)
                                 </option>
-                                <option value="Diproses" @selected($statusValue === 'Diproses')>
+                                <option value="Diproses" @selected(old('status') === 'Diproses')>
                                     2. Diproses (Dicuci & Disetrika)
                                 </option>
-                                <option value="Selesai" @selected($statusValue === 'Selesai')>
+                                <option value="Selesai" @selected(old('status') === 'Selesai')>
                                     3. Selesai (Siap Diambil)
                                 </option>
-                                <option value="Diambil" @selected($statusValue === 'Diambil')>
+                                <option value="Diambil" @selected(old('status') === 'Diambil')>
                                     4. Diambil (Diserahkan ke Pelanggan)
-                                </option>
-                                <option value="Dibatalkan" @selected($statusValue === 'Dibatalkan')>
-                                    &times; Dibatalkan (Batalkan Transaksi)
                                 </option>
                             </select>
                         </div>
 
                         {{-- Submit Button --}}
-                        <div class="flex items-end">
-                            <button
+                        <div class="sm:shrink-0">
+                            <x-ui.button
                                 type="submit"
-                                class="w-full rounded-lg bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
+                                variant="primary"
+                                class="w-full sm:w-auto sm:min-w-48 cursor-pointer shadow-2xs active:scale-98"
+                                x-bind:disabled="submitting"
+                                @click="if (! selectedStatus || selectedStatus === currentStatus) { $event.preventDefault(); showStatusHint = true; $refs.statusSelect?.focus(); }"
                             >
-                                Perbarui Status
-                            </button>
+                                <svg x-show="submitting" x-cloak class="size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                                </svg>
+                                <span x-text="submitting ? 'Menyimpan...' : 'Perbarui Status'">Perbarui Status</span>
+                            </x-ui.button>
                         </div>
                     </div>
 
-                    {{-- Dynamic Warning & Mandatory Reason Field when Rolling Back or Cancelling --}}
+                    <p
+                        x-show="showStatusHint && (! selectedStatus || selectedStatus === currentStatus)"
+                        x-cloak
+                        class="text-xs font-bold text-rose-700"
+                        role="alert"
+                    >
+                        Pilih status berikutnya dulu sebelum memperbarui.
+                    </p>
+
+                    {{-- Dynamic warning & mandatory reason when rolling back --}}
                     <div
                         x-show="needsNotes()"
                         x-cloak
                         x-transition:enter="ease-out duration-150"
                         x-transition:enter-start="opacity-0 -translate-y-1"
                         x-transition:enter-end="opacity-100 translate-y-0"
-                        class="rounded-xl border p-4 transition-all"
-                        :class="selectedStatus === 'Dibatalkan' ? 'border-rose-200 bg-rose-50/60' : 'border-amber-200 bg-amber-50/60'"
+                        class="rounded-xl border border-amber-200 bg-amber-50/70 p-4 shadow-2xs"
                     >
                         <div class="flex items-start gap-3">
-                            <div
-                                class="flex size-7 shrink-0 items-center justify-center rounded-lg text-xs"
-                                :class="selectedStatus === 'Dibatalkan' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'"
-                            >
-                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
+                            <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700 shadow-2xs">
+                                <x-lucide-alert-triangle class="size-4" />
                             </div>
 
                             <div class="flex-1">
-                                <p
-                                    class="text-xs font-semibold"
-                                    :class="selectedStatus === 'Dibatalkan' ? 'text-rose-900' : 'text-amber-900'"
-                                    x-text="selectedStatus === 'Dibatalkan' ? 'Perhatian: Transaksi akan dibatalkan.' : 'Perhatian: Anda memundurkan status cucian dari ' + currentStatus + ' ke ' + selectedStatus + '.'"
-                                ></p>
+                                <p class="text-xs font-bold text-amber-900">
+                                    Perhatian: Anda memundurkan status cucian dari
+                                    <span x-text="currentStatus"></span> ke <span x-text="selectedStatus"></span>.
+                                </p>
 
-                                <p
-                                    class="mt-0.5 text-[11px]"
-                                    :class="selectedStatus === 'Dibatalkan' ? 'text-rose-700' : 'text-amber-700'"
-                                >
-                                    Tuliskan alasan koreksi/pembatalan di bawah ini agar tercatat di audit trail sistem.
+                                <p class="mt-0.5 text-xs text-amber-800">
+                                    Tuliskan alasan koreksi di bawah ini agar tercatat di audit trail sistem.
                                 </p>
 
                                 <div class="mt-3">
-                                    <label
-                                        for="notes"
-                                        class="mb-1 block text-xs font-semibold"
-                                        :class="selectedStatus === 'Dibatalkan' ? 'text-rose-800' : 'text-amber-800'"
-                                    >
+                                    <label for="notes" class="mb-1 block text-xs font-bold text-amber-900">
                                         Alasan Koreksi Status <span class="text-rose-600">*</span>
                                     </label>
 
@@ -813,270 +968,188 @@
                                         rows="2"
                                         x-model="notes"
                                         :required="needsNotes()"
+                                        maxlength="500"
                                         placeholder="Contoh: Salah klik status oleh kasir / pakaian perlu dicuci ulang karena noda belum tuntas"
-                                        class="w-full rounded-lg border border-slate-300 bg-white p-2.5 text-xs text-slate-800 shadow-2xs outline-none transition focus:border-brand-500 focus:ring-1 focus:ring-brand-500"
+                                        class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs sm:text-sm text-slate-800 outline-none transition focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
                                     ></textarea>
+
+                                    @if ($errors->has('notes') && old('status') !== 'Dibatalkan')
+                                        <p class="mt-1 text-xs text-rose-700 font-semibold" role="alert">
+                                            {{ $errors->first('notes') }}
+                                        </p>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                     </div>
                 </form>
+
+                {{-- Zona berbahaya: pembatalan terpisah dari transisi rutin --}}
+                <div
+                    class="mt-6 border-t border-slate-200/90 pt-5"
+                    x-data="{
+                        confirming: @js(old('status') === 'Dibatalkan'),
+                        reason: @js(old('notes', ''))
+                    }"
+                >
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900">Batalkan transaksi</h3>
+                            <p class="mt-0.5 text-xs text-slate-500">
+                                Gunakan hanya jika cucian tidak jadi diproses. Tindakan ini permanen.
+                            </p>
+                        </div>
+
+                        <x-ui.button type="button" variant="danger-outline" size="sm" @click="confirming = true" class="cursor-pointer active:scale-98">
+                            Batalkan transaksi
+                        </x-ui.button>
+                    </div>
+
+                    <div x-show="confirming" x-cloak class="mt-4 rounded-xl border border-rose-200 bg-rose-50/70 p-4 shadow-2xs">
+                        <p class="text-sm font-bold text-rose-900">
+                            Batalkan nota {{ $transaction->transaction_code }}?
+                        </p>
+                        <p class="mt-1 text-xs text-rose-800">
+                            {{ $transaction->customer?->name ?? 'Pelanggan umum' }} &middot;
+                            Total <x-ui.money :value="$transaction->total_amount" class="font-mono tabular-nums font-bold" />.
+                            Status akan menjadi <strong>Dibatalkan</strong> dan tidak dapat diubah lagi.
+                        </p>
+
+                        <form
+                            method="POST"
+                            action="{{ route("{$currentRoutePrefix}.transactions.status", $transaction) }}"
+                            class="mt-3 space-y-3"
+                        >
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="status" value="Dibatalkan">
+
+                            <div>
+                                <label for="cancel-notes" class="mb-1 block text-xs font-bold text-rose-900">
+                                    Alasan pembatalan <span class="text-rose-700">*</span>
+                                </label>
+                                <textarea
+                                    name="notes"
+                                    id="cancel-notes"
+                                    rows="3"
+                                    maxlength="500"
+                                    required
+                                    x-model="reason"
+                                    placeholder="Contoh: Pelanggan membatalkan cucian sebelum diproses"
+                                    class="w-full rounded-xl border border-rose-300 bg-white p-2.5 text-xs sm:text-sm text-slate-800 outline-none transition focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20"
+                                ></textarea>
+
+                                @if (old('status') === 'Dibatalkan' && $errors->has('notes'))
+                                    <p class="mt-1 text-xs text-rose-700 font-semibold" role="alert">
+                                        {{ $errors->first('notes') }}
+                                    </p>
+                                @endif
+                            </div>
+
+                            <div class="flex flex-wrap justify-end gap-2">
+                                <x-ui.button type="button" variant="secondary" size="sm" @click="confirming = false" class="cursor-pointer">
+                                    Batal
+                                </x-ui.button>
+                                <x-ui.button type="submit" variant="danger" size="sm" class="cursor-pointer">
+                                    Ya, Batalkan Transaksi
+                                </x-ui.button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             @endif
         </div>
-
-
-        {{-- ============================================================
-            TIMELINE STATUS
-        ============================================================= --}}
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="mb-6">
-                <h2 class="text-sm font-semibold text-slate-900">
-                    Alur Status Cucian
-                </h2>
-
-                <p class="mt-1 text-xs text-slate-500">
-                    Tahapan proses transaksi laundry.
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                {{-- Diterima --}}
-                <div
-                    class="rounded-xl border p-4
-                    {{ in_array($statusValue, ['Diterima', 'Diproses', 'Selesai', 'Diambil'])
-                        ? 'border-brand-200 bg-brand-50'
-                        : 'border-slate-200 bg-slate-50' }}"
-                >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold
-                            {{ in_array($statusValue, ['Diterima', 'Diproses', 'Selesai', 'Diambil'])
-                                ? 'bg-brand-600 text-white'
-                                : 'bg-white text-slate-500' }}"
-                        >
-                            1
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-slate-900">
-                                Diterima
-                            </p>
-
-                            <p class="mt-0.5 text-[11px] text-slate-500">
-                                Cucian masuk
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Diproses --}}
-                <div
-                    class="rounded-xl border p-4
-                    {{ in_array($statusValue, ['Diproses', 'Selesai', 'Diambil'])
-                        ? 'border-brand-200 bg-brand-50'
-                        : 'border-slate-200 bg-slate-50' }}"
-                >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold
-                            {{ in_array($statusValue, ['Diproses', 'Selesai', 'Diambil'])
-                                ? 'bg-brand-600 text-white'
-                                : 'bg-white text-slate-500' }}"
-                        >
-                            2
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-slate-900">
-                                Diproses
-                            </p>
-
-                            <p class="mt-0.5 text-[11px] text-slate-500">
-                                Cucian dikerjakan
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Selesai --}}
-                <div
-                    class="rounded-xl border p-4
-                    {{ in_array($statusValue, ['Selesai', 'Diambil'])
-                        ? 'border-brand-200 bg-brand-50'
-                        : 'border-slate-200 bg-slate-50' }}"
-                >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold
-                            {{ in_array($statusValue, ['Selesai', 'Diambil'])
-                                ? 'bg-brand-600 text-white'
-                                : 'bg-white text-slate-500' }}"
-                        >
-                            3
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-slate-900">
-                                Selesai
-                            </p>
-
-                            <p class="mt-0.5 text-[11px] text-slate-500">
-                                Siap diambil
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Diambil --}}
-                <div
-                    class="rounded-xl border p-4
-                    {{ $statusValue === 'Diambil'
-                        ? 'border-brand-200 bg-brand-50'
-                        : 'border-slate-200 bg-slate-50' }}"
-                >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold
-                            {{ $statusValue === 'Diambil'
-                                ? 'bg-brand-600 text-white'
-                                : 'bg-white text-slate-500' }}"
-                        >
-                            4
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-slate-900">
-                                Diambil
-                            </p>
-
-                            <p class="mt-0.5 text-[11px] text-slate-500">
-                                Transaksi selesai
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Dibatalkan --}}
-                <div
-                    class="rounded-xl border p-4
-                    {{ $statusValue === 'Dibatalkan'
-                        ? 'border-red-200 bg-red-50'
-                        : 'border-slate-200 bg-slate-50' }}"
-                >
-                    <div class="flex items-center gap-3">
-                        <div
-                            class="flex size-9 shrink-0 items-center justify-center rounded-full text-xs font-bold
-                            {{ $statusValue === 'Dibatalkan'
-                                ? 'bg-red-600 text-white'
-                                : 'bg-white text-slate-500' }}"
-                        >
-                            !
-                        </div>
-
-                        <div>
-                            <p class="text-xs font-semibold text-slate-900">
-                                Dibatalkan
-                            </p>
-
-                            <p class="mt-0.5 text-[11px] text-slate-500">
-                                Transaksi dibatalkan
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
 
         {{-- ============================================================
             AUDIT TRAIL / RIWAYAT PEMBARUAN STATUS
         ============================================================= --}}
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div class="mb-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-sm font-semibold text-slate-900">
-                        Riwayat Pembaruan Status
-                    </h2>
-                    <p class="mt-0.5 text-xs text-slate-500">
-                        Catatan audit trail seluruh perubahan status pengerjaan cucian.
-                    </p>
-                </div>
-                <span class="text-xs font-medium text-slate-400">
-                    Total: {{ $transaction->statusHistories->count() }} catatan
-                </span>
-            </div>
+        <details class="group rounded-2xl border border-slate-200/90 bg-white shadow-2xs">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-3 p-5 transition-colors hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+                <div class="flex items-center gap-3">
+                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700 shadow-2xs">
+                        <x-lucide-history class="size-4" />
+                    </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-xs uppercase text-slate-500">
-                        <tr>
-                            <th class="px-5 py-3 font-semibold">Waktu Perubahan</th>
-                            <th class="px-5 py-3 font-semibold">Status</th>
-                            <th class="px-5 py-3 font-semibold">Petugas (Diubah Oleh)</th>
-                            <th class="px-5 py-3 font-semibold">Catatan / Alasan</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        @forelse ($transaction->statusHistories->sortByDesc('id') as $history)
-                            @php
-                                $histStatus = $history->status instanceof \App\Enums\TransactionStatus
-                                    ? $history->status->value
-                                    : (string) $history->status;
-                                $histBadge = match ($histStatus) {
-                                    'Diterima' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                    'Diproses' => 'bg-amber-50 text-amber-700 border-amber-200',
-                                    'Selesai' => 'bg-green-50 text-green-700 border-green-200',
-                                    'Diambil' => 'bg-slate-100 text-slate-700 border-slate-200',
-                                    'Dibatalkan' => 'bg-red-50 text-red-700 border-red-200',
-                                    default => 'bg-slate-50 text-slate-600 border-slate-200',
-                                };
-                            @endphp
-                            <tr class="hover:bg-slate-50/80">
-                                <td class="px-5 py-3.5 text-xs text-slate-600">
-                                    <div class="font-medium text-slate-800">
-                                        {{ $history->changed_at?->translatedFormat('d F Y, H:i:s') ?? '-' }}
-                                    </div>
-                                    <div class="mt-0.5 text-[11px] text-slate-400">
-                                        {{ $history->changed_at?->diffForHumans() }}
-                                    </div>
-                                </td>
-                                <td class="px-5 py-3.5">
-                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $histBadge }}">
-                                        {{ $histStatus }}
-                                    </span>
-                                </td>
-                                <td class="px-5 py-3.5 text-xs font-medium text-slate-700">
-                                    <div class="flex items-center gap-2">
-                                        <div class="flex size-6 items-center justify-center rounded-full bg-slate-100 text-[10px] font-bold text-slate-600">
-                                            {{ strtoupper(substr($history->changedBy?->name ?? 'S', 0, 1)) }}
-                                        </div>
-                                        <span>{{ $history->changedBy?->name ?? 'Sistem' }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-5 py-3.5 text-xs text-slate-600">
-                                    @if ($history->notes)
-                                        <span class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-800 border border-amber-200">
-                                            <svg class="size-3.5 shrink-0 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            <span>{{ $history->notes }}</span>
-                                        </span>
-                                    @else
-                                        <span class="text-slate-400">-</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">
+                            Riwayat Pembaruan Status
+                        </h2>
+                        <p class="mt-0.5 text-xs text-slate-500">
+                            Catatan audit trail seluruh perubahan status pengerjaan cucian.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex shrink-0 items-center gap-2">
+                    <x-ui.badge tone="neutral" size="sm" class="font-bold font-mono tabular-nums">
+                        {{ $transaction->statusHistories->count() }} catatan
+                    </x-ui.badge>
+
+                    <x-lucide-chevron-down class="size-4 text-slate-400 transition-transform group-open:rotate-180" />
+                </div>
+            </summary>
+
+            <div class="border-t border-slate-100">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50/80 text-xs uppercase font-bold text-slate-500 border-b border-slate-100">
                             <tr>
-                                <td colspan="4" class="px-5 py-8 text-center text-xs text-slate-400">
-                                    Belum ada catatan riwayat status untuk transaksi ini.
-                                </td>
+                                <th class="px-5 py-3 font-semibold">Waktu Perubahan</th>
+                                <th class="px-5 py-3 font-semibold">Status</th>
+                                <th class="px-5 py-3 font-semibold">Petugas (Diubah Oleh)</th>
+                                <th class="px-5 py-3 font-semibold">Catatan / Alasan</th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse ($transaction->statusHistories->sortByDesc('id') as $history)
+                                @php
+                                    $histStatus = $history->status instanceof \App\Enums\TransactionStatus
+                                        ? $history->status->value
+                                        : (string) $history->status;
+                                @endphp
+                                <tr class="hover:bg-slate-50/60 transition-colors">
+                                    <td class="px-5 py-3.5 text-xs text-slate-600">
+                                        <div class="font-bold text-slate-800 font-mono tabular-nums">
+                                            {{ $history->changed_at?->translatedFormat('d F Y, H:i:s') ?? '-' }}
+                                        </div>
+                                        <div class="mt-0.5 text-xs text-slate-500 font-medium">
+                                            {{ $history->changed_at?->diffForHumans() }}
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <x-ui.status-badge :status="$histStatus" size="sm" />
+                                    </td>
+                                    <td class="px-5 py-3.5 text-xs font-bold text-slate-700">
+                                        <div class="flex items-center gap-2">
+                                            <div class="flex size-6 items-center justify-center rounded-full bg-slate-100 border border-slate-200 text-xs font-bold text-slate-600 shadow-2xs">
+                                                {{ strtoupper(substr($history->changedBy?->name ?? 'S', 0, 1)) }}
+                                            </div>
+                                            <span>{{ $history->changedBy?->name ?? 'Sistem' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-xs text-slate-600">
+                                        @if ($history->notes)
+                                            <span class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800 border border-amber-200 shadow-2xs">
+                                                <x-lucide-info class="size-3.5 shrink-0 text-amber-600" />
+                                                <span>{{ $history->notes }}</span>
+                                            </span>
+                                        @else
+                                            <span class="text-slate-400">-</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="px-5 py-8 text-center text-xs text-slate-500 font-medium">
+                                        Belum ada catatan riwayat status untuk transaksi ini.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+        </details>
 
     </div>
 

@@ -16,6 +16,7 @@ class TransactionLookupController extends Controller
         $code = trim((string) $request->input('code', ''));
         $transaction = null;
         $searched = false;
+        $maskedCustomerName = 'Pelanggan Umum';
 
         $paymentSummary = [
             'total_paid' => 0.0,
@@ -31,14 +32,14 @@ class TransactionLookupController extends Controller
                 ->with([
                     'customer',
                     'details.service',
-                    'payments' => fn ($query) => $query->whereIn('verification_status', ['Terverifikasi', 'Tidak Diperlukan']),
+                    'payments' => fn ($query) => $query->paid(),
                     'statusHistories.changedBy',
                 ])
                 ->whereRaw('UPPER(transaction_code) = ?', [mb_strtoupper($code)])
                 ->first();
 
             if ($transaction) {
-                $totalPaid = (float) $transaction->payments->sum('amount');
+                $totalPaid = $transaction->total_paid;
                 $totalAmount = (float) $transaction->total_amount;
                 $remainingAmount = max(0.0, $totalAmount - $totalPaid);
 
@@ -54,6 +55,13 @@ class TransactionLookupController extends Controller
                     'status' => $paymentStatus,
                     'latest_payment' => $transaction->payments->last(),
                 ];
+
+                if ($transaction->customer?->name) {
+                    $maskedCustomerName = collect(preg_split('/\s+/', trim($transaction->customer->name)))
+                        ->filter()
+                        ->map(fn (string $part): string => mb_substr($part, 0, 1).'***')
+                        ->implode(' ');
+                }
             }
         }
 
@@ -62,6 +70,7 @@ class TransactionLookupController extends Controller
             'searched' => $searched,
             'transaction' => $transaction,
             'paymentSummary' => $paymentSummary,
+            'maskedCustomerName' => $maskedCustomerName,
         ]);
     }
 }

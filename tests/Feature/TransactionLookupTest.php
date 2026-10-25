@@ -82,7 +82,8 @@ class TransactionLookupTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('TRX-0001');
-        $response->assertSee('Budi Santoso');
+        $response->assertSee('B*** S***');
+        $response->assertDontSee('Budi Santoso');
         $response->assertSee('Cuci Kering');
         $response->assertSee('3 kg');
         $response->assertSee('21.000');
@@ -93,7 +94,7 @@ class TransactionLookupTest extends TestCase
         $responseLowercase = $this->get(route('transactions.lookup', ['code' => 'trx-0001']));
         $responseLowercase->assertOk();
         $responseLowercase->assertSee('TRX-0001');
-        $responseLowercase->assertSee('Budi Santoso');
+        $responseLowercase->assertSee('B*** S***');
     }
 
     /**
@@ -159,7 +160,8 @@ class TransactionLookupTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('TRX-0002');
-        $response->assertSee('Siti Aminah');
+        $response->assertSee('S*** A***');
+        $response->assertDontSee('Siti Aminah');
         $response->assertSee('Lunas');
         $response->assertSee('Selesai');
     }

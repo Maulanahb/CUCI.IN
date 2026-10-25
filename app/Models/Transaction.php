@@ -136,8 +136,8 @@ class Transaction extends Model
     public function getTotalPaidAttribute(): float
     {
         $validPayments = $this->relationLoaded('payments')
-            ? $this->payments->filter(fn (Payment $p): bool => in_array($p->verification_status, ['Tidak Diperlukan', 'Terverifikasi'], true))
-            : $this->payments()->whereIn('verification_status', ['Tidak Diperlukan', 'Terverifikasi'])->get();
+            ? $this->payments->filter(fn (Payment $p): bool => in_array($p->verification_status, Payment::PAID_STATUSES, true))
+            : $this->payments()->paid()->get();
 
         return (float) $validPayments->sum('amount');
     }
@@ -175,5 +175,24 @@ class Transaction extends Model
     public function isPaidOff(): bool
     {
         return $this->payment_status === 'Lunas';
+    }
+
+    /**
+     * Scope untuk menyaring cucian yang selesai namun belum diambil melebihi ambang hari.
+     */
+    public function scopeUnclaimedStorage($query, int $days = 14)
+    {
+        return $query->where('status', TransactionStatus::Selesai)
+            ->where('updated_at', '<=', now()->subDays($days));
+    }
+
+    /**
+     * Cek apakah cucian selesai disimpan melebihi ambang batas hari.
+     */
+    public function isStorageOverdue(int $days = 14): bool
+    {
+        return $this->status === TransactionStatus::Selesai
+            && $this->updated_at !== null
+            && $this->updated_at <= now()->subDays($days);
     }
 }

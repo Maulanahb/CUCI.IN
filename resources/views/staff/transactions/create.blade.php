@@ -15,62 +15,74 @@
 
 <x-layouts::app title="Transaksi Baru (POS)">
     <div
-        class="space-y-4"
+        class="space-y-4 pb-24 lg:pb-0"
         x-data="posTransactionManager()"
     >
         {{-- Top Bar Navigasi Kasir --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Kasir POS — Transaksi Baru</h1>
-                    <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
-                        <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        Terminal Aktif
-                    </span>
-                </div>
+                <h1 class="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Kasir POS — Transaksi Baru</h1>
                 <p class="mt-0.5 text-xs text-slate-500 sm:text-sm">
                     Pilih layanan di katalog kiri, sesuaikan timbangan, dan simpan nota kasir secara instan.
                 </p>
             </div>
 
             <div class="flex items-center gap-2">
-                <a
+                <x-ui.button
+                    variant="secondary"
+                    size="sm"
                     href="{{ $transactionIndexRoute }}"
-                    class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition hover:bg-slate-50 hover:text-slate-900 active:scale-98"
+                    class="gap-1.5"
                 >
-                    <svg class="size-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
+                    <x-lucide-arrow-left class="size-4 text-slate-500" />
                     <span>Daftar Transaksi</span>
-                </a>
+                </x-ui.button>
+            </div>
+        </div>
+
+        {{-- Bar Pintasan Keyboard POS --}}
+        <div class="hidden sm:flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200/90 bg-white px-4 py-2.5 text-xs text-slate-600 shadow-2xs">
+            <span class="font-bold text-slate-800 flex items-center gap-1.5">
+                <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" />
+                <span>Pintasan Cepat:</span>
+            </span>
+            <div class="flex items-center gap-1.5">
+                <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-800 shadow-2xs">/</kbd>
+                <span class="text-slate-600">Cari Layanan</span>
+            </div>
+            <span class="text-slate-300">•</span>
+            <div class="flex items-center gap-1.5">
+                <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-800 shadow-2xs">Alt + P</kbd>
+                <span class="text-slate-600">Pelanggan Baru</span>
+            </div>
+            <span class="text-slate-300">•</span>
+            <div class="flex items-center gap-1.5">
+                <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-800 shadow-2xs">Alt + T</kbd>
+                <span class="text-slate-600">Tambah Baris</span>
+            </div>
+            <span class="text-slate-300">•</span>
+            <div class="flex items-center gap-1.5">
+                <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[11px] font-mono font-bold text-slate-800 shadow-2xs">Ctrl + Enter</kbd>
+                <span class="text-slate-600">Simpan Transaksi</span>
             </div>
         </div>
 
         {{-- Alert Notifikasi Status --}}
         @if (session('status'))
-            <div class="flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 text-xs font-semibold text-emerald-800 shadow-2xs">
-                <svg class="size-4 shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>{{ session('status') }}</span>
-            </div>
+            <x-ui.alert variant="success" dismissible>
+                {{ session('status') }}
+            </x-ui.alert>
         @endif
 
         {{-- Alert Error Global --}}
         @if ($errors->any())
-            <div class="rounded-xl border border-rose-200 bg-rose-50/80 p-4 text-xs font-semibold text-rose-800 shadow-2xs">
-                <div class="flex items-center gap-2">
-                    <svg class="size-4 shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <span>Terdapat kesalahan pada input transaksi:</span>
-                </div>
-                <ul class="mt-2 list-inside list-disc space-y-0.5 pl-2 font-normal">
+            <x-ui.alert variant="destructive" title="Terdapat kesalahan pada input transaksi:" dismissible>
+                <ul class="list-inside list-disc space-y-0.5 pl-1 font-normal text-xs">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
                 </ul>
-            </div>
+            </x-ui.alert>
         @endif
 
         {{-- SPLIT-SCREEN LAYOUT POS (Kiri: Katalog Cepat | Kanan: Tiket Nota) --}}
@@ -81,44 +93,63 @@
             {{-- ======================================================== --}}
             <div class="space-y-4 lg:col-span-7">
                 {{-- Search Bar & Filter Layanan --}}
-                <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs">
+                <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div class="relative flex-1">
                             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
+                                <x-lucide-search class="size-4" />
                             </div>
                             <input
                                 type="text"
+                                id="service-search-input"
                                 x-model="searchQuery"
-                                placeholder="Cari layanan (misal: Komplit, Kering, Bedcover)..."
-                                class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 transition focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                                placeholder="Cari layanan laundry (Tekan / untuk fokus)..."
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-10 pr-9 py-2.5 text-xs text-slate-800 placeholder-slate-400 transition focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
                             />
+                            <button
+                                type="button"
+                                x-show="searchQuery"
+                                @click="searchQuery = ''; document.getElementById('service-search-input').focus()"
+                                class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                title="Hapus pencarian"
+                            >
+                                <x-lucide-x class="size-4" />
+                            </button>
                         </div>
 
+                        {{-- Category Filter Pills --}}
                         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
                             <button
                                 type="button"
                                 @click="searchQuery = ''"
-                                :class="searchQuery === '' ? 'bg-brand-600 text-white font-semibold' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                class="rounded-lg px-3 py-1.5 text-xs transition"
+                                :class="searchQuery === '' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
                                 Semua
                             </button>
                             <button
                                 type="button"
                                 @click="searchQuery = 'Komplit'"
-                                class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-600 transition hover:bg-slate-200"
+                                :class="searchQuery === 'Komplit' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
                                 Komplit
                             </button>
                             <button
                                 type="button"
                                 @click="searchQuery = 'Kering'"
-                                class="rounded-lg bg-slate-100 px-3 py-1.5 text-xs text-slate-600 transition hover:bg-slate-200"
+                                :class="searchQuery === 'Kering' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
                                 Kering
+                            </button>
+                            <button
+                                type="button"
+                                @click="searchQuery = 'Setrika'"
+                                :class="searchQuery === 'Setrika' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
+                            >
+                                Setrika
                             </button>
                         </div>
                     </div>
@@ -129,38 +160,35 @@
                     <template x-for="service in filteredServices" :key="service.id">
                         <div
                             @click="selectServiceCard(service)"
-                            class="group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all duration-200 active:scale-98 select-none"
-                            :class="getItemInCart(service.id) ? 'border-brand-400 bg-brand-50/50 shadow-xs ring-2 ring-brand-200' : 'border-slate-200/90 bg-white hover:border-brand-300 hover:shadow-md'"
+                            class="group relative flex cursor-pointer flex-col justify-between rounded-2xl border p-4 transition-all duration-150 active:scale-[0.98] select-none"
+                            :class="getItemInCart(service.id) ? 'border-brand-500 bg-brand-50/40 shadow-xs ring-2 ring-brand-200/80' : 'border-slate-200/90 bg-white hover:border-brand-300 hover:shadow-md'"
                         >
                             <div>
                                 <div class="flex items-start justify-between gap-2">
-                                    <div class="flex size-9 items-center justify-center rounded-xl transition" :class="getItemInCart(service.id) ? 'bg-brand-600 text-white' : 'bg-brand-50 text-brand-700 group-hover:bg-brand-100'">
-                                        <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M20 7H4a1 1 0 00-1 1v11a1 1 0 001 1h16a1 1 0 001-1V8a1 1 0 00-1-1zM16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
-                                        </svg>
+                                    <div
+                                        class="flex size-9 items-center justify-center rounded-xl transition"
+                                        :class="getItemInCart(service.id) ? 'bg-brand-600 text-white shadow-2xs' : 'bg-brand-50 text-brand-700 group-hover:bg-brand-100'"
+                                    >
+                                        <x-lucide-shirt class="size-5" />
                                     </div>
 
-                                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
-                                        <svg class="size-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
+                                    <x-ui.badge tone="neutral" size="sm" class="gap-1 font-mono tabular-nums text-slate-600">
+                                        <x-lucide-clock class="size-3 text-slate-400" />
                                         <span x-text="service.estimated_duration + ' Jam'"></span>
-                                    </span>
+                                    </x-ui.badge>
                                 </div>
 
                                 <h3 class="mt-3 text-sm font-bold text-slate-900 group-hover:text-brand-700 transition" x-text="service.name"></h3>
-                                <p class="text-[11px] text-slate-400">Tarif per kilogram</p>
+                                <p class="text-xs text-slate-500">Tarif per kilogram</p>
                             </div>
 
                             <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-                                <span class="text-sm font-extrabold text-brand-700 sm:text-base" x-text="formatRupiah(service.price)"></span>
+                                <span class="text-sm font-extrabold text-brand-700 font-mono tabular-nums sm:text-base" x-text="formatRupiah(service.price)"></span>
 
                                 <div class="flex items-center gap-1.5">
                                     <template x-if="getItemInCart(service.id)">
-                                        <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-100 px-2 py-1 text-[11px] font-bold text-emerald-800">
-                                            <svg class="size-3 text-emerald-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                                            </svg>
+                                        <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-100/90 px-2 py-1 text-xs font-bold font-mono tabular-nums text-emerald-800 shadow-2xs">
+                                            <x-lucide-check class="size-3 text-emerald-700" />
                                             <span x-text="(parseFloat(getItemInCart(service.id).weight) || 0).toFixed(1) + ' kg'"></span>
                                         </span>
                                     </template>
@@ -168,9 +196,7 @@
                                         class="inline-flex size-7 items-center justify-center rounded-lg transition"
                                         :class="getItemInCart(service.id) ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 group-hover:bg-brand-600 group-hover:text-white'"
                                     >
-                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                        </svg>
+                                        <x-lucide-plus class="size-4" />
                                     </span>
                                 </div>
                             </div>
@@ -179,14 +205,18 @@
                 </div>
 
                 {{-- Fallback: Empty search result --}}
-                <div x-show="filteredServices.length === 0" class="rounded-2xl border border-slate-200/80 bg-white p-8 text-center shadow-xs">
-                    <p class="text-xs font-semibold text-slate-500">Tidak ada layanan yang sesuai dengan pencarian "<span x-text="searchQuery"></span>".</p>
+                <div x-show="filteredServices.length === 0" class="rounded-2xl border border-slate-200/90 bg-white p-8 text-center shadow-2xs">
+                    <x-lucide-search-x class="mx-auto size-10 text-slate-300" />
+                    <p class="mt-2 text-xs font-semibold text-slate-600">
+                        Tidak ada layanan yang cocok dengan kata kunci "<span class="font-bold text-slate-900" x-text="searchQuery"></span>".
+                    </p>
                     <button
                         type="button"
                         @click="searchQuery = ''"
-                        class="mt-2 text-xs font-bold text-brand-600 underline hover:text-brand-700"
+                        class="mt-3 inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline cursor-pointer"
                     >
-                        Tampilkan semua layanan
+                        <x-lucide-rotate-ccw class="size-3.5" />
+                        <span>Tampilkan semua layanan</span>
                     </button>
                 </div>
 
@@ -204,12 +234,14 @@
             {{-- ======================================================== --}}
             {{-- KOLOM KANAN (5/12): NOTA KASIR TRANSAKSI POS (STICKY)    --}}
             {{-- ======================================================== --}}
-            <div class="lg:col-span-5">
+            <div id="kasir-ticket-panel" class="lg:col-span-5 lg:sticky lg:top-4">
                 <form
                     id="transaction-form"
                     method="POST"
+                    target="_self"
                     action="{{ route("{$currentRoutePrefix}.transactions.store") }}"
-                    class="rounded-2xl border border-slate-200/90 bg-white shadow-sm overflow-hidden"
+                    class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xs"
+                    @submit="isSubmitting = true"
                 >
                     @csrf
 
@@ -217,16 +249,14 @@
                     <div class="border-b border-slate-100 bg-slate-50/70 p-4 sm:p-5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="flex size-7 items-center justify-center rounded-lg bg-brand-600 text-white">
-                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
+                                <div class="flex size-7 items-center justify-center rounded-lg bg-brand-600 text-white shadow-2xs">
+                                    <x-lucide-receipt class="size-4" />
                                 </div>
                                 <h2 class="text-sm font-bold text-slate-900 sm:text-base">Tiket Nota Kasir</h2>
                             </div>
-                            <span class="rounded-md bg-brand-100 px-2 py-0.5 text-[10px] font-bold text-brand-800">
+                            <x-ui.badge tone="brand" size="sm" class="font-bold">
                                 Draf Baru
-                            </span>
+                            </x-ui.badge>
                         </div>
                     </div>
 
@@ -234,19 +264,19 @@
                         {{-- Section 1: Data Pelanggan --}}
                         <div>
                             <div class="flex items-center justify-between mb-1.5">
-                                <label for="customer_id" class="text-xs font-bold text-slate-700">
+                                <label for="customer_id" class="text-xs font-bold text-slate-800">
                                     Data Pelanggan <span class="text-rose-500">*</span>
                                 </label>
                                 <button
                                     type="button"
                                     id="btn-open-quick-customer"
-                                    onclick="openQuickCustomerModal()"
-                                    class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 hover:text-brand-700 hover:underline"
+                                    @click="openCustomerModal()"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline cursor-pointer transition"
+                                    title="Pintasan keyboard: Alt + P"
                                 >
-                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                    </svg>
+                                    <x-lucide-user-plus class="size-3.5" />
                                     <span>Pelanggan Baru</span>
+                                    <kbd class="hidden sm:inline-block ml-1 rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500">Alt+P</kbd>
                                 </button>
                             </div>
 
@@ -254,6 +284,7 @@
                                 <select
                                     id="customer_id"
                                     name="customer_id"
+                                    required
                                     onchange="onCustomerSelectChange(this.value)"
                                     @class([
                                         'w-full rounded-xl border bg-white px-3 py-2 text-xs text-slate-800 transition focus:outline-none focus:ring-2 sm:text-sm',
@@ -280,28 +311,26 @@
                             {{-- Preview Pelanggan Terpilih --}}
                             <div
                                 id="customer-preview-card"
-                                class="mt-2.5 hidden rounded-xl border border-emerald-200 bg-emerald-50/60 p-3 transition-all duration-200"
+                                class="mt-2.5 hidden rounded-xl border border-emerald-200/90 bg-emerald-50/70 p-3 transition-all duration-200"
                             >
                                 <div class="flex items-start justify-between gap-2">
                                     <div class="flex items-start gap-2.5">
-                                        <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 font-bold text-xs text-emerald-800" id="preview-avatar">
+                                        <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100 font-bold text-xs text-emerald-800 shadow-2xs" id="preview-avatar">
                                             PL
                                         </div>
                                         <div class="min-w-0">
                                             <p class="truncate text-xs font-bold text-slate-900" id="preview-name">-</p>
-                                            <p class="text-[11px] text-slate-600" id="preview-phone">-</p>
-                                            <p class="line-clamp-1 italic text-[11px] text-slate-500" id="preview-address">Alamat belum diisi</p>
+                                            <p class="text-xs text-slate-600 font-mono tabular-nums" id="preview-phone">-</p>
+                                            <p class="line-clamp-1 italic text-xs text-slate-500" id="preview-address">Alamat belum diisi</p>
                                         </div>
                                     </div>
                                     <button
                                         type="button"
                                         onclick="resetCustomerSelection()"
-                                        class="shrink-0 rounded p-1 text-slate-400 hover:bg-emerald-100 hover:text-slate-700"
+                                        class="shrink-0 rounded-lg p-1 text-slate-400 hover:bg-emerald-100 hover:text-slate-700 cursor-pointer transition"
                                         title="Ganti Pelanggan"
                                     >
-                                        <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
+                                        <x-lucide-x class="size-4" />
                                     </button>
                                 </div>
                             </div>
@@ -310,35 +339,33 @@
                         {{-- Section 2: Daftar Item Cucian Nota --}}
                         <div>
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold text-slate-700">Item Cucian</span>
+                                <span class="text-xs font-bold text-slate-800">Item Cucian</span>
                                 <button
                                     type="button"
                                     @click="addItem()"
-                                    class="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 hover:text-brand-700 hover:underline"
+                                    class="inline-flex items-center gap-1 text-xs font-bold text-brand-700 hover:text-brand-800 hover:underline cursor-pointer transition"
+                                    title="Pintasan keyboard: Alt + T"
                                 >
-                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    <span>Tambah Baris Manual</span>
+                                    <x-lucide-plus class="size-3.5" />
+                                    <span>Tambah Baris</span>
+                                    <kbd class="hidden sm:inline-block ml-1 rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500">Alt+T</kbd>
                                 </button>
                             </div>
 
                             <div class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
                                 <template x-for="(item, index) in items" :key="index">
-                                    <div class="rounded-xl border border-slate-200/80 bg-slate-50/50 p-3 transition hover:border-slate-300">
+                                    <div class="rounded-xl border border-slate-200/90 bg-slate-50/60 p-3 transition hover:border-slate-300">
                                         <div class="flex items-center justify-between gap-2 mb-2">
-                                            <span class="inline-flex items-center rounded-md bg-brand-100 px-1.5 py-0.5 text-[10px] font-bold text-brand-800" x-text="'Item #' + (index + 1)"></span>
+                                            <x-ui.badge tone="brand" size="sm" class="font-bold" x-text="'Item #' + (index + 1)"></x-ui.badge>
                                             <div class="flex items-center gap-2">
-                                                <span class="text-xs font-bold text-brand-700" x-text="formatRupiah(getSubtotal(item))"></span>
+                                                <span class="text-xs font-extrabold text-brand-700 font-mono tabular-nums" x-text="formatRupiah(getSubtotal(item))"></span>
                                                 <button
                                                     type="button"
                                                     @click="removeItem(index)"
-                                                    class="rounded p-1 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                                                    class="rounded-lg p-1 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 cursor-pointer"
                                                     title="Hapus baris item"
                                                 >
-                                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
+                                                    <x-lucide-trash-2 class="size-3.5" />
                                                 </button>
                                             </div>
                                         </div>
@@ -362,13 +389,15 @@
                                                 </select>
                                             </div>
 
-                                            {{-- Stepper Input Berat (Kg) --}}
-                                            <div class="flex items-center gap-2">
+                                            {{-- Stepper Input Berat (Kg) & Quick Chips --}}
+                                            <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                                                 <div class="flex flex-1 items-center rounded-lg border border-slate-300 bg-white overflow-hidden focus-within:border-brand-500 focus-within:ring-1 focus-within:ring-brand-200">
                                                     <button
                                                         type="button"
                                                         @click="stepWeight(index, -0.5)"
-                                                        class="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 active:bg-slate-200"
+                                                        aria-label="Kurangi berat 0.5 kg"
+                                                        class="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 active:bg-slate-200 cursor-pointer"
+                                                        title="Kurangi 0.5 kg"
                                                     >
                                                         -
                                                     </button>
@@ -376,21 +405,38 @@
                                                         type="number"
                                                         step="0.01"
                                                         min="0.01"
+                                                        inputmode="decimal"
                                                         :id="index === 0 ? 'weight' : null"
                                                         :name="'items[' + index + '][weight]'"
                                                         x-model="item.weight"
                                                         required
                                                         placeholder="0.00"
-                                                        class="w-full text-center border-0 p-1 text-xs font-bold text-slate-900 focus:outline-none"
+                                                        class="w-full text-center border-0 p-1 text-xs font-bold font-mono tabular-nums text-slate-900 focus:outline-none"
                                                     />
-                                                    <span class="pr-2 text-[10px] font-semibold text-slate-400">Kg</span>
+                                                    <span class="pr-2 text-xs font-semibold text-slate-500">Kg</span>
                                                     <button
                                                         type="button"
                                                         @click="stepWeight(index, 0.5)"
-                                                        class="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 active:bg-slate-200"
+                                                        aria-label="Tambah berat 0.5 kg"
+                                                        class="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 active:bg-slate-200 cursor-pointer"
+                                                        title="Tambah 0.5 kg"
                                                     >
                                                         +
                                                     </button>
+                                                </div>
+
+                                                {{-- Quick Weight Presets (+1kg, +2kg, +3kg, +5kg) --}}
+                                                <div class="flex items-center gap-1 shrink-0">
+                                                    <template x-for="w in [1, 2, 3, 5]" :key="w">
+                                                        <button
+                                                            type="button"
+                                                            @click="stepWeight(index, w)"
+                                                            class="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-bold font-mono tabular-nums text-slate-600 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition active:scale-95 cursor-pointer shadow-2xs"
+                                                            :title="'Tambah ' + w + ' kg'"
+                                                        >
+                                                            <span x-text="'+' + w + 'k'"></span>
+                                                        </button>
+                                                    </template>
                                                 </div>
                                             </div>
                                         </div>
@@ -404,18 +450,18 @@
                         </div>
 
                         {{-- Section 3: Ringkasan Kalkulasi & Total --}}
-                        <div class="rounded-xl border border-brand-100 bg-brand-50/50 p-4 space-y-2">
+                        <div class="rounded-xl border border-brand-100 bg-brand-50/40 p-4 space-y-2">
                             <div class="flex items-center justify-between text-xs text-slate-600">
                                 <span>Total Berat Cucian:</span>
-                                <span class="font-bold text-slate-900" x-text="getTotalWeight().toFixed(2) + ' kg'">0.00 kg</span>
+                                <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getTotalWeight().toFixed(2) + ' kg'">0.00 kg</span>
                             </div>
                             <div class="flex items-center justify-between text-xs text-slate-600">
                                 <span>Estimasi Pengerjaan:</span>
-                                <span class="font-bold text-slate-900" x-text="getMaxDuration() + ' Jam'">0 Jam</span>
+                                <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getMaxDuration() + ' Jam'">0 Jam</span>
                             </div>
-                            <div class="border-t border-brand-200/80 pt-2 flex items-center justify-between">
+                            <div class="border-t border-brand-200/80 pt-2.5 flex items-center justify-between">
                                 <span class="text-xs font-extrabold text-slate-800">Total Tagihan:</span>
-                                <span class="text-xl font-black text-brand-700" x-text="formatRupiah(getTotalAmount())">Rp 0</span>
+                                <span class="text-xl font-black text-brand-700 font-mono tabular-nums sm:text-2xl" x-text="formatRupiah(getTotalAmount())">Rp 0</span>
                             </div>
                         </div>
 
@@ -423,48 +469,49 @@
                         <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
                             <div class="flex items-center justify-between">
                                 <label class="text-xs font-bold text-slate-800">Pembayaran Kasir</label>
-                                <span class="text-[10px] font-semibold text-slate-500">Pilih status bayar saat ini</span>
+                                <span class="text-xs font-semibold text-slate-500">Pilih status bayar</span>
                             </div>
 
                             {{-- Pilihan Opsi Pembayaran --}}
-                            <div class="grid grid-cols-3 gap-1.5 rounded-lg bg-slate-200/70 p-1 text-xs font-semibold">
+                            <div class="grid grid-cols-3 gap-1.5 rounded-xl bg-slate-200/70 p-1 text-xs font-semibold text-slate-600">
                                 <button
                                     type="button"
-                                    @click="paymentChoice = 'unpaid'"
-                                    :class="paymentChoice === 'unpaid' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
-                                    class="rounded-md py-1.5 transition text-center"
+                                    @click="paymentChoice = 'unpaid'; dpAmount = ''"
+                                    :class="paymentChoice === 'unpaid' ? 'bg-white text-slate-900 shadow-2xs font-bold' : 'hover:text-slate-900'"
+                                    class="rounded-lg py-1.5 text-center transition cursor-pointer"
                                 >
                                     Bayar Nanti
                                 </button>
                                 <button
                                     type="button"
-                                    @click="paymentChoice = 'full'"
-                                    :class="paymentChoice === 'full' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
-                                    class="rounded-md py-1.5 transition text-center"
+                                    @click="paymentChoice = 'full'; dpAmount = ''"
+                                    :class="paymentChoice === 'full' ? 'bg-emerald-600 text-white shadow-2xs font-bold' : 'hover:text-slate-900'"
+                                    class="rounded-lg py-1.5 text-center transition cursor-pointer"
                                 >
                                     Bayar Lunas
                                 </button>
                                 <button
                                     type="button"
                                     @click="paymentChoice = 'dp'"
-                                    :class="paymentChoice === 'dp' ? 'bg-amber-500 text-white shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'"
-                                    class="rounded-md py-1.5 transition text-center"
+                                    :class="paymentChoice === 'dp' ? 'bg-amber-500 text-white shadow-2xs font-bold' : 'hover:text-slate-900'"
+                                    class="rounded-lg py-1.5 text-center transition cursor-pointer"
                                 >
                                     Bayar DP
                                 </button>
                             </div>
 
-                            {{-- Hidden input pay_now --}}
+                            {{-- Hidden input pay_now & payment_choice --}}
                             <input type="hidden" name="pay_now" :value="paymentChoice !== 'unpaid' ? '1' : '0'" />
+                            <input type="hidden" name="payment_choice" :value="paymentChoice" />
 
                             {{-- Detail Metode Pembayaran jika Bayar Sekarang --}}
                             <div x-show="paymentChoice !== 'unpaid'" x-transition class="space-y-3 pt-1">
                                 <div>
-                                    <label class="block mb-1 text-[11px] font-semibold text-slate-600">Metode Pembayaran</label>
+                                    <label class="block mb-1 text-xs font-semibold text-slate-600">Metode Pembayaran</label>
                                     <div class="grid grid-cols-3 gap-2">
                                         <template x-for="m in ['Tunai', 'QRIS', 'Transfer']" :key="m">
                                             <label
-                                                class="flex items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-bold cursor-pointer transition"
+                                                class="flex items-center justify-center gap-1.5 rounded-lg border py-1.5 text-xs font-bold cursor-pointer transition select-none"
                                                 :class="paymentMethod === m ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-2xs' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'"
                                             >
                                                 <input type="radio" name="payment_method" :value="m" x-model="paymentMethod" class="sr-only" />
@@ -477,20 +524,23 @@
                                 {{-- Input Nominal DP jika memilih DP --}}
                                 <div x-show="paymentChoice === 'dp'" x-transition>
                                     <div class="flex items-center justify-between mb-1">
-                                        <label for="payment_amount" class="text-[11px] font-semibold text-slate-600">Nominal DP (Uang Muka)</label>
-                                        <span class="text-[10px] text-amber-700 font-bold" x-text="'Maks. ' + formatRupiah(getTotalAmount())"></span>
+                                        <label for="payment_amount" class="text-xs font-semibold text-slate-600">Nominal DP (Uang Muka)</label>
+                                        <span class="text-xs text-amber-700 font-bold font-mono tabular-nums" x-text="'Maks. ' + formatRupiah(getTotalAmount())"></span>
                                     </div>
                                     <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-slate-400">Rp</span>
+                                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-slate-500">Rp</span>
                                         <input
                                             type="number"
                                             id="payment_amount"
                                             name="payment_amount"
+                                            inputmode="numeric"
                                             x-model="dpAmount"
+                                            :disabled="paymentChoice !== 'dp'"
+                                            :required="paymentChoice === 'dp'"
                                             min="1000"
-                                            :max="getTotalAmount()"
+                                            :max="Math.max(0, getTotalAmount() - 1000)"
                                             placeholder="Contoh: 20000"
-                                            class="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 py-1.5 text-xs font-semibold text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                            class="w-full rounded-lg border border-slate-300 bg-white pl-9 pr-3 py-1.5 text-xs font-bold font-mono tabular-nums text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                         />
                                     </div>
                                 </div>
@@ -502,15 +552,20 @@
                             <button
                                 type="submit"
                                 id="btn-submit-transaction"
-                                class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-brand-700 active:scale-98 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                                :disabled="isSubmitting"
+                                @click="if ($event.ctrlKey || $event.metaKey) { $event.preventDefault(); $event.stopPropagation(); const f = document.getElementById('transaction-form'); if (f?.reportValidity()) { isSubmitting = true; f.submit(); } }"
+                                class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-60 cursor-pointer shadow-sm active:scale-[0.99]"
                             >
-                                <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                <svg x-show="isSubmitting" x-cloak class="size-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                                 </svg>
-                                <span>Simpan Transaksi (Cetak Struk)</span>
+                                <x-lucide-check-circle x-show="! isSubmitting" class="size-5 text-brand-200" />
+                                <span x-text="isSubmitting ? 'Menyimpan transaksi...' : 'Simpan Transaksi (Cetak Struk)'">Simpan Transaksi (Cetak Struk)</span>
+                                <kbd class="hidden sm:inline-block rounded-md bg-brand-800/90 px-2 py-0.5 text-xs font-mono font-medium text-brand-100 border border-brand-600/50 ml-1">Ctrl + Enter</kbd>
                             </button>
-                            <p class="mt-2 text-center text-[11px] text-slate-400">
-                                Nomor nota unik dan riwayat pengerjaan otomatis dibuat oleh server.
+                            <p class="mt-2 text-center text-xs text-slate-500">
+                                Nomor nota unik dan riwayat pengerjaan otomatis dibuat oleh sistem.
                             </p>
                         </div>
                     </div>
@@ -518,145 +573,137 @@
             </div>
         </div>
 
-        {{-- Modal Tambah Pelanggan Cepat (AJAX Quick Add) --}}
+        {{-- Floating Bottom Bar untuk Layar Mobile (lg:hidden) --}}
         <div
-            id="modal-quick-customer"
-            class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs transition-opacity duration-200"
-            aria-labelledby="modal-quick-customer-title"
-            role="dialog"
-            aria-modal="true"
-            onclick="if (event.target === this) closeQuickCustomerModal()"
+            x-cloak
+            x-show="getTotalAmount() > 0"
+            x-transition:enter="ease-out duration-300"
+            x-transition:enter-start="opacity-0 translate-y-full"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-full"
+            class="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-slate-200/90 bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
         >
-            <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
-                <div class="relative w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left shadow-2xl transition-all sm:my-8">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                        <div class="flex items-center gap-2.5">
-                            <div class="flex size-8 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                                <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-bold text-slate-900" id="modal-quick-customer-title">
-                                    Tambah Pelanggan Baru
-                                </h3>
-                                <p class="text-[11px] text-slate-500">Daftarkan pelanggan baru langsung tanpa keluar dari kasir POS.</p>
-                            </div>
-                        </div>
-                        <button
-                            type="button"
-                            onclick="closeQuickCustomerModal()"
-                            class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none"
-                            aria-label="Tutup"
-                        >
-                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+            <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 text-xs text-slate-500">
+                        <span class="font-medium text-slate-700" x-text="items.filter(i => i.service_id).length + ' Layanan'"></span>
+                        <span>•</span>
+                        <span class="font-mono tabular-nums font-semibold" x-text="getTotalWeight().toFixed(2) + ' Kg'"></span>
                     </div>
-
-                    {{-- Container Error Validasi AJAX --}}
-                    <div id="quick-customer-errors" class="mt-4 hidden rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800">
-                        <div class="flex items-center gap-1.5 font-semibold">
-                            <svg class="size-4 shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
-                            <span>Gagal menyimpan data pelanggan:</span>
-                        </div>
-                        <ul id="quick-customer-errors-list" class="mt-1 list-inside list-disc space-y-0.5 pl-2 font-normal"></ul>
-                    </div>
-
-                    <form id="form-quick-customer" onsubmit="submitQuickCustomer(event)" class="mt-4 space-y-4">
-                        <div>
-                            <label for="quick_customer_name" class="block text-xs font-semibold text-slate-700">
-                                Nama Pelanggan <span class="text-rose-500">*</span>
-                            </label>
-                            <div class="relative mt-1.5">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="text"
-                                    id="quick_customer_name"
-                                    name="name"
-                                    required
-                                    placeholder="Contoh: Budi Santoso"
-                                    class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex items-center justify-between">
-                                <label for="quick_customer_phone" class="block text-xs font-semibold text-slate-700">
-                                    Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
-                                </label>
-                                <span class="text-[11px] text-slate-400">Otomatis format 08xxx</span>
-                            </div>
-                            <div class="relative mt-1.5">
-                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
-                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                    </svg>
-                                </div>
-                                <input
-                                    type="text"
-                                    id="quick_customer_phone"
-                                    name="phone"
-                                    required
-                                    placeholder="081234567890"
-                                    class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label for="quick_customer_address" class="block text-xs font-semibold text-slate-700">
-                                Alamat <span class="text-slate-400 font-normal">(Opsional)</span>
-                            </label>
-                            <div class="relative mt-1.5">
-                                <div class="pointer-events-none absolute top-3 left-0 flex items-center pl-3.5 text-slate-400">
-                                    <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
-                                <textarea
-                                    id="quick_customer_address"
-                                    name="address"
-                                    rows="2"
-                                    placeholder="Contoh: Jl. Merdeka No. 10, RT 02/05"
-                                    class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
-                                ></textarea>
-                            </div>
-                        </div>
-
-                        <div class="mt-6 flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
-                            <button
-                                type="button"
-                                onclick="closeQuickCustomerModal()"
-                                class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                type="submit"
-                                id="btn-save-quick-customer"
-                                class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98"
-                            >
-                                <svg id="btn-save-quick-customer-spinner" class="hidden size-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                                </svg>
-                                <span id="btn-save-quick-customer-text">Simpan & Pilih</span>
-                            </button>
-                        </div>
-                    </form>
+                    <p class="text-base font-black text-brand-700 font-mono tabular-nums tracking-tight" x-text="formatRupiah(getTotalAmount())"></p>
                 </div>
+                <a
+                    href="#kasir-ticket-panel"
+                    class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition hover:bg-brand-800 active:scale-98"
+                >
+                    <x-lucide-receipt class="size-4" />
+                    <span>Lihat Nota & Bayar</span>
+                </a>
             </div>
         </div>
+
+        {{-- Modal Tambah Pelanggan Cepat (AJAX Quick Add) Menggunakan <x-ui.modal> --}}
+        <x-ui.modal
+            id="modal-quick-customer"
+            show="quickCustomerModalOpen"
+            title="Tambah Pelanggan Baru"
+            description="Daftarkan pelanggan baru langsung tanpa keluar dari kasir POS."
+            maxWidth="lg"
+        >
+            {{-- Container Error Validasi AJAX --}}
+            <div id="quick-customer-errors" class="mb-4 hidden rounded-xl border border-rose-200 bg-rose-50/80 p-3 text-xs text-rose-800">
+                <div class="flex items-center gap-1.5 font-semibold">
+                    <x-lucide-alert-circle class="size-4 shrink-0 text-rose-600" />
+                    <span>Gagal menyimpan data pelanggan:</span>
+                </div>
+                <ul id="quick-customer-errors-list" class="mt-1 list-inside list-disc space-y-0.5 pl-2 font-normal"></ul>
+            </div>
+
+            <form id="form-quick-customer" onsubmit="submitQuickCustomer(event)" class="space-y-4">
+                <div>
+                    <label for="quick_customer_name" class="block text-xs font-bold text-slate-700">
+                        Nama Pelanggan <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative mt-1.5">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <x-lucide-user class="size-4" />
+                        </div>
+                        <input
+                            type="text"
+                            id="quick_customer_name"
+                            name="name"
+                            required
+                            placeholder="Contoh: Budi Santoso"
+                            class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between">
+                        <label for="quick_customer_phone" class="block text-xs font-bold text-slate-700">
+                            Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
+                        </label>
+                        <span class="text-[11px] text-slate-400">Format: 08xxx</span>
+                    </div>
+                    <div class="relative mt-1.5">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <x-lucide-phone class="size-4" />
+                        </div>
+                        <input
+                            type="text"
+                            id="quick_customer_phone"
+                            name="phone"
+                            required
+                            placeholder="081234567890"
+                            class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs font-mono tabular-nums text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label for="quick_customer_address" class="block text-xs font-bold text-slate-700">
+                        Alamat <span class="text-slate-400 font-normal">(Opsional)</span>
+                    </label>
+                    <div class="relative mt-1.5">
+                        <div class="pointer-events-none absolute top-3 left-0 flex items-center pl-3.5 text-slate-400">
+                            <x-lucide-map-pin class="size-4" />
+                        </div>
+                        <textarea
+                            id="quick_customer_address"
+                            name="address"
+                            rows="2"
+                            placeholder="Contoh: Jl. Merdeka No. 10, RT 02/05"
+                            class="w-full rounded-xl border border-slate-300 bg-white pl-10 pr-3.5 py-2.5 text-xs text-slate-800 transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:text-sm"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex items-center justify-end gap-2 border-t border-slate-100 pt-4">
+                    <button
+                        type="button"
+                        @click="quickCustomerModalOpen = false"
+                        class="min-h-[38px] rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="submit"
+                        id="btn-save-quick-customer"
+                        class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-xs font-semibold text-white shadow-2xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98 cursor-pointer"
+                    >
+                        <svg id="btn-save-quick-customer-spinner" class="hidden size-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        <x-lucide-check class="size-3.5" />
+                        <span id="btn-save-quick-customer-text">Simpan & Pilih</span>
+                    </button>
+                </div>
+            </form>
+        </x-ui.modal>
     </div>
 
     <script>
@@ -664,12 +711,93 @@
         function posTransactionManager() {
             return {
                 searchQuery: '',
+                isSubmitting: false,
+                quickCustomerModalOpen: false,
                 items: @json(old('items', [['service_id' => ($services->first()?->id ?? ''), 'weight' => '']])),
                 servicesList: @json($services),
                 servicesMap: @json($services->keyBy('id')),
-                paymentChoice: '{{ old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid' }}',
-                paymentMethod: '{{ old('payment_method', 'Tunai') }}',
-                dpAmount: '{{ old('payment_amount', '') }}',
+                paymentChoice: @js(old('payment_choice', old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid')),
+                paymentMethod: @js(old('payment_method', 'Tunai')),
+                dpAmount: @js(old('payment_amount', '')),
+
+                init() {
+                    window.addEventListener('keydown', (e) => {
+                        // Alt + P -> Tambah Pelanggan Baru
+                        if (e.altKey && (e.key === 'p' || e.key === 'P')) {
+                            e.preventDefault();
+                            this.openCustomerModal();
+                            return;
+                        }
+
+                        // Alt + T -> Tambah Baris Layanan
+                        if (e.altKey && (e.key === 't' || e.key === 'T')) {
+                            e.preventDefault();
+                            this.addItem();
+                            return;
+                        }
+
+                        // Ctrl + Enter atau Cmd + Enter -> Simpan Transaksi POS (tetap di tab saat ini)
+                        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            // Jika modal tambah pelanggan sedang terbuka, simpan data pelanggan baru
+                            if (this.showCustomerModal) {
+                                const custBtn = document.getElementById('btn-save-quick-customer');
+                                if (custBtn && !custBtn.disabled) {
+                                    custBtn.click();
+                                }
+                                return;
+                            }
+
+                            const form = document.getElementById('transaction-form');
+                            if (form && !this.isSubmitting) {
+                                if (typeof form.reportValidity === 'function' && !form.reportValidity()) {
+                                    return;
+                                }
+                                this.isSubmitting = true;
+                                form.submit();
+                            }
+                            return;
+                        }
+
+                        // / -> Fokus Cepat Kolom Cari Layanan
+                        if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
+                            e.preventDefault();
+                            const searchInput = document.getElementById('service-search-input');
+                            if (searchInput) {
+                                searchInput.focus();
+                                searchInput.select();
+                            }
+                        }
+                    });
+
+                    window.addEventListener('open-quick-customer-modal', () => {
+                        this.openCustomerModal();
+                    });
+
+                    window.addEventListener('close-quick-customer-modal', () => {
+                        this.closeCustomerModal();
+                    });
+                },
+
+                openCustomerModal() {
+                    this.quickCustomerModalOpen = true;
+                    const errBox = document.getElementById('quick-customer-errors');
+                    if (errBox) errBox.classList.add('hidden');
+                    const errList = document.getElementById('quick-customer-errors-list');
+                    if (errList) errList.innerHTML = '';
+                    const form = document.getElementById('form-quick-customer');
+                    if (form) form.reset();
+                    setTimeout(() => {
+                        const nameInput = document.getElementById('quick_customer_name');
+                        if (nameInput) nameInput.focus();
+                    }, 120);
+                },
+
+                closeCustomerModal() {
+                    this.quickCustomerModalOpen = false;
+                },
 
                 get filteredServices() {
                     let list = this.servicesList;
@@ -789,11 +917,11 @@
             if (addressEl) {
                 if (cust.address && cust.address.trim() !== '') {
                     addressEl.textContent = cust.address;
-                    addressEl.classList.remove('italic', 'text-slate-400');
+                    addressEl.classList.remove('italic', 'text-slate-500');
                     addressEl.classList.add('text-slate-600');
                 } else {
                     addressEl.textContent = 'Alamat belum diisi';
-                    addressEl.classList.add('italic', 'text-slate-400');
+                    addressEl.classList.add('italic', 'text-slate-500');
                     addressEl.classList.remove('text-slate-600');
                 }
             }
@@ -823,31 +951,12 @@
         });
 
         function openQuickCustomerModal() {
-            const modal = document.getElementById('modal-quick-customer');
-            if (modal) {
-                modal.classList.remove('hidden');
-                document.getElementById('quick-customer-errors').classList.add('hidden');
-                document.getElementById('quick-customer-errors-list').innerHTML = '';
-                document.getElementById('form-quick-customer').reset();
-                setTimeout(() => {
-                    const nameInput = document.getElementById('quick_customer_name');
-                    if (nameInput) nameInput.focus();
-                }, 100);
-            }
+            window.dispatchEvent(new CustomEvent('open-quick-customer-modal'));
         }
 
         function closeQuickCustomerModal() {
-            const modal = document.getElementById('modal-quick-customer');
-            if (modal) {
-                modal.classList.add('hidden');
-            }
+            window.dispatchEvent(new CustomEvent('close-quick-customer-modal'));
         }
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeQuickCustomerModal();
-            }
-        });
 
         async function submitQuickCustomer(event) {
             event.preventDefault();

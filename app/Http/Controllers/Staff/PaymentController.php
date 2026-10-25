@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePaymentRequest;
 use App\Models\Payment;
 use App\Models\Transaction;
 use App\Services\RecordPayment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 
 class PaymentController extends Controller
@@ -26,61 +27,37 @@ class PaymentController extends Controller
             'verifier',
         ])->latest();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Pencarian
-        |--------------------------------------------------------------------------
-        */
-
+        // Pencarian kode transaksi atau nama pelanggan.
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = $request->input('search');
 
             $query->where(function ($q) use ($search) {
                 $q->whereHas('transaction', function ($transactionQuery) use ($search) {
                     $transactionQuery
                         ->where('transaction_code', 'like', "%{$search}%")
                         ->orWhereHas('customer', function ($customerQuery) use ($search) {
-                            $customerQuery->where(
-                                'name',
-                                'like',
-                                "%{$search}%"
-                            );
+                            $customerQuery->where('name', 'like', "%{$search}%");
                         });
                 });
             });
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filter Status Verifikasi
-        |--------------------------------------------------------------------------
-        */
-
+        // Filter status verifikasi.
         if ($request->filled('verification_status')) {
             $query->where(
                 'verification_status',
-                $request->verification_status
+                $request->input('verification_status')
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filter Metode Pembayaran
-        |--------------------------------------------------------------------------
-        */
-
+        // Filter metode pembayaran.
         if ($request->filled('method')) {
             $query->where('method', $request->input('method'));
         }
 
-        $payments = $query
-            ->paginate(10)
-            ->withQueryString();
+        $payments = $query->paginate(10)->withQueryString();
 
-        return view(
-            'staff.payments.index',
-            compact('payments')
-        );
+        return view('staff.payments.index', compact('payments'));
     }
 
     /**
@@ -95,58 +72,33 @@ class PaymentController extends Controller
             'verifier',
         ]);
 
-        return view(
-            'staff.payments.show',
-            compact('payment')
-        );
+        return view('staff.payments.show', compact('payment'));
     }
 
     /**
-     * Catat pembayaran baru.
-     *
-     * Pembayaran:
-     * - Tunai
-     * - Transfer
-     * - QRIS
-     *
-     * Transfer dan QRIS dapat menyertakan
-     * bukti pembayaran digital.
+     * Mencatat pembayaran baru dan mengunggah bukti jika diperlukan.
      */
     public function store(
         StorePaymentRequest $request,
         Transaction $transaction
-    ): RedirectResponse {
+    ): JsonResponse|RedirectResponse {
         $validated = $request->validated();
 
         try {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Catat pembayaran menggunakan service yang sudah ada
-            |--------------------------------------------------------------------------
-            */
-
             $payment = RecordPayment::execute(
                 transaction: $transaction,
                 amount: (float) $validated['amount'],
                 method: (string) $validated['method'],
                 userId: (int) auth()->id(),
-                paymentType: $validated['payment_type'] ?? null
+                cashReceived: isset($validated['cash_received'])
+                    ? (float) $validated['cash_received']
+                    : null
             );
 
-            /*
-            |--------------------------------------------------------------------------
-            | Upload bukti pembayaran
-            |--------------------------------------------------------------------------
-            */
-
+            // Bukti Transfer/QRIS disimpan dan menunggu verifikasi.
             if (
                 $request->hasFile('proof_file')
-                && in_array(
-                    $validated['method'],
-                    ['Transfer', 'QRIS'],
-                    true
-                )
+                && in_array($validated['method'], ['Transfer', 'QRIS'], true)
             ) {
                 $path = $request->file('proof_file')->store(
                     'payments/proofs',
@@ -158,39 +110,77 @@ class PaymentController extends Controller
                     'verification_status' => 'Menunggu Verifikasi',
                 ]);
             }
-
         } catch (InvalidArgumentException $e) {
-
             throw ValidationException::withMessages([
                 'amount' => [$e->getMessage()],
             ]);
         }
 
-        $amount = number_format(
-        (float) $payment->amount,
-        0,
-        ',',
-        '.'
-    );
-
-    $method = $payment->method;
-
-    return redirect()
-        ->back()
-        ->with(
-            'success',
-            "Pembayaran sebesar Rp {$amount} ({$method}) berhasil dicatat."
+        $formattedAmount = number_format(
+            (float) $payment->amount,
+            0,
+            ',',
+            '.'
         );
+
+        $successMessage = "Pembayaran sebesar Rp {$formattedAmount} ({$payment->method}) berhasil dicatat.";
+
+        // Jika dipanggil melalui AJAX/API, kembalikan respons JSON.
+        if ($request->expectsJson()) {
+            $transaction->refresh();
+            $transaction->load('payments');
+
+            $paymentStatusValue = $transaction->payment_status instanceof PaymentStatus
+                ? $transaction->payment_status->value
+                : (string) $transaction->payment_status;
+
+            return response()->json([
+                'success' => true,
+                'message' => $successMessage,
+                'transaction' => [
+                    'id' => $transaction->id,
+                    'paid_amount' => (float) $transaction->total_paid,
+                    'paid_formatted' => 'Rp '.number_format(
+                        (float) $transaction->total_paid,
+                        0,
+                        ',',
+                        '.'
+                    ),
+                    'remaining_amount' => (float) $transaction->remaining_amount,
+                    'remaining_formatted' => 'Rp '.number_format(
+                        (float) $transaction->remaining_amount,
+                        0,
+                        ',',
+                        '.'
+                    ),
+                    'payment_status' => $paymentStatusValue,
+                    'payments' => $transaction->payments->map(fn ($p) => [
+                        'id' => $p->id,
+                        'amount_formatted' => 'Rp '.number_format(
+                            (float) $p->amount,
+                            0,
+                            ',',
+                            '.'
+                        ),
+                        'method' => $p->method ?? 'Tunai',
+                        'created_at' => $p->paid_at?->format('d M Y, H:i')
+                            ?? $p->created_at?->format('d M Y, H:i'),
+                        'status' => $p->verification_status ?? 'Terverifikasi',
+                    ])->values()->all(),
+                ],
+            ]);
+        }
+
+        return redirect()->back()->with('success', $successMessage);
     }
 
     /**
-     * Verifikasi pembayaran non-tunai.
+     * Memverifikasi atau menolak pembayaran non-tunai.
      */
     public function verify(
         Request $request,
         Payment $payment
     ): RedirectResponse {
-
         $validated = $request->validate([
             'verification_status' => [
                 'required',
@@ -206,11 +196,9 @@ class PaymentController extends Controller
 
         $status = $validated['verification_status'];
 
-        return redirect()
-            ->back()
-            ->with(
-                'success',
-                "Pembayaran berhasil diproses dengan status {$status}."
-            );
+        return redirect()->back()->with(
+            'success',
+            "Pembayaran berhasil diproses dengan status {$status}."
+        );
     }
 }
