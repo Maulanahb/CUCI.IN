@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TransactionStatus;
+use App\Models\Payment;
 use App\Services\TransactionCodeGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
