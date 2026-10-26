@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\ComplaintController as CustomerComplaintController;
+use App\Http\Controllers\Customer\PaymentProofController as CustomerPaymentProofController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ServiceController;
@@ -152,6 +153,19 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
                     ->name('transactions.payments.store');
 
+                // Verifikasi Bukti Pembayaran Transfer/QRIS
+                Route::get('/payments', [PaymentController::class, 'index'])
+                    ->name('payments.index');
+
+                Route::get('/payments/{payment}', [PaymentController::class, 'show'])
+                    ->name('payments.show');
+
+                Route::get('/payments/{payment}/proof', [PaymentController::class, 'proof'])
+                    ->name('payments.proof');
+
+                Route::patch('/payments/{payment}/verify', [PaymentController::class, 'verify'])
+                    ->name('payments.verify');
+
                 // Layanan (Katalog untuk Staff)
                 Route::get('/services', [ServiceController::class, 'index'])
                     ->name('services.index');
@@ -198,6 +212,19 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
                     ->name('transactions.payments.store');
 
+                // Verifikasi Bukti Pembayaran Transfer/QRIS
+                Route::get('/payments', [PaymentController::class, 'index'])
+                    ->name('payments.index');
+
+                Route::get('/payments/{payment}', [PaymentController::class, 'show'])
+                    ->name('payments.show');
+
+                Route::get('/payments/{payment}/proof', [PaymentController::class, 'proof'])
+                    ->name('payments.proof');
+
+                Route::patch('/payments/{payment}/verify', [PaymentController::class, 'verify'])
+                    ->name('payments.verify');
+
                 // Layanan (CRUD Master Layanan untuk Admin)
                 Route::get('/services', [ServiceController::class, 'index'])
                     ->name('services.index');
@@ -228,6 +255,14 @@ Route::middleware(['auth', 'active'])->group(function () {
 
             Route::get('/transactions', [CustomerTransactionController::class, 'index'])
                 ->name('transactions.index');
+
+            // Unggah & lihat bukti pembayaran Transfer/QRIS
+            Route::post('/transactions/{transaction}/payment-proofs', [CustomerPaymentProofController::class, 'store'])
+                ->middleware('throttle:10,1')
+                ->name('transactions.payment-proofs.store');
+
+            Route::get('/payments/{payment}/proof', [CustomerPaymentProofController::class, 'show'])
+                ->name('payments.proof');
 
             Route::get('/complaints', [CustomerComplaintController::class, 'index'])
                 ->name('complaints.index');

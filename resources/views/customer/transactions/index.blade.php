@@ -22,6 +22,12 @@
             <div></div>
         </div>
 
+        @if (session('status'))
+            <x-ui.alert variant="success" dismissible class="print:hidden">
+                {{ session('status') }}
+            </x-ui.alert>
+        @endif
+
         {{-- 4 Kartu Statistik Ringkasan --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 print:hidden">
             {{-- Kartu 1: Total Transaksi --}}
@@ -155,7 +161,7 @@
                                 @foreach ($paginatedTransactions as $trx)
                                     @php
                                         $statusVal = $trx->status instanceof \App\Enums\TransactionStatus ? $trx->status->value : (string) $trx->status;
-                                        $paidAmount = (float) $trx->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
+                                        $paidAmount = $trx->total_paid;
                                         $remainingAmount = max(0.0, (float) $trx->total_amount - $paidAmount);
                                         $isPaidOff = $remainingAmount <= 0.001;
                                         $hasDp = ! $isPaidOff && $paidAmount > 0;
@@ -244,7 +250,7 @@
                         @foreach ($paginatedTransactions as $trx)
                             @php
                                 $statusVal = $trx->status instanceof \App\Enums\TransactionStatus ? $trx->status->value : (string) $trx->status;
-                                $paidAmount = (float) $trx->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
+                                $paidAmount = $trx->total_paid;
                                 $remainingAmount = max(0.0, (float) $trx->total_amount - $paidAmount);
                                 $isPaidOff = $remainingAmount <= 0.001;
                                 $hasDp = ! $isPaidOff && $paidAmount > 0;
@@ -314,11 +320,15 @@
             {{-- Pop-up Modal: Detail Transaksi Cucian (Sesuai Database) --}}
             @if ($selectedTransaction)
                 @php
-                    $selPaid = (float) $selectedTransaction->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
+                    $selPaid = $selectedTransaction->total_paid;
                     $selRemaining = max(0.0, (float) $selectedTransaction->total_amount - $selPaid);
                     $selIsPaidOff = $selRemaining <= 0.001;
                     $closeModalUrl = request()->fullUrlWithQuery(['selected' => null]);
-                    $latestPayment = $selectedTransaction->payments->last();
+                    $latestPayment = $selectedTransaction->payments->whereIn('verification_status', \App\Models\Payment::PAID_STATUSES)->last();
+                    $selPendingAmount = $selectedTransaction->pending_verification_amount;
+                    $selSubmittable = $selectedTransaction->submittable_amount;
+                    $selCanUploadProof = ! $selectedTransaction->status->isTerminal() && $selSubmittable > 0;
+                    $proofErrorKeys = ['method', 'amount', 'proof_file'];
                 @endphp
 
                 <div
@@ -350,7 +360,7 @@
                         </div>
 
                         {{-- Isi Modal --}}
-                        <div class="p-5 space-y-4 text-xs sm:text-sm">
+                        <div class="max-h-[70vh] overflow-y-auto p-5 space-y-4 text-xs sm:text-sm">
                             {{-- Info Transaksi --}}
                             <div class="grid grid-cols-2 gap-3 rounded-xl border border-slate-100 bg-slate-50/50 p-3.5">
                                 <div>
@@ -374,7 +384,7 @@
                                 <div>
                                     <p class="text-xs font-medium text-slate-500">Status Pembayaran</p>
                                     <div class="mt-0.5">
-                                        <x-ui.payment-badge :status="$selIsPaidOff ? 'Lunas' : 'Belum Bayar'" size="sm" />
+                                        <x-ui.payment-badge :status="$selectedTransaction->payment_status" size="sm" />
                                     </div>
                                 </div>
                             </div>
@@ -445,6 +455,176 @@
                                     </span>
                                 </div>
                             </div>
+
+                            {{-- Riwayat Pembayaran & Status Verifikasi --}}
+                            @if ($selectedTransaction->payments->isNotEmpty())
+                                <div>
+                                    <p class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Riwayat Pembayaran</p>
+                                    <ul class="divide-y divide-slate-100 rounded-lg border border-slate-200/80">
+                                        @foreach ($selectedTransaction->payments->sortByDesc('id') as $payment)
+                                            <li class="flex items-start justify-between gap-3 px-3 py-2.5">
+                                                <div class="min-w-0">
+                                                    <p class="font-bold font-mono tabular-nums text-slate-900">
+                                                        <x-ui.money :value="$payment->amount" />
+                                                    </p>
+                                                    <p class="text-xs text-slate-500">
+                                                        {{ $payment->paid_at?->translatedFormat('d M Y, H:i') }} &middot; {{ $payment->method }} &middot; {{ $payment->payment_type }}
+                                                    </p>
+                                                    @if ($payment->proof_file)
+                                                        <a
+                                                            href="{{ route('customer.payments.proof', $payment) }}"
+                                                            target="_blank"
+                                                            rel="noopener"
+                                                            class="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800"
+                                                        >
+                                                            <x-lucide-image class="size-3.5" />
+                                                            <span>Lihat bukti</span>
+                                                        </a>
+                                                    @endif
+                                                    @if ($payment->verification_status === 'Ditolak' && $payment->verification_notes)
+                                                        <p class="mt-1 text-xs text-rose-700">
+                                                            <span class="font-semibold">Alasan ditolak:</span> {{ $payment->verification_notes }}
+                                                        </p>
+                                                    @endif
+                                                </div>
+                                                <x-ui.verification-badge :status="$payment->verification_status" size="sm" class="shrink-0" />
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            @if ($selPendingAmount > 0)
+                                <x-ui.alert variant="warning">
+                                    Bukti pembayaran <span class="font-bold font-mono">Rp {{ number_format($selPendingAmount, 0, ',', '.') }}</span> lagi dicek kasir. Status tagihan akan berubah setelah disetujui.
+                                </x-ui.alert>
+                            @endif
+
+                            {{-- Formulir Unggah Bukti Transfer / QRIS --}}
+                            @if ($selCanUploadProof)
+                                <form
+                                    method="POST"
+                                    action="{{ route('customer.transactions.payment-proofs.store', $selectedTransaction) }}"
+                                    enctype="multipart/form-data"
+                                    class="space-y-3 rounded-xl border border-brand-100 bg-brand-50/40 p-3.5"
+                                    x-data="{
+                                        method: @js(old('method', 'Transfer')),
+                                        amount: @js(old('amount', $selSubmittable)),
+                                        maxAmount: {{ $selSubmittable }},
+                                        previewUrl: null,
+                                        fileName: '',
+                                        fileError: '',
+                                        submitting: false,
+                                        allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+                                        maxBytes: 5 * 1024 * 1024,
+                                        pickFile(event) {
+                                            const file = event.target.files[0] ?? null;
+                                            this.fileError = '';
+                                            this.fileName = '';
+                                            if (this.previewUrl) {
+                                                URL.revokeObjectURL(this.previewUrl);
+                                                this.previewUrl = null;
+                                            }
+                                            if (! file) {
+                                                return;
+                                            }
+                                            if (! this.allowedTypes.includes(file.type)) {
+                                                this.fileError = 'Format bukti hanya JPG, PNG, atau WEBP.';
+                                                event.target.value = '';
+                                                return;
+                                            }
+                                            if (file.size > this.maxBytes) {
+                                                this.fileError = 'Ukuran bukti maksimal 5 MB.';
+                                                event.target.value = '';
+                                                return;
+                                            }
+                                            this.fileName = file.name;
+                                            this.previewUrl = URL.createObjectURL(file);
+                                        },
+                                        get canSubmit() {
+                                            const value = Number(this.amount) || 0;
+                                            return ! this.submitting && this.previewUrl !== null && value > 0 && value <= this.maxAmount;
+                                        },
+                                    }"
+                                    @submit="if (! canSubmit) { $event.preventDefault(); return; } submitting = true"
+                                >
+                                    @csrf
+
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-800 uppercase tracking-wider">Sudah Transfer / Bayar QRIS?</p>
+                                        <p class="mt-0.5 text-xs text-slate-500">Unggah bukti pembayaranmu, nanti kasir yang mengecek dan mengonfirmasi.</p>
+                                    </div>
+
+                                    @if ($errors->hasAny($proofErrorKeys))
+                                        <div class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700" role="alert">
+                                            {{ $errors->first('proof_file') ?: ($errors->first('amount') ?: $errors->first('method')) }}
+                                        </div>
+                                    @endif
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label for="proof-method" class="mb-1 block text-xs font-bold text-slate-700">Metode</label>
+                                            <select
+                                                id="proof-method"
+                                                name="method"
+                                                x-model="method"
+                                                required
+                                                class="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs text-slate-800 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                                            >
+                                                <option value="Transfer">Transfer Bank</option>
+                                                <option value="QRIS">QRIS</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="proof-amount" class="mb-1 block text-xs font-bold text-slate-700">Nominal (Rp)</label>
+                                            <input
+                                                id="proof-amount"
+                                                type="number"
+                                                name="amount"
+                                                x-model="amount"
+                                                min="100"
+                                                max="{{ $selSubmittable }}"
+                                                inputmode="numeric"
+                                                required
+                                                class="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs font-bold font-mono tabular-nums text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                                            />
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-500 font-mono tabular-nums">
+                                        Maksimal yang bisa diajukan: Rp {{ number_format($selSubmittable, 0, ',', '.') }}
+                                    </p>
+
+                                    <div>
+                                        <label for="proof-file" class="mb-1 block text-xs font-bold text-slate-700">Foto Bukti Pembayaran</label>
+                                        <input
+                                            id="proof-file"
+                                            type="file"
+                                            name="proof_file"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            required
+                                            @change="pickFile($event)"
+                                            class="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-700 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-brand-800"
+                                        />
+                                        <p class="mt-1 text-xs text-slate-500">JPG, PNG, atau WEBP, maksimal 5 MB.</p>
+                                        <p x-show="fileError" x-text="fileError" x-cloak class="mt-1 text-xs font-semibold text-rose-700" role="alert"></p>
+                                    </div>
+
+                                    <template x-if="previewUrl">
+                                        <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+                                            <img :src="previewUrl" :alt="'Pratinjau ' + fileName" class="max-h-56 w-full object-contain" />
+                                        </div>
+                                    </template>
+
+                                    <button
+                                        type="submit"
+                                        x-bind:disabled="! canSubmit"
+                                        class="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2.5 text-xs font-bold text-white shadow-2xs transition hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-50"
+                                    >
+                                        <x-lucide-upload class="size-4" />
+                                        <span x-text="submitting ? 'Mengirim...' : 'Kirim Bukti Pembayaran'">Kirim Bukti Pembayaran</span>
+                                    </button>
+                                </form>
+                            @endif
                         </div>
 
                         {{-- Footer Modal: Tombol Aksi --}}

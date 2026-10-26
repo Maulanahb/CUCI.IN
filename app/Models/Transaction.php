@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\TransactionStatus;
-use App\Models\Payment;
 use App\Services\TransactionCodeGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -148,6 +147,26 @@ class Transaction extends Model
     public function getRemainingAmountAttribute(): float
     {
         return max(0.0, (float) $this->total_amount - $this->total_paid);
+    }
+
+    /**
+     * Hitung nominal bukti pembayaran yang masih menunggu verifikasi kasir.
+     */
+    public function getPendingVerificationAmountAttribute(): float
+    {
+        $pendingPayments = $this->relationLoaded('payments')
+            ? $this->payments->filter(fn (Payment $p): bool => $p->verification_status === Payment::PENDING_STATUS)
+            : $this->payments()->pendingVerification()->get();
+
+        return (float) $pendingPayments->sum('amount');
+    }
+
+    /**
+     * Sisa tagihan yang masih dapat diajukan bukti pembayarannya oleh pelanggan.
+     */
+    public function getSubmittableAmountAttribute(): float
+    {
+        return max(0.0, $this->remaining_amount - $this->pending_verification_amount);
     }
 
     /**

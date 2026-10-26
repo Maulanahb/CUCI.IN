@@ -20,7 +20,7 @@
         <span>{{ $title }}</span>
         <x-lucide-chevron-down
             class="size-4 shrink-0 text-slate-400 transition-transform duration-200"
-            :class="{ 'rotate-180': activeAccordion === id }"
+            x-bind:class="{ 'rotate-180': activeAccordion === id }"
         />
     </button>
 

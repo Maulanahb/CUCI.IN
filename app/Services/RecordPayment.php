@@ -67,15 +67,7 @@ class RecordPayment
                 throw new InvalidArgumentException('Nominal pembayaran (Rp '.number_format($amount, 0, ',', '.').") melebihi sisa tagihan (Rp {$formattedRemaining}).");
             }
 
-            $totalPaidBefore = $lockedTransaction->total_paid;
-
-            if ($totalPaidBefore == 0 && $amount >= (float) $lockedTransaction->total_amount) {
-                $paymentType = 'Pembayaran Penuh';
-            } elseif ($amount >= $remaining) {
-                $paymentType = 'Pelunasan';
-            } else {
-                $paymentType = 'DP';
-            }
+            $paymentType = self::determinePaymentType($lockedTransaction, $amount);
 
             // Kasir mencatat pembayaran setelah uang diterima, jadi transfer/QRIS langsung dianggap terverifikasi.
             $verificationStatus = $method === 'Tunai' ? 'Tidak Diperlukan' : 'Terverifikasi';
@@ -95,5 +87,23 @@ class RecordPayment
 
             return $payment;
         });
+    }
+
+    /**
+     * Tentukan jenis pembayaran berdasarkan pembayaran valid yang sudah tercatat.
+     */
+    public static function determinePaymentType(Transaction $transaction, float $amount): string
+    {
+        $totalPaidBefore = $transaction->total_paid;
+
+        if ($totalPaidBefore == 0 && $amount >= (float) $transaction->total_amount) {
+            return 'Pembayaran Penuh';
+        }
+
+        if ($amount >= $transaction->remaining_amount) {
+            return 'Pelunasan';
+        }
+
+        return 'DP';
     }
 }
