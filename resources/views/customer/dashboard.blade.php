@@ -188,7 +188,7 @@
                     @foreach ($activeTransactions as $trx)
                         @php
                             $statusVal = $trx->status instanceof \App\Enums\TransactionStatus ? $trx->status->value : (string) $trx->status;
-                            $paid = (float) $trx->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
+                            $paid = $trx->total_paid;
                             $remaining = max(0.0, (float) $trx->total_amount - $paid);
                             $isPaidOff = $remaining <= 0;
 
@@ -356,7 +356,7 @@
                     @foreach ($recentTransactions as $transaction)
                         @php
                             $statusVal = $transaction->status instanceof \App\Enums\TransactionStatus ? $transaction->status->value : (string) $transaction->status;
-                            $paid = (float) $transaction->payments->where('verification_status', '!=', 'Ditolak')->sum('amount');
+                            $paid = $transaction->total_paid;
                             $remaining = max(0.0, (float) $transaction->total_amount - $paid);
                             $isPaidOff = $remaining <= 0;
                         @endphp
