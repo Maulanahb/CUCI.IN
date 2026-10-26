@@ -121,35 +121,44 @@
                         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
                             <button
                                 type="button"
-                                @click="searchQuery = ''"
-                                :class="searchQuery === '' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="selectedCategory = 'all'; searchQuery = ''"
+                                :class="selectedCategory === 'all' && searchQuery === '' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
                                 class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
                                 Semua
                             </button>
                             <button
                                 type="button"
-                                @click="searchQuery = 'Komplit'"
-                                :class="searchQuery === 'Komplit' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
+                                @click="selectedCategory = 'express'; searchQuery = ''"
+                                :class="selectedCategory === 'express' ? 'bg-amber-600 text-white font-bold shadow-2xs' : 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0 flex items-center gap-1"
                             >
-                                Komplit
+                                <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" x-bind:class="selectedCategory === 'express' ? 'text-white fill-white' : ''" />
+                                <span>⚡ Paket Kilat</span>
                             </button>
                             <button
                                 type="button"
-                                @click="searchQuery = 'Kering'"
-                                :class="searchQuery === 'Kering' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="selectedCategory = 'kiloan'; searchQuery = ''"
+                                :class="selectedCategory === 'kiloan' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
                                 class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
-                                Kering
+                                Kiloan (Kg)
                             </button>
                             <button
                                 type="button"
-                                @click="searchQuery = 'Setrika'"
-                                :class="searchQuery === 'Setrika' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                @click="selectedCategory = 'satuan'; searchQuery = ''"
+                                :class="selectedCategory === 'satuan' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
                                 class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
                             >
-                                Setrika
+                                Satuan (Pcs)
+                            </button>
+                            <button
+                                type="button"
+                                @click="selectedCategory = 'khusus'; searchQuery = ''"
+                                :class="selectedCategory === 'khusus' ? 'bg-brand-600 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+                                class="rounded-lg px-3 py-1.5 text-xs font-semibold transition active:scale-95 cursor-pointer shrink-0"
+                            >
+                                Khusus
                             </button>
                         </div>
                     </div>
@@ -167,29 +176,44 @@
                                 <div class="flex items-start justify-between gap-2">
                                     <div
                                         class="flex size-9 items-center justify-center rounded-xl transition"
-                                        :class="getItemInCart(service.id) ? 'bg-brand-600 text-white shadow-2xs' : 'bg-brand-50 text-brand-700 group-hover:bg-brand-100'"
+                                        :class="service.is_express ? 'bg-amber-100 text-amber-700' : (getItemInCart(service.id) ? 'bg-brand-600 text-white shadow-2xs' : 'bg-brand-50 text-brand-700 group-hover:bg-brand-100')"
                                     >
-                                        <x-lucide-shirt class="size-5" />
+                                        <template x-if="service.is_express">
+                                            <x-lucide-zap class="size-5 fill-amber-500 text-amber-600" />
+                                        </template>
+                                        <template x-if="!service.is_express">
+                                            <x-lucide-shirt class="size-5" />
+                                        </template>
                                     </div>
 
-                                    <x-ui.badge tone="neutral" size="sm" class="gap-1 font-mono tabular-nums text-slate-600">
-                                        <x-lucide-clock class="size-3 text-slate-400" />
-                                        <span x-text="service.estimated_duration + ' Jam'"></span>
-                                    </x-ui.badge>
+                                    <div class="flex items-center gap-1">
+                                        <template x-if="service.is_express">
+                                            <span class="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-2xs font-extrabold text-amber-800 border border-amber-300">
+                                                ⚡ KILAT
+                                            </span>
+                                        </template>
+                                        <x-ui.badge tone="neutral" size="sm" class="gap-1 font-mono tabular-nums text-slate-600">
+                                            <x-lucide-clock class="size-3 text-slate-400" />
+                                            <span x-text="service.estimated_duration + ' Jam'"></span>
+                                        </x-ui.badge>
+                                    </div>
                                 </div>
 
                                 <h3 class="mt-3 text-sm font-bold text-slate-900 group-hover:text-brand-700 transition" x-text="service.name"></h3>
-                                <p class="text-xs text-slate-500">Tarif per kilogram</p>
+                                <p class="text-xs text-slate-500" x-text="'Tarif per ' + (service.unit === 'pcs' ? 'satuan (pcs)' : (service.unit === 'meter' ? 'meter (m²)' : 'kilogram (kg)'))"></p>
                             </div>
 
                             <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
-                                <span class="text-sm font-extrabold text-brand-700 font-mono tabular-nums sm:text-base" x-text="formatRupiah(service.price)"></span>
+                                <div>
+                                    <span class="text-sm font-extrabold text-brand-700 font-mono tabular-nums sm:text-base" x-text="formatRupiah(service.price)"></span>
+                                    <span class="text-2xs font-semibold text-slate-400" x-text="' / ' + (service.unit === 'pcs' ? 'pcs' : (service.unit === 'meter' ? 'm²' : 'kg'))"></span>
+                                </div>
 
                                 <div class="flex items-center gap-1.5">
                                     <template x-if="getItemInCart(service.id)">
                                         <span class="inline-flex items-center gap-1 rounded-lg bg-emerald-100/90 px-2 py-1 text-xs font-bold font-mono tabular-nums text-emerald-800 shadow-2xs">
                                             <x-lucide-check class="size-3 text-emerald-700" />
-                                            <span x-text="(parseFloat(getItemInCart(service.id).weight) || 0).toFixed(1) + ' kg'"></span>
+                                            <span x-text="(parseFloat(getItemInCart(service.id).weight) || 0).toFixed(1) + ' ' + (service.unit || 'kg')"></span>
                                         </span>
                                     </template>
                                     <span
@@ -383,13 +407,13 @@
                                                     <option value="">-- Pilih Layanan --</option>
                                                     @foreach ($services as $service)
                                                         <option value="{{ $service->id }}">
-                                                            {{ $service->name }} (Rp {{ number_format($service->price, 0, ',', '.') }}/kg)
+                                                            {{ $service->name }} (Rp {{ number_format($service->price, 0, ',', '.') }}/{{ $service->unit_label }}) {{ $service->is_express ? '⚡ [KILAT ' . $service->estimated_duration . ' Jam]' : '[' . $service->estimated_duration . ' Jam]' }}
                                                         </option>
                                                     @endforeach
                                                 </select>
                                             </div>
 
-                                            {{-- Stepper Input Berat (Kg) & Quick Chips --}}
+                                            {{-- Stepper Input Berat/Kuantitas & Quick Chips --}}
                                             <div class="flex flex-col sm:flex-row sm:items-center gap-2">
                                                 <div class="flex flex-1 items-center rounded-lg border border-slate-300 bg-white overflow-hidden focus-within:border-brand-500 focus-within:ring-1 focus-within:ring-brand-200">
                                                     <button
@@ -397,7 +421,7 @@
                                                         @click="stepWeight(index, -0.5)"
                                                         aria-label="Kurangi berat 0.5 kg"
                                                         class="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 active:bg-slate-200 cursor-pointer"
-                                                        title="Kurangi 0.5 kg"
+                                                        title="Kurangi 0.5 unit"
                                                     >
                                                         -
                                                     </button>
@@ -413,28 +437,28 @@
                                                         placeholder="0.00"
                                                         class="w-full text-center border-0 p-1 text-xs font-bold font-mono tabular-nums text-slate-900 focus:outline-none"
                                                     />
-                                                    <span class="pr-2 text-xs font-semibold text-slate-500">Kg</span>
+                                                    <span class="pr-2 text-xs font-semibold text-slate-500" x-text="getItemUnitLabel(item.service_id)"></span>
                                                     <button
                                                         type="button"
                                                         @click="stepWeight(index, 0.5)"
                                                         aria-label="Tambah berat 0.5 kg"
                                                         class="px-2.5 py-1.5 text-xs font-bold text-slate-500 hover:bg-slate-100 active:bg-slate-200 cursor-pointer"
-                                                        title="Tambah 0.5 kg"
+                                                        title="Tambah 0.5 unit"
                                                     >
                                                         +
                                                     </button>
                                                 </div>
 
-                                                {{-- Quick Weight Presets (+1kg, +2kg, +3kg, +5kg) --}}
+                                                {{-- Quick Weight Presets (+1, +2, +3, +5) --}}
                                                 <div class="flex items-center gap-1 shrink-0">
                                                     <template x-for="w in [1, 2, 3, 5]" :key="w">
                                                         <button
                                                             type="button"
                                                             @click="stepWeight(index, w)"
                                                             class="rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-bold font-mono tabular-nums text-slate-600 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition active:scale-95 cursor-pointer shadow-2xs"
-                                                            :title="'Tambah ' + w + ' kg'"
+                                                            :title="'Tambah ' + w"
                                                         >
-                                                            <span x-text="'+' + w + 'k'"></span>
+                                                            <span x-text="'+' + w"></span>
                                                         </button>
                                                     </template>
                                                 </div>
@@ -452,12 +476,19 @@
                         {{-- Section 3: Ringkasan Kalkulasi & Total --}}
                         <div class="rounded-xl border border-brand-100 bg-brand-50/40 p-4 space-y-2">
                             <div class="flex items-center justify-between text-xs text-slate-600">
-                                <span>Total Berat Cucian:</span>
-                                <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getTotalWeight().toFixed(2) + ' kg'">0.00 kg</span>
+                                <span>Total Berat / Kuantitas:</span>
+                                <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getTotalWeight().toFixed(2) + ' unit'">0.00 unit</span>
                             </div>
                             <div class="flex items-center justify-between text-xs text-slate-600">
                                 <span>Estimasi Pengerjaan:</span>
-                                <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getMaxDuration() + ' Jam'">0 Jam</span>
+                                <div class="flex items-center gap-1.5">
+                                    <template x-if="hasExpressItem()">
+                                        <span class="inline-flex items-center gap-0.5 rounded bg-amber-100 px-1.5 py-0.5 text-2xs font-extrabold text-amber-800 border border-amber-300">
+                                            ⚡ KILAT
+                                        </span>
+                                    </template>
+                                    <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getMaxDuration() + ' Jam'">0 Jam</span>
+                                </div>
                             </div>
                             <div class="border-t border-brand-200/80 pt-2.5 flex items-center justify-between">
                                 <span class="text-xs font-extrabold text-slate-800">Total Tagihan:</span>
@@ -710,6 +741,7 @@
         // Alpine POS Manager
         function posTransactionManager() {
             return {
+                selectedCategory: 'all',
                 searchQuery: '',
                 isSubmitting: false,
                 quickCustomerModalOpen: false,
@@ -801,11 +833,37 @@
 
                 get filteredServices() {
                     let list = this.servicesList;
+
+                    if (this.selectedCategory === 'express') {
+                        list = list.filter(s => Boolean(s.is_express) || s.service_type === 'express');
+                    } else if (this.selectedCategory === 'kiloan') {
+                        list = list.filter(s => (s.unit || 'kg') === 'kg');
+                    } else if (this.selectedCategory === 'satuan') {
+                        list = list.filter(s => s.unit === 'pcs');
+                    } else if (this.selectedCategory === 'khusus') {
+                        list = list.filter(s => s.service_type === 'khusus');
+                    }
+
                     if (this.searchQuery && this.searchQuery.trim() !== '') {
                         const q = this.searchQuery.toLowerCase();
-                        list = list.filter(s => s.name.toLowerCase().includes(q));
+                        list = list.filter(s => s.name.toLowerCase().includes(q) || (s.description && s.description.toLowerCase().includes(q)));
                     }
                     return list;
+                },
+
+                getItemUnitLabel(serviceId) {
+                    let s = this.getService(serviceId);
+                    if (!s) return 'Kg';
+                    if (s.unit === 'pcs') return 'Pcs';
+                    if (s.unit === 'meter') return 'M²';
+                    return 'Kg';
+                },
+
+                hasExpressItem() {
+                    return this.items.some(item => {
+                        let s = this.getService(item.service_id);
+                        return s && (Boolean(s.is_express) || s.service_type === 'express');
+                    });
                 },
 
                 selectServiceCard(service) {
