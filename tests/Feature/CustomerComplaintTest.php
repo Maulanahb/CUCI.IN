@@ -234,7 +234,9 @@ class CustomerComplaintTest extends TestCase
         $this->assertNotNull($complaint->photo_path);
 
         Storage::disk('public')->assertExists($complaint->photo_path);
-        Queue::assertPushed(CompressComplaintPhoto::class);
+        Queue::assertPushed(CompressComplaintPhoto::class, function (CompressComplaintPhoto $job) use ($complaint) {
+            return $job->complaintId === $complaint->id;
+        });
 
         $response->assertRedirect(route('customer.complaints.show', $complaint));
     }

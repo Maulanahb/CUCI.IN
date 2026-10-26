@@ -150,7 +150,7 @@ class ComplaintController extends Controller
         ]);
 
         if ($photoPath) {
-            CompressComplaintPhoto::dispatch($complaint);
+            CompressComplaintPhoto::dispatch($complaint->id)->afterCommit();
         }
 
         return redirect()

@@ -14,10 +14,27 @@ class CompressComplaintPhoto implements ShouldQueue
     use Queueable;
 
     /**
-     * Create a new job instance.
+     * Jumlah percobaan maksimal jika job mengalami kegagalan.
+     */
+    public int $tries = 3;
+
+    /**
+     * Jeda waktu antar percobaan ulang (dalam detik).
+     *
+     * @var array<int, int>
+     */
+    public array $backoff = [10, 60];
+
+    /**
+     * Batas waktu eksekusi maksimal sebelum timeout (dalam detik).
+     */
+    public int $timeout = 60;
+
+    /**
+     * Create a new job instance. Hanya membawa ID model untuk meminimalkan beban serialisasi antrean.
      */
     public function __construct(
-        public Complaint $complaint
+        public int $complaintId
     ) {}
 
     /**
@@ -25,7 +42,12 @@ class CompressComplaintPhoto implements ShouldQueue
      */
     public function handle(): void
     {
-        $photoPath = $this->complaint->photo_path;
+        $complaint = Complaint::find($this->complaintId);
+        if (! $complaint) {
+            return;
+        }
+
+        $photoPath = $complaint->photo_path;
 
         if (! $photoPath || ! Storage::disk('public')->exists($photoPath)) {
             return;
@@ -36,7 +58,7 @@ class CompressComplaintPhoto implements ShouldQueue
         // Pastikan ekstensi GD tersedia untuk manipulasi berkas
         if (! extension_loaded('gd')) {
             Log::info('Ekstensi PHP-GD tidak aktif, kompresi berkas foto komplain dilewati.', [
-                'complaint_id' => $this->complaint->id,
+                'complaint_id' => $complaint->id,
                 'path' => $photoPath,
             ]);
 
@@ -110,13 +132,13 @@ class CompressComplaintPhoto implements ShouldQueue
             imagedestroy($targetImage);
 
             Log::info('Berhasil mengompresi berkas foto komplain.', [
-                'complaint_id' => $this->complaint->id,
+                'complaint_id' => $complaint->id,
                 'path' => $photoPath,
                 'dimensions' => "{$newWidth}x{$newHeight}",
             ]);
         } catch (Throwable $e) {
             Log::warning('Gagal mengompresi foto komplain: '.$e->getMessage(), [
-                'complaint_id' => $this->complaint->id,
+                'complaint_id' => $complaint->id,
             ]);
         }
     }
