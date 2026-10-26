@@ -51,7 +51,6 @@ class StorePaymentRequest extends FormRequest
                 'image',
                 'mimes:jpg,jpeg,png,webp',
                 'max:5120',
-                'required_if:method,Transfer,QRIS',
             ],
         ];
     }

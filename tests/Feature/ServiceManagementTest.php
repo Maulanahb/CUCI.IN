@@ -363,4 +363,138 @@ class ServiceManagementTest extends TestCase
         $responseStaff->assertSee('Layanan');
         $responseStaff->assertSee(route('staff.services.index'));
     }
+
+    /**
+     * Admin dapat membuat layanan baru dengan unit dinamis (pcs, meter, kg) dan paket kilat.
+     */
+    public function test_admin_can_create_advanced_service_with_dynamic_unit_and_express_tier(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $payload = [
+            'name' => 'Cuci Kilat Jas & Blazer 4 Jam',
+            'price' => '45.000',
+            'unit' => 'pcs',
+            'service_type' => 'express',
+            'is_express' => '1',
+            'minimum_order' => 1,
+            'estimated_duration' => 4,
+            'description' => 'Pencucian kilat khusus jas pesta selesai 4 jam.',
+            'is_active' => true,
+        ];
+
+        $response = $this->actingAs($admin)->post(route('admin.services.store'), $payload);
+
+        $response->assertRedirect(route('admin.services.index'));
+        $response->assertSessionHas('status');
+
+        $this->assertDatabaseHas('services', [
+            'name' => 'Cuci Kilat Jas & Blazer 4 Jam',
+            'price' => '45000.00',
+            'unit' => 'pcs',
+            'service_type' => 'express',
+            'is_express' => true,
+            'minimum_order' => '1.00',
+            'estimated_duration' => 4,
+        ]);
+    }
+
+    /**
+     * Admin dapat memperbarui atribut lanjutan layanan (unit, kategori, order minimum).
+     */
+    public function test_admin_can_update_service_advanced_attributes(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $service = Service::create([
+            'name' => 'Cuci Karpet Standar',
+            'price' => 12000.00,
+            'unit' => 'kg',
+            'service_type' => 'reguler',
+            'is_express' => false,
+            'minimum_order' => 1.00,
+            'estimated_duration' => 48,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->put(route('admin.services.update', $service), [
+            'name' => 'Cuci Karpet Bulu Tebal Per Meter',
+            'price' => '18000',
+            'unit' => 'meter',
+            'service_type' => 'khusus',
+            'is_express' => '0',
+            'minimum_order' => 2.00,
+            'estimated_duration' => 72,
+            'description' => 'Cuci karpet ukuran besar per meter persegi.',
+            'is_active' => '1',
+        ]);
+
+        $response->assertRedirect(route('admin.services.index'));
+        $response->assertSessionHas('status');
+
+        $service->refresh();
+        $this->assertEquals('Cuci Karpet Bulu Tebal Per Meter', $service->name);
+        $this->assertEquals('meter', $service->unit);
+        $this->assertEquals('M²', $service->unit_label);
+        $this->assertEquals('khusus', $service->service_type);
+        $this->assertEquals('2.00', $service->minimum_order);
+        $this->assertEquals(72, $service->estimated_duration);
+    }
+
+    /**
+     * Pengujian filter kategori layanan (express, kiloan, satuan, khusus).
+     */
+    public function test_service_filtering_by_category_type(): void
+    {
+        $this->withoutVite();
+
+        $admin = User::factory()->admin()->create();
+
+        Service::create([
+            'name' => 'Super Kilat Express 3 Jam',
+            'price' => 20000,
+            'unit' => 'kg',
+            'service_type' => 'express',
+            'is_express' => true,
+            'estimated_duration' => 3,
+            'is_active' => true,
+        ]);
+
+        Service::create([
+            'name' => 'Cuci Boneka Teddy Jumbo',
+            'price' => 30000,
+            'unit' => 'pcs',
+            'service_type' => 'satuan',
+            'is_express' => false,
+            'estimated_duration' => 48,
+            'is_active' => true,
+        ]);
+
+        Service::create([
+            'name' => 'Cuci Karpet Masjid',
+            'price' => 15000,
+            'unit' => 'meter',
+            'service_type' => 'khusus',
+            'is_express' => false,
+            'estimated_duration' => 72,
+            'is_active' => true,
+        ]);
+
+        // 1. Filter paket express
+        $responseExpress = $this->actingAs($admin)->get(route('admin.services.index', ['type' => 'express']));
+        $responseExpress->assertOk();
+        $responseExpress->assertSee('Super Kilat Express 3 Jam');
+        $responseExpress->assertDontSee('Cuci Boneka Teddy Jumbo');
+
+        // 2. Filter satuan (pcs)
+        $responseSatuan = $this->actingAs($admin)->get(route('admin.services.index', ['type' => 'satuan']));
+        $responseSatuan->assertOk();
+        $responseSatuan->assertSee('Cuci Boneka Teddy Jumbo');
+        $responseSatuan->assertDontSee('Super Kilat Express 3 Jam');
+
+        // 3. Filter khusus
+        $responseKhusus = $this->actingAs($admin)->get(route('admin.services.index', ['type' => 'khusus']));
+        $responseKhusus->assertOk();
+        $responseKhusus->assertSee('Cuci Karpet Masjid');
+    }
 }
