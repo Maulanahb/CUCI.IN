@@ -12,10 +12,20 @@
             deleteModalOpen: false,
             detailModalOpen: false,
             activeService: null,
+            createForm: {
+                unit: 'kg',
+                service_type: 'reguler',
+                is_express: false,
+                minimum_order: 1.00
+            },
             editForm: {
                 id: '',
                 name: '',
                 price: '',
+                unit: 'kg',
+                service_type: 'reguler',
+                is_express: false,
+                minimum_order: 1.00,
                 estimated_duration: '',
                 description: '',
                 is_active: true
@@ -28,13 +38,25 @@
             detailData: {
                 name: '',
                 price: 0,
+                unit: 'kg',
+                unit_label: 'Kg',
+                service_type: 'reguler',
+                type_label: 'Reguler',
+                is_express: false,
+                minimum_order: 1.00,
                 estimated_duration: 0,
                 description: '',
                 is_active: true,
                 transaction_details_count: 0,
-                calcWeight: 3
+                calcQty: 3
             },
             openCreateModal() {
+                this.createForm = {
+                    unit: 'kg',
+                    service_type: 'reguler',
+                    is_express: false,
+                    minimum_order: 1.00
+                };
                 this.createModalOpen = true;
             },
             openEditModal(service) {
@@ -42,6 +64,10 @@
                     id: service.id,
                     name: service.name,
                     price: Math.round(parseFloat(service.price)),
+                    unit: service.unit || 'kg',
+                    service_type: service.service_type || 'reguler',
+                    is_express: Boolean(service.is_express),
+                    minimum_order: service.minimum_order ? parseFloat(service.minimum_order) : 1.00,
                     estimated_duration: service.estimated_duration,
                     description: service.description || '',
                     is_active: Boolean(service.is_active)
@@ -57,14 +83,25 @@
                 this.deleteModalOpen = true;
             },
             openDetailModal(service) {
+                const unitLabel = service.unit === 'pcs' ? 'Pcs' : (service.unit === 'meter' ? 'M²' : 'Kg');
+                const typeLabel = service.service_type === 'express' || service.is_express
+                    ? 'Paket Kilat / Express'
+                    : (service.service_type === 'khusus' ? 'Perawatan Khusus' : (service.service_type === 'satuan' ? 'Cuci Satuan' : 'Reguler'));
+
                 this.detailData = {
                     name: service.name,
                     price: parseFloat(service.price),
+                    unit: service.unit || 'kg',
+                    unit_label: unitLabel,
+                    service_type: service.service_type || 'reguler',
+                    type_label: typeLabel,
+                    is_express: Boolean(service.is_express),
+                    minimum_order: service.minimum_order ? parseFloat(service.minimum_order) : 1.00,
                     estimated_duration: service.estimated_duration,
                     description: service.description || 'Tidak ada keterangan tambahan.',
                     is_active: Boolean(service.is_active),
                     transaction_details_count: service.transaction_details_count || 0,
-                    calcWeight: 3
+                    calcQty: service.unit === 'pcs' ? 1 : 3
                 };
                 this.detailModalOpen = true;
             },
@@ -82,7 +119,7 @@
                     Katalog Layanan Laundry
                 </h1>
                 <p class="mt-1 text-xs text-slate-500 sm:text-sm">
-                    Kelola tarif pencucian, durasi estimasi pengerjaan, dan ketersediaan layanan operasional CUCI.IN ({{ $isAdmin ? 'Mode Administrator' : 'Katalog Kasir / Staff' }}).
+                    Kelola tarif dinamis, unit hitung, paket kilat/express, dan estimasi waktu selesai CUCI.IN ({{ $isAdmin ? 'Mode Administrator' : 'Katalog Kasir / Staff' }}).
                 </p>
             </div>
 
@@ -131,7 +168,7 @@
         @endif
 
         {{-- ============================================================
-            KPI STATISTIC CARDS (Aqua Teal + Semantic)
+            KPI STATISTIC CARDS (Aqua Teal + Amber Semantic)
         ============================================================= --}}
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             {{-- Card 1: Total Layanan --}}
@@ -143,7 +180,7 @@
                     </div>
                 </div>
                 <p class="mt-2 text-xl font-bold tabular-nums tracking-tight text-slate-900 sm:text-2xl">{{ $stats['total'] }}</p>
-                <p class="mt-0.5 text-2xs text-slate-400">Seluruh jenis layanan</p>
+                <p class="mt-0.5 text-2xs text-slate-400">Seluruh jenis katalog</p>
             </div>
 
             {{-- Card 2: Layanan Aktif --}}
@@ -161,16 +198,18 @@
                 <p class="mt-0.5 text-2xs text-slate-400">Siap dipilih di kasir</p>
             </div>
 
-            {{-- Card 3: Layanan Nonaktif --}}
-            <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs transition hover:border-slate-300">
+            {{-- Card 3: Paket Kilat / Express --}}
+            <div class="rounded-2xl border border-amber-200/80 bg-amber-50/40 p-4 shadow-xs transition hover:border-amber-300">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-slate-500">Nonaktif / Tutup</span>
-                    <div class="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
-                        <x-lucide-archive class="size-4" />
+                    <span class="text-xs font-medium text-amber-900">Paket Kilat / Express</span>
+                    <div class="flex size-7 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                        <x-lucide-zap class="size-4" />
                     </div>
                 </div>
-                <p class="mt-2 text-xl font-bold tabular-nums tracking-tight text-slate-600 sm:text-2xl">{{ $stats['inactive'] }}</p>
-                <p class="mt-0.5 text-2xs text-slate-400">Layanan diarsipkan</p>
+                <p class="mt-2 text-xl font-bold tabular-nums tracking-tight text-amber-700 sm:text-2xl">
+                    {{ $stats['express'] ?? 0 }}
+                </p>
+                <p class="mt-0.5 text-2xs text-amber-600/90">Layanan prioritas cepat</p>
             </div>
 
             {{-- Card 4: Rata-rata Tarif --}}
@@ -191,62 +230,128 @@
         </div>
 
         {{-- ============================================================
-            FILTER & SEARCH TOOLBAR (Pines UI Segmented Tabs & Input)
+            FILTER & SEARCH TOOLBAR
         ============================================================= --}}
-        <div class="flex flex-col gap-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs sm:flex-row sm:items-center sm:justify-between">
-            {{-- Tab Filter Status (Pines UI Segmented Control) --}}
-            <x-ui.tabs variant="segmented">
-                <x-ui.tab
-                    :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'all']))"
-                    :active="$statusFilter === 'all'"
-                    :badge="$stats['total']"
-                    :badgeTone="$statusFilter === 'all' ? 'brand' : 'neutral'"
-                >
-                    Semua
-                </x-ui.tab>
-                <x-ui.tab
-                    :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'active']))"
-                    :active="$statusFilter === 'active'"
-                    :badge="$stats['active']"
-                    :badgeTone="$statusFilter === 'active' ? 'emerald' : 'neutral'"
-                >
-                    Aktif
-                </x-ui.tab>
-                <x-ui.tab
-                    :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'inactive']))"
-                    :active="$statusFilter === 'inactive'"
-                    :badge="$stats['inactive']"
-                    :badgeTone="$statusFilter === 'inactive' ? 'neutral' : 'neutral'"
-                >
-                    Nonaktif
-                </x-ui.tab>
-            </x-ui.tabs>
-
-            {{-- Form Pencarian --}}
-            <form method="GET" action="{{ route("{$currentRoutePrefix}.services.index") }}" class="relative w-full sm:w-72">
-                @if ($statusFilter !== 'all')
-                    <input type="hidden" name="status" value="{{ $statusFilter }}">
-                @endif
-                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <x-lucide-search class="size-4 text-slate-400" />
-                </div>
-                <input
-                    type="text"
-                    name="q"
-                    value="{{ $search }}"
-                    placeholder="Cari nama layanan..."
-                    class="w-full rounded-xl border border-slate-200 bg-white py-2 pr-9 pl-9 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
-                />
-                @if ($search !== '')
-                    <a
-                        href="{{ route("{$currentRoutePrefix}.services.index", ['status' => $statusFilter]) }}"
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition"
-                        title="Hapus pencarian"
+        <div class="space-y-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                {{-- Tab Filter Status --}}
+                <x-ui.tabs variant="segmented">
+                    <x-ui.tab
+                        :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'all']))"
+                        :active="$statusFilter === 'all'"
+                        :badge="$stats['total']"
+                        :badgeTone="$statusFilter === 'all' ? 'brand' : 'neutral'"
                     >
-                        <x-lucide-x class="size-4" />
-                    </a>
-                @endif
-            </form>
+                        Semua Status
+                    </x-ui.tab>
+                    <x-ui.tab
+                        :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'active']))"
+                        :active="$statusFilter === 'active'"
+                        :badge="$stats['active']"
+                        :badgeTone="$statusFilter === 'active' ? 'emerald' : 'neutral'"
+                    >
+                        Aktif
+                    </x-ui.tab>
+                    <x-ui.tab
+                        :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'inactive']))"
+                        :active="$statusFilter === 'inactive'"
+                        :badge="$stats['inactive']"
+                        :badgeTone="$statusFilter === 'inactive' ? 'neutral' : 'neutral'"
+                    >
+                        Nonaktif
+                    </x-ui.tab>
+                </x-ui.tabs>
+
+                {{-- Form Pencarian --}}
+                <form method="GET" action="{{ route("{$currentRoutePrefix}.services.index") }}" class="relative w-full sm:w-72">
+                    @if ($statusFilter !== 'all')
+                        <input type="hidden" name="status" value="{{ $statusFilter }}">
+                    @endif
+                    @if (($typeFilter ?? 'all') !== 'all')
+                        <input type="hidden" name="type" value="{{ $typeFilter }}">
+                    @endif
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <x-lucide-search class="size-4 text-slate-400" />
+                    </div>
+                    <input
+                        type="text"
+                        name="q"
+                        value="{{ $search }}"
+                        placeholder="Cari nama atau deskripsi..."
+                        class="w-full rounded-xl border border-slate-200 bg-white py-2 pr-9 pl-9 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                    />
+                    @if ($search !== '')
+                        <a
+                            href="{{ route("{$currentRoutePrefix}.services.index", ['status' => $statusFilter, 'type' => $typeFilter ?? 'all']) }}"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition"
+                            title="Hapus pencarian"
+                        >
+                            <x-lucide-x class="size-4" />
+                        </a>
+                    @endif
+                </form>
+            </div>
+
+            {{-- Filter Chips Kategori & Paket Lanjutan --}}
+            <div class="flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-slate-100 text-xs">
+                <span class="text-2xs font-bold uppercase tracking-wider text-slate-400 shrink-0 mr-1">Kategori:</span>
+
+                <a
+                    href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'all'])) }}"
+                    @class([
+                        'inline-flex items-center rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
+                        'bg-brand-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'all',
+                        'bg-slate-100 text-slate-600 hover:bg-slate-200' => ($typeFilter ?? 'all') !== 'all',
+                    ])
+                >
+                    Semua Jenis
+                </a>
+
+                <a
+                    href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'express'])) }}"
+                    @class([
+                        'inline-flex items-center gap-1 rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
+                        'bg-amber-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'express',
+                        'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100' => ($typeFilter ?? 'all') !== 'express',
+                    ])
+                >
+                    <x-lucide-zap class="size-3.5 text-amber-500 {{ ($typeFilter ?? 'all') === 'express' ? 'text-white' : '' }}" />
+                    <span>Paket Kilat / Express</span>
+                </a>
+
+                <a
+                    href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'kiloan'])) }}"
+                    @class([
+                        'inline-flex items-center rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
+                        'bg-brand-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'kiloan',
+                        'bg-slate-100 text-slate-600 hover:bg-slate-200' => ($typeFilter ?? 'all') !== 'kiloan',
+                    ])
+                >
+                    Cuci Kiloan (Kg)
+                </a>
+
+                <a
+                    href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'satuan'])) }}"
+                    @class([
+                        'inline-flex items-center rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
+                        'bg-brand-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'satuan',
+                        'bg-slate-100 text-slate-600 hover:bg-slate-200' => ($typeFilter ?? 'all') !== 'satuan',
+                    ])
+                >
+                    Cuci Satuan (Pcs)
+                </a>
+
+                <a
+                    href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'khusus'])) }}"
+                    @class([
+                        'inline-flex items-center rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
+                        'bg-brand-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'khusus',
+                        'bg-slate-100 text-slate-600 hover:bg-slate-200' => ($typeFilter ?? 'all') !== 'khusus',
+                    ])
+                >
+                    Perawatan Khusus
+                </a>
+            </div>
         </div>
 
         {{-- ============================================================
@@ -257,8 +362,8 @@
                 <table class="w-full text-left text-xs sm:text-sm">
                     <thead class="border-b border-slate-100 bg-slate-50/75 text-2xs font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
                         <tr>
-                            <th scope="col" class="px-5 py-3.5">Nama Layanan</th>
-                            <th scope="col" class="px-5 py-3.5">Tarif Satuan (kg)</th>
+                            <th scope="col" class="px-5 py-3.5">Nama Layanan & Kategori</th>
+                            <th scope="col" class="px-5 py-3.5">Tarif Dinamis</th>
                             <th scope="col" class="px-5 py-3.5">Estimasi Durasi</th>
                             <th scope="col" class="px-5 py-3.5">Status Ketersediaan</th>
                             <th scope="col" class="px-5 py-3.5 text-center">Riwayat Transaksi</th>
@@ -268,14 +373,36 @@
                     <tbody class="divide-y divide-slate-100">
                         @forelse ($services as $service)
                             <tr class="transition hover:bg-slate-50/70">
-                                {{-- Nama Layanan & Deskripsi --}}
+                                {{-- Nama Layanan & Kategori --}}
                                 <td class="px-5 py-4">
                                     <div class="flex items-start gap-3">
-                                        <div class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-700">
-                                            <x-lucide-shirt class="size-4" />
+                                        <div @class([
+                                            'mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg',
+                                            'bg-amber-100 text-amber-700 shadow-2xs' => $service->is_express,
+                                            'bg-brand-50 text-brand-700' => ! $service->is_express,
+                                        ])>
+                                            @if ($service->is_express)
+                                                <x-lucide-zap class="size-4" />
+                                            @elseif ($service->unit === 'pcs')
+                                                <x-lucide-tag class="size-4" />
+                                            @elseif ($service->unit === 'meter')
+                                                <x-lucide-ruler class="size-4" />
+                                            @else
+                                                <x-lucide-shirt class="size-4" />
+                                            @endif
                                         </div>
                                         <div class="min-w-0">
-                                            <p class="font-semibold text-slate-900">{{ $service->name }}</p>
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <p class="font-semibold text-slate-900">{{ $service->name }}</p>
+                                                @if ($service->is_express)
+                                                    <span class="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-2xs font-extrabold text-amber-800 border border-amber-300">
+                                                        ⚡ KILAT
+                                                    </span>
+                                                @endif
+                                                <span class="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-2xs font-semibold text-slate-600">
+                                                    {{ $service->unit_label }}
+                                                </span>
+                                            </div>
                                             <p class="mt-0.5 line-clamp-1 text-xs text-slate-400">
                                                 {{ $service->description ?: 'Tanpa keterangan khusus.' }}
                                             </p>
@@ -283,23 +410,37 @@
                                     </div>
                                 </td>
 
-                                {{-- Tarif Satuan --}}
+                                {{-- Tarif Dinamis --}}
                                 <td class="px-5 py-4 font-semibold text-slate-800">
-                                    <span class="inline-flex items-center rounded-lg bg-brand-50 px-2.5 py-1 text-xs font-bold tabular-nums text-brand-700">
-                                        Rp {{ number_format($service->price, 0, ',', '.') }} <span class="ml-1 text-2xs font-normal text-brand-600/80">/kg</span>
+                                    <span @class([
+                                        'inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold tabular-nums',
+                                        'bg-amber-50 text-amber-800 border border-amber-200' => $service->is_express,
+                                        'bg-brand-50 text-brand-700' => ! $service->is_express,
+                                    ])>
+                                        Rp {{ number_format($service->price, 0, ',', '.') }}
+                                        <span class="ml-1 text-2xs font-normal opacity-80">/ {{ $service->unit_label }}</span>
                                     </span>
+                                    @if ($service->minimum_order > 1)
+                                        <span class="block text-2xs font-medium text-slate-400 mt-0.5">
+                                            Min: {{ (float) $service->minimum_order }} {{ $service->unit_label }}
+                                        </span>
+                                    @endif
                                 </td>
 
                                 {{-- Estimasi Durasi --}}
                                 <td class="px-5 py-4 text-slate-600">
                                     <div class="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
-                                        <x-lucide-clock class="size-4 text-slate-400" />
-                                        <span>{{ $service->estimated_duration }} Jam</span>
-                                        @if ($service->estimated_duration >= 24)
-                                            <span class="text-2xs text-slate-400">
-                                                ({{ round($service->estimated_duration / 24, 1) }} hari)
-                                            </span>
-                                        @endif
+                                        <x-lucide-clock @class([
+                                            'size-4',
+                                            'text-amber-500 font-bold' => $service->is_express,
+                                            'text-slate-400' => ! $service->is_express,
+                                        ]) />
+                                        <span @class([
+                                            'font-semibold text-amber-900' => $service->is_express,
+                                            'text-slate-700' => ! $service->is_express,
+                                        ])>
+                                            {{ $service->duration_label }}
+                                        </span>
                                     </div>
                                 </td>
 
@@ -445,8 +586,47 @@
                                 name="name"
                                 required
                                 maxlength="100"
-                                placeholder="Contoh: Cuci Komplit Kilat, Cuci Karpet Tebal"
+                                placeholder="Contoh: Cuci Komplit Kilat 6 Jam, Cuci Sepatu Deep Clean"
                             />
+                        </div>
+                    </div>
+
+                    {{-- Baris: Satuan Unit & Kategori Layanan --}}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <x-ui.label for="create_unit" required>
+                                Satuan Hitung (Unit)
+                            </x-ui.label>
+                            <select
+                                id="create_unit"
+                                name="unit"
+                                x-model="createForm.unit"
+                                required
+                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                            >
+                                <option value="kg">Kilogram (Kg) — Cuci Kiloan</option>
+                                <option value="pcs">Satuan / Potong (Pcs) — Jas, Selimut, Sepatu</option>
+                                <option value="meter">Meter Persegi (M²) — Karpet, Gorden</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <x-ui.label for="create_service_type" required>
+                                Tipe / Paket Layanan
+                            </x-ui.label>
+                            <select
+                                id="create_service_type"
+                                name="service_type"
+                                x-model="createForm.service_type"
+                                @change="if (createForm.service_type === 'express') createForm.is_express = true"
+                                required
+                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                            >
+                                <option value="reguler">Reguler Standar</option>
+                                <option value="express">⚡ Paket Kilat / Express</option>
+                                <option value="satuan">Cuci Satuan Khusus</option>
+                                <option value="khusus">Perawatan Khusus (Sepatu/Karpet)</option>
+                            </select>
                         </div>
                     </div>
 
@@ -454,7 +634,7 @@
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <x-ui.label for="create_price" required>
-                                Tarif Satuan (Rp/kg)
+                                Tarif Satuan (Rp / <span x-text="createForm.unit === 'pcs' ? 'Pcs' : (createForm.unit === 'meter' ? 'M²' : 'Kg')"></span>)
                             </x-ui.label>
                             <div class="mt-1.5">
                                 <x-ui.input
@@ -491,6 +671,43 @@
                         </div>
                     </div>
 
+                    {{-- Baris: Order Minimum & Toggle Express --}}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <x-ui.label for="create_minimum_order" optional>
+                                Order Minimum
+                            </x-ui.label>
+                            <div class="mt-1.5">
+                                <x-ui.input
+                                    id="create_minimum_order"
+                                    type="number"
+                                    name="minimum_order"
+                                    x-model="createForm.minimum_order"
+                                    min="0.1"
+                                    step="0.5"
+                                    placeholder="1.00"
+                                    class="tabular-nums"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="flex items-center pt-6">
+                            <label class="relative flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    name="is_express"
+                                    value="1"
+                                    x-model="createForm.is_express"
+                                    class="size-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                                />
+                                <span class="text-xs font-bold text-amber-900 flex items-center gap-1">
+                                    <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" />
+                                    Tandai Sebagai Paket Kilat
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
                     {{-- Deskripsi Layanan --}}
                     <div>
                         <x-ui.label for="create_description" optional>
@@ -499,7 +716,7 @@
                         <textarea
                             id="create_description"
                             name="description"
-                            rows="3"
+                            rows="2"
                             maxlength="1000"
                             placeholder="Detail proses pengerjaan, perlakuan khusus, atau fasilitas layanan..."
                             class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
@@ -546,7 +763,7 @@
             <x-ui.modal
                 show="editModalOpen"
                 title="Ubah Data Layanan"
-                description="Perbarui tarif, estimasi durasi, atau keterangan paket."
+                description="Perbarui tarif, unit hitung, estimasi durasi, atau spesifikasi paket."
                 maxWidth="lg"
             >
                 <form
@@ -574,11 +791,50 @@
                         </div>
                     </div>
 
+                    {{-- Baris: Satuan Unit & Kategori Layanan --}}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <x-ui.label for="edit_unit" required>
+                                Satuan Hitung (Unit)
+                            </x-ui.label>
+                            <select
+                                id="edit_unit"
+                                name="unit"
+                                x-model="editForm.unit"
+                                required
+                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                            >
+                                <option value="kg">Kilogram (Kg) — Cuci Kiloan</option>
+                                <option value="pcs">Satuan / Potong (Pcs) — Jas, Selimut, Sepatu</option>
+                                <option value="meter">Meter Persegi (M²) — Karpet, Gorden</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <x-ui.label for="edit_service_type" required>
+                                Tipe / Paket Layanan
+                            </x-ui.label>
+                            <select
+                                id="edit_service_type"
+                                name="service_type"
+                                x-model="editForm.service_type"
+                                @change="if (editForm.service_type === 'express') editForm.is_express = true"
+                                required
+                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                            >
+                                <option value="reguler">Reguler Standar</option>
+                                <option value="express">⚡ Paket Kilat / Express</option>
+                                <option value="satuan">Cuci Satuan Khusus</option>
+                                <option value="khusus">Perawatan Khusus (Sepatu/Karpet)</option>
+                            </select>
+                        </div>
+                    </div>
+
                     {{-- Baris: Harga & Estimasi Durasi --}}
                     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <div>
                             <x-ui.label for="edit_price" required>
-                                Tarif Satuan (Rp/kg)
+                                Tarif Satuan (Rp / <span x-text="editForm.unit === 'pcs' ? 'Pcs' : (editForm.unit === 'meter' ? 'M²' : 'Kg')"></span>)
                             </x-ui.label>
                             <div class="mt-1.5">
                                 <x-ui.input
@@ -615,6 +871,42 @@
                         </div>
                     </div>
 
+                    {{-- Baris: Order Minimum & Toggle Express --}}
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                            <x-ui.label for="edit_minimum_order" optional>
+                                Order Minimum
+                            </x-ui.label>
+                            <div class="mt-1.5">
+                                <x-ui.input
+                                    id="edit_minimum_order"
+                                    type="number"
+                                    name="minimum_order"
+                                    x-model="editForm.minimum_order"
+                                    min="0.1"
+                                    step="0.5"
+                                    class="tabular-nums"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="flex items-center pt-6">
+                            <label class="relative flex items-center gap-2 cursor-pointer select-none">
+                                <input
+                                    type="checkbox"
+                                    name="is_express"
+                                    value="1"
+                                    x-model="editForm.is_express"
+                                    class="size-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
+                                />
+                                <span class="text-xs font-bold text-amber-900 flex items-center gap-1">
+                                    <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" />
+                                    Tandai Sebagai Paket Kilat
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
                     {{-- Deskripsi Layanan --}}
                     <div>
                         <x-ui.label for="edit_description" optional>
@@ -624,7 +916,7 @@
                             id="edit_description"
                             name="description"
                             x-model="editForm.description"
-                            rows="3"
+                            rows="2"
                             maxlength="1000"
                             class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
                         ></textarea>
@@ -770,20 +1062,20 @@
                 {{-- Grid Atribut --}}
                 <div class="grid grid-cols-2 gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3.5">
                     <div>
-                        <span class="text-2xs text-slate-400">Tarif Satuan</span>
-                        <p class="mt-0.5 text-sm font-bold tabular-nums text-brand-700" x-text="formatRupiah(detailData.price) + ' / kg'"></p>
+                        <span class="text-2xs text-slate-400">Tarif Dinamis</span>
+                        <p class="mt-0.5 text-sm font-bold tabular-nums text-brand-700" x-text="formatRupiah(detailData.price) + ' / ' + detailData.unit_label"></p>
                     </div>
                     <div>
                         <span class="text-2xs text-slate-400">Estimasi Durasi</span>
-                        <p class="mt-0.5 text-sm font-bold tabular-nums text-slate-800" x-text="detailData.estimated_duration + ' Jam'"></p>
+                        <p class="mt-0.5 text-sm font-bold tabular-nums text-slate-800" x-text="detailData.estimated_duration + ' Jam' + (detailData.is_express ? ' (⚡ Kilat)' : '')"></p>
                     </div>
                     <div>
-                        <span class="text-2xs text-slate-400">Status Layanan</span>
-                        <p class="mt-0.5 text-xs font-semibold" :class="detailData.is_active ? 'text-emerald-600' : 'text-slate-500'" x-text="detailData.is_active ? 'Tersedia (Aktif)' : 'Nonaktif'"></p>
+                        <span class="text-2xs text-slate-400">Kategori & Tipe</span>
+                        <p class="mt-0.5 text-xs font-semibold text-slate-700" x-text="detailData.type_label"></p>
                     </div>
                     <div>
-                        <span class="text-2xs text-slate-400">Total Digunakan</span>
-                        <p class="mt-0.5 text-xs font-semibold tabular-nums text-slate-800" x-text="detailData.transaction_details_count + ' Transaksi'"></p>
+                        <span class="text-2xs text-slate-400">Order Minimum</span>
+                        <p class="mt-0.5 text-xs font-semibold text-slate-700" x-text="detailData.minimum_order + ' ' + detailData.unit_label"></p>
                     </div>
                 </div>
 
@@ -793,27 +1085,29 @@
                     <p class="mt-1 text-xs leading-relaxed text-slate-600" x-text="detailData.description"></p>
                 </div>
 
-                {{-- Simulasi Subtotal Berdasarkan Berat --}}
+                {{-- Simulasi Subtotal Berdasarkan Unit --}}
                 <div class="rounded-xl border border-brand-200/80 bg-brand-50/50 p-4">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold text-brand-900">Simulasi Subtotal Kasir</span>
-                        <span class="text-2xs font-medium text-brand-600">Formula: Berat × Tarif</span>
+                        <span class="text-2xs font-medium text-brand-600">Formula: Kuantitas × Tarif</span>
                     </div>
                     <div class="mt-3 flex items-center gap-3">
                         <div class="w-1/2">
-                            <label class="text-2xs font-semibold text-slate-600">Berat Cucian (kg):</label>
+                            <label class="text-2xs font-semibold text-slate-600">
+                                Kuantitas (<span x-text="detailData.unit_label"></span>):
+                            </label>
                             <input
                                 type="number"
                                 min="0.1"
                                 step="0.5"
-                                x-model.number="detailData.calcWeight"
+                                x-model.number="detailData.calcQty"
                                 class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs tabular-nums text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-200"
                             />
                         </div>
                         <div class="w-1/2">
                             <label class="text-2xs font-semibold text-slate-600">Hasil Subtotal:</label>
                             <div class="mt-1 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold tabular-nums text-brand-700 border border-brand-100">
-                                <span x-text="formatRupiah(detailData.calcWeight * detailData.price)"></span>
+                                <span x-text="formatRupiah(detailData.calcQty * detailData.price)"></span>
                             </div>
                         </div>
                     </div>
