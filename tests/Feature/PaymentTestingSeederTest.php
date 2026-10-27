@@ -32,7 +32,7 @@ class PaymentTestingSeederTest extends TestCase
         $this->assertEqualsCanonicalizing(['Menunggu', 'Diproses', 'Selesai'], Complaint::query()->pluck('status')->all());
 
         Payment::query()->whereNotNull('proof_file')->each(function (Payment $payment): void {
-            Storage::disk(Payment::PROOF_DISK)->assertExists($payment->proof_file);
+            $this->assertTrue(Storage::disk(Payment::PROOF_DISK)->exists($payment->proof_file));
         });
 
         Transaction::query()->with('payments')->each(function (Transaction $transaction): void {

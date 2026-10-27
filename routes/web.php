@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\ComplaintController as CustomerComplaintController;
-use App\Http\Controllers\PaymentProofController as CustomerPaymentProofController;
+use App\Http\Controllers\Customer\PaymentProofController as CustomerPaymentProofController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ServiceController;

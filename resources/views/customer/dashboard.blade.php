@@ -237,15 +237,7 @@
                                     {{-- Garis progress background --}}
                                     <div class="absolute left-6 right-6 top-3.5 h-1 -translate-y-1/2 bg-slate-200" aria-hidden="true"></div>
                                     {{-- Garis progress aktif --}}
-                                    @php
-                                        $progressWidth = match ($currentStep) {
-                                            1 => '0%',
-                                            2 => '50%',
-                                            3 => '100%',
-                                            default => '0%',
-                                        };
-                                    @endphp
-                                    <div class="absolute left-6 top-3.5 h-1 -translate-y-1/2 bg-brand-600 transition-all duration-500" style="width: {{ $progressWidth }};" aria-hidden="true"></div>
+                                    <div class="absolute left-6 top-3.5 h-1 -translate-y-1/2 bg-brand-600 transition-all duration-500 {{ match ($currentStep) { 1 => 'w-0', 2 => 'w-1/2', 3 => 'w-full', default => 'w-0' } }}" aria-hidden="true"></div>
 
                                     {{-- Titik-titik tahap --}}
                                     <div class="relative flex justify-between">
