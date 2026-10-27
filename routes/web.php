@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -96,6 +97,13 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'admin'])
                 ->name('dashboard');
+
+            // Pengelolaan Pengguna & Hak Akses (Milestone 2 Maulana)
+            Route::patch('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])
+                ->name('users.toggle-status');
+
+            Route::resource('users', AdminUserController::class)
+                ->except(['show']);
         });
 
     // =========================================================
