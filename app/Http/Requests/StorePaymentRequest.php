@@ -71,7 +71,6 @@ class StorePaymentRequest extends FormRequest
             'cash_received.min' => 'Uang diterima tidak boleh negatif.',
             'cash_received.gte' => 'Uang diterima tidak boleh kurang dari nominal pembayaran.',
 
-            'proof_file.required_if' => 'Bukti pembayaran wajib diunggah untuk pembayaran Transfer atau QRIS.',
             'proof_file.file' => 'Bukti pembayaran harus berupa berkas.',
             'proof_file.image' => 'Bukti pembayaran harus berupa gambar.',
             'proof_file.mimes' => 'Bukti pembayaran harus berformat JPG, JPEG, PNG, atau WEBP.',
