@@ -36,3 +36,11 @@ Pada **setiap prompt atau tugas**, sebelum menulis kode atau mengajukan pertanya
   2. Susun bite-sized tasks terstruktur lengkap dengan checklist (`- [ ]`), file target, dan skenario test.
   3. Ajukan rencana implementasi kepada pengguna terlebih dahulu untuk disetujui sebelum mengeksekusi kode nyata.
 
+## 4. Protokol Wawancara Bebas Asumsi (/grill-me Mode)
+- **Zero Silent Assumptions**: DILARANG keras mengambil keputusan desain arsitektur, struktur data, atau alur bisnis krusial hanya berdasarkan asumsi sepihak.
+- **Eksekusi /grill-me & brainstorming**:
+  1. Jika instruksi ambigu, memiliki trade-off teknis, atau ada detail spesifikasi yang belum pasti: aktifkan mode `/grill-me`.
+  2. Gunakan `ask_question` atau pertanyaan terarah untuk mewawancarai pengguna: bedah edge cases, batasan hak akses (role), skenario kegagalan, dan preferensi implementasi.
+  3. Hanya lanjutkan ke tahap `/plan` dan penulisan kode setelah seluruh asumsi terverifikasi dan disepakati.
+
+
