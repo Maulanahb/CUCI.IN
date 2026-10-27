@@ -74,6 +74,7 @@
                     event.preventDefault();
                     first.focus();
                 }
+            },
             submitPayment() {
                 if (this.submitting || (this.method === 'Tunai' && this.shortfall > 0) || !this.paymentAmount || this.paymentAmount > this.remaining) {
                     return;
@@ -464,6 +465,7 @@
                                     <th scope="col" class="px-4 py-3 font-semibold">Jenis</th>
                                     <th scope="col" class="px-4 py-3 font-semibold">Metode</th>
                                     <th scope="col" class="px-4 py-3 font-semibold">Kasir</th>
+                                    <th scope="col" class="px-4 py-3 font-semibold">Verifikasi</th>
                                     <th scope="col" class="px-4 py-3 text-right font-semibold">Jumlah</th>
                                 </tr>
                             </thead>
@@ -480,6 +482,14 @@
                                         </td>
                                         <td class="px-4 py-3 font-semibold text-slate-700">{{ $payment->method }}</td>
                                         <td class="px-4 py-3 text-slate-600 font-medium">{{ $payment->creator?->name ?? 'Kasir' }}</td>
+                                        <td class="px-4 py-3">
+                                            <div class="flex flex-col items-start gap-1">
+                                                <x-ui.verification-badge :status="$payment->verification_status" size="sm" />
+                                                @if ($payment->isPendingVerification())
+                                                    <a href="{{ route("{$currentRoutePrefix}.payments.show", $payment) }}" class="text-xs font-semibold text-brand-700 hover:text-brand-800">Tinjau bukti</a>
+                                                @endif
+                                            </div>
+                                        </td>
                                         <td class="px-4 py-3 text-right font-black text-emerald-700 font-mono tabular-nums text-sm">
                                             <x-ui.money :value="$payment->amount" />
 
@@ -492,7 +502,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-4 py-8 text-center text-sm text-slate-500 font-medium">
+                                        <td colspan="6" class="px-4 py-8 text-center text-sm text-slate-500 font-medium">
                                             Belum ada riwayat pembayaran untuk transaksi ini.
                                         </td>
                                     </tr>
@@ -520,9 +530,15 @@
                                     </span>
                                 </div>
 
-                                <p class="mt-2 text-xs text-slate-500 font-medium">
-                                    Kasir: {{ $payment->creator?->name ?? 'Kasir' }}
-                                </p>
+                                <div class="mt-2 flex items-center justify-between gap-2">
+                                    <p class="text-xs text-slate-500 font-medium">
+                                        Kasir: {{ $payment->creator?->name ?? 'Kasir' }}
+                                    </p>
+                                    <x-ui.verification-badge :status="$payment->verification_status" size="sm" />
+                                </div>
+                                @if ($payment->isPendingVerification())
+                                    <a href="{{ route("{$currentRoutePrefix}.payments.show", $payment) }}" class="mt-1 inline-block text-xs font-semibold text-brand-700 hover:text-brand-800">Tinjau bukti</a>
+                                @endif
 
                                 @if ($payment->cash_received !== null)
                                     <p class="mt-1 text-xs text-slate-500 font-mono tabular-nums">

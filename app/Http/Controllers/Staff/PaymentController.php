@@ -1,78 +1,113 @@
 <?php
 
 namespace App\Http\Controllers\Staff;
-
-use App\Enums\PaymentStatus;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePaymentRequest;
+use App\Http\Requests\StorePaymentRequest;use App\Http\Requests\VerifyPaymentRequest;
 use App\Models\Payment;
 use App\Models\Transaction;
 use App\Services\RecordPayment;
+use App\Services\VerifyPayment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request;use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 use InvalidArgumentException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PaymentController extends Controller
 {
     /**
-     * Menampilkan daftar pembayaran.
+     * Pilihan tab filter status pada panel verifikasi.
+     *
+     * @var list<string>
      */
-    public function index(Request $request)
+    private const VERIFICATION_FILTERS = ['Menunggu Verifikasi', 'Terverifikasi', 'Ditolak', 'Semua'];
+
+    /**
+     * Panel verifikasi kasir: daftar pembayaran Transfer/QRIS beserta status verifikasinya.
+     */
+    public function index(Request $request): View
     {
-        $query = Payment::with([
-            'transaction.customer',
-            'creator',
-            'verifier',
-        ])->latest();
+        $statusFilter = (string) $request->query('status', Payment::PENDING_STATUS);
+        $statusFilter = in_array($statusFilter, self::VERIFICATION_FILTERS, true) ? $statusFilter : Payment::PENDING_STATUS;
+        $search = trim((string) $request->query('search'));
+        $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
 
-        // Pencarian kode transaksi atau nama pelanggan.
-        if ($request->filled('search')) {
-            $search = $request->input('search');
+        $nonCashPayments = Payment::query()->whereIn('method', Payment::PROOF_METHODS);
 
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('transaction', function ($transactionQuery) use ($search) {
-                    $transactionQuery
-                        ->where('transaction_code', 'like', "%{$search}%")
-                        ->orWhereHas('customer', function ($customerQuery) use ($search) {
-                            $customerQuery->where('name', 'like', "%{$search}%");
-                        });
-                });
+        /** @var array<string, int> $counts */
+        $counts = (clone $nonCashPayments)
+            ->selectRaw('verification_status, COUNT(*) as aggregate')
+            ->groupBy('verification_status')
+            ->pluck('aggregate', 'verification_status')
+            ->map(fn ($count): int => (int) $count)
+            ->all();
+
+        $query = $nonCashPayments
+            ->with(['transaction.customer', 'creator', 'verifier'])
+            ->when($statusFilter !== 'Semua', fn ($q) => $q->where('verification_status', $statusFilter));
+
+        if ($search !== '') {
+            $query->whereHas('transaction', function ($transactionQuery) use ($search) {
+                $transactionQuery
+                    ->where('transaction_code', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function ($customerQuery) use ($search) {
+                        $customerQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
-        // Filter status verifikasi.
-        if ($request->filled('verification_status')) {
-            $query->where(
-                'verification_status',
-                $request->input('verification_status')
-            );
-        }
-
-        // Filter metode pembayaran.
-        if ($request->filled('method')) {
-            $query->where('method', $request->input('method'));
-        }
+        // Antrean menunggu diurutkan dari yang paling lama agar diproses lebih dulu.
+        $statusFilter === Payment::PENDING_STATUS
+            ? $query->oldest('paid_at')->oldest('id')
+            : $query->latest('id');
 
         $payments = $query->paginate(10)->withQueryString();
 
-        return view('staff.payments.index', compact('payments'));
+        return view('staff.payments.index', compact('payments', 'counts', 'statusFilter', 'search', 'routePrefix'));
     }
 
     /**
-     * Menampilkan detail pembayaran.
+     * Menampilkan detail pembayaran beserta pratinjau bukti untuk diverifikasi.
      */
-    public function show(Payment $payment)
+    public function show(Request $request, Payment $payment): View
     {
         $payment->load([
             'transaction.customer',
-            'transaction.details.service',
+            'transaction.payments.creator',
             'creator',
             'verifier',
         ]);
 
-        return view('staff.payments.show', compact('payment'));
+        $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
+
+        return view('staff.payments.show', compact('payment', 'routePrefix'));
+    }
+
+    /**
+     * Tampilkan berkas bukti pembayaran dari disk privat.
+     */
+    public function proof(Payment $payment): StreamedResponse
+    {
+        if (! $payment->proof_file || ! Storage::disk(Payment::PROOF_DISK)->exists($payment->proof_file)) {
+            abort(404, 'Berkas bukti pembayaran tidak ditemukan.');
+        }
+
+        $disk = Storage::disk(Payment::PROOF_DISK);
+        $stream = $disk->readStream($payment->proof_file);
+
+        if (! is_resource($stream)) {
+            abort(404, 'Berkas bukti pembayaran tidak ditemukan.');
+        }
+
+        return response()->stream(function () use ($stream): void {
+            fpassthru($stream);
+            fclose($stream);
+        }, 200, [
+            'Content-Type' => $disk->mimeType($payment->proof_file) ?: 'application/octet-stream',
+            'Content-Disposition' => 'inline; filename="'.basename($payment->proof_file).'"',
+        ]);
     }
 
     /**
@@ -101,8 +136,8 @@ class PaymentController extends Controller
                 && in_array($validated['method'], ['Transfer', 'QRIS'], true)
             ) {
                 $path = $request->file('proof_file')->store(
-                    'payments/proofs',
-                    'public'
+                    Payment::PROOF_DIRECTORY,
+                    Payment::PROOF_DISK
                 );
 
                 $payment->update([
@@ -130,9 +165,7 @@ class PaymentController extends Controller
             $transaction->refresh();
             $transaction->load('payments');
 
-            $paymentStatusValue = $transaction->payment_status instanceof PaymentStatus
-                ? $transaction->payment_status->value
-                : (string) $transaction->payment_status;
+            $paymentStatusValue = (string) $transaction->payment_status;
 
             return response()->json([
                 'success' => true,
@@ -175,30 +208,34 @@ class PaymentController extends Controller
     }
 
     /**
-     * Memverifikasi atau menolak pembayaran non-tunai.
+     * Memverifikasi (approve) atau menolak (reject) bukti pembayaran non-tunai.
+     *
+     * @throws ValidationException
      */
-    public function verify(
-        Request $request,
-        Payment $payment
-    ): RedirectResponse {
-        $validated = $request->validate([
-            'verification_status' => [
-                'required',
-                'in:Terverifikasi,Ditolak',
-            ],
-        ]);
+    public function verify(VerifyPaymentRequest $request, Payment $payment): RedirectResponse
+    {
+        $validated = $request->validated();
 
-        $payment->update([
-            'verification_status' => $validated['verification_status'],
-            'verified_by' => auth()->id(),
-            'verified_at' => now(),
-        ]);
+        try {
+            $payment = VerifyPayment::execute(
+                payment: $payment,
+                decision: $validated['verification_status'],
+                verifierId: (int) $request->user()->id,
+                notes: $validated['verification_notes'] ?? null,
+            );
+        } catch (InvalidArgumentException $e) {
+            throw ValidationException::withMessages([
+                'verification_status' => [$e->getMessage()],
+            ]);
+        }
 
-        $status = $validated['verification_status'];
+        $formattedAmount = number_format((float) $payment->amount, 0, ',', '.');
+        $message = $payment->verification_status === VerifyPayment::APPROVE
+            ? "Pembayaran Rp {$formattedAmount} berhasil diverifikasi."
+            : "Pembayaran Rp {$formattedAmount} ditolak.";
 
-        return redirect()->back()->with(
-            'success',
-            "Pembayaran berhasil diproses dengan status {$status}."
-        );
+        return redirect()
+            ->back()
+            ->with('success', $message);
     }
 }
