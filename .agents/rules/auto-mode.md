@@ -28,3 +28,11 @@ Pada **setiap prompt atau tugas**, sebelum menulis kode atau mengajukan pertanya
 - **Action & Code First**: Berikan akar masalah, diff kode spesifik, link file yang dapat diklik, dan perintah terminal yang siap dijalankan.
 - **Kepadatan Informasi Tinggi**: Gunakan poin-poin telegrafis daripada paragraf naratif panjang.
 - **Evidence Before Assertions**: Jangan pernah mengklaim tugas selesai sebelum memverifikasi bukti eksekusi perintah (contoh: `php artisan test`, `vendor/bin/pint --format agent`).
+
+## 3. Protokol Perencanaan (/plan Mode)
+- **Tugas Berbasis Rencana**: Jika instruksi masih berbasis ide, rancangan arsitektur, tugas multi-tahap, atau belum memiliki spesifikasi file/kode yang pasti: **DILARANG LANGSUNG CODING**.
+- **Eksekusi /plan & writing-plans**:
+  1. Aktifkan skill `writing-plans` ([`.agents/skills/writing-plans/SKILL.md`](file:///c:/laragon/www/cuci-in/.agents/skills/writing-plans/SKILL.md)).
+  2. Susun bite-sized tasks terstruktur lengkap dengan checklist (`- [ ]`), file target, dan skenario test.
+  3. Ajukan rencana implementasi kepada pengguna terlebih dahulu untuk disetujui sebelum mengeksekusi kode nyata.
+
