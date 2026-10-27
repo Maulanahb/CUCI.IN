@@ -8,6 +8,7 @@ use App\Http\Controllers\Customer\ComplaintController as CustomerComplaintContro
 use App\Http\Controllers\Customer\PaymentProofController as CustomerPaymentProofController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Staff\ComplaintController as StaffComplaintController;
 use App\Http\Controllers\Staff\CustomerController;
@@ -261,6 +262,19 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::delete('/services/{service}', [ServiceController::class, 'destroy'])
                     ->name('services.destroy');
+
+                // Laporan Operasional & Keuangan (Ekspor PDF, Excel, CSV Streaming - Ayin M2)
+                Route::get('/reports', [ReportController::class, 'index'])
+                    ->name('reports.index');
+
+                Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])
+                    ->name('reports.export.pdf');
+
+                Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])
+                    ->name('reports.export.excel');
+
+                Route::get('/reports/export/csv', [ReportController::class, 'exportCsv'])
+                    ->name('reports.export.csv');
             });
     });
 
