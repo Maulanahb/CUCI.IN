@@ -8,7 +8,9 @@ use App\Http\Controllers\Customer\ComplaintController as CustomerComplaintContro
 use App\Http\Controllers\Customer\PaymentProofController as CustomerPaymentProofController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\Staff\ComplaintController as StaffComplaintController;
 use App\Http\Controllers\Staff\CustomerController;
 use App\Http\Controllers\Staff\PaymentController;
 use App\Http\Controllers\Staff\TransactionController as StaffTransactionController;
@@ -169,6 +171,16 @@ Route::middleware(['auth', 'active'])->group(function () {
                 // Layanan (Katalog untuk Staff)
                 Route::get('/services', [ServiceController::class, 'index'])
                     ->name('services.index');
+
+                // Pengelolaan Pengaduan Pelanggan
+                Route::get('/complaints', [StaffComplaintController::class, 'index'])
+                    ->name('complaints.index');
+
+                Route::get('/complaints/{complaint}', [StaffComplaintController::class, 'show'])
+                    ->name('complaints.show');
+
+                Route::patch('/complaints/{complaint}', [StaffComplaintController::class, 'update'])
+                    ->name('complaints.update');
             });
 
         // -------------------------------------------------
@@ -240,6 +252,29 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::delete('/services/{service}', [ServiceController::class, 'destroy'])
                     ->name('services.destroy');
+
+                // Pengelolaan Pengaduan Pelanggan untuk Admin
+                Route::get('/complaints', [StaffComplaintController::class, 'index'])
+                    ->name('complaints.index');
+
+                Route::get('/complaints/{complaint}', [StaffComplaintController::class, 'show'])
+                    ->name('complaints.show');
+
+                Route::patch('/complaints/{complaint}', [StaffComplaintController::class, 'update'])
+                    ->name('complaints.update');
+
+                // Laporan Operasional & Keuangan (Ekspor PDF, Excel, CSV Streaming - Ayin M2)
+                Route::get('/reports', [ReportController::class, 'index'])
+                    ->name('reports.index');
+
+                Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])
+                    ->name('reports.export.pdf');
+
+                Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])
+                    ->name('reports.export.excel');
+
+                Route::get('/reports/export/csv', [ReportController::class, 'exportCsv'])
+                    ->name('reports.export.csv');
             });
     });
 

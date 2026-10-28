@@ -62,12 +62,11 @@ desktop.ini
 # Local Agent Credentials & Caches
 *mcp_config*.json
 /.impeccable/
-.agent/skills/impeccable/scripts/bin/
+.agents/skills/impeccable/scripts/bin/
 
 # Local Graphify
 /graphify-out/
 /.graphify/
 /.graphifyignore
-.agent/skills/graphify/
-.agents/
 docs/pines_ui_guidelines.md
+

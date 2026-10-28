@@ -1,15 +1,18 @@
 <?php
 
 namespace App\Http\Controllers\Staff;
+
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePaymentRequest;use App\Http\Requests\VerifyPaymentRequest;
+use App\Http\Requests\StorePaymentRequest;
+use App\Http\Requests\VerifyPaymentRequest;
 use App\Models\Payment;
 use App\Models\Transaction;
 use App\Services\RecordPayment;
 use App\Services\VerifyPayment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use InvalidArgumentException;
