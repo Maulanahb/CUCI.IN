@@ -6,6 +6,7 @@
     'side' => 'right',
     'maxWidth' => 'xl',
     'closable' => true,
+    'closeTitle' => 'Tutup panel',
 ])
 
 @php
@@ -87,7 +88,8 @@
                                 type="button"
                                 @click="{{ $closeAction }}"
                                 class="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
-                                aria-label="Tutup panel"
+                                aria-label="{{ $closeTitle }}"
+                                title="{{ $closeTitle }}"
                             >
                                 <x-lucide-x class="size-5" />
                             </button>

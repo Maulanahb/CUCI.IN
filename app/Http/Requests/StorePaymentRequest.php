@@ -52,6 +52,11 @@ class StorePaymentRequest extends FormRequest
                 'mimes:jpg,jpeg,png,webp',
                 'max:5120',
             ],
+
+            'is_confirmed' => [
+                'nullable',
+                'boolean',
+            ],
         ];
     }
 

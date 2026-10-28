@@ -19,7 +19,7 @@
     };
 
     $activeClasses = match ($variant) {
-        'segmented' => 'bg-white text-slate-900 shadow-2xs font-bold',
+        'segmented' => 'bg-brand-700 text-white font-semibold',
         'pills' => 'bg-brand-50 text-brand-700 font-bold',
         'underline' => 'border-b-2 border-brand-600 text-brand-700 font-bold -mb-px pb-2',
         default => 'bg-white text-slate-900 shadow-2xs font-bold',
@@ -32,9 +32,9 @@
         default => 'text-slate-600 hover:text-slate-900 font-medium',
     };
 
-    $baseClasses = 'inline-flex items-center gap-1.5 shrink-0 rounded-lg px-3 py-1.5 transition-all duration-150 cursor-pointer focus:outline-none';
+    $baseClasses = 'inline-flex min-h-11 items-center gap-1.5 shrink-0 rounded-lg px-3 py-2 transition-colors duration-150 cursor-pointer';
     if ($variant === 'underline') {
-        $baseClasses = 'inline-flex items-center gap-1.5 shrink-0 transition-all duration-150 cursor-pointer focus:outline-none';
+        $baseClasses = 'inline-flex min-h-11 items-center gap-1.5 shrink-0 transition-colors duration-150 cursor-pointer';
     }
 
     $isAlpineControlled = (bool) ($model && $name);

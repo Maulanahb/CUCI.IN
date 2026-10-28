@@ -133,20 +133,29 @@ class PaymentController extends Controller
                     : null
             );
 
-            // Bukti Transfer/QRIS disimpan dan menunggu verifikasi.
-            if (
-                $request->hasFile('proof_file')
-                && in_array($validated['method'], ['Transfer', 'QRIS'], true)
-            ) {
-                $path = $request->file('proof_file')->store(
-                    Payment::PROOF_DIRECTORY,
-                    Payment::PROOF_DISK
-                );
+            // Bukti Transfer/QRIS disimpan dan status verifikasi disesuaikan
+            if (in_array($validated['method'], ['Transfer', 'QRIS'], true)) {
+                $updates = [];
 
-                $payment->update([
-                    'proof_file' => $path,
-                    'verification_status' => 'Menunggu Verifikasi',
-                ]);
+                if ($request->hasFile('proof_file')) {
+                    $path = $request->file('proof_file')->store(
+                        Payment::PROOF_DIRECTORY,
+                        Payment::PROOF_DISK
+                    );
+                    $updates['proof_file'] = $path;
+                }
+
+                if ($request->has('is_confirmed')) {
+                    $updates['verification_status'] = $request->boolean('is_confirmed')
+                        ? 'Terverifikasi'
+                        : 'Menunggu Verifikasi';
+                } elseif ($request->hasFile('proof_file')) {
+                    $updates['verification_status'] = 'Menunggu Verifikasi';
+                }
+
+                if (! empty($updates)) {
+                    $payment->update($updates);
+                }
             }
         } catch (InvalidArgumentException $e) {
             throw ValidationException::withMessages([

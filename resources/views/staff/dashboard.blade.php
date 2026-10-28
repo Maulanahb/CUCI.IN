@@ -1,6 +1,6 @@
 <x-layouts::app title="Dashboard Kasir & Operasional">
     <div
-        class="space-y-6"
+        class="space-y-7"
         x-data="{
             initShortcuts() {
                 window.addEventListener('keydown', (e) => {
@@ -14,225 +14,65 @@
         }"
         x-init="initShortcuts()"
     >
-        {{-- Banner Sapaan Staff & Aksi Cepat --}}
-        <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
-                        Selamat Datang, {{ auth()->user()->name }}!
-                    </h1>
-                    <p class="mt-1 text-xs text-slate-500 sm:text-sm">
-                        {{ now()->locale('id')->translatedFormat('l, d F Y') }} &bull; Kelola antrean cucian hari ini: input nota baru, perbarui tahapan cuci, dan serahkan cucian yang telah tuntas.
-                    </p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2">
-                    <x-ui.button :href="route('staff.transactions.create')" size="sm" class="shadow-xs">
-                        <x-lucide-plus class="size-4" aria-hidden="true" />
-                        <span>Buka Kasir POS</span>
-                        <kbd class="hidden rounded-md border border-brand-500/40 bg-brand-800/80 px-1.5 py-0.5 text-[10px] font-mono font-bold text-white sm:inline shadow-2xs">F2</kbd>
-                    </x-ui.button>
-                    <x-ui.button :href="route('staff.customers.index')" variant="secondary" size="sm">
-                        <x-lucide-users class="size-4 text-slate-500" aria-hidden="true" />
-                        <span>Cari Pelanggan</span>
-                    </x-ui.button>
-                    <x-ui.button :href="route('transactions.lookup')" variant="secondary" size="sm">
-                        <x-lucide-search class="size-4 text-slate-500" aria-hidden="true" />
-                        <span>Cek Nota</span>
-                    </x-ui.button>
-                </div>
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Meja kasir</h1>
+                <p class="mt-2 text-sm text-slate-600">{{ now()->locale('id')->translatedFormat('l, d F Y') }} <span class="mx-1 text-slate-300" aria-hidden="true">/</span> {{ auth()->user()->name }}</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+                <x-ui.button :href="route('transactions.lookup')" variant="ghost">
+                    <x-lucide-search class="size-4" aria-hidden="true" />
+                    Cek Nota
+                </x-ui.button>
+                <x-ui.button :href="route('staff.transactions.create')">
+                    <x-lucide-plus class="size-4" aria-hidden="true" />
+                    Buka Kasir POS
+                    <kbd class="ml-2 hidden rounded border border-white/30 px-1.5 py-0.5 text-xs text-white sm:inline">F2</kbd>
+                </x-ui.button>
             </div>
         </div>
 
-        {{-- KPI Operasional Hari Ini --}}
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {{-- Nota Masuk Hari Ini --}}
-            <a
-                href="{{ route('staff.transactions.index') }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:border-brand-300 hover:shadow-sm"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-slate-500 group-hover:text-brand-700 transition">Nota Masuk Hari Ini</span>
-                    <div class="flex size-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
-                        <x-lucide-receipt class="size-4.5" />
-                    </div>
+        <section aria-label="Ringkasan operasional" class="grid grid-cols-2 overflow-hidden rounded-2xl border border-slate-200 bg-white lg:grid-cols-4">
+            <a href="{{ route('staff.transactions.index') }}" class="group border-b border-r border-slate-200 p-5 transition-colors hover:bg-slate-50 sm:p-6 lg:border-b-0">
+                <p class="text-sm font-medium text-slate-600">Nota masuk hari ini</p>
+                <div class="mt-4 flex items-end justify-between gap-2">
+                    <p class="text-4xl font-semibold tracking-tight tabular-nums text-slate-900">{{ number_format($stats['transactions_today'], 0, ',', '.') }}</p>
+                    <x-lucide-arrow-up-right class="mb-1 size-4 text-slate-400 group-hover:text-brand-700" aria-hidden="true" />
                 </div>
-                <p class="mt-2 text-2xl font-bold tabular-nums text-slate-900 sm:text-3xl">
-                    {{ number_format($stats['transactions_today'], 0, ',', '.') }}
-                </p>
-                <p class="mt-1 flex items-center gap-1 text-xs font-semibold text-brand-700">
-                    <span>Transaksi dibuat hari ini</span>
-                    <x-lucide-arrow-right class="size-3.5 transition-transform group-hover:translate-x-1" />
-                </p>
+                <p class="mt-2 text-xs text-slate-500">Transaksi baru hari ini</p>
             </a>
-
-            {{-- Perlu Dikerjakan --}}
-            <a
-                href="{{ route('staff.transactions.index', ['status' => 'Diterima']) }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:border-sky-300 hover:shadow-sm"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-slate-500 group-hover:text-sky-700 transition">Perlu Dikerjakan</span>
-                    <div class="flex size-9 items-center justify-center rounded-xl bg-sky-50 text-sky-700">
-                        <x-lucide-clock class="size-4.5" />
-                    </div>
+            <a href="{{ route('staff.transactions.index', ['status' => 'Diterima']) }}" class="group border-b border-slate-200 p-5 transition-colors hover:bg-slate-50 sm:p-6 lg:border-b-0 lg:border-r">
+                <p class="text-sm font-medium text-slate-600">Perlu dikerjakan</p>
+                <div class="mt-4 flex items-end justify-between gap-2">
+                    <p class="text-4xl font-semibold tracking-tight tabular-nums text-slate-900">{{ number_format($stats['in_progress'], 0, ',', '.') }}</p>
+                    <x-lucide-arrow-up-right class="mb-1 size-4 text-slate-400 group-hover:text-brand-700" aria-hidden="true" />
                 </div>
-                <p class="mt-2 text-2xl font-bold tabular-nums text-slate-900 sm:text-3xl">
-                    {{ number_format($stats['in_progress'], 0, ',', '.') }}
-                </p>
-                <p class="mt-1 flex items-center gap-1 text-xs font-semibold text-sky-700">
-                    <span>Status Diterima &amp; Diproses</span>
-                    <x-lucide-arrow-right class="size-3.5 transition-transform group-hover:translate-x-1" />
-                </p>
+                <p class="mt-2 text-xs text-slate-500">Diterima &amp; diproses</p>
             </a>
-
-            {{-- Terlambat --}}
-            <a
-                href="{{ route('staff.transactions.index') }}"
-                class="group block rounded-xl border {{ $stats['overdue'] > 0 ? 'border-rose-200 bg-rose-50/20' : 'border-slate-200/80 bg-white' }} p-5 shadow-xs transition hover:border-rose-300 hover:shadow-sm"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-slate-500 group-hover:text-rose-700 transition">Terlambat</span>
-                    <div class="flex size-9 items-center justify-center rounded-xl bg-rose-50 text-rose-600">
-                        <x-lucide-alert-triangle class="size-4.5" />
-                    </div>
+            <a href="{{ route('staff.transactions.index', ['status' => 'Selesai']) }}" class="group border-r border-slate-200 p-5 transition-colors hover:bg-emerald-50/40 sm:p-6">
+                <p class="text-sm font-medium text-slate-600">Siap diambil</p>
+                <div class="mt-4 flex items-end justify-between gap-2">
+                    <p class="text-4xl font-semibold tracking-tight tabular-nums text-emerald-700">{{ number_format($stats['ready_for_pickup'], 0, ',', '.') }}</p>
+                    <x-lucide-arrow-up-right class="mb-1 size-4 text-slate-400 group-hover:text-emerald-700" aria-hidden="true" />
                 </div>
-                <p class="mt-2 text-2xl font-bold tabular-nums text-rose-700 sm:text-3xl">
-                    {{ number_format($stats['overdue'], 0, ',', '.') }}
-                </p>
-                <p class="mt-1 flex items-center gap-1 text-xs font-semibold text-rose-600">
-                    @if ($stats['overdue'] > 0)
-                        <span>Lewat estimasi selesai!</span>
-                    @else
-                        <span>Seluruh pesanan tepat waktu</span>
-                    @endif
-                    <x-lucide-arrow-right class="size-3.5 transition-transform group-hover:translate-x-1" />
-                </p>
+                <p class="mt-2 text-xs text-slate-500">Menunggu pelanggan</p>
             </a>
-
-            {{-- Siap Diambil --}}
-            <a
-                href="{{ route('staff.transactions.index', ['status' => 'Selesai']) }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:border-emerald-300 hover:shadow-sm"
-            >
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-slate-500 group-hover:text-emerald-700 transition">Siap Diambil</span>
-                    <div class="flex size-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
-                        <x-lucide-check-circle-2 class="size-4.5" />
-                    </div>
+            <a href="#antrean-prioritas" @class(['group p-5 transition-colors sm:p-6', 'bg-rose-50 hover:bg-rose-100/70' => $stats['overdue'] > 0, 'hover:bg-slate-50' => $stats['overdue'] === 0])>
+                <p class="flex items-center gap-2 text-sm font-medium text-slate-600">
+                    <x-lucide-alarm-clock class="size-4" aria-hidden="true" /> Terlambat
+                </p>
+                <div class="mt-4 flex items-end justify-between gap-2">
+                    <p class="text-4xl font-semibold tracking-tight tabular-nums {{ $stats['overdue'] > 0 ? 'text-rose-700' : 'text-slate-900' }}">{{ number_format($stats['overdue'], 0, ',', '.') }}</p>
+                    <x-lucide-arrow-down class="mb-1 size-4 text-slate-500" aria-hidden="true" />
                 </div>
-                <p class="mt-2 text-2xl font-bold tabular-nums text-slate-900 sm:text-3xl">
-                    {{ number_format($stats['ready_for_pickup'], 0, ',', '.') }}
-                </p>
-                <p class="mt-1 flex items-center gap-1 text-xs font-semibold text-emerald-700">
-                    <span>Menunggu diambil pelanggan</span>
-                    <x-lucide-arrow-right class="size-3.5 transition-transform group-hover:translate-x-1" />
-                </p>
+                <p class="mt-2 text-xs {{ $stats['overdue'] > 0 ? 'font-medium text-rose-700' : 'text-slate-500' }}">{{ $stats['overdue'] > 0 ? 'Dahulukan pengerjaannya' : 'Tidak ada cucian terlambat' }}</p>
             </a>
-        </div>
-
-        {{-- Pipeline Antrean & Status Operasional Cucian --}}
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs sm:p-6">
-            <div class="mb-4 flex flex-col gap-1 border-b border-slate-100 pb-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h2 class="text-sm font-bold text-slate-900 sm:text-base">
-                        Pipeline &amp; Status Operasional Antrean
-                    </h2>
-                    <p class="text-xs text-slate-500">
-                        Klik pada kartu status untuk memfilter daftar transaksi operasional laundry.
-                    </p>
-                </div>
-                <a href="{{ route('staff.transactions.index') }}" class="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline">
-                    <span>Kelola Seluruh Antrean</span>
-                    <x-lucide-arrow-right class="size-3.5" />
-                </a>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {{-- Diterima --}}
-                <a
-                    href="{{ route('staff.transactions.index', ['status' => 'Diterima']) }}"
-                    class="group block rounded-xl border border-sky-100 bg-sky-50/40 p-4 transition hover:border-sky-300 hover:bg-sky-50"
-                >
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-bold text-sky-800">1. Diterima</span>
-                        <span class="inline-flex size-2 rounded-full bg-sky-500"></span>
-                    </div>
-                    <div class="mt-2 flex items-baseline justify-between gap-2">
-                        <p class="text-2xl font-bold tabular-nums text-sky-950">{{ number_format($statusCounts['diterima'], 0, ',', '.') }}</p>
-                        <x-lucide-chevron-right class="size-4 text-sky-600 transition-transform group-hover:translate-x-0.5" />
-                    </div>
-                    @if ($overdueByStatus['diterima'] > 0)
-                        <p class="mt-1 inline-flex items-center gap-1 text-2xs font-bold text-rose-600">
-                            <span class="size-1 rounded-full bg-rose-500" aria-hidden="true"></span>
-                            {{ number_format($overdueByStatus['diterima'], 0, ',', '.') }} terlambat
-                        </p>
-                    @else
-                        <p class="mt-1 text-2xs font-medium text-sky-800">Antrean masuk baru</p>
-                    @endif
-                </a>
-
-                {{-- Diproses --}}
-                <a
-                    href="{{ route('staff.transactions.index', ['status' => 'Diproses']) }}"
-                    class="group block rounded-xl border border-amber-100 bg-amber-50/40 p-4 transition hover:border-amber-300 hover:bg-amber-50"
-                >
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-bold text-amber-800">2. Diproses</span>
-                        <span class="inline-flex size-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    </div>
-                    <div class="mt-2 flex items-baseline justify-between gap-2">
-                        <p class="text-2xl font-bold tabular-nums text-amber-950">{{ number_format($statusCounts['diproses'], 0, ',', '.') }}</p>
-                        <x-lucide-chevron-right class="size-4 text-amber-600 transition-transform group-hover:translate-x-0.5" />
-                    </div>
-                    @if ($overdueByStatus['diproses'] > 0)
-                        <p class="mt-1 inline-flex items-center gap-1 text-2xs font-bold text-rose-600">
-                            <span class="size-1 rounded-full bg-rose-500" aria-hidden="true"></span>
-                            {{ number_format($overdueByStatus['diproses'], 0, ',', '.') }} terlambat
-                        </p>
-                    @else
-                        <p class="mt-1 text-2xs font-medium text-amber-800">Sedang dicuci &amp; disetrika</p>
-                    @endif
-                </a>
-
-                {{-- Selesai --}}
-                <a
-                    href="{{ route('staff.transactions.index', ['status' => 'Selesai']) }}"
-                    class="group block rounded-xl border border-emerald-100 bg-emerald-50/40 p-4 transition hover:border-emerald-300 hover:bg-emerald-50"
-                >
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-bold text-emerald-800">3. Selesai</span>
-                        <span class="inline-flex size-2 rounded-full bg-emerald-500"></span>
-                    </div>
-                    <div class="mt-2 flex items-baseline justify-between gap-2">
-                        <p class="text-2xl font-bold tabular-nums text-emerald-950">{{ number_format($statusCounts['selesai'], 0, ',', '.') }}</p>
-                        <x-lucide-chevron-right class="size-4 text-emerald-600 transition-transform group-hover:translate-x-0.5" />
-                    </div>
-                    <p class="mt-1 text-2xs font-medium text-emerald-800">Siap diambil pelanggan</p>
-                </a>
-
-                {{-- Diambil --}}
-                <a
-                    href="{{ route('staff.transactions.index', ['status' => 'Diambil']) }}"
-                    class="group block rounded-xl border border-slate-200 bg-slate-50/60 p-4 transition hover:border-slate-300 hover:bg-slate-100/60"
-                >
-                    <div class="flex items-center justify-between gap-2">
-                        <span class="text-xs font-bold text-slate-700">4. Diambil</span>
-                        <span class="inline-flex size-2 rounded-full bg-slate-400"></span>
-                    </div>
-                    <div class="mt-2 flex items-baseline justify-between gap-2">
-                        <p class="text-2xl font-bold tabular-nums text-slate-900">{{ number_format($statusCounts['diambil'], 0, ',', '.') }}</p>
-                        <x-lucide-chevron-right class="size-4 text-slate-500 transition-transform group-hover:translate-x-0.5" />
-                    </div>
-                    <p class="mt-1 text-2xs font-medium text-slate-500">Tuntas diserahkan</p>
-                </a>
-            </div>
-        </div>
+        </section>
 
         {{-- Grid Konten: Prioritas Hari Ini & Kas --}}
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div class="space-y-6">
             {{-- Kolom Kiri (2/3 width): Tabel Prioritas Hari Ini & Feed --}}
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs sm:p-6 lg:col-span-2 space-y-6">
+            <div id="antrean-prioritas" class="scroll-mt-24 overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 space-y-6">
                 {{-- Prioritas Hari Ini --}}
                 <div>
                     <div class="mb-4 flex items-center justify-between border-b border-slate-100 pb-3">
@@ -241,8 +81,8 @@
                                 <x-lucide-list-ordered class="size-4" />
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-slate-900 sm:text-base">Antrean Prioritas Pengerjaan</h3>
-                                <p class="text-xs text-slate-500">Cucian yang mendekati atau melewati tenggat waktu ditampilkan lebih awal.</p>
+                                <h3 class="text-lg font-semibold tracking-tight text-slate-900">Antrean Prioritas Pengerjaan</h3>
+                                <p class="text-xs text-slate-500">Dahulukan cucian yang melewati atau mendekati estimasi selesai.</p>
                             </div>
                         </div>
                         <a
@@ -253,6 +93,18 @@
                             <x-lucide-arrow-right class="size-3.5" />
                         </a>
                     </div>
+
+                    <nav aria-label="Filter status cucian" class="mb-5 flex flex-wrap gap-2">
+                        @foreach (['diterima' => 'Diterima', 'diproses' => 'Diproses', 'selesai' => 'Selesai', 'diambil' => 'Diambil'] as $statusKey => $statusLabel)
+                            <a href="{{ route('staff.transactions.index', ['status' => $statusLabel]) }}" class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-slate-200 px-3 text-sm text-slate-600 transition-colors hover:border-brand-700 hover:bg-brand-50 hover:text-brand-800">
+                                {{ $statusLabel }}
+                                <span class="rounded bg-slate-100 px-1.5 py-0.5 text-xs font-semibold tabular-nums text-slate-800">{{ $statusCounts[$statusKey] }}</span>
+                                @if (($overdueByStatus[$statusKey] ?? 0) > 0)
+                                    <span class="text-xs font-medium text-rose-700">{{ $overdueByStatus[$statusKey] }} terlambat</span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </nav>
 
                     @if ($queueTransactions->isEmpty())
                         <div class="flex flex-col items-center justify-center py-10 text-center">
@@ -271,7 +123,7 @@
                     @else
                         {{-- Desktop Table --}}
                         <div class="hidden overflow-x-auto sm:block -mx-5 sm:-mx-6">
-                            <table class="w-full text-left text-xs">
+                            <table class="w-full text-left text-sm">
                                 <thead>
                                     <tr class="border-b border-slate-100 bg-slate-50/50 text-2xs font-bold uppercase tracking-wider text-slate-500">
                                         <th scope="col" class="py-3 px-5 sm:px-6">Kode Nota</th>
@@ -293,7 +145,7 @@
                                             <td class="py-3.5 px-5 sm:px-6 font-semibold">
                                                 <a
                                                     href="{{ route('staff.transactions.show', $trx) }}"
-                                                    class="font-sans font-bold tracking-tight text-brand-700 hover:text-brand-800 hover:underline inline-flex items-center gap-1"
+                                                    class="whitespace-nowrap font-mono font-semibold text-brand-800 hover:text-brand-800 hover:underline inline-flex items-center gap-1"
                                                 >
                                                     {{ $trx->transaction_code }}
                                                     <x-lucide-external-link class="size-3 text-slate-400" />
@@ -309,7 +161,7 @@
                                             {{-- Estimasi --}}
                                             <td class="py-3.5 px-4">
                                                 @if ($trx->queue_is_overdue)
-                                                    <x-ui.badge tone="danger" size="xs" dot pulse>
+                                                    <x-ui.badge tone="danger" size="xs" dot>
                                                         Terlambat {{ $trx->queue_hours }}j
                                                     </x-ui.badge>
                                                 @elseif ($trx->status !== \App\Enums\TransactionStatus::Selesai && $trx->estimated_completed_at)
@@ -356,6 +208,7 @@
                                                         target="_blank"
                                                         rel="noopener"
                                                         title="Cetak Struk Thermal Kasir"
+                                                        aria-label="Cetak nota {{ $trx->transaction_code }}"
                                                     >
                                                         <x-lucide-printer class="size-3.5" />
                                                     </x-ui.button>
@@ -405,7 +258,7 @@
                                             <x-ui.button :href="route('staff.transactions.show', $trx)" variant="soft" size="xs">
                                                 Detail
                                             </x-ui.button>
-                                            <x-ui.button :href="route('staff.transactions.print', $trx)" variant="secondary" size="xs" target="_blank" rel="noopener">
+                                            <x-ui.button :href="route('staff.transactions.print', $trx)" variant="secondary" size="xs" target="_blank" rel="noopener" aria-label="Cetak nota {{ $trx->transaction_code }}">
                                                 <x-lucide-printer class="size-3.5" />
                                             </x-ui.button>
                                         </div>
@@ -422,14 +275,11 @@
                     @endif
                 </div>
 
-                {{-- Feed Aktivitas Riwayat Perubahan Status --}}
-                <div class="border-t border-slate-100 pt-5">
-                    <x-dashboard.activity-feed :activities="$recentActivities" prefix="staff" />
-                </div>
+
             </div>
 
             {{-- Kolom Kanan (1/3 width): Kas Tutup Shift, Katalog & Pelanggan --}}
-            <div class="space-y-6 lg:col-span-1">
+            <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-3">
                 {{-- Card Kas Hari Ini (Rekap Tutup Shift) --}}
                 <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs sm:p-6">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -540,6 +390,10 @@
                 {{-- Pelanggan Baru --}}
                 <x-dashboard.new-customers :customers="$recentCustomers" prefix="staff" />
             </div>
+        </div>
+        {{-- Feed Aktivitas Riwayat Perubahan Status --}}
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+            <x-dashboard.activity-feed :activities="$recentActivities" prefix="staff" />
         </div>
     </div>
 </x-layouts::app>

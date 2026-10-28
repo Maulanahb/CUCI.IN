@@ -179,4 +179,21 @@ class TransactionLookupTest extends TestCase
         $response->assertSee(route('transactions.lookup'));
         $response->assertSee('Cek Transaksi');
     }
+
+    /**
+     * Test pelanggan terautentikasi melihat halaman pelacakan di dalam layout aplikasi bersidebar.
+     */
+    public function test_authenticated_customer_sees_lookup_page_inside_app_layout(): void
+    {
+        $this->withoutVite();
+
+        $user = User::factory()->create(['role' => 'customer']);
+        Customer::factory()->create(['user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->get(route('transactions.lookup'));
+
+        $response->assertOk();
+        $response->assertSee('Lacak Nota Fisik');
+        $response->assertSee('sidebar');
+    }
 }

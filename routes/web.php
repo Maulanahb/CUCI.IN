@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 // Rute Publik: Lacak Cucian / Cek Transaksi Menggunakan Kode Nota (Tanpa Login)
 Route::get('/lookup', [TransactionLookupController::class, 'index'])
     ->name('transactions.lookup');
+Route::post('/lookup/payment-proof', [TransactionLookupController::class, 'storePaymentProof'])
+    ->name('transactions.lookup.payment-proof');
 
 // Rute Home / Root: Mengarahkan pengguna sesuai status login & role
 Route::get('/', function () {
