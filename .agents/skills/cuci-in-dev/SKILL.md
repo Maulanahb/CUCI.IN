@@ -119,3 +119,28 @@ Bila mendampingi pengembang pada modul pelaporan, ekspor dokumen, upload media, 
    - Gunakan `->afterCommit()` saat men-dispatch job di dalam transaksi basis data.
    - Panduan alokasi modul tim dan standar arsitektur tersedia di [rules_milestone_2.md](file:///c:/laragon/www/cuci-in/docs/rules_milestone_2.md) dan [prd.md](file:///c:/laragon/www/cuci-in/docs/prd.md) (Seksi 24).
 
+---
+
+## 5. Deployment ke Server Production AWS EC2 (sistem.md)
+
+Dokumentasi lengkap topologi cloud dan server tercatat pada [docs/sistem.md](file:///c:/laragon/www/cuci-in/docs/sistem.md):
+
+- **Domain Utama:** `https://portal-cuciin.web.id` (Cloudflare SSL Flexible $\rightarrow$ AWS EC2 `3.25.167.8`).
+- **Path Proyek Server:** `/var/www/cuci-in` (branch `develop`).
+- **Basis Data Server:** PostgreSQL 16+ (`cuci_in`), user `postgres`.
+- **Perintah Sinkronisasi Kode ke Server (One-Liner):**
+  ```bash
+  cd /var/www/cuci-in && \
+  git pull origin develop && \
+  composer install --no-dev --optimize-autoloader && \
+  php artisan migrate --force && \
+  npm install && \
+  npm run build && \
+  php artisan optimize && \
+  sudo chown -R www-data:www-data storage bootstrap/cache
+  ```
+- **Eksekusi Queue Worker Background:**
+  ```bash
+  nohup php /var/www/cuci-in/artisan queue:work --tries=3 --timeout=60 > /dev/null 2>&1 &
+  ```
+

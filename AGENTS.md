@@ -230,6 +230,35 @@ Setiap agen AI di AGY wajib menerapkan standar berikut saat membantu modul terka
 3. **Queue Job (Maulana, Nora, Daysyani):** Tugas lambat/berat (kompresi foto bukti transfer, kompresi foto komplain noda, notifikasi status cucian) wajib menggunakan Job (`make:job`) dengan `$tries = 3`, `$backoff = [10, 60]`, `$timeout = 60`, hanya membawa ID model/path, dan dispatch dengan `->afterCommit()`.
 4. Rujukan detail aturan pengerjaan tim dan arsitektur ada pada [rules_milestone_2.md](file:///c:/laragon/www/cuci-in/docs/rules_milestone_2.md) dan [prd.md](file:///c:/laragon/www/cuci-in/docs/prd.md) (Seksi 24).
 
+---
+
+## 4. Infrastruktur Server Production & Panduan Deployment Cloud (sistem.md)
+
+Aplikasi CUCI.IN telah ter-deploy langsung pada lingkungan cloud publik dan terintegrasi dengan domain resmi. Rujukan lengkap infrastruktur tercatat di [sistem.md](file:///c:/laragon/www/cuci-in/docs/sistem.md):
+
+1. **Domain & Jaringan:**
+   - URL Utama: `https://portal-cuciin.web.id`
+   - DNS & SSL: Dikelola via Cloudflare (SSL Mode: *Flexible*).
+   - Server Host: AWS EC2 Instance `t3.micro` (`ap-southeast-2`), IP Publik `3.25.167.8`.
+   - Security Group Inbound: Port 22 (SSH), Port 80 (HTTP), Port 443 (HTTPS) terbuka untuk `0.0.0.0/0`.
+
+2. **Web Stack Server:**
+   - Web Server: Nginx 1.28+ (`/etc/nginx/sites-available/cuci-in` -> `/var/www/cuci-in/public`).
+   - Runtime: PHP 8.5+ FastCGI (`/run/php/php-fpm.sock`), Composer 2.11+, Node.js 20+ LTS.
+   - Database: PostgreSQL 16+ (`cuci_in`), Port 5432, User `postgres`.
+   - Swap: 2 GB (`/swapfile`) untuk stabilitas memori RAM 1 GB.
+
+3. **Alur Deployment (Pembaruan Kode ke Server):**
+   - Setiap kali cabang fitur selesai diuji dan di-*merge* ke cabang `develop`, pembaruan ke server live dilakukan via SSH/AWS Instance Connect dengan perintah:
+     ```bash
+     cd /var/www/cuci-in && git pull origin develop && composer install --no-dev --optimize-autoloader && php artisan migrate --force && npm install && npm run build && php artisan optimize && sudo chown -R www-data:www-data storage bootstrap/cache
+     ```
+   - Worker background job dijalankan di latar belakang:
+     ```bash
+     nohup php /var/www/cuci-in/artisan queue:work --tries=3 --timeout=60 > /dev/null 2>&1 &
+     ```
+
+
 
 
 
