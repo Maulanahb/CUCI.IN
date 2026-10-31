@@ -178,7 +178,8 @@
                                         $isSelected = $selectedTransaction && $selectedTransaction->id === $trx->id;
                                     @endphp
                                     <tr
-                                        onclick="window.location.href='{{ request()->fullUrlWithQuery(['selected' => $trx->transaction_code]) }}'"
+                                        onclick="window.location.href = this.dataset.href"
+                                        data-href="{{ request()->fullUrlWithQuery(['selected' => $trx->transaction_code]) }}"
                                         class="cursor-pointer transition hover:bg-brand-50/50 {{ $isSelected ? 'bg-brand-50/70 font-medium' : '' }}"
                                         title="Klik untuk melihat detail nota {{ $trx->transaction_code }}"
                                     >

@@ -51,6 +51,6 @@ class OptimizePaymentProofTest extends TestCase
 
         (new OptimizePaymentProof($payment->id))->handle();
 
-        Storage::disk(Payment::PROOF_DISK)->assertMissing('payments/proofs/tidak-ada.jpg');
+        $this->assertFalse(Storage::disk(Payment::PROOF_DISK)->exists('payments/proofs/tidak-ada.jpg'));
     }
 }
