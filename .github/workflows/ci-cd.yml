@@ -1,0 +1,97 @@
+name: CI/CD Pipeline & Auto Deployment
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  # ====================================================
+  # JOB 1: CONTINUOUS INTEGRATION (CI)
+  # Menguji kode dan memvalidasi kerapian sintaks
+  # ====================================================
+  test:
+    name: Run Tests & Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP Runtime
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, bcmath
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Copy Environment Configuration for Testing
+        run: cp .env.example .env
+
+      - name: Install Composer Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Install & Build NPM Assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: Execute Automated Feature & Unit Tests (PHPUnit)
+        run: php artisan test --compact
+
+  # ====================================================
+  # JOB 2: CONTINUOUS DEPLOYMENT (CD)
+  # Deploy otomatis ke AWS EC2 saat merge ke branch develop
+  # Hanya jalan jika pengujian di Job 1 lolos (PASS)!
+  # ====================================================
+  deploy:
+    name: Deploy to AWS EC2 Production
+    needs: test
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH & Execute Auto-Deploy Script on AWS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 3.25.167.8
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            echo "🚀 Memulai proses deployment otomatis di server AWS..."
+            cd /var/www/cuci-in
+            
+            # Ambil commit terbaru dari branch develop
+            git pull origin develop
+            
+            # Update dependencies PHP & build aset frontend
+            composer install --no-dev --optimize-autoloader
+            npm install && npm run build
+            
+            # Eksekusi migrasi database & link storage
+            php artisan migrate --force
+            php artisan storage:link || true
+            
+            # Optimasi cache konfigurasi, routing, dan view
+            php artisan optimize
+            
+            # Pastikan izin folder upload bukti bayar & komplain aman
+            sudo chown -R www-data:www-data storage bootstrap/cache
+            sudo chmod -R 775 storage bootstrap/cache
+            
+            # Restart Nginx & PHP-FPM untuk memuat pembaruan
+            sudo systemctl reload nginx
+            
+            echo "✅ Deployment CUCI.IN Milestone 2 Berhasil Diselesaikan!"
+

@@ -1,166 +1,139 @@
 <x-layouts::app title="Dashboard Pelanggan">
     <div class="space-y-6">
         {{-- Banner Sapaan Pelanggan & Aksi Cepat --}}
-        <div class="relative overflow-hidden rounded-2xl border border-brand-100 bg-gradient-to-r from-brand-50 via-white to-brand-50/40 p-5 sm:p-6 shadow-xs">
-            <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
-                        Selamat Datang, {{ auth()->user()->name }}!
+                    <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                        Selamat Datang, {{ auth()->user()->name }}
                     </h1>
-                    <p class="mt-1 text-xs text-slate-500 sm:text-sm max-w-xl">
+                    <p class="mt-2 text-sm text-slate-600 max-w-xl">
                         Pantau status pengerjaan pakaian laundry Anda secara langsung serta cek riwayat transaksi dan rincian nota kapan saja.
                     </p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2.5">
-                    <x-ui.button :href="route('customer.transactions.index')" size="sm" class="shadow-xs">
+                    <x-ui.button :href="route('customer.transactions.index')" size="md">
                         <x-lucide-receipt class="size-4" />
                         <span>Semua Riwayat Transaksi</span>
                     </x-ui.button>
-                    <x-ui.button :href="route('transactions.lookup')" variant="secondary" size="sm">
-                        <x-lucide-search class="size-4 text-slate-500" />
+                    <x-ui.button :href="route('transactions.lookup')" variant="secondary" size="md">
+                        <x-lucide-search class="size-4" />
                         <span>Cek Kode Nota Fisik</span>
                     </x-ui.button>
                 </div>
             </div>
         </div>
 
-        {{-- Kartu Ringkasan Statistik (FR-27) --}}
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {{-- Kartu Ringkasan Statistik Monolitik (FR-27) --}}
+        <section aria-label="Ringkasan akun Anda" class="grid grid-cols-2 overflow-hidden rounded-2xl border border-slate-200 bg-white lg:grid-cols-4">
             {{-- Kartu 1: Cucian Berjalan --}}
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:border-brand-300 hover:shadow-sm">
-                <div class="flex items-center justify-between">
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Cucian Berjalan</p>
-                    <div class="flex size-9 items-center justify-center rounded-xl bg-sky-50 text-sky-700 shrink-0">
-                        <x-lucide-refresh-cw class="size-4.5" />
-                    </div>
-                </div>
-                <div class="mt-3 flex items-baseline gap-2">
-                    <p class="text-2xl font-bold font-mono tabular-nums text-brand-700 tracking-tight sm:text-3xl">
+            <div class="border-b border-r border-slate-200 p-5 sm:p-6 lg:border-b-0">
+                <p class="text-sm font-medium text-slate-600">Cucian berjalan</p>
+                <div class="mt-4 flex items-baseline gap-2">
+                    <p class="text-3xl font-semibold tracking-tight tabular-nums text-brand-700 sm:text-4xl">
                         {{ $stats['active_count'] }}
                     </p>
                     <span class="text-xs font-medium text-slate-500">Nota Aktif</span>
                 </div>
-                <p class="mt-1 text-xs text-slate-500">Sedang diproses di workshop</p>
+                <p class="mt-2 text-xs text-slate-500">Sedang diproses di workshop</p>
             </div>
 
             {{-- Kartu 2: Menunggu Pelunasan --}}
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:border-amber-300 hover:shadow-sm">
-                <div class="flex items-center justify-between">
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Menunggu Pelunasan</p>
-                    <div class="flex size-9 items-center justify-center rounded-xl bg-amber-50 text-amber-700 shrink-0">
-                        <x-lucide-hourglass class="size-4.5" />
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <p class="text-2xl font-bold font-mono tabular-nums {{ $stats['unpaid_amount'] > 0 ? 'text-amber-800' : 'text-slate-800' }} tracking-tight sm:text-3xl">
-                        <x-ui.money :value="$stats['unpaid_amount']" />
-                    </p>
-                </div>
-                <p class="mt-1 text-xs text-slate-500">
+            <div class="border-b border-slate-200 p-5 sm:p-6 lg:border-b-0 lg:border-r">
+                <p class="text-sm font-medium text-slate-600">Menunggu pelunasan</p>
+                <p class="mt-4 text-3xl font-semibold tracking-tight tabular-nums {{ $stats['unpaid_amount'] > 0 ? 'text-amber-800' : 'text-slate-900' }} sm:text-4xl">
+                    <x-ui.money :value="$stats['unpaid_amount']" />
+                </p>
+                <p class="mt-2 text-xs text-slate-500">
                     {{ $stats['unpaid_amount'] > 0 ? 'Dapat dilunasi saat pengambilan' : 'Semua tagihan lunas' }}
                 </p>
             </div>
 
             {{-- Kartu 3: Total Transaksi --}}
-            <div class="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:border-brand-300 hover:shadow-sm">
-                <div class="flex items-center justify-between">
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Riwayat Transaksi</p>
-                    <div class="flex size-9 items-center justify-center rounded-xl bg-brand-50 text-brand-700 shrink-0">
-                        <x-lucide-package class="size-4.5" />
-                    </div>
-                </div>
-                <div class="mt-3 flex items-baseline gap-2">
-                    <p class="text-2xl font-bold font-mono tabular-nums text-slate-900 tracking-tight sm:text-3xl">
+            <div class="border-r border-slate-200 p-5 sm:p-6">
+                <p class="text-sm font-medium text-slate-600">Total riwayat nota</p>
+                <div class="mt-4 flex items-baseline gap-2">
+                    <p class="text-3xl font-semibold tracking-tight tabular-nums text-slate-900 sm:text-4xl">
                         {{ $stats['total_count'] }}
                     </p>
                     <span class="text-xs font-medium text-slate-500">Nota Laundry</span>
                 </div>
-                <p class="mt-1 text-xs text-slate-500">Riwayat sejak akun terdaftar</p>
+                <p class="mt-2 text-xs text-slate-500">Riwayat sejak akun terdaftar</p>
             </div>
 
             {{-- Kartu 4: Pengaduan Aktif (FR-27) --}}
             <a
                 href="{{ route('customer.complaints.index') }}"
-                class="block rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs transition hover:border-brand-300 hover:shadow-md"
+                class="block p-5 sm:p-6 transition hover:bg-slate-50"
             >
                 <div class="flex items-center justify-between">
-                    <p class="text-xs font-bold uppercase tracking-wider {{ ($stats['active_complaints_count'] ?? 0) > 0 ? 'text-rose-600' : 'text-slate-500' }}">
-                        Pengaduan Aktif
-                    </p>
-                    <div class="flex size-9 items-center justify-center rounded-lg {{ ($stats['active_complaints_count'] ?? 0) > 0 ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-600' }} shrink-0">
-                        <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                        </svg>
-                    </div>
+                    <p class="text-sm font-medium text-slate-600">Pengaduan aktif</p>
+                    <x-lucide-arrow-right class="size-4 text-slate-400" />
                 </div>
-                <div class="mt-3 flex items-baseline gap-2">
-                    <p class="text-2xl font-extrabold {{ ($stats['active_complaints_count'] ?? 0) > 0 ? 'text-rose-600' : 'text-slate-900' }} tracking-tight">
+                <div class="mt-4 flex items-baseline gap-2">
+                    <p class="text-3xl font-semibold tracking-tight tabular-nums {{ ($stats['active_complaints_count'] ?? 0) > 0 ? 'text-rose-700' : 'text-slate-900' }} sm:text-4xl">
                         {{ $stats['active_complaints_count'] ?? 0 }}
                     </p>
-                    <span class="text-xs text-slate-500 font-medium">Tiket Kendala</span>
+                    <span class="text-xs font-medium text-slate-500">Tiket Kendala</span>
                 </div>
-                <p class="mt-1 text-xs text-slate-500">
+                <p class="mt-2 text-xs text-slate-500">
                     {{ ($stats['active_complaints_count'] ?? 0) > 0 ? 'Sedang ditangani tim staf' : 'Tidak ada komplain aktif' }}
                 </p>
             </a>
-        </div>
+        </section>
 
         {{-- Banner Notifikasi Jika Ada Tiket Komplain Ditangani (FR-27) --}}
         @if (!empty($activeComplaints) && $activeComplaints->isNotEmpty())
-            <div class="rounded-2xl border border-rose-200/80 bg-rose-50/50 p-5 shadow-xs">
+            <div class="rounded-2xl border border-rose-200 bg-rose-50/60 p-5">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div class="flex items-start gap-3">
-                        <div class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
-                            <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                            </svg>
+                        <div class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700">
+                            <x-lucide-alert-triangle class="size-5" aria-hidden="true" />
                         </div>
                         <div>
-                            <h4 class="text-sm font-bold text-rose-900">
+                            <h4 class="text-base font-semibold text-rose-900">
                                 Anda Memiliki {{ $activeComplaints->count() }} Pengaduan Cucian yang Sedang Ditangani
                             </h4>
-                            <p class="text-xs text-rose-700/90 mt-0.5">
-                                Tiket terbaru: <span class="font-bold">{{ $activeComplaints->first()->complaint_code }}</span> &mdash;
+                            <p class="text-sm text-rose-700/90 mt-0.5">
+                                Tiket terbaru: <span class="font-mono font-semibold">{{ $activeComplaints->first()->complaint_code }}</span> &mdash;
                                 {{ $activeComplaints->first()->subject }} (Status: {{ $activeComplaints->first()->status }})
                             </p>
                         </div>
                     </div>
                     <a
                         href="{{ route('customer.complaints.show', $activeComplaints->first()) }}"
-                        class="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-xl bg-rose-600 px-4 py-2 text-xs font-semibold text-white shadow-2xs hover:bg-rose-700 transition"
+                        class="inline-flex min-h-11 items-center gap-2 self-start sm:self-auto rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700"
                     >
                         <span>Lihat Respons Petugas</span>
-                        <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                        </svg>
+                        <x-lucide-arrow-right class="size-4" aria-hidden="true" />
                     </a>
                 </div>
             </div>
         @endif
 
         {{-- Section Utama: Cucian Aktif & Status Pelacakan (FR-27) --}}
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
             <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4">
                 <div>
                     <div class="flex items-center gap-2">
-                        <x-lucide-activity class="size-4.5 text-brand-600" />
-                        <h2 class="text-base font-bold text-slate-900">Cucian Sedang Berjalan</h2>
+                        <x-lucide-activity class="size-4.5 text-brand-700" />
+                        <h2 class="text-lg font-semibold tracking-tight text-slate-900">Cucian Sedang Berjalan</h2>
                         <x-ui.badge tone="brand" size="xs">
                             {{ $activeTransactions->count() }} Aktif
                         </x-ui.badge>
                     </div>
-                    <p class="mt-0.5 text-xs text-slate-500">
+                    <p class="mt-1 text-sm text-slate-500">
                         Pantau proses pengerjaan cucian aktif Anda dari tahap Diterima hingga Selesai siap diambil.
                     </p>
                 </div>
                 @if ($activeTransactions->isNotEmpty())
                     <a
                         href="{{ route('customer.transactions.index') }}"
-                        class="text-xs font-semibold text-brand-600 hover:text-brand-700 inline-flex items-center gap-1 self-start sm:self-auto"
+                        class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-1 self-start sm:self-auto"
                     >
                         <span>Lihat di Portal Transaksi</span>
-                        <x-lucide-arrow-right class="size-3.5" />
+                        <x-lucide-arrow-right class="size-4" />
                     </a>
                 @endif
             </div>
@@ -212,7 +185,7 @@
                                             Siap Diambil di Gerai
                                         </x-ui.badge>
                                     @elseif ($statusVal === 'Diproses')
-                                        <x-ui.badge tone="warning" size="sm" dot pulse>
+                                        <x-ui.badge tone="warning" size="sm" dot>
                                             Sedang Dicuci / Disetrika
                                         </x-ui.badge>
                                     @else
@@ -222,7 +195,7 @@
                                     @endif
                                 </div>
 
-                                <div class="flex items-center gap-2 text-xs text-slate-500 font-mono">
+                                <div class="flex items-center gap-2 text-sm text-slate-500 font-mono">
                                     <span>Masuk: {{ $trx->created_at->translatedFormat('d M Y, H:i') }}</span>
                                     @if ($trx->estimated_completed_at)
                                         <span class="text-slate-300">•</span>
@@ -237,13 +210,13 @@
                                     {{-- Garis progress background --}}
                                     <div class="absolute left-6 right-6 top-3.5 h-1 -translate-y-1/2 bg-slate-200" aria-hidden="true"></div>
                                     {{-- Garis progress aktif --}}
-                                    <div class="absolute left-6 top-3.5 h-1 -translate-y-1/2 bg-brand-600 transition-all duration-500 {{ match ($currentStep) { 1 => 'w-0', 2 => 'w-1/2', 3 => 'w-full', default => 'w-0' } }}" aria-hidden="true"></div>
+                                    <div class="absolute left-6 top-3.5 h-1 -translate-y-1/2 bg-brand-700 transition-all duration-500 {{ match ($currentStep) { 1 => 'w-0', 2 => 'w-1/2', 3 => 'w-full', default => 'w-0' } }}" aria-hidden="true"></div>
 
                                     {{-- Titik-titik tahap --}}
                                     <div class="relative flex justify-between">
                                         {{-- Step 1: Diterima --}}
                                         <div class="flex flex-col items-center text-center">
-                                            <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 1 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
+                                            <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 1 ? 'bg-brand-700 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
                                                 @if ($currentStep > 1)
                                                     <x-lucide-check class="size-4" />
                                                 @else
@@ -251,12 +224,12 @@
                                                 @endif
                                             </div>
                                             <p class="mt-2 text-xs font-bold {{ $currentStep >= 1 ? 'text-slate-900' : 'text-slate-500' }}">Diterima</p>
-                                            <p class="text-2xs text-slate-500 hidden sm:block">Ditimbang di kasir</p>
+                                            <p class="text-xs text-slate-500 hidden sm:block">Ditimbang di kasir</p>
                                         </div>
 
                                         {{-- Step 2: Diproses --}}
                                         <div class="flex flex-col items-center text-center">
-                                            <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 2 ? 'bg-brand-600 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
+                                            <div class="flex size-7 items-center justify-center rounded-full {{ $currentStep >= 2 ? 'bg-brand-700 text-white ring-4 ring-brand-100' : 'bg-slate-200 text-slate-500' }} text-xs font-bold transition">
                                                 @if ($currentStep > 2)
                                                     <x-lucide-check class="size-4" />
                                                 @else
@@ -264,7 +237,7 @@
                                                 @endif
                                             </div>
                                             <p class="mt-2 text-xs font-bold {{ $currentStep >= 2 ? 'text-slate-900' : 'text-slate-500' }}">Diproses</p>
-                                            <p class="text-2xs text-slate-500 hidden sm:block">Dicuci &amp; disetrika</p>
+                                            <p class="text-xs text-slate-500 hidden sm:block">Dicuci &amp; disetrika</p>
                                         </div>
 
                                         {{-- Step 3: Selesai --}}
@@ -279,14 +252,14 @@
                                                 </span>
                                             </div>
                                             <p class="mt-2 text-xs font-bold {{ $currentStep >= 3 ? 'text-emerald-800' : 'text-slate-500' }}">Selesai</p>
-                                            <p class="text-2xs {{ $currentStep >= 3 ? 'text-emerald-600 font-medium' : 'text-slate-500' }} hidden sm:block">Siap diambil</p>
+                                            <p class="text-xs {{ $currentStep >= 3 ? 'text-emerald-700 font-medium' : 'text-slate-500' }} hidden sm:block">Siap diambil</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             {{-- Footer Card: Layanan, Status Pembayaran & Tombol Detail --}}
-                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/70 pt-3 text-xs">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/70 pt-3 text-sm">
                                 <div class="text-slate-600">
                                     <span class="font-medium text-slate-800">Layanan:</span>
                                     <span class="font-semibold text-slate-900">
@@ -310,10 +283,10 @@
 
                                     <a
                                         href="{{ route('customer.transactions.index', ['selected' => $trx->transaction_code]) }}"
-                                        class="inline-flex items-center gap-1 rounded-lg border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 shadow-2xs transition hover:border-brand-300 hover:bg-brand-100 hover:text-brand-800"
+                                        class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand-300 hover:bg-slate-50 hover:text-brand-700"
                                     >
                                         <span>Rincian Nota</span>
-                                        <x-lucide-arrow-right class="size-3" />
+                                        <x-lucide-arrow-right class="size-4" />
                                     </a>
                                 </div>
                             </div>
@@ -324,24 +297,24 @@
         </div>
 
         {{-- Section Riwayat Transaksi Terbaru (5 Transaksi Terakhir) --}}
-        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
             <div class="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-slate-900">Riwayat Pesanan Terbaru</h3>
-                    <p class="text-xs text-slate-500">Daftar transaksi laundry terakhir Anda di sistem CUCI.IN</p>
+                    <h3 class="text-lg font-semibold tracking-tight text-slate-900">Riwayat Pesanan Terbaru</h3>
+                    <p class="mt-1 text-sm text-slate-500">Daftar transaksi laundry terakhir Anda di sistem CUCI.IN</p>
                 </div>
                 <a
                     href="{{ route('customer.transactions.index') }}"
-                    class="text-xs font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-1"
+                    class="text-sm font-semibold text-brand-700 hover:text-brand-800 inline-flex items-center gap-1"
                 >
                     <span>Lihat Semua Riwayat ({{ $stats['total_count'] }})</span>
-                    <x-lucide-arrow-right class="size-3.5" />
+                    <x-lucide-arrow-right class="size-4" />
                 </a>
             </div>
 
             @if ($recentTransactions->isEmpty())
                 <div class="py-10 text-center">
-                    <p class="text-xs text-slate-500">Belum ada data transaksi yang tercatat.</p>
+                    <p class="text-sm text-slate-500">Belum ada data transaksi yang tercatat.</p>
                 </div>
             @else
                 <div class="mt-4 divide-y divide-slate-100">
@@ -354,18 +327,18 @@
                         @endphp
                         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between py-3.5 transition hover:bg-slate-50/70 rounded-lg px-2">
                             <div class="flex items-center gap-3">
-                                <div class="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 shrink-0">
-                                    <x-lucide-receipt class="size-4" />
+                                <div class="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600 shrink-0">
+                                    <x-lucide-receipt class="size-4.5" />
                                 </div>
                                 <div>
-                                    <p class="text-xs font-bold font-mono text-slate-900">{{ $transaction->transaction_code }}</p>
+                                    <p class="text-sm font-mono font-semibold text-slate-900">{{ $transaction->transaction_code }}</p>
                                     <p class="text-xs text-slate-500 font-mono">{{ $transaction->created_at->translatedFormat('d F Y, H:i') }}</p>
                                 </div>
                             </div>
 
                             <div class="flex items-center justify-between sm:justify-end gap-3 pl-12 sm:pl-0">
                                 <div class="text-right">
-                                    <span class="text-xs font-bold font-mono text-slate-900">Rp {{ number_format((float) $transaction->total_amount, 0, ',', '.') }}</span>
+                                    <span class="text-sm font-semibold font-mono tabular-nums text-slate-900">Rp {{ number_format((float) $transaction->total_amount, 0, ',', '.') }}</span>
                                     <div class="mt-1">
                                         <x-ui.payment-badge :status="$isPaidOff ? 'Lunas' : 'Belum Bayar'" size="sm" />
                                     </div>
@@ -375,9 +348,11 @@
 
                                 <a
                                     href="{{ route('customer.transactions.index', ['selected' => $transaction->transaction_code]) }}"
-                                    class="text-xs font-semibold text-brand-600 hover:text-brand-700"
+                                    class="inline-flex min-h-11 items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-brand-700 hover:bg-brand-50 hover:text-brand-800"
+                                    aria-label="Lihat detail nota {{ $transaction->transaction_code }}"
                                 >
-                                    Detail
+                                    <span>Detail</span>
+                                    <x-lucide-chevron-right class="size-4" />
                                 </a>
                             </div>
                         </div>

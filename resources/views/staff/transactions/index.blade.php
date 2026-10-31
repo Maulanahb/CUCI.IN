@@ -82,11 +82,11 @@
         >
             <x-lucide-plus class="size-4" aria-hidden="true" />
             <span>Buka Kasir POS</span>
-            <kbd class="hidden rounded-md bg-brand-800/80 px-1.5 py-0.5 text-[10px] font-mono font-bold text-white sm:inline border border-brand-600/40">F2</kbd>
+            <kbd class="hidden rounded-md bg-brand-800/80 px-1.5 py-0.5 text-xs font-mono font-bold text-white sm:inline border border-brand-600/40">F2</kbd>
         </x-ui.button>
     </x-slot>
 
-    <div class="space-y-5" x-data="{
+    <div class="space-y-7" x-data="{
         trxMap: {{ Js::from($transactionsPayloadMap) }},
         selectedTrx: null,
         isDrawerOpen: false,
@@ -462,6 +462,11 @@
         }
     }" x-init="initShortcuts()">
 
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Transaksi cucian</h1>
+            <p class="mt-2 text-sm text-slate-600">Cari nota, perbarui status cucian, dan catat pembayaran pelanggan.</p>
+        </div>
+
         {{-- Flash message --}}
         @if (session('success'))
             <x-ui.alert variant="success" dismissible>
@@ -478,8 +483,8 @@
         @if ($errors->any())
             <x-ui.alert variant="destructive" dismissible>
                 <div class="space-y-1">
-                    <p class="font-bold text-xs">Perhatian:</p>
-                    <ul class="list-disc list-inside space-y-0.5 text-xs">
+                    <p class="font-bold text-sm">Perhatian:</p>
+                    <ul class="list-disc list-inside space-y-0.5 text-sm">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -489,19 +494,19 @@
         @endif
 
         {{-- Filter & Search Card --}}
-        <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs">
+        <div class="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-2xs sm:p-6">
             <form
                 method="GET"
                 action="{{ route($routePrefix . '.transactions.index') }}"
-                class="flex flex-col gap-3 md:flex-row md:items-end"
+                class="flex flex-wrap items-end gap-3"
             >
                 @if (request()->filled('status'))
                     <input type="hidden" name="status" value="{{ request('status') }}">
                 @endif
 
                 {{-- Input Pencarian --}}
-                <div class="relative flex-1">
-                    <label for="search" class="mb-1.5 block text-xs font-bold text-slate-700">
+                <div class="relative min-w-0 basis-72 grow">
+                    <label for="search" class="mb-1.5 block text-sm font-bold text-slate-700">
                         Cari Transaksi
                     </label>
                     <div class="relative">
@@ -513,11 +518,11 @@
                             name="search"
                             id="search"
                             value="{{ request('search') }}"
-                            placeholder="Ketik nomor nota (TRK-...) atau nama pelanggan..."
-                            class="h-10 w-full rounded-xl border border-slate-300 bg-slate-50/50 pl-10 pr-10 text-xs sm:text-sm text-slate-800 transition placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100"
+                            placeholder="Nomor nota atau nama pelanggan..."
+                            class="h-10 w-full rounded-xl border border-slate-300 bg-slate-50/50 pl-10 pr-10 text-sm text-slate-800 transition placeholder:text-slate-500 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-100"
                         >
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                            <kbd class="hidden rounded-md border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-[10px] font-mono font-bold text-slate-500 sm:inline" title="Tekan '/' untuk fokus">/</kbd>
+                            <kbd class="hidden rounded-md border border-slate-200 bg-slate-100 px-1.5 py-0.5 text-xs font-mono font-bold text-slate-500 sm:inline" title="Tekan '/' untuk fokus">/</kbd>
                         </div>
                     </div>
                 </div>
@@ -548,7 +553,7 @@
         </div>
 
         {{-- Quick Status Filter Tabs --}}
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none sm:gap-2">
+        <div class="flex flex-wrap items-center gap-2" aria-label="Filter status cucian">
             @php
                 $statusTabs = [
                     ['label' => 'Semua Nota', 'status' => null],
@@ -567,11 +572,11 @@
                 @endphp
                 <a
                     href="{{ route($routePrefix . '.transactions.index', array_filter(array_merge(request()->except(['page', 'status']), ['status' => $tab['status']]))) }}"
-                    class="inline-flex shrink-0 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition active:scale-95 {{ $isActive ? 'border-brand-600 bg-brand-50 text-brand-700 shadow-2xs ring-1 ring-brand-300 font-bold' : 'border-slate-200/90 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-2xs' }}"
+                    class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition active:scale-95 {{ $isActive ? 'border-brand-700 bg-brand-700 text-white font-semibold' : 'border-slate-200/90 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-2xs' }}"
                 >
                     <span>{{ $tab['label'] }}</span>
                     @if (!empty($tab['count']))
-                        <span class="rounded-full bg-rose-600 px-1.5 py-0.2 text-[10px] font-bold text-white font-mono">{{ $tab['count'] }}</span>
+                        <span class="rounded-full bg-rose-600 px-1.5 py-0.2 text-xs font-bold text-white font-mono">{{ $tab['count'] }}</span>
                     @endif
                 </a>
             @endforeach
@@ -586,8 +591,8 @@
                     </div>
 
                     <div>
-                        <h2 class="text-sm font-bold text-slate-900">Daftar Nota Transaksi</h2>
-                        <p class="text-xs text-slate-500">
+                        <h2 class="text-lg font-semibold tracking-tight text-slate-900">Daftar Nota Transaksi</h2>
+                        <p class="text-sm text-slate-500">
                             Menampilkan <span class="font-bold text-slate-800 font-mono tabular-nums">{{ $transactions->total() }}</span> nota tercatat
                         </p>
                     </div>
@@ -596,8 +601,8 @@
 
             {{-- Tabel Desktop --}}
             <div class="hidden overflow-x-auto md:block">
-                <table class="w-full text-left text-xs sm:text-sm">
-                    <thead class="border-b border-slate-200/80 bg-slate-50/75 text-2xs font-bold uppercase tracking-wider text-slate-500">
+                <table class="w-full text-left text-sm">
+                    <thead class="border-b border-slate-200/80 bg-slate-50/75 text-xs font-bold text-slate-500">
                         <tr>
                             <th class="w-10 px-4 py-3 text-center">
                                 <input
@@ -648,7 +653,7 @@
                                     <span class="font-mono font-bold tracking-tight text-brand-700 hover:text-brand-800 text-sm">
                                         {{ $transaction->transaction_code }}
                                     </span>
-                                    <p class="mt-0.5 text-xs text-slate-500 font-mono tabular-nums">
+                                    <p class="mt-0.5 text-sm text-slate-500 font-mono tabular-nums">
                                         {{ $transaction->created_at?->format('d M Y, H:i') }}
                                     </p>
                                 </td>
@@ -656,7 +661,7 @@
                                 {{-- Pelanggan --}}
                                 <td class="px-5 py-4">
                                     <div class="flex items-center gap-2.5">
-                                        <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 font-bold text-xs text-slate-700 border border-slate-200/90 shadow-2xs">
+                                        <div class="flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 font-bold text-sm text-slate-700 border border-slate-200/90 shadow-2xs">
                                             {{ $initials }}
                                         </div>
                                         <div class="min-w-0">
@@ -664,7 +669,7 @@
                                                 {{ $transaction->customer?->name ?? 'Pelanggan umum' }}
                                             </p>
                                             @if ($transaction->customer?->phone)
-                                                <p class="mt-0.5 font-mono text-xs text-slate-500 tabular-nums">
+                                                <p class="mt-0.5 font-mono text-sm text-slate-500 tabular-nums">
                                                     {{ $transaction->customer->phone }}
                                                 </p>
                                             @endif
@@ -674,10 +679,10 @@
 
                                 {{-- Layanan & Bobot --}}
                                 <td class="px-5 py-4">
-                                    <p class="font-bold text-slate-800 line-clamp-1 text-xs sm:text-sm" title="{{ $firstService }}">
+                                    <p class="font-bold text-slate-800 line-clamp-1 text-sm" title="{{ $firstService }}">
                                         {{ $firstService }}
                                     </p>
-                                    <p class="mt-0.5 text-xs text-slate-500 font-mono tabular-nums">
+                                    <p class="mt-0.5 text-sm text-slate-500 font-mono tabular-nums">
                                         {{ number_format((float) $totalWeight, 1, ',', '.') }} kg
                                         @if ($itemCount > 1)
                                             <span class="text-slate-400 font-sans">· +{{ $itemCount - 1 }} item lainnya</span>
@@ -687,10 +692,10 @@
 
                                 {{-- Total & Pembayaran Dinamis --}}
                                 <td class="px-5 py-4">
-                                    <x-ui.money :value="$transaction->total_amount" class="font-black text-slate-900 font-mono tabular-nums text-sm" />
+                                    <x-ui.money :value="$transaction->total_amount" class="font-bold text-slate-900 font-mono tabular-nums text-sm" />
                                     <div class="mt-1 flex flex-wrap items-center gap-1.5">
                                         <span
-                                            class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset transition-colors duration-200"
+                                            class="inline-flex items-center rounded-full px-2 py-0.5 text-sm font-semibold ring-1 ring-inset transition-colors duration-200"
                                             :class="{
                                                 'bg-emerald-50 text-emerald-700 ring-emerald-600/20': (trxMap[{{ $transaction->id }}]?.payment_status ?? '{{ $paymentStatusValue }}') === 'Lunas',
                                                 'bg-amber-50 text-amber-800 ring-amber-600/25': (trxMap[{{ $transaction->id }}]?.payment_status ?? '{{ $paymentStatusValue }}') === 'DP',
@@ -700,7 +705,7 @@
                                         >{{ $paymentStatusValue }}</span>
 
                                         <template x-if="(trxMap[{{ $transaction->id }}]?.remaining_amount ?? {{ (float) $transaction->remaining_amount }}) > 0">
-                                            <span class="text-xs font-bold text-rose-600 font-mono tabular-nums">
+                                            <span class="text-sm font-bold text-rose-600 font-mono tabular-nums">
                                                 (Sisa: <span x-text="trxMap[{{ $transaction->id }}]?.remaining_formatted ?? 'Rp {{ number_format($transaction->remaining_amount, 0, ',', '.') }}'">Rp {{ number_format($transaction->remaining_amount, 0, ',', '.') }}</span>)
                                             </span>
                                         </template>
@@ -710,7 +715,7 @@
                                 {{-- Status Operasional Dinamis --}}
                                 <td class="px-5 py-4">
                                     <span
-                                        class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset transition-colors duration-200"
+                                        class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-sm font-semibold ring-1 ring-inset transition-colors duration-200"
                                         :class="{
                                             'bg-sky-50 text-sky-700 ring-sky-600/20': (trxMap[{{ $transaction->id }}]?.status ?? '{{ $statusValue }}') === 'Diterima',
                                             'bg-amber-50 text-amber-800 ring-amber-600/25': (trxMap[{{ $transaction->id }}]?.status ?? '{{ $statusValue }}') === 'Diproses',
@@ -733,7 +738,7 @@
                                     </span>
 
                                     @if ($transaction->estimated_completed_at)
-                                        <div class="mt-1.5 flex items-center gap-1 text-xs">
+                                        <div class="mt-1.5 flex items-center gap-1 text-sm">
                                             <x-lucide-clock class="size-3.5 {{ $isOverdue ? 'text-rose-500' : 'text-slate-400' }}" aria-hidden="true" />
                                             @if ($isOverdue)
                                                 <span class="font-bold text-rose-600 font-mono tabular-nums">
@@ -749,7 +754,7 @@
 
                                     @if ($transaction->isStorageOverdue(14))
                                         <div class="mt-1">
-                                            <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 border border-amber-200/90 px-1.5 py-0.5 text-[10px] font-bold text-amber-800" title="Cucian sudah selesai lebih dari 14 hari di rak penyimpanan">
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 border border-amber-200/90 px-1.5 py-0.5 text-xs font-bold text-amber-800" title="Cucian sudah selesai lebih dari 14 hari di rak penyimpanan">
                                                 <x-lucide-clock class="size-2.5 text-amber-600" />
                                                 <span>Lewat Simpan ({{ (int) $transaction->updated_at?->diffInDays(now()) }} hr)</span>
                                             </span>
@@ -790,7 +795,7 @@
                                         <x-lucide-receipt class="size-6" aria-hidden="true" />
                                     </div>
                                     <p class="mt-3 text-sm font-bold text-slate-800">Tidak ada transaksi ditemukan</p>
-                                    <p class="mt-1 text-xs text-slate-500">
+                                    <p class="mt-1 text-sm text-slate-500">
                                         @if ($hasFilters)
                                             Coba ubah kata kunci atau bersihkan filter pencarian.
                                         @else
@@ -834,12 +839,12 @@
                                 <span class="font-mono font-bold tracking-tight text-brand-700 text-sm">
                                     {{ $transaction->transaction_code }}
                                 </span>
-                                <p class="mt-0.5 text-xs text-slate-500 font-mono tabular-nums">
+                                <p class="mt-0.5 text-sm text-slate-500 font-mono tabular-nums">
                                     {{ $transaction->created_at?->format('d M Y, H:i') }}
                                 </p>
                             </div>
                             <span
-                                class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset"
+                                class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-sm font-semibold ring-1 ring-inset"
                                 :class="{
                                     'bg-sky-50 text-sky-700 ring-sky-600/20': (trxMap[{{ $transaction->id }}]?.status ?? '{{ $statusValue }}') === 'Diterima',
                                     'bg-amber-50 text-amber-800 ring-amber-600/25': (trxMap[{{ $transaction->id }}]?.status ?? '{{ $statusValue }}') === 'Diproses',
@@ -852,7 +857,7 @@
                         </div>
 
                         {{-- Baris 2: Pelanggan & Layanan --}}
-                        <div class="rounded-xl bg-slate-50/80 border border-slate-200/80 p-3 text-xs shadow-2xs">
+                        <div class="rounded-xl bg-slate-50/80 border border-slate-200/80 p-3 text-sm shadow-2xs">
                             <div class="flex items-center justify-between font-bold text-slate-800">
                                 <span>{{ $transaction->customer?->name ?? 'Pelanggan umum' }}</span>
                                 <span class="font-normal font-mono text-slate-500 tabular-nums">{{ $transaction->customer?->phone ?? '-' }}</span>
@@ -865,7 +870,7 @@
 
                         {{-- Baris 3: Estimasi Waktu jika ada --}}
                         @if ($transaction->estimated_completed_at)
-                            <div class="flex items-center gap-1.5 text-xs">
+                            <div class="flex items-center gap-1.5 text-sm">
                                 <x-lucide-clock class="size-3.5 {{ $isOverdue ? 'text-rose-500' : 'text-slate-400' }}" aria-hidden="true" />
                                 @if ($isOverdue)
                                     <span class="font-bold text-rose-600 font-mono tabular-nums">
@@ -882,10 +887,10 @@
                         {{-- Baris 4: Total & Tombol Aksi --}}
                         <div class="flex items-center justify-between gap-3 border-t border-slate-100 pt-3" @click.stop>
                             <div>
-                                <x-ui.money :value="$transaction->total_amount" class="text-sm font-black text-slate-900 font-mono tabular-nums" />
+                                <x-ui.money :value="$transaction->total_amount" class="text-sm font-bold text-slate-900 font-mono tabular-nums" />
                                 <div class="mt-0.5 flex items-center gap-1.5">
                                     <span
-                                        class="inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-semibold ring-1 ring-inset"
+                                        class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset"
                                         :class="{
                                             'bg-emerald-50 text-emerald-700 ring-emerald-600/20': (trxMap[{{ $transaction->id }}]?.payment_status ?? '{{ $paymentStatusValue }}') === 'Lunas',
                                             'bg-amber-50 text-amber-800 ring-amber-600/25': (trxMap[{{ $transaction->id }}]?.payment_status ?? '{{ $paymentStatusValue }}') === 'DP',
@@ -900,7 +905,7 @@
                                 <button
                                     type="button"
                                     @click="openDrawer({{ $transaction->id }})"
-                                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-brand-50 hover:text-brand-700 transition"
+                                    class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-sm font-semibold text-slate-700 shadow-2xs hover:bg-brand-50 hover:text-brand-700 transition"
                                 >
                                     <x-lucide-sliders-horizontal class="size-3.5" />
                                     <span>Panel</span>
@@ -925,7 +930,7 @@
                             <x-lucide-receipt class="size-5" aria-hidden="true" />
                         </div>
                         <p class="mt-2.5 text-sm font-bold text-slate-800">Belum ada transaksi</p>
-                        <p class="mt-1 text-xs text-slate-500">
+                        <p class="mt-1 text-sm text-slate-500">
                             Transaksi baru akan muncul di sini setelah kasir menyimpan nota.
                         </p>
                     </div>
@@ -957,14 +962,14 @@
                                 <x-lucide-check x-show="copied" x-cloak class="size-3.5 text-emerald-600" />
                             </button>
                         </div>
-                        <p class="mt-0.5 text-2xs text-slate-500 font-mono" x-text="'Dibuat: ' + (selectedTrx?.created_at || '-')"></p>
+                        <p class="mt-0.5 text-xs text-slate-500 font-mono" x-text="'Dibuat: ' + (selectedTrx?.created_at || '-')"></p>
                     </div>
 
                     <div class="text-right shrink-0">
                         <p class="font-mono text-base font-bold tracking-tight text-slate-900 tabular-nums" x-text="selectedTrx?.total_formatted"></p>
                         <div class="mt-0.5 flex items-center justify-end">
                             <span
-                                class="inline-flex items-center rounded-full px-2 py-0.5 text-2xs font-semibold ring-1 ring-inset"
+                                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset"
                                 :class="{
                                     'bg-emerald-50 text-emerald-700 ring-emerald-600/20': selectedTrx?.payment_status === 'Lunas',
                                     'bg-amber-50 text-amber-800 ring-amber-600/25': selectedTrx?.payment_status === 'DP',
@@ -981,7 +986,7 @@
 
                 {{-- 1. ACTION & LIFECYCLE STEPPER --}}
                 <template x-if="selectedTrx?.status !== 'Dibatalkan'">
-                    <div class="rounded-2xl border border-slate-200/90 bg-gradient-to-b from-slate-50/70 via-white to-white p-4 shadow-2xs space-y-4">
+                    <div class="rounded-2xl border border-slate-200/90 bg-slate-50/70 p-4 shadow-2xs space-y-4">
                         {{-- Visual Mini Progress Stepper --}}
                         <div class="relative px-2 pt-1">
                             {{-- Connecting track --}}
@@ -1002,7 +1007,7 @@
                                 ] as $st)
                                     <div class="flex flex-col items-center text-center">
                                         <div
-                                            class="size-7 sm:size-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300"
+                                            class="size-7 sm:size-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300"
                                             :class="{
                                                 'bg-brand-600 text-white shadow-xs ring-4 ring-brand-100 scale-105': selectedTrx?.status === '{{ $st['key'] }}',
                                                 'bg-brand-700 text-white': rank(selectedTrx?.status) > {{ $st['num'] }},
@@ -1017,7 +1022,7 @@
                                             </template>
                                         </div>
                                         <span
-                                            class="mt-1.5 text-[11px] font-semibold leading-tight tracking-tight transition-colors"
+                                            class="mt-1.5 text-xs font-semibold leading-tight tracking-tight transition-colors"
                                             :class="{
                                                 'text-brand-900 font-extrabold': selectedTrx?.status === '{{ $st['key'] }}',
                                                 'text-slate-700 font-medium': rank(selectedTrx?.status) > {{ $st['num'] }},
@@ -1031,12 +1036,12 @@
 
                         {{-- Peringatan Cucian Lewat Batas Simpan 14 Hari --}}
                         <template x-if="selectedTrx?.is_storage_overdue">
-                            <div class="rounded-xl border border-amber-200/90 bg-amber-50/90 p-3 text-xs text-amber-950 flex items-start justify-between gap-3 shadow-2xs">
+                            <div class="rounded-xl border border-amber-200/90 bg-amber-50/90 p-3 text-sm text-amber-950 flex items-start justify-between gap-3 shadow-2xs">
                                 <div class="flex items-start gap-2 min-w-0">
                                     <x-lucide-clock class="size-4 text-amber-600 shrink-0 mt-0.5" />
                                     <div>
-                                        <p class="font-bold text-xs text-amber-950">Lewat Batas Simpan (<span x-text="selectedTrx?.days_in_storage"></span> hari di rak)</p>
-                                        <p class="text-2xs text-amber-800 mt-0.5">Cucian sudah selesai lebih dari 14 hari namun belum diambil pelanggan.</p>
+                                        <p class="font-bold text-sm text-amber-950">Lewat Batas Simpan (<span x-text="selectedTrx?.days_in_storage"></span> hari di rak)</p>
+                                        <p class="text-xs text-amber-800 mt-0.5">Cucian sudah selesai lebih dari 14 hari namun belum diambil pelanggan.</p>
                                     </div>
                                 </div>
                                 <template x-if="selectedTrx?.wa_reminder_url">
@@ -1044,7 +1049,7 @@
                                         :href="selectedTrx?.wa_reminder_url"
                                         target="_blank"
                                         rel="noopener"
-                                        class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1 text-2xs font-bold text-white hover:bg-emerald-700 transition shadow-2xs shrink-0 cursor-pointer"
+                                        class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1 text-xs font-bold text-white hover:bg-emerald-700 transition shadow-2xs shrink-0 cursor-pointer"
                                         title="Kirim pesan pengingat WhatsApp ke pelanggan"
                                     >
                                         <x-lucide-message-circle class="size-3" />
@@ -1062,7 +1067,7 @@
                                     type="button"
                                     @click="advanceStatus('Diproses')"
                                     :disabled="isSubmitting"
-                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-brand-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
                                 >
                                     <template x-if="isSubmitting">
                                         <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1080,7 +1085,7 @@
                                     type="button"
                                     @click="advanceStatus('Selesai')"
                                     :disabled="isSubmitting"
-                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-brand-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
                                 >
                                     <template x-if="isSubmitting">
                                         <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1100,7 +1105,7 @@
                                             type="button"
                                             @click="advanceStatus('Diambil')"
                                             :disabled="isSubmitting"
-                                            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-emerald-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
                                         >
                                             <template x-if="isSubmitting">
                                                 <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1113,11 +1118,11 @@
                                     </template>
 
                                     <template x-if="(selectedTrx?.remaining_amount || 0) > 0">
-                                        <div class="rounded-xl border border-amber-200/90 bg-amber-50/90 p-3 text-xs text-amber-900 flex items-start gap-2.5">
+                                        <div class="rounded-xl border border-amber-200/90 bg-amber-50/90 p-3 text-sm text-amber-900 flex items-start gap-2.5">
                                             <x-lucide-alert-triangle class="size-4 text-amber-600 shrink-0 mt-0.5" />
                                             <div class="flex-1 min-w-0">
-                                                <p class="font-bold text-xs text-amber-950">Menunggu Pelunasan Tagihan</p>
-                                                <p class="text-2xs text-amber-800 mt-0.5">Cucian telah selesai, namun belum dapat diserahkan sebelum sisa tagihan lunas.</p>
+                                                <p class="font-bold text-sm text-amber-950">Menunggu Pelunasan Tagihan</p>
+                                                <p class="text-xs text-amber-800 mt-0.5">Cucian telah selesai, namun belum dapat diserahkan sebelum sisa tagihan lunas.</p>
                                             </div>
                                         </div>
                                     </template>
@@ -1126,11 +1131,11 @@
 
                             {{-- Diambil (Final) --}}
                             <template x-if="selectedTrx?.status === 'Diambil'">
-                                <div class="rounded-xl border border-emerald-200 bg-emerald-50/80 p-3 text-xs text-emerald-900 flex items-center gap-2.5">
+                                <div class="rounded-xl border border-emerald-200 bg-emerald-50/80 p-3 text-sm text-emerald-900 flex items-center gap-2.5">
                                     <x-lucide-check-circle-2 class="size-4 text-emerald-600 shrink-0" />
                                     <div class="min-w-0 flex-1">
-                                        <p class="font-bold text-xs text-emerald-950">Cucian Telah Diambil & Selesai</p>
-                                        <p class="text-2xs text-emerald-800 mt-0.5">Status transaksi sudah tuntas dan terkunci permanen.</p>
+                                        <p class="font-bold text-sm text-emerald-950">Cucian Telah Diambil & Selesai</p>
+                                        <p class="text-xs text-emerald-800 mt-0.5">Status transaksi sudah tuntas dan terkunci permanen.</p>
                                     </div>
                                 </div>
                             </template>
@@ -1142,7 +1147,7 @@
                                 <button
                                     type="button"
                                     @click="showAdvancedStatus = !showAdvancedStatus"
-                                    class="inline-flex items-center gap-1.5 text-2xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer"
+                                    class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer"
                                 >
                                     <x-lucide-history class="size-3" />
                                     <span x-text="showAdvancedStatus ? 'Tutup koreksi status manual' : 'Koreksi status mundur atau batalkan nota...'"></span>
@@ -1161,7 +1166,7 @@
                                                     class="sr-only"
                                                 >
                                                 <div
-                                                    class="rounded-lg border p-1.5 text-center text-xs font-semibold transition"
+                                                    class="rounded-lg border p-1.5 text-center text-sm font-semibold transition"
                                                     :class="{
                                                         'border-brand-600 bg-brand-50 text-brand-700 ring-1 ring-brand-400': newStatus === '{{ $stOption }}' && '{{ $stOption }}' !== 'Dibatalkan',
                                                         'border-rose-600 bg-rose-50 text-rose-700 ring-rose-400': newStatus === '{{ $stOption }}' && '{{ $stOption }}' === 'Dibatalkan',
@@ -1175,11 +1180,11 @@
                                         @endforeach
                                     </div>
 
-                                    <div x-show="isRollback(newStatus)" x-cloak class="text-2xs text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                                    <div x-show="isRollback(newStatus)" x-cloak class="text-xs text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
                                         Wajib isi memo di bawah sebagai alasan koreksi status mundur.
                                     </div>
 
-                                    <div x-show="newStatus === 'Dibatalkan'" x-cloak class="text-2xs text-rose-800 bg-rose-50 p-2.5 rounded-lg border border-rose-200">
+                                    <div x-show="newStatus === 'Dibatalkan'" x-cloak class="text-xs text-rose-800 bg-rose-50 p-2.5 rounded-lg border border-rose-200">
                                         Wajib isi memo di bawah sebagai alasan pembatalan permanen.
                                     </div>
 
@@ -1187,7 +1192,7 @@
                                         type="button"
                                         @click="advanceStatus(newStatus)"
                                         :disabled="!canSubmitStatus() || isSubmitting"
-                                        class="w-full rounded-lg py-2 text-xs font-semibold shadow-xs transition active:scale-98 disabled:opacity-50"
+                                        class="w-full rounded-lg py-2 text-sm font-semibold shadow-xs transition active:scale-98 disabled:opacity-50"
                                         :class="canSubmitStatus()
                                             ? (newStatus === 'Dibatalkan' ? 'bg-rose-600 hover:bg-rose-700 text-white cursor-pointer' : 'bg-slate-900 hover:bg-slate-800 text-white cursor-pointer')
                                             : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
@@ -1203,13 +1208,13 @@
 
                 {{-- Banner Khusus Transaksi Dibatalkan --}}
                 <template x-if="selectedTrx?.status === 'Dibatalkan'">
-                    <div class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-xs text-rose-900 flex items-start gap-3 shadow-2xs">
+                    <div class="rounded-2xl border border-rose-200 bg-rose-50/80 p-4 text-sm text-rose-900 flex items-start gap-3 shadow-2xs">
                         <x-lucide-ban class="size-5 text-rose-600 shrink-0 mt-0.5" />
                         <div class="min-w-0 flex-1 space-y-1">
                             <p class="font-bold text-sm text-rose-950">Transaksi Dibatalkan</p>
-                            <p class="text-xs text-rose-800">Nota transaksi ini telah dibatalkan permanen dan tidak dapat diproses lagi.</p>
+                            <p class="text-sm text-rose-800">Nota transaksi ini telah dibatalkan permanen dan tidak dapat diproses lagi.</p>
                             <template x-if="selectedTrx?.notes">
-                                <p class="text-2xs text-rose-700 bg-white/70 p-2 rounded-lg border border-rose-200/60 font-mono mt-1.5" x-text="'Alasan: ' + selectedTrx?.notes"></p>
+                                <p class="text-xs text-rose-700 bg-white/70 p-2 rounded-lg border border-rose-200/60 font-mono mt-1.5" x-text="'Alasan: ' + selectedTrx?.notes"></p>
                             </template>
                         </div>
                     </div>
@@ -1219,10 +1224,10 @@
                 <div class="rounded-2xl border border-slate-200/90 bg-white p-4 space-y-3.5 shadow-2xs">
                     <div class="flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 min-w-0">
-                            <div class="size-9 rounded-xl bg-brand-50 border border-brand-200/60 text-brand-700 font-bold text-xs flex items-center justify-center font-mono shrink-0 shadow-2xs" x-text="selectedTrx?.initials || 'P'"></div>
+                            <div class="size-9 rounded-xl bg-brand-50 border border-brand-200/60 text-brand-700 font-bold text-sm flex items-center justify-center font-mono shrink-0 shadow-2xs" x-text="selectedTrx?.initials || 'P'"></div>
                             <div class="min-w-0">
-                                <p class="font-bold text-xs text-slate-900 truncate" x-text="selectedTrx?.customer_name"></p>
-                                <p class="text-2xs text-slate-500 truncate mt-0.5" x-text="selectedTrx?.customer_address !== '-' ? selectedTrx?.customer_address : 'Alamat belum diatur'"></p>
+                                <p class="font-bold text-sm text-slate-900 truncate" x-text="selectedTrx?.customer_name"></p>
+                                <p class="text-xs text-slate-500 truncate mt-0.5" x-text="selectedTrx?.customer_address !== '-' ? selectedTrx?.customer_address : 'Alamat belum diatur'"></p>
                             </div>
                         </div>
 
@@ -1231,7 +1236,7 @@
                                 :href="'https://wa.me/' + selectedTrx?.customer_phone?.replace(/[^0-9]/g, '')"
                                 target="_blank"
                                 rel="noopener"
-                                class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50/70 px-2.5 py-1 text-2xs font-semibold text-emerald-700 hover:bg-emerald-100 transition shadow-2xs shrink-0 cursor-pointer"
+                                class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50/70 px-2.5 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition shadow-2xs shrink-0 cursor-pointer"
                                 title="Kirim pesan WhatsApp"
                             >
                                 <x-lucide-message-circle class="size-3 text-emerald-600" />
@@ -1241,17 +1246,17 @@
                     </div>
 
                     {{-- Quick Operational Specs --}}
-                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs">
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-sm">
                         <div class="p-2.5 rounded-xl bg-slate-50/70 border border-slate-100">
-                            <span class="text-2xs font-medium text-slate-500 block">Total Bobot Cucian</span>
-                            <span class="font-mono text-xs font-bold text-slate-900 mt-0.5 block" x-text="selectedTrx?.total_weight + ' kg'"></span>
+                            <span class="text-xs font-medium text-slate-500 block">Total Bobot Cucian</span>
+                            <span class="font-mono text-sm font-bold text-slate-900 mt-0.5 block" x-text="selectedTrx?.total_weight + ' kg'"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-slate-50/70 border border-slate-100">
-                            <span class="text-2xs font-medium text-slate-500 block">Estimasi Selesai</span>
+                            <span class="text-xs font-medium text-slate-500 block">Estimasi Selesai</span>
                             <div class="flex items-center gap-1.5 mt-0.5">
-                                <span class="font-mono text-2xs font-bold text-slate-900" x-text="selectedTrx?.estimated_at || '-'"></span>
+                                <span class="font-mono text-xs font-bold text-slate-900" x-text="selectedTrx?.estimated_at || '-'"></span>
                                 <template x-if="selectedTrx?.is_overdue">
-                                    <span class="inline-flex items-center rounded bg-rose-100 px-1 py-0.2 text-[9px] font-bold text-rose-700">Lewat</span>
+                                    <span class="inline-flex items-center rounded bg-rose-100 px-1 py-0.2 text-xs font-bold text-rose-700">Lewat</span>
                                 </template>
                             </div>
                         </div>
@@ -1261,9 +1266,9 @@
                 {{-- 3. FINANCIAL & PAYMENT PROCESSING HUB --}}
                 <div class="rounded-2xl border border-slate-200/90 bg-white p-4 space-y-3.5 shadow-2xs">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-slate-900 tracking-tight">Status Pembayaran</span>
+                        <span class="text-sm font-bold text-slate-900 tracking-tight">Status Pembayaran</span>
                         <span
-                            class="inline-flex items-center rounded-full px-2.5 py-0.5 text-2xs font-semibold ring-1 ring-inset"
+                            class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset"
                             :class="{
                                 'bg-emerald-50 text-emerald-700 ring-emerald-600/20': selectedTrx?.payment_status === 'Lunas',
                                 'bg-amber-50 text-amber-800 ring-amber-600/25': selectedTrx?.payment_status === 'DP',
@@ -1274,19 +1279,19 @@
                     </div>
 
                     {{-- Financial Breakdown Snapshot --}}
-                    <div class="grid grid-cols-3 gap-2 text-center">
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
                         <div class="p-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
-                            <span class="text-[10px] text-slate-500 font-medium block">Total Biaya</span>
-                            <span class="font-mono text-xs font-bold text-slate-900 tabular-nums mt-0.5 block" x-text="selectedTrx?.total_formatted"></span>
+                            <span class="text-xs text-slate-500 font-medium block">Total Biaya</span>
+                            <span class="text-lg font-semibold text-slate-900 tabular-nums mt-1 block" x-text="selectedTrx?.total_formatted"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-100">
-                            <span class="text-[10px] text-emerald-700 font-medium block">Terbayar</span>
-                            <span class="font-mono text-xs font-bold text-emerald-700 tabular-nums mt-0.5 block" x-text="selectedTrx?.paid_formatted"></span>
+                            <span class="text-xs text-emerald-700 font-medium block">Terbayar</span>
+                            <span class="text-lg font-semibold text-emerald-700 tabular-nums mt-1 block" x-text="selectedTrx?.paid_formatted"></span>
                         </div>
                         <div class="p-2.5 rounded-xl border"
                              :class="(selectedTrx?.remaining_amount || 0) > 0 ? 'bg-rose-50/60 border-rose-100' : 'bg-slate-50/80 border-slate-100'">
-                            <span class="text-[10px] font-medium block" :class="(selectedTrx?.remaining_amount || 0) > 0 ? 'text-rose-700 font-bold' : 'text-slate-500'">Sisa Tagihan</span>
-                            <span class="font-mono text-xs font-bold tabular-nums mt-0.5 block"
+                            <span class="text-xs font-medium block" :class="(selectedTrx?.remaining_amount || 0) > 0 ? 'text-rose-700 font-bold' : 'text-slate-500'">Sisa Tagihan</span>
+                            <span class="text-lg font-semibold tabular-nums mt-1 block"
                                   :class="(selectedTrx?.remaining_amount || 0) > 0 ? 'text-rose-700' : 'text-slate-900'"
                                   x-text="selectedTrx?.remaining_formatted"></span>
                         </div>
@@ -1299,7 +1304,7 @@
                                 type="button"
                                 @click="quickPayExact()"
                                 :disabled="isSubmitting"
-                                class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition active:scale-98 disabled:opacity-50 cursor-pointer"
                             >
                                 <template x-if="isSubmitting">
                                     <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1314,7 +1319,7 @@
                                 <button
                                     type="button"
                                     @click="showCustomPay = !showCustomPay"
-                                    class="inline-flex items-center gap-1 text-2xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer"
+                                    class="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-slate-800 transition cursor-pointer"
                                 >
                                     <x-lucide-sliders-horizontal class="size-3" />
                                     <span x-text="showCustomPay ? 'Tutup opsi pembayaran lain' : 'Opsi bayar lain (Transfer, QRIS, Cicil)...'"></span>
@@ -1324,25 +1329,25 @@
                             {{-- Form Bayar Kustom --}}
                             <div x-show="showCustomPay" x-cloak class="pt-2 border-t border-slate-100 space-y-3">
                                 <div>
-                                    <label class="block text-xs font-medium text-slate-600 mb-1.5">Metode Bayar</label>
+                                    <label class="block text-sm font-medium text-slate-600 mb-1.5">Metode Bayar</label>
                                     <div class="grid grid-cols-3 gap-1.5">
                                         <label class="cursor-pointer">
                                             <input type="radio" name="custom_pay_method" value="Tunai" x-model="payMethod" class="sr-only">
-                                            <div class="rounded-lg border text-center py-1.5 text-xs font-semibold transition"
+                                            <div class="rounded-lg border text-center py-1.5 text-sm font-semibold transition"
                                                 :class="payMethod === 'Tunai' ? 'border-brand-600 bg-brand-600 text-white shadow-2xs' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'">
                                                 Tunai
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
                                             <input type="radio" name="custom_pay_method" value="Transfer" x-model="payMethod" class="sr-only">
-                                            <div class="rounded-lg border text-center py-1.5 text-xs font-semibold transition"
+                                            <div class="rounded-lg border text-center py-1.5 text-sm font-semibold transition"
                                                 :class="payMethod === 'Transfer' ? 'border-brand-600 bg-brand-600 text-white shadow-2xs' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'">
                                                 Transfer
                                             </div>
                                         </label>
                                         <label class="cursor-pointer">
                                             <input type="radio" name="custom_pay_method" value="QRIS" x-model="payMethod" class="sr-only">
-                                            <div class="rounded-lg border text-center py-1.5 text-xs font-semibold transition"
+                                            <div class="rounded-lg border text-center py-1.5 text-sm font-semibold transition"
                                                 :class="payMethod === 'QRIS' ? 'border-brand-600 bg-brand-600 text-white shadow-2xs' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'">
                                                 QRIS
                                             </div>
@@ -1351,25 +1356,25 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-medium text-slate-600 mb-1">Nominal (Rp)</label>
+                                    <label class="block text-sm font-medium text-slate-600 mb-1">Nominal (Rp)</label>
                                     <input
                                         type="number"
                                         x-model="payAmount"
                                         min="1"
                                         :max="selectedTrx?.remaining_amount"
-                                        class="h-8 w-full rounded-lg border border-slate-300 bg-white px-3 font-mono text-xs font-semibold text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                        class="h-8 w-full rounded-lg border border-slate-300 bg-white px-3 font-mono text-sm font-semibold text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                     >
                                 </div>
 
                                 <template x-if="payMethod === 'Tunai'">
                                     <div class="space-y-1.5 pt-1">
-                                        <label class="block text-xs font-medium text-slate-600 mb-1">Uang Diterima (Rp)</label>
+                                        <label class="block text-sm font-medium text-slate-600 mb-1">Uang Diterima (Rp)</label>
                                         <input
                                             type="number"
                                             x-model="cashReceived"
-                                            class="h-8 w-full rounded-lg border border-slate-300 bg-white px-3 font-mono text-xs font-semibold text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                            class="h-8 w-full rounded-lg border border-slate-300 bg-white px-3 font-mono text-sm font-semibold text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                         >
-                                        <div class="flex items-center justify-between text-xs font-medium text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-200/80">
+                                        <div class="flex items-center justify-between text-sm font-medium text-slate-600 bg-slate-50 p-2 rounded-lg border border-slate-200/80">
                                             <span>Kembalian:</span>
                                             <span class="font-mono font-bold text-emerald-700" x-text="'Rp ' + Number(changeAmount).toLocaleString('id-ID')"></span>
                                         </div>
@@ -1380,7 +1385,7 @@
                                     type="button"
                                     @click="submitCustomPayment()"
                                     :disabled="isSubmitting"
-                                    class="w-full rounded-lg bg-brand-600 py-2 text-xs font-semibold text-white shadow-sm hover:bg-brand-700 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                                    class="w-full rounded-lg bg-brand-600 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition active:scale-98 cursor-pointer disabled:opacity-50"
                                 >
                                     <span x-show="isSubmitting" class="inline-flex items-center gap-1.5">
                                         <x-lucide-loader-2 class="size-3.5 animate-spin" />
@@ -1398,17 +1403,17 @@
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-1.5">
                             <x-lucide-sticky-note class="size-3.5 text-slate-400" />
-                            <span class="text-xs font-bold text-slate-900 tracking-tight">Memo Catatan Cucian</span>
+                            <span class="text-sm font-bold text-slate-900 tracking-tight">Memo Catatan Cucian</span>
                         </div>
                         <button
                             type="button"
                             @click="saveNotes()"
                             :disabled="isSubmitting"
-                            class="inline-flex items-center gap-1 rounded-lg bg-brand-50 border border-brand-200/80 px-2.5 py-1 text-2xs font-semibold text-brand-700 hover:bg-brand-100 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                            class="inline-flex items-center gap-1 rounded-lg bg-brand-50 border border-brand-200/80 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition active:scale-98 cursor-pointer disabled:opacity-50"
                         >
                             <x-lucide-check class="size-3" />
                             <span>Simpan Memo</span>
-                            <span class="text-[10px] text-brand-600 font-mono hidden sm:inline">(Ctrl+Enter)</span>
+                            <span class="text-xs text-brand-600 font-mono hidden sm:inline">(Ctrl+Enter)</span>
                         </button>
                     </div>
                     <textarea
@@ -1416,7 +1421,7 @@
                         @keydown.ctrl.enter.prevent="saveNotes()"
                         @keydown.meta.enter.prevent="saveNotes()"
                         rows="2"
-                        class="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500 transition resize-none"
+                        class="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-2.5 text-sm text-slate-800 placeholder:text-slate-500 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-1 focus:ring-brand-500 transition resize-none"
                         placeholder="Contoh: Pakaian luntur dipisah, rak B-04, noda minyak di kerah..."
                     ></textarea>
                 </div>
@@ -1435,15 +1440,15 @@
                     {{-- Item list --}}
                     <div x-show="detailTab === 'items'" class="divide-y divide-slate-100">
                         <template x-for="(item, idx) in selectedTrx?.items" :key="idx">
-                            <div class="py-2.5 text-xs first:pt-1 last:pb-1">
+                            <div class="py-2.5 text-sm first:pt-1 last:pb-1">
                                 <div class="flex items-center justify-between">
                                     <p class="font-semibold text-slate-900" x-text="item.service"></p>
                                     <p class="font-mono font-bold text-slate-900 tabular-nums" x-text="item.subtotal_formatted"></p>
                                 </div>
                                 <div class="flex items-center justify-between mt-0.5">
-                                    <p class="text-2xs text-slate-500 font-mono" x-text="item.weight + ' kg' + (item.price_formatted ? ' · ' + item.price_formatted + '/kg' : '')"></p>
+                                    <p class="text-xs text-slate-500 font-mono" x-text="item.weight + ' kg' + (item.price_formatted ? ' · ' + item.price_formatted + '/kg' : '')"></p>
                                     <template x-if="item.notes">
-                                        <span class="inline-flex items-center gap-1 text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60 font-medium">
+                                        <span class="inline-flex items-center gap-1 text-xs text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/60 font-medium">
                                             <x-lucide-tag class="size-2.5" />
                                             <span x-text="item.notes"></span>
                                         </span>
@@ -1452,30 +1457,30 @@
                             </div>
                         </template>
                         <template x-if="!selectedTrx?.items || selectedTrx?.items.length === 0">
-                            <p class="text-xs text-slate-400 italic py-3 text-center">Tidak ada item layanan yang tercatat.</p>
+                            <p class="text-sm text-slate-400 italic py-3 text-center">Tidak ada item layanan yang tercatat.</p>
                         </template>
                     </div>
 
                     {{-- Payment list --}}
                     <div x-show="detailTab === 'payments'" class="divide-y divide-slate-100">
                         <template x-for="(pay, pIdx) in selectedTrx?.payments" :key="pIdx">
-                            <div class="flex items-center justify-between py-2.5 text-xs first:pt-1 last:pb-1">
+                            <div class="flex items-center justify-between py-2.5 text-sm first:pt-1 last:pb-1">
                                 <div class="space-y-0.5">
                                     <div class="flex items-center gap-1.5">
-                                        <span class="inline-block rounded-md bg-slate-100 border border-slate-200/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-700" x-text="pay.method"></span>
-                                        <span class="text-2xs text-slate-400 font-mono" x-text="pay.created_at"></span>
+                                        <span class="inline-block rounded-md bg-slate-100 border border-slate-200/80 px-1.5 py-0.5 font-mono text-xs font-bold text-slate-700" x-text="pay.method"></span>
+                                        <span class="text-xs text-slate-400 font-mono" x-text="pay.created_at"></span>
                                     </div>
                                 </div>
                                 <div class="text-right">
                                     <p class="font-mono font-bold text-emerald-700 tabular-nums" x-text="pay.amount_formatted"></p>
-                                    <p class="text-[10px] text-slate-400 font-medium" x-text="pay.status"></p>
+                                    <p class="text-xs text-slate-400 font-medium" x-text="pay.status"></p>
                                 </div>
                             </div>
                         </template>
                         <template x-if="!selectedTrx?.payments || selectedTrx?.payments.length === 0">
                             <div class="py-4 text-center">
                                 <x-lucide-receipt class="size-5 text-slate-300 mx-auto mb-1" />
-                                <p class="text-xs text-slate-400 italic">Belum ada riwayat pembayaran yang tercatat.</p>
+                                <p class="text-sm text-slate-400 italic">Belum ada riwayat pembayaran yang tercatat.</p>
                             </div>
                         </template>
                     </div>
@@ -1487,7 +1492,7 @@
                 <div class="flex items-center justify-between w-full">
                     <a
                         :href="selectedTrx?.show_url"
-                        class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition"
+                        class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 transition"
                     >
                         <x-lucide-external-link class="size-3.5 text-slate-400" />
                         <span>Buka Detail Lengkap</span>
@@ -1497,16 +1502,16 @@
                         <button
                             type="button"
                             @click="closeDrawer()"
-                            class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
+                            class="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition cursor-pointer"
                         >
                             <span>Tutup</span>
-                            <kbd class="font-mono text-[10px] bg-slate-200/70 text-slate-600 px-1 py-0.2 rounded border border-slate-300/60">ESC</kbd>
+                            <kbd class="font-mono text-xs bg-slate-200/70 text-slate-600 px-1 py-0.2 rounded border border-slate-300/60">ESC</kbd>
                         </button>
                         <a
                             :href="selectedTrx?.print_url"
                             target="_blank"
                             rel="noopener"
-                            class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 transition active:scale-95"
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition active:scale-95"
                         >
                             <x-lucide-printer class="size-3.5" />
                             <span>Cetak Struk</span>
@@ -1535,7 +1540,7 @@
             <template x-if="toast.type === 'error'">
                 <x-lucide-alert-circle class="size-4 text-rose-600 shrink-0" />
             </template>
-            <span class="text-xs font-semibold" x-text="toast.message"></span>
+            <span class="text-sm font-semibold" x-text="toast.message"></span>
         </div>
 
         {{-- Floating Bulk Action Bar --}}
@@ -1551,22 +1556,22 @@
             class="fixed bottom-6 inset-x-0 mx-auto z-40 w-fit max-w-lg rounded-2xl border border-slate-200/90 bg-white/95 px-4 py-3 shadow-2xl backdrop-blur-md flex items-center gap-3 sm:gap-4 ring-1 ring-slate-900/5"
         >
             <div class="flex items-center gap-2">
-                <span class="flex size-6 items-center justify-center rounded-lg bg-brand-600 font-mono text-xs font-bold text-white" x-text="selectedIds.length"></span>
-                <span class="text-xs font-semibold text-slate-700">nota dipilih</span>
+                <span class="flex size-6 items-center justify-center rounded-lg bg-brand-600 font-mono text-sm font-bold text-white" x-text="selectedIds.length"></span>
+                <span class="text-sm font-semibold text-slate-700">nota dipilih</span>
             </div>
             <div class="h-4 w-px bg-slate-200"></div>
             <div class="flex items-center gap-2">
                 <button
                     type="button"
                     @click="selectedIds = []; selectAll = false;"
-                    class="rounded-lg px-2.5 py-1 text-xs font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition cursor-pointer"
+                    class="rounded-lg px-2.5 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-800 transition cursor-pointer"
                 >
                     Batal
                 </button>
                 <button
                     type="button"
                     @click="window.print()"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white shadow-2xs hover:bg-slate-800 transition active:scale-95 cursor-pointer"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-bold text-white shadow-2xs hover:bg-slate-800 transition active:scale-95 cursor-pointer"
                 >
                     <x-lucide-printer class="size-3.5" />
                     <span>Cetak Terpilih</span>

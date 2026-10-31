@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -21,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 // Rute Publik: Lacak Cucian / Cek Transaksi Menggunakan Kode Nota (Tanpa Login)
 Route::get('/lookup', [TransactionLookupController::class, 'index'])
     ->name('transactions.lookup');
+Route::post('/lookup/payment-proof', [TransactionLookupController::class, 'storePaymentProof'])
+    ->name('transactions.lookup.payment-proof');
 
 // Rute Home / Root: Mengarahkan pengguna sesuai status login & role
 Route::get('/', function () {
@@ -96,6 +99,13 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'admin'])
                 ->name('dashboard');
+
+            // Pengelolaan Pengguna & Hak Akses (Milestone 2 Maulana)
+            Route::patch('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])
+                ->name('users.toggle-status');
+
+            Route::resource('users', AdminUserController::class)
+                ->except(['show']);
         });
 
     // =========================================================

@@ -53,7 +53,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false }" x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)">
+    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false }" x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)" @keydown.escape.window="sidebarOpen = false">
         {{-- Skip to main content link (Aksesibilitas Keyboard WCAG 2.2 AA) --}}
         <a
             href="#main-content"
@@ -74,18 +74,22 @@
             <div class="flex h-16 items-center gap-2 border-b border-slate-100 px-5">
                 <x-app-logo class="size-8" />
                 <span class="text-lg font-semibold tracking-tight text-brand-700">CUCI<span class="text-brand-600">.IN</span></span>
+                <button type="button" class="ml-auto flex size-11 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = false; $nextTick(() => document.getElementById('sidebar-toggle').focus())" aria-label="Tutup menu">
+                    <x-lucide-x class="size-5" aria-hidden="true" />
+                </button>
             </div>
 
-            <nav class="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+            <nav aria-label="Navigasi utama" class="flex flex-1 flex-col gap-1.5 overflow-y-auto p-3 pt-5">
                 @foreach ($navigation as $item)
                     @if (Route::has($item['route']))
                         @php($isActive = is_array($item['active']) ? request()->routeIs(...$item['active']) : request()->routeIs($item['active']))
                         <a
                             href="{{ route($item['route']) }}"
+                            @if ($isActive) aria-current="page" @endif
                             wire:navigate
                             @class([
-                                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                                'bg-brand-50 text-brand-700' => $isActive,
+                                'flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+                                'bg-brand-700 text-white' => $isActive,
                                 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' => ! $isActive,
                             ])
                         >
@@ -126,7 +130,7 @@
         <div class="flex min-h-screen flex-col lg:pl-64">
             <header class="sticky top-0 z-20 border-b border-slate-200 bg-white/80 backdrop-blur">
                 <div class="mx-auto flex h-16 w-full max-w-7xl items-center gap-3 px-4 sm:px-6">
-                    <button type="button" id="sidebar-toggle" class="rounded-lg p-3 text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = true" aria-label="Buka menu">
+                    <button type="button" id="sidebar-toggle" class="rounded-lg p-3 text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = true" aria-label="Buka menu" aria-controls="sidebar" :aria-expanded="sidebarOpen">
                         <svg class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                             <path d="M4 6h16M4 12h16M4 18h16" />
                         </svg>

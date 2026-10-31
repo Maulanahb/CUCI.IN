@@ -33,6 +33,8 @@ desktop.ini
 *.dll
 *.so
 *.dylib
+*.doc
+*.docx
 
 # Local Environment Overrides
 .env.local

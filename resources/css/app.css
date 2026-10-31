@@ -38,6 +38,11 @@
 
 /* Fokus keyboard yang konsisten untuk seluruh elemen interaktif. */
 @layer base {
+    ::selection {
+        background: var(--color-brand-100);
+        color: var(--color-brand-950);
+    }
+
     :where(a, button, [role='button'], summary):focus-visible {
         outline: 2px solid var(--color-brand-600);
         outline-offset: 2px;

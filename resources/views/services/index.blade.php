@@ -5,7 +5,7 @@
 
 <x-layouts::app title="Katalog Layanan Laundry">
     <div
-        class="space-y-6"
+        class="space-y-7"
         x-data="{
             createModalOpen: false,
             editModalOpen: false,
@@ -113,22 +113,22 @@
         {{-- ============================================================
             HEADER & ACTIONS
         ============================================================= --}}
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <h1 class="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                     Katalog Layanan Laundry
                 </h1>
-                <p class="mt-1 text-xs text-slate-500 sm:text-sm">
-                    Kelola tarif dinamis, unit hitung, paket kilat/express, dan estimasi waktu selesai CUCI.IN ({{ $isAdmin ? 'Mode Administrator' : 'Katalog Kasir / Staff' }}).
+                <p class="mt-2 text-sm text-slate-600">Tarif, satuan, dan estimasi pengerjaan untuk setiap layanan.
+                    <span class="mt-1 block text-xs text-slate-500">{{ $isAdmin ? 'Mode Administrator' : 'Katalog Kasir / Staff' }}</span>
                 </p>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex shrink-0 flex-wrap items-center gap-2">
                 @if ($isAdmin)
                     <x-ui.button
                         id="btn-open-create-service"
                         type="button"
-                        size="sm"
+                        size="md"
                         @click="openCreateModal()"
                         class="shadow-xs"
                     >
@@ -139,10 +139,10 @@
 
                 <x-ui.button
                     href="{{ route($currentRoutePrefix . '.transactions.create') }}"
-                    variant="secondary"
-                    size="sm"
+                    :variant="$isAdmin ? 'secondary' : 'primary'"
+                    size="md"
                 >
-                    <x-lucide-receipt class="size-4 text-brand-600" />
+                    <x-lucide-receipt class="size-4" />
                     <span>Kasir POS</span>
                 </x-ui.button>
             </div>
@@ -167,76 +167,39 @@
             </x-ui.alert>
         @endif
 
-        {{-- ============================================================
-            KPI STATISTIC CARDS (Aqua Teal + Amber Semantic)
-        ============================================================= --}}
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-            {{-- Card 1: Total Layanan --}}
-            <div class="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-xs transition hover:border-slate-300">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-slate-500">Total Paket</span>
-                    <div class="flex size-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                        <x-lucide-layers class="size-4" />
-                    </div>
-                </div>
-                <p class="mt-2 text-xl font-bold tabular-nums tracking-tight text-slate-900 sm:text-2xl">{{ $stats['total'] }}</p>
-                <p class="mt-0.5 text-2xs text-slate-400">Seluruh jenis katalog</p>
+        <section aria-label="Ringkasan layanan" class="grid grid-cols-2 overflow-hidden rounded-2xl border border-slate-200 bg-white lg:grid-cols-4">
+            <div class="min-w-0 border-b border-r lg:border-b-0 border-slate-200 p-5 sm:p-6">
+                <p class="text-sm font-medium text-slate-600">Total paket</p>
+                <p class="mt-4 text-4xl font-semibold tracking-tight tabular-nums text-slate-900">{{ $stats['total'] }}</p>
+                <p class="mt-2 text-xs text-slate-500">Seluruh layanan</p>
             </div>
-
-            {{-- Card 2: Layanan Aktif --}}
-            <div class="rounded-2xl border border-emerald-100 bg-white p-4 shadow-xs transition hover:border-emerald-200">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-slate-500">Layanan Aktif</span>
-                    <div class="flex size-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-                        <span class="relative flex size-2">
-                            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
-                        </span>
-                    </div>
-                </div>
-                <p class="mt-2 text-xl font-bold tabular-nums tracking-tight text-emerald-600 sm:text-2xl">{{ $stats['active'] }}</p>
-                <p class="mt-0.5 text-2xs text-slate-400">Siap dipilih di kasir</p>
+            <div class="min-w-0 border-b lg:border-b-0 lg:border-r border-slate-200 p-5 sm:p-6">
+                <p class="text-sm font-medium text-slate-600">Layanan aktif</p>
+                <p class="mt-4 text-4xl font-semibold tracking-tight tabular-nums text-emerald-700">{{ $stats['active'] }}</p>
+                <p class="mt-2 text-xs text-slate-500">Siap dipilih di kasir</p>
             </div>
-
-            {{-- Card 3: Paket Kilat / Express --}}
-            <div class="rounded-2xl border border-amber-200/80 bg-amber-50/40 p-4 shadow-xs transition hover:border-amber-300">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-amber-900">Paket Kilat / Express</span>
-                    <div class="flex size-7 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
-                        <x-lucide-zap class="size-4" />
-                    </div>
-                </div>
-                <p class="mt-2 text-xl font-bold tabular-nums tracking-tight text-amber-700 sm:text-2xl">
-                    {{ $stats['express'] ?? 0 }}
-                </p>
-                <p class="mt-0.5 text-2xs text-amber-600/90">Layanan prioritas cepat</p>
+            <div class="min-w-0 border-r border-slate-200 p-5 sm:p-6">
+                <p class="text-sm font-medium text-slate-600">Paket kilat</p>
+                <p class="mt-4 text-4xl font-semibold tracking-tight tabular-nums text-slate-900">{{ $stats['express'] ?? 0 }}</p>
+                <p class="mt-2 text-xs text-slate-500">Layanan express</p>
             </div>
-
-            {{-- Card 4: Rata-rata Tarif --}}
-            <div class="rounded-2xl border border-brand-100 bg-brand-50/40 p-4 shadow-xs transition hover:border-brand-200">
-                <div class="flex items-center justify-between">
-                    <span class="text-xs font-medium text-brand-900">Rata-rata Tarif</span>
-                    <div class="flex size-7 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
-                        <x-lucide-coins class="size-4" />
-                    </div>
-                </div>
-                <p class="mt-2 text-lg font-bold tabular-nums tracking-tight text-brand-700 sm:text-xl">
-                    Rp {{ number_format($stats['avg_price'], 0, ',', '.') }}
-                </p>
-                <p class="mt-0.5 text-2xs text-brand-600/80">
-                    Durasi tercepat: {{ $stats['min_duration'] > 0 ? $stats['min_duration'] . ' jam' : '-' }}
-                </p>
+            <div class="min-w-0  border-slate-200 p-5 sm:p-6">
+                <p class="text-sm font-medium text-slate-600">Rata-rata tarif</p>
+                <p class="mt-4 text-2xl font-semibold tracking-tight tabular-nums text-slate-900">Rp {{ number_format($stats['avg_price'], 0, ',', '.') }}</p>
+                <p class="mt-2 text-xs text-slate-500">Durasi tercepat: {{ $stats['min_duration'] > 0 ? $stats['min_duration'] . ' jam' : '-' }}</p>
             </div>
-        </div>
+        </section>
 
         {{-- ============================================================
             FILTER & SEARCH TOOLBAR
         ============================================================= --}}
-        <div class="space-y-3 rounded-2xl border border-slate-200/90 bg-white p-3.5 shadow-xs">
+        <div class="space-y-4 rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 {{-- Tab Filter Status --}}
-                <x-ui.tabs variant="segmented">
+                <x-ui.tabs variant="segmented" class="flex-wrap gap-2" aria-label="Filter ketersediaan layanan">
                     <x-ui.tab
+                        variant="segmented"
+                        class="min-h-11 text-sm"
                         :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'all']))"
                         :active="$statusFilter === 'all'"
                         :badge="$stats['total']"
@@ -245,6 +208,8 @@
                         Semua Status
                     </x-ui.tab>
                     <x-ui.tab
+                        variant="segmented"
+                        class="min-h-11 text-sm"
                         :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'active']))"
                         :active="$statusFilter === 'active'"
                         :badge="$stats['active']"
@@ -253,6 +218,8 @@
                         Aktif
                     </x-ui.tab>
                     <x-ui.tab
+                        variant="segmented"
+                        class="min-h-11 text-sm"
                         :href="route($currentRoutePrefix . '.services.index', array_merge(request()->except(['status', 'page']), ['status' => 'inactive']))"
                         :active="$statusFilter === 'inactive'"
                         :badge="$stats['inactive']"
@@ -263,7 +230,7 @@
                 </x-ui.tabs>
 
                 {{-- Form Pencarian --}}
-                <form method="GET" action="{{ route("{$currentRoutePrefix}.services.index") }}" class="relative w-full sm:w-72">
+                <form method="GET" action="{{ route("{$currentRoutePrefix}.services.index") }}" class="relative w-full shrink-0 sm:w-72">
                     @if ($statusFilter !== 'all')
                         <input type="hidden" name="status" value="{{ $statusFilter }}">
                     @endif
@@ -271,19 +238,20 @@
                         <input type="hidden" name="type" value="{{ $typeFilter }}">
                     @endif
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <x-lucide-search class="size-4 text-slate-400" />
+                        <x-lucide-search class="size-4 text-slate-500" />
                     </div>
                     <input
                         type="text"
                         name="q"
+                        aria-label="Cari layanan berdasarkan nama atau deskripsi"
                         value="{{ $search }}"
                         placeholder="Cari nama atau deskripsi..."
-                        class="w-full rounded-xl border border-slate-200 bg-white py-2 pr-9 pl-9 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                        class="w-full rounded-xl border border-slate-200 bg-white py-2 pr-9 pl-9 text-sm text-slate-900 shadow-2xs transition placeholder:text-slate-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                     />
                     @if ($search !== '')
                         <a
                             href="{{ route("{$currentRoutePrefix}.services.index", ['status' => $statusFilter, 'type' => $typeFilter ?? 'all']) }}"
-                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition"
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-600 transition"
                             title="Hapus pencarian"
                         >
                             <x-lucide-x class="size-4" />
@@ -293,14 +261,14 @@
             </div>
 
             {{-- Filter Chips Kategori & Paket Lanjutan --}}
-            <div class="flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-slate-100 text-xs">
-                <span class="text-2xs font-bold uppercase tracking-wider text-slate-400 shrink-0 mr-1">Kategori:</span>
+            <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-slate-100 text-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 shrink-0 mr-1">Kategori:</span>
 
                 <a
                     href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'all'])) }}"
                     @class([
-                        'inline-flex items-center rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
-                        'bg-brand-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'all',
+                        'inline-flex items-center min-h-11 rounded-lg px-3 py-2 font-semibold transition-colors shrink-0',
+                        'bg-brand-700 text-white' => ($typeFilter ?? 'all') === 'all',
                         'bg-slate-100 text-slate-600 hover:bg-slate-200' => ($typeFilter ?? 'all') !== 'all',
                     ])
                 >
@@ -310,20 +278,20 @@
                 <a
                     href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'express'])) }}"
                     @class([
-                        'inline-flex items-center gap-1 rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
-                        'bg-amber-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'express',
+                        'inline-flex items-center gap-1 min-h-11 rounded-lg px-3 py-2 font-semibold transition-colors shrink-0',
+                        'bg-brand-700 text-white' => ($typeFilter ?? 'all') === 'express',
                         'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100' => ($typeFilter ?? 'all') !== 'express',
                     ])
                 >
-                    <x-lucide-zap class="size-3.5 text-amber-500 {{ ($typeFilter ?? 'all') === 'express' ? 'text-white' : '' }}" />
+                    <x-lucide-zap class="size-3.5 text-current {{ ($typeFilter ?? 'all') === 'express' ? 'text-white' : '' }}" />
                     <span>Paket Kilat / Express</span>
                 </a>
 
                 <a
                     href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'kiloan'])) }}"
                     @class([
-                        'inline-flex items-center rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
-                        'bg-brand-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'kiloan',
+                        'inline-flex items-center min-h-11 rounded-lg px-3 py-2 font-semibold transition-colors shrink-0',
+                        'bg-brand-700 text-white' => ($typeFilter ?? 'all') === 'kiloan',
                         'bg-slate-100 text-slate-600 hover:bg-slate-200' => ($typeFilter ?? 'all') !== 'kiloan',
                     ])
                 >
@@ -333,8 +301,8 @@
                 <a
                     href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'satuan'])) }}"
                     @class([
-                        'inline-flex items-center rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
-                        'bg-brand-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'satuan',
+                        'inline-flex items-center min-h-11 rounded-lg px-3 py-2 font-semibold transition-colors shrink-0',
+                        'bg-brand-700 text-white' => ($typeFilter ?? 'all') === 'satuan',
                         'bg-slate-100 text-slate-600 hover:bg-slate-200' => ($typeFilter ?? 'all') !== 'satuan',
                     ])
                 >
@@ -344,8 +312,8 @@
                 <a
                     href="{{ route("{$currentRoutePrefix}.services.index", array_merge(request()->except(['type', 'page']), ['type' => 'khusus'])) }}"
                     @class([
-                        'inline-flex items-center rounded-lg px-2.5 py-1 font-semibold transition shrink-0',
-                        'bg-brand-600 text-white shadow-2xs' => ($typeFilter ?? 'all') === 'khusus',
+                        'inline-flex items-center min-h-11 rounded-lg px-3 py-2 font-semibold transition-colors shrink-0',
+                        'bg-brand-700 text-white' => ($typeFilter ?? 'all') === 'khusus',
                         'bg-slate-100 text-slate-600 hover:bg-slate-200' => ($typeFilter ?? 'all') !== 'khusus',
                     ])
                 >
@@ -357,10 +325,10 @@
         {{-- ============================================================
             TABEL MASTER DATA LAYANAN
         ============================================================= --}}
-        <div class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-xs">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs sm:text-sm">
-                    <thead class="border-b border-slate-100 bg-slate-50/75 text-2xs font-bold uppercase tracking-wider text-slate-500 sm:text-xs">
+        <div class="lg:overflow-hidden lg:rounded-2xl lg:border lg:border-slate-200 lg:bg-white">
+            <div class="lg:overflow-x-auto" tabindex="0" role="region" aria-label="Daftar layanan">
+                <table class="block w-full text-left text-sm lg:table">
+                    <thead class="hidden border-b border-slate-100 bg-slate-50/75 lg:table-header-group text-xs font-bold uppercase tracking-wider text-slate-500 ">
                         <tr>
                             <th scope="col" class="px-5 py-3.5">Nama Layanan & Kategori</th>
                             <th scope="col" class="px-5 py-3.5">Tarif Dinamis</th>
@@ -370,11 +338,11 @@
                             <th scope="col" class="px-5 py-3.5 text-right">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:table-row-group lg:divide-y lg:divide-slate-100">
                         @forelse ($services as $service)
-                            <tr class="transition hover:bg-slate-50/70">
+                            <tr class="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white transition-colors lg:table-row lg:rounded-none lg:border-0 lg:hover:bg-slate-50/70">
                                 {{-- Nama Layanan & Kategori --}}
-                                <td class="px-5 py-4">
+                                <td class="block px-5 py-3 lg:table-cell lg:py-4">
                                     <div class="flex items-start gap-3">
                                         <div @class([
                                             'mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg',
@@ -393,17 +361,17 @@
                                         </div>
                                         <div class="min-w-0">
                                             <div class="flex items-center gap-1.5 flex-wrap">
-                                                <p class="font-semibold text-slate-900">{{ $service->name }}</p>
+                                                <p class="text-base font-semibold text-slate-900">{{ $service->name }}</p>
                                                 @if ($service->is_express)
-                                                    <span class="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-2xs font-extrabold text-amber-800 border border-amber-300">
+                                                    <span class="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-extrabold text-amber-800 border border-amber-300">
                                                         ⚡ KILAT
                                                     </span>
                                                 @endif
-                                                <span class="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-2xs font-semibold text-slate-600">
+                                                <span class="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-xs font-semibold text-slate-600">
                                                     {{ $service->unit_label }}
                                                 </span>
                                             </div>
-                                            <p class="mt-0.5 line-clamp-1 text-xs text-slate-400">
+                                            <p class="mt-0.5 line-clamp-2 text-sm text-slate-500">
                                                 {{ $service->description ?: 'Tanpa keterangan khusus.' }}
                                             </p>
                                         </div>
@@ -411,29 +379,30 @@
                                 </td>
 
                                 {{-- Tarif Dinamis --}}
-                                <td class="px-5 py-4 font-semibold text-slate-800">
+                                <td class="block px-5 py-2 font-semibold text-slate-800 lg:table-cell lg:py-4">
                                     <span @class([
-                                        'inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-bold tabular-nums',
+                                        'inline-flex flex-wrap items-baseline rounded-lg px-2.5 py-2 text-base font-semibold tabular-nums',
                                         'bg-amber-50 text-amber-800 border border-amber-200' => $service->is_express,
                                         'bg-brand-50 text-brand-700' => ! $service->is_express,
                                     ])>
                                         Rp {{ number_format($service->price, 0, ',', '.') }}
-                                        <span class="ml-1 text-2xs font-normal opacity-80">/ {{ $service->unit_label }}</span>
+                                        <span class="ml-1 text-xs font-normal opacity-80">/ {{ $service->unit_label }}</span>
                                     </span>
                                     @if ($service->minimum_order > 1)
-                                        <span class="block text-2xs font-medium text-slate-400 mt-0.5">
+                                        <span class="block text-xs font-medium text-slate-500 mt-0.5">
                                             Min: {{ (float) $service->minimum_order }} {{ $service->unit_label }}
                                         </span>
                                     @endif
                                 </td>
 
                                 {{-- Estimasi Durasi --}}
-                                <td class="px-5 py-4 text-slate-600">
-                                    <div class="flex items-center gap-1.5 text-xs font-medium sm:text-sm">
+                                <td class="block px-5 py-2 text-slate-600 lg:table-cell lg:py-4">
+                                    <div class="flex flex-wrap items-center gap-1.5 text-sm font-medium ">
+                                        <span class="lg:hidden">Estimasi:</span>
                                         <x-lucide-clock @class([
                                             'size-4',
                                             'text-amber-500 font-bold' => $service->is_express,
-                                            'text-slate-400' => ! $service->is_express,
+                                            'text-slate-500' => ! $service->is_express,
                                         ]) />
                                         <span @class([
                                             'font-semibold text-amber-900' => $service->is_express,
@@ -445,7 +414,7 @@
                                 </td>
 
                                 {{-- Status Ketersediaan --}}
-                                <td class="px-5 py-4">
+                                <td class="block px-5 py-3 lg:table-cell lg:py-4">
                                     @if ($isAdmin)
                                         <form method="POST" action="{{ route('admin.services.toggle', $service) }}" class="inline">
                                             @csrf
@@ -454,7 +423,7 @@
                                                 type="submit"
                                                 title="Klik untuk mengubah status ketersediaan"
                                                 @class([
-                                                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset transition cursor-pointer select-none active:scale-95',
+                                                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset transition cursor-pointer select-none active:scale-95',
                                                     'bg-emerald-50 text-emerald-700 ring-emerald-600/20 hover:bg-emerald-100/70' => $service->is_active,
                                                     'bg-slate-50 text-slate-600 ring-slate-600/15 hover:bg-slate-100' => ! $service->is_active,
                                                 ])
@@ -473,19 +442,20 @@
                                 </td>
 
                                 {{-- Penggunaan Transaksi --}}
-                                <td class="px-5 py-4 text-center">
+                                <td class="block px-5 py-2 text-slate-600 lg:table-cell lg:py-4 lg:text-center">
+                                    <span class="mr-1 lg:hidden">Riwayat transaksi:</span>
                                     @if ($service->transaction_details_count > 0)
-                                        <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700">
+                                        <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-sm font-semibold text-blue-700">
                                             <span class="tabular-nums">{{ $service->transaction_details_count }}</span>
-                                            <span class="text-2xs font-normal">order</span>
+                                            <span class="text-xs font-normal">order</span>
                                         </span>
                                     @else
-                                        <span class="text-xs text-slate-400">0 order</span>
+                                        <span class="text-sm text-slate-500">0 order</span>
                                     @endif
                                 </td>
 
                                 {{-- Aksi Kolom --}}
-                                <td class="px-5 py-4 text-right">
+                                <td class="mt-auto block border-t border-slate-100 px-5 py-3 text-right lg:table-cell lg:border-0 lg:py-4">
                                     <div class="flex items-center justify-end gap-1.5">
                                         {{-- Tombol Detail / Preview --}}
                                         <x-ui.button
@@ -494,6 +464,7 @@
                                             size="icon"
                                             @click="openDetailModal({{ json_encode($service) }})"
                                             title="Lihat Detail & Simulasi"
+                                            aria-label="Lihat detail dan simulasi {{ $service->name }}"
                                         >
                                             <x-lucide-eye class="size-4" />
                                         </x-ui.button>
@@ -506,6 +477,7 @@
                                                 size="icon"
                                                 @click="openEditModal({{ json_encode($service) }})"
                                                 title="Ubah Layanan"
+                                                aria-label="Ubah layanan {{ $service->name }}"
                                             >
                                                 <x-lucide-pencil class="size-4" />
                                             </x-ui.button>
@@ -516,6 +488,7 @@
                                                 variant="{{ $service->transaction_details_count > 0 ? 'muted' : 'danger-outline' }}"
                                                 size="icon"
                                                 @click="openDeleteModal({{ json_encode($service) }})"
+                                                aria-label="Hapus layanan {{ $service->name }}"
                                                 title="{{ $service->transaction_details_count > 0 ? 'Layanan memiliki riwayat transaksi (Gunakan nonaktifkan)' : 'Hapus Layanan' }}"
                                             >
                                                 <x-lucide-trash-2 class="size-4" />
@@ -525,13 +498,13 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="6" class="px-5 py-12 text-center">
-                                    <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                                        <x-lucide-inbox class="size-6 text-slate-400" />
+                            <tr class="block rounded-2xl border border-slate-200 bg-white sm:col-span-2 lg:table-row lg:border-0">
+                                <td colspan="6" class="block px-5 py-12 lg:table-cell text-center">
+                                    <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                                        <x-lucide-inbox class="size-6 text-slate-500" />
                                     </div>
-                                    <h3 class="mt-3 text-sm font-semibold text-slate-900">Tidak ada layanan ditemukan</h3>
-                                    <p class="mt-1 text-xs text-slate-500">
+                                    <h3 class="mt-3 text-base font-semibold text-slate-900">Tidak ada layanan ditemukan</h3>
+                                    <p class="mt-1 text-sm text-slate-500">
                                         {{ $search !== '' ? 'Tidak ada hasil untuk kata kunci "' . $search . '".' : 'Belum ada data layanan laundry yang tersimpan.' }}
                                     </p>
                                     @if ($isAdmin && $search === '')
@@ -602,7 +575,7 @@
                                 name="unit"
                                 x-model="createForm.unit"
                                 required
-                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                             >
                                 <option value="kg">Kilogram (Kg) — Cuci Kiloan</option>
                                 <option value="pcs">Satuan / Potong (Pcs) — Jas, Selimut, Sepatu</option>
@@ -620,7 +593,7 @@
                                 x-model="createForm.service_type"
                                 @change="if (createForm.service_type === 'express') createForm.is_express = true"
                                 required
-                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                             >
                                 <option value="reguler">Reguler Standar</option>
                                 <option value="express">⚡ Paket Kilat / Express</option>
@@ -700,7 +673,7 @@
                                     x-model="createForm.is_express"
                                     class="size-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
                                 />
-                                <span class="text-xs font-bold text-amber-900 flex items-center gap-1">
+                                <span class="text-sm font-bold text-amber-900 flex items-center gap-1">
                                     <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" />
                                     Tandai Sebagai Paket Kilat
                                 </span>
@@ -719,7 +692,7 @@
                             rows="2"
                             maxlength="1000"
                             placeholder="Detail proses pengerjaan, perlakuan khusus, atau fasilitas layanan..."
-                            class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                            class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs transition placeholder:text-slate-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                         ></textarea>
                     </div>
 
@@ -802,7 +775,7 @@
                                 name="unit"
                                 x-model="editForm.unit"
                                 required
-                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                             >
                                 <option value="kg">Kilogram (Kg) — Cuci Kiloan</option>
                                 <option value="pcs">Satuan / Potong (Pcs) — Jas, Selimut, Sepatu</option>
@@ -820,7 +793,7 @@
                                 x-model="editForm.service_type"
                                 @change="if (editForm.service_type === 'express') editForm.is_express = true"
                                 required
-                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                                class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                             >
                                 <option value="reguler">Reguler Standar</option>
                                 <option value="express">⚡ Paket Kilat / Express</option>
@@ -899,7 +872,7 @@
                                     x-model="editForm.is_express"
                                     class="size-4 rounded border-slate-300 text-amber-600 focus:ring-amber-500"
                                 />
-                                <span class="text-xs font-bold text-amber-900 flex items-center gap-1">
+                                <span class="text-sm font-bold text-amber-900 flex items-center gap-1">
                                     <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" />
                                     Tandai Sebagai Paket Kilat
                                 </span>
@@ -918,7 +891,7 @@
                             x-model="editForm.description"
                             rows="2"
                             maxlength="1000"
-                            class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs text-slate-900 shadow-2xs transition placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 sm:text-sm"
+                            class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs transition placeholder:text-slate-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                         ></textarea>
                     </div>
 
@@ -935,9 +908,9 @@
                     </div>
 
                     {{-- Info Snapshot Note --}}
-                    <div class="rounded-xl border border-amber-200/70 bg-amber-50/60 p-3 text-xs text-amber-800">
+                    <div class="rounded-xl border border-amber-200/70 bg-amber-50/60 p-3 text-sm text-amber-800">
                         <p class="font-semibold">Catatan Snapshot Harga:</p>
-                        <p class="mt-0.5 text-2xs text-amber-700">
+                        <p class="mt-0.5 text-xs text-amber-700">
                             Perubahan tarif ini hanya berlaku untuk transaksi baru yang akan datang. Transaksi lama tetap mempertahankan nominal riil saat transaksi dibuat.
                         </p>
                     </div>
@@ -979,7 +952,7 @@
                             <x-lucide-alert-triangle class="size-6" />
                         </div>
                         <h3 class="mt-4 text-base font-bold text-slate-900">Layanan Tidak Dapat Dihapus</h3>
-                        <p class="mt-2 text-xs leading-relaxed text-slate-600">
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">
                             Layanan <span class="font-semibold text-slate-900" x-text="'&ldquo;' + deleteForm.name + '&rdquo;'"></span> sudah tercatat dalam
                             <span class="font-bold text-amber-700" x-text="deleteForm.transactionCount + ' riwayat transaksi'"></span>. Sesuai aturan integritas operasional, data historis tidak boleh dihapus.
                         </p>
@@ -1006,7 +979,7 @@
                             <x-lucide-trash-2 class="size-6" />
                         </div>
                         <h3 class="mt-4 text-base font-bold text-slate-900">Konfirmasi Hapus Layanan</h3>
-                        <p class="mt-2 text-xs leading-relaxed text-slate-600">
+                        <p class="mt-2 text-sm leading-relaxed text-slate-600">
                             Apakah Anda yakin ingin menghapus layanan <span class="font-semibold text-slate-900" x-text="'&ldquo;' + deleteForm.name + '&rdquo;'"></span>?
                             Tindakan ini bersifat permanen karena layanan belum memiliki riwayat order.
                         </p>
@@ -1054,7 +1027,7 @@
                 </div>
                 <div>
                     <h3 class="text-base font-bold text-slate-900" x-text="detailData.name"></h3>
-                    <p class="text-xs text-slate-500">Rincian spesifikasi paket dan simulasi biaya cucian.</p>
+                    <p class="text-sm text-slate-500">Rincian spesifikasi paket dan simulasi biaya cucian.</p>
                 </div>
             </div>
 
@@ -1062,38 +1035,38 @@
                 {{-- Grid Atribut --}}
                 <div class="grid grid-cols-2 gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3.5">
                     <div>
-                        <span class="text-2xs text-slate-400">Tarif Dinamis</span>
+                        <span class="text-xs text-slate-500">Tarif Dinamis</span>
                         <p class="mt-0.5 text-sm font-bold tabular-nums text-brand-700" x-text="formatRupiah(detailData.price) + ' / ' + detailData.unit_label"></p>
                     </div>
                     <div>
-                        <span class="text-2xs text-slate-400">Estimasi Durasi</span>
+                        <span class="text-xs text-slate-500">Estimasi Durasi</span>
                         <p class="mt-0.5 text-sm font-bold tabular-nums text-slate-800" x-text="detailData.estimated_duration + ' Jam' + (detailData.is_express ? ' (⚡ Kilat)' : '')"></p>
                     </div>
                     <div>
-                        <span class="text-2xs text-slate-400">Kategori & Tipe</span>
-                        <p class="mt-0.5 text-xs font-semibold text-slate-700" x-text="detailData.type_label"></p>
+                        <span class="text-xs text-slate-500">Kategori & Tipe</span>
+                        <p class="mt-0.5 text-sm font-semibold text-slate-700" x-text="detailData.type_label"></p>
                     </div>
                     <div>
-                        <span class="text-2xs text-slate-400">Order Minimum</span>
-                        <p class="mt-0.5 text-xs font-semibold text-slate-700" x-text="detailData.minimum_order + ' ' + detailData.unit_label"></p>
+                        <span class="text-xs text-slate-500">Order Minimum</span>
+                        <p class="mt-0.5 text-sm font-semibold text-slate-700" x-text="detailData.minimum_order + ' ' + detailData.unit_label"></p>
                     </div>
                 </div>
 
                 {{-- Deskripsi --}}
                 <div>
-                    <span class="text-xs font-semibold text-slate-700">Keterangan Layanan:</span>
-                    <p class="mt-1 text-xs leading-relaxed text-slate-600" x-text="detailData.description"></p>
+                    <span class="text-sm font-semibold text-slate-700">Keterangan Layanan:</span>
+                    <p class="mt-1 text-sm leading-relaxed text-slate-600" x-text="detailData.description"></p>
                 </div>
 
                 {{-- Simulasi Subtotal Berdasarkan Unit --}}
                 <div class="rounded-xl border border-brand-200/80 bg-brand-50/50 p-4">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold text-brand-900">Simulasi Subtotal Kasir</span>
-                        <span class="text-2xs font-medium text-brand-600">Formula: Kuantitas × Tarif</span>
+                        <span class="text-sm font-bold text-brand-900">Simulasi Subtotal Kasir</span>
+                        <span class="text-xs font-medium text-brand-600">Formula: Kuantitas × Tarif</span>
                     </div>
                     <div class="mt-3 flex items-center gap-3">
                         <div class="w-1/2">
-                            <label class="text-2xs font-semibold text-slate-600">
+                            <label class="text-xs font-semibold text-slate-600">
                                 Kuantitas (<span x-text="detailData.unit_label"></span>):
                             </label>
                             <input
@@ -1101,12 +1074,13 @@
                                 min="0.1"
                                 step="0.5"
                                 x-model.number="detailData.calcQty"
-                                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs tabular-nums text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-200"
+                                aria-label="Kuantitas simulasi layanan"
+                                class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm tabular-nums text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-200"
                             />
                         </div>
                         <div class="w-1/2">
-                            <label class="text-2xs font-semibold text-slate-600">Hasil Subtotal:</label>
-                            <div class="mt-1 rounded-lg bg-white px-2.5 py-1.5 text-xs font-bold tabular-nums text-brand-700 border border-brand-100">
+                            <label class="text-xs font-semibold text-slate-600">Hasil Subtotal:</label>
+                            <div class="mt-1 rounded-lg bg-white px-2.5 py-1.5 text-sm font-bold tabular-nums text-brand-700 border border-brand-100">
                                 <span x-text="formatRupiah(detailData.calcQty * detailData.price)"></span>
                             </div>
                         </div>

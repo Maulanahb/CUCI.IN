@@ -1,3 +1,8 @@
+---
+name: humanizer
+description: Use when rewriting, polishing, or reviewing text to eliminate AI writing patterns, robotic tone, formulaic structures, and corporate buzzwords to make text read naturally.
+---
+
 # Humanizer
 
 Identify and remove patterns typical of AI-generated writing so text reads as if written by a thoughtful human. Stripping bad words is only half the job - replace hollow inflation and robotic symmetry with concrete details, varied sentence rhythm, and authentic voice.
