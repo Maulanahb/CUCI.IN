@@ -163,36 +163,52 @@ Asisten AI di IDE AGY HARUS mengenali tugas masing-masing anggota dan langsung m
 
 ### A. Daysyani Sophi Masayu (`daysyani` | `syaniday@gmail.com`)
 - **Fokus Modul:** Modul Tiket Pengaduan Pelanggan (*Complaint Handling*), Dashboard Customer, dan Skenario Uji Fungsional Komplain.
-- **Cabang Git Utama:** `feature/complaint-handling`
+- **Tugas P10 PWL:** **Laravel Policies & Sentralisasi Otorisasi Anti-IDOR** (`ComplaintPolicy` & `TransactionPolicy`).
+- **Cabang Git Utama:** `feature/complaint-handling` dan `feature/policy-authorization`
 - **Spesifikasi Tugas:**
   - Formulir pengajuan pengaduan pelanggan terhubung nomor nota transaksi (`TRX-XXXX`).
   - Fitur unggah foto kendala/noda pakaian dan pelacakan status tiket (*Menunggu* $\rightarrow$ *Diproses* $\rightarrow$ *Selesai*).
   - Tampilan pemantauan status cucian mandiri dan riwayat komplain pada Dashboard Customer.
-  - Penulisan skenario dan eksekusi pengujian di `tests/Feature/CustomerComplaintTest.php`.
+  - Implementasi `app/Policies/ComplaintPolicy.php` dan `TransactionPolicy.php` menggantikan `abort(403)` manual via `Gate::authorize()`.
+  - Penulisan skenario dan eksekusi pengujian di `tests/Feature/CustomerComplaintTest.php` (termasuk uji 403 Forbidden).
 
 ### B. Gargarina Nanda Iswati / Ayin (`ayinanda` | `ayiniswati22@gmail.com`)
 - **Fokus Modul:** Pengelolaan Katalog Layanan Lanjutan, Mesin Ekspor Laporan (PDF & Excel), dan Diagram Rekayasa Sistem.
-- **Cabang Git Utama:** `feature/advanced-service-catalog` dan `feature/export-reports-pdf-excel`
+- **Tugas P10 PWL:** **Eloquent API Resource (`TransactionResource`) & Kontrak OpenAPI Spec**.
+- **Cabang Git Utama:** `feature/advanced-service-catalog`, `feature/export-reports-pdf-excel`, dan `feature/transaction-api-resource`
 - **Spesifikasi Tugas:**
   - Pengaturan tarif layanan dinamis, estimasi durasi selesai dinamis, dan integrasi paket kilat ke katalog kasir.
   - Implementasi mesin unduh/ekspor laporan operasional laundry ke dokumen siap cetak (PDF & Excel).
-  - Pemodelan visual *Activity Diagram* (AD) dan *Sequence Diagram* (SD) yang merefleksikan kode aktual.
+  - Implementasi `app/Http/Resources/TransactionResource.php` dan `TransactionDetailResource.php` dengan proteksi N+1 via `whenLoaded()`.
+  - Penyusunan berkas spesifikasi OpenAPI di `docs/openapi.yaml` serta pemodelan visual *Activity Diagram* (AD) dan *Sequence Diagram* (SD).
 
 ### C. Nayla Annora Nobel Widyonarko / Nora (`nayla annora nobel widyonarko` / `annora1304` | `naylaannora@gmail.com`)
 - **Fokus Modul:** Modul Upload Bukti Pembayaran Digital, Panel Verifikasi Kasir, dan Dataset Seeder Pengujian.
-- **Cabang Git Utama:** `feature/payment-proof-upload` dan `feature/cashier-payment-verification`
+- **Tugas P10 PWL:** **Pemasangan Laravel Sanctum & API Endpoint Pelacakan Nota Publik**.
+- **Cabang Git Utama:** `feature/payment-proof-upload`, `feature/cashier-payment-verification`, dan `feature/sanctum-tracking-api`
 - **Spesifikasi Tugas:**
   - Komponen upload bukti transfer bank dan struk QRIS oleh pelanggan beserta validasi berkas gambar (format MIME & batas ukuran file).
   - Panel verifikasi bukti bayar bagi kasir/admin untuk menyetujui (*approve*) atau menolak (*reject*) pembayaran digital.
-  - Penyiapan dataset seeder transaksi dan pengujian modul pembayaran.
+  - Inisialisasi API (`php artisan install:api`), pasang trait `HasApiTokens` di `User.php`, buat endpoint `GET /api/v1/track/{transaction_code}`.
+  - Penyiapan dataset seeder transaksi dan pengujian modul pembayaran & tracking API di `tests/Feature/Api/TrackingApiTest.php`.
 
 ### D. Maulana Ahmad Bukhori (`Maulanahb` | `maulanahmad2287@gmail.com`)
 - **Fokus:** Project Leader, Manajemen Peran Pengguna (*Role Authorization* Admin/Kasir/Owner), Optimasi Logika Kasir POS & Thermal Receipt, dan Koordinasi Tim.
-- **Cabang Git:** `feature/user-role-management`, `develop`, `main`
+- **Tugas P10 PWL:** **Idempotency Key & Anti Double-Submit pada Transaksi POS & Pembayaran**.
+- **Cabang Git:** `feature/user-role-management`, `feature/pos-idempotency-guard`, `develop`, `main`
+- **Spesifikasi Tugas:**
+  - Migration tabel `idempotency_keys` dan middleware `EnsureIdempotency` untuk cegah transaksi kasir dobel akibat timeout/retry.
+  - Header `Idempotency-Key` (UUID) dan state `:disabled="loading"` pada tombol POS di `create.blade.php`.
+  - Penulisan pengujian di `tests/Feature/IdempotencyTransactionTest.php`.
 
 ### E. Muh. Zaky Dawamul Busro (`Zakydawamul` | `zakydb091005@gmail.com`)
 - **Fokus:** Backend Architecture, Mesin Kueri Agregasi Pelaporan Keuangan/Operasional, Optimasi Indeks Basis Data, dan Resolusi Defek Backend (*Bug Log*).
-- **Cabang Git:** `feature/reporting-aggregation-engine`, `fix/backend-bug-log-resolution`
+- **Tugas P10 PWL:** **Rate Limiting Login (`throttle:5,1`) & Konfigurasi Throttle Global**.
+- **Cabang Git:** `feature/reporting-aggregation-engine`, `feature/auth-rate-limiting`, `fix/backend-bug-log-resolution`
+- **Spesifikasi Tugas:**
+  - Pemasangan `throttle:5,1` pada rute `POST /login` di `routes/web.php` untuk mencegah brute force.
+  - Konfigurasi named rate limiter di `bootstrap/app.php` (`RateLimiter::for('api', ...)`).
+  - Penulisan pengujian di `tests/Feature/AuthRateLimitTest.php` (memastikan status 429 dan header `Retry-After`).
 
 ---
 
@@ -232,7 +248,29 @@ Setiap agen AI di AGY wajib menerapkan standar berikut saat membantu modul terka
 
 ---
 
-## 4. Infrastruktur Server Production & Panduan Deployment Cloud (sistem.md)
+## 4. Standar Arsitektur REST API, Keamanan & Deteksi Otomatis Tugas P10
+
+Asisten AI di IDE AGY **wajib mendeteksi secara otomatis** anggota tim yang sedang aktif ketika mereka menyebutkan nama atau fitur yang dikerjakan, lalu langsung memandu ke cabang Git dan file target yang relevan:
+
+* **Deteksi Maulana (`Maulanahb`) / Idempotency POS:**
+  * Cabang: `feature/pos-idempotency-guard`
+  * Fokus: Migration `idempotency_keys`, middleware `EnsureIdempotency`, Alpine.js UUID header, disable checkout submit.
+* **Deteksi Zaky (`Zakydawamul`) / Rate Limiting Login:**
+  * Cabang: `feature/auth-rate-limiting`
+  * Fokus: `throttle:5,1` di `routes/web.php`, `RateLimiter::for('api')`, status code 429, `Retry-After`.
+* **Deteksi Daysyani (`daysyani`) / Laravel Policies:**
+  * Cabang: `feature/policy-authorization`
+  * Fokus: `ComplaintPolicy`, `TransactionPolicy`, refactor `abort(403)` ke `Gate::authorize()`.
+* **Deteksi Nora (`annora1304`) / Sanctum & Tracking API:**
+  * Cabang: `feature/sanctum-tracking-api`
+  * Fokus: `install:api`, trait `HasApiTokens`, `routes/api.php`, endpoint `GET /api/v1/track/{trx}`.
+* **Deteksi Ayin (`ayinanda`) / API Resource & OpenAPI:**
+  * Cabang: `feature/transaction-api-resource`
+  * Fokus: `TransactionResource`, `whenLoaded()`, format integer uang & ISO 8601, berkas `docs/openapi.yaml`.
+
+---
+
+## 5. Infrastruktur Server Production & Panduan Deployment Cloud (sistem.md)
 
 Aplikasi CUCI.IN telah ter-deploy langsung pada lingkungan cloud publik dan terintegrasi dengan domain resmi. Rujukan lengkap infrastruktur tercatat di [sistem.md](file:///c:/laragon/www/cuci-in/docs/sistem.md):
 

@@ -9,24 +9,31 @@ Skill ini memandu asisten AI di Antigravity IDE (AGY) untuk mendampingi anggota 
 
 ---
 
-## 1. Langkah Pertama: Identifikasi Anggota Tim
+## 1. Langkah Pertama: Identifikasi Anggota Tim & Tugas P10
 
-Saat sesi dimulai, kenali siapa pengembang yang sedang berinteraksi:
+Saat sesi dimulai atau ketika pengembang menyebutkan nama maupun tugasnya, kenali dan langsung arahkan ke konfigurasi git author serta cabang fitur yang tepat:
 - **Daysyani Sophi Masayu** (`daysyani` | `syaniday@gmail.com`)
   - **Tugas Utama:** Modul Tiket Pengaduan Pelanggan (*Complaint Handling*) & Dashboard Customer.
-  - **Cabang Git:** `feature/complaint-handling`
+  - **Tugas P10 PWL:** Laravel Policies & Sentralisasi Otorisasi Anti-IDOR (`ComplaintPolicy` & `TransactionPolicy`).
+  - **Cabang Git:** `feature/complaint-handling` dan `feature/policy-authorization`
 - **Gargarina Nanda Iswati / Ayin** (`ayinanda` | `ayiniswati22@gmail.com`)
   - **Tugas Utama:** Katalog Layanan Lanjutan & Mesin Ekspor Laporan (PDF/Excel).
-  - **Cabang Git:** `feature/advanced-service-catalog` & `feature/export-reports-pdf-excel`
+  - **Tugas P10 PWL:** Eloquent API Resource (`TransactionResource`) & Kontrak OpenAPI Spec (`docs/openapi.yaml`).
+  - **Cabang Git:** `feature/advanced-service-catalog`, `feature/export-reports-pdf-excel`, dan `feature/transaction-api-resource`
 - **Nayla Annora Nobel Widyonarko / Nora** (`nayla annora nobel widyonarko` / `annora1304` | `naylaannora@gmail.com`)
   - **Tugas Utama:** Komponen Upload Bukti Bayar Digital & Panel Verifikasi Kasir.
-  - **Cabang Git:** `feature/payment-proof-upload` & `feature/cashier-payment-verification`
+  - **Tugas P10 PWL:** Pemasangan Laravel Sanctum (`install:api`) & API Endpoint Pelacakan Nota Publik (`/api/v1/track/{trx}`).
+  - **Cabang Git:** `feature/payment-proof-upload`, `feature/cashier-payment-verification`, dan `feature/sanctum-tracking-api`
 - **Maulana Ahmad Bukhori** (`Maulanahb` | `maulanahmad2287@gmail.com`)
   - **Tugas Utama:** Project Leader, Manajemen Hak Akses/Role, Optimasi POS & Koordinasi.
+  - **Tugas P10 PWL:** Idempotency Key & Anti Double-Submit pada Transaksi POS (`idempotency_keys` & `EnsureIdempotency`).
+  - **Cabang Git:** `feature/user-role-management`, `feature/pos-idempotency-guard`, `develop`, `main`
 - **Muh. Zaky Dawamul Busro** (`Zakydawamul` | `zakydb091005@gmail.com`)
   - **Tugas Utama:** Mesin Kueri Pelaporan, Optimasi Basis Data & Resolusi Bug Log Backend.
+  - **Tugas P10 PWL:** Rate Limiting Login (`throttle:5,1`) & Konfigurasi Throttle Global (`RateLimiter::for('api')`).
+  - **Cabang Git:** `feature/reporting-aggregation-engine`, `feature/auth-rate-limiting`, `fix/backend-bug-log-resolution`
 
-*Jika nama pengembang belum diketahui, tanyakan dengan ramah di awal turn: "Halo! Dengan siapa saya berpasangan hari ini (Daysyani, Ayin, Nora, Dawamul, atau Maulana)?"*
+*Aturan Deteksi Otomatis:* Jika pengembang menyebutkan nama (misal: "saya Nora", "saya Zaky") atau menyebutkan kata kunci tugasnya (misal: "mau buat policy", "mau pasang rate limit", "mau setup idempotency", "mau bikin tracking api", "mau bikin resource"), asisten IDE AGY harus langsung menyapa dengan nama mereka, mengingatkan pengaturan git author, dan memandu pengerjaan pada cabang fitur terkait.
 
 ---
 

@@ -111,7 +111,30 @@ Mengadaptasi materi *Pertemuan 9 Pemrograman Web Lanjut (ETL, Dataset Besar, Mem
 
 ---
 
-## 5. Riwayat Perubahan Dokumen (*Changelog*)
+## 5. Standar Arsitektur REST API, Keamanan, Otorisasi & Distribusi Tugas P10 PWL
+
+Mengadaptasi materi *Pertemuan 10 Pemrograman Web Lanjut (REST API Architecture, Sanctum, Rate Limiting, Idempotency, Policies, API Resource, dan OpenAPI)*, sistem CUCI.IN diperkuat dengan standar keamanan dan arsitektur data terdistribusi. Asisten AI di IDE AGY **wajib mendeteksi secara otomatis** anggota tim yang sedang aktif dan langsung mengarahkan instruksi ke modul serta cabang fitur berikut:
+
+### Tabel 3. Matriks Tugas P10 PWL & Deteksi Pengembang IDE AGY
+
+| No | Anggota Tim | Git Author & Email | Tugas Spesifik P10 | Cabang Git Fitur | File / Komponen Target |
+|:---:|---|---|---|---|---|
+| 1 | **Maulana Ahmad Bukhori** | `Maulanahb`<br>`maulanahmad2287@gmail.com` | **Idempotency & Anti Double-Submit POS** | `feature/pos-idempotency-guard` | • Migration `create_idempotency_keys_table`<br>• Middleware `EnsureIdempotency`<br>• [`create.blade.php`](file:///c:/laragon/www/cuci-in/resources/views/staff/transactions/create.blade.php) (UUID & disable submit)<br>• `tests/Feature/IdempotencyTransactionTest.php` |
+| 2 | **Muh. Zaky Dawamul Busro** | `Zakydawamul`<br>`zakydb091005@gmail.com` | **Rate Limiting Login & API Throttle** | `feature/auth-rate-limiting` | • [`routes/web.php`](file:///c:/laragon/www/cuci-in/routes/web.php) (`throttle:5,1` di `/login`)<br>• [`bootstrap/app.php`](file:///c:/laragon/www/cuci-in/bootstrap/app.php) (`RateLimiter::for('api', ...)` 60 req/min)<br>• Response 429 + header `Retry-After`<br>• `tests/Feature/AuthRateLimitTest.php` |
+| 3 | **Daysyani Sophi Masayu** | `daysyani`<br>`syaniday@gmail.com` | **Laravel Policies (Anti-IDOR Terpusat)** | `feature/policy-authorization` | • Policy: `app/Policies/ComplaintPolicy.php`<br>• Policy: `app/Policies/TransactionPolicy.php`<br>• Refactor [`ComplaintController.php`](file:///c:/laragon/www/cuci-in/app/Http/Controllers/Customer/ComplaintController.php) (`Gate::authorize`)<br>• `tests/Feature/CustomerComplaintTest.php` (uji 403) |
+| 4 | **Nayla Annora Nobel W. (Nora)** | `annora1304`<br>`naylaannora@gmail.com` | **Sanctum & API Tracking Publik** | `feature/sanctum-tracking-api` | • `php artisan install:api` (`routes/api.php`)<br>• Model [`User.php`](file:///c:/laragon/www/cuci-in/app/Models/User.php) (`HasApiTokens`)<br>• Controller `Api/TrackingController.php`<br>• `tests/Feature/Api/TrackingApiTest.php` |
+| 5 | **Gargarina Nanda I. (Ayin)** | `ayinanda`<br>`ayiniswati22@gmail.com` | **Eloquent API Resource & OpenAPI Spec** | `feature/transaction-api-resource` | • Resource `app/Http/Resources/TransactionResource.php`<br>• Pencegahan N+1 dengan `whenLoaded()`<br>• Format uang integer & ISO 8601 tanggal<br>• Spesifikasi kontrak `docs/openapi.yaml` |
+
+### Pedoman Teknis Implementasi P10:
+1. **Idempotency Key (Maulana):** Request checkout POS menyertakan header `Idempotency-Key` (UUID). Middleware mengembalikan `409` jika request sedang diproses, `422` jika payload berubah untuk key yang sama, dan replay data lama (`Idempotent-Replayed: true`) jika request diulang karena koneksi putus.
+2. **Brute Force Protection (Zaky):** Rute `POST /login` wajib dilindungi `throttle:5,1` untuk membatasi maksimal 5 percobaan gagal per menit per IP.
+3. **Otorisasi Terpusat Anti-IDOR (Daysyani):** Semua pengecekan hak akses manual `abort(403)` di controller wajib direfactor ke Laravel Policy resmi dan dipanggil dengan `Gate::authorize()` atau `$this->authorize()`.
+4. **Pondasi Token API (Nora):** Jalankan `install:api`, endpoint pelacakan publik `GET /api/v1/track/{trx}` merespons data cucian tanpa mengharuskan login session web.
+5. **Data Shaper API (Ayin):** Seluruh response JSON API publik wajib dibungkus `JsonResource`. Dilarang mengembalikan model mentah yang mengekspos atribut sensitif basis data.
+
+---
+
+## 6. Riwayat Perubahan Dokumen (*Changelog*)
 
 | Versi | Tanggal | Penulis / Kontributor | Deskripsi Perubahan |
 | :---: | :---: | :--- | :--- |
@@ -119,3 +142,4 @@ Mengadaptasi materi *Pertemuan 9 Pemrograman Web Lanjut (ETL, Dataset Besar, Mem
 | **v1.1** | 24 Oktober 2026 | Maulana Ahmad Bukhori | **Penambahan Subbab Standar Teknis Data, Ekspor & Queue:** Integrasi materi Pertemuan 9 Pemrograman Web Lanjut ke dalam arsitektur sistem (standar query tanggal `endOfDay`, agregasi SQL PostgreSQL, pola streaming CSV, kompresi upload foto & notifikasi asynchronous via Laravel Queue). |
 | **v1.2** | 24 Oktober 2026 | Maulana Ahmad Bukhori | **Penyelarasan Format Tabel:** Penambahan format tabel resmi *Matriks Pembagian Tugas dan Cabang Git Milestone 2* serta sinkronisasi penanggung jawab teknis (PIC) pada seluruh roadmap mingguan M9–M12 selaras dengan standar arsitektur P9. |
 | **v2.0** | 24 Oktober 2026 | Maulana Ahmad Bukhori | **Restrukturisasi & Penamaan Dokumen:** Berkas resmi diubah namanya menjadi `rules_milestone_2.md` agar terlacak oleh Git (tidak terhalang *.gitignore*) sehingga dapat di-push dan dibaca oleh seluruh anggota tim di GitHub. |
+| **v2.1** | 31 Oktober 2026 | Tim Pengembang CUCI.IN | **Integrasi Standar Arsitektur REST API & Keamanan (Materi P10):** Penambahan Seksi 5 berisi Matriks Pembagian Tugas P10 untuk 5 anggota (Idempotency POS, Rate Limiter Login, Laravel Policies, Sanctum Tracking API, dan API Resource/OpenAPI) serta aturan deteksi otomatis pengembang pada IDE AGY. |

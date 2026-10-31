@@ -57,6 +57,7 @@ desktop.ini
 /docs/*.docx
 /docs/~$*
 
+
 # Artefak Eksperimen Stitch & Scripts
 /docs/diagram/stitch/
 /scripts/
