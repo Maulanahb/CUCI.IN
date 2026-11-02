@@ -35,6 +35,7 @@ def test_pembayaran_kurang_ditolak_tiga_lapisan(page: Page, transaksi_belum_luna
     expect(page).to_have_url("http://localhost:8000/staff/transactions")
 
     # ==========================================================================
-    # LAPISAN 3: Assertion Efek Lanjutan
+    # TAHAP 4 (NOMOR 4): MENAMBAHKAN LAPISAN 3 (ASSERTION EFEK LANJUTAN)
+    # Memastikan tidak ada efek samping sistem, crash, atau error 500
     # ==========================================================================
     expect(page.locator("body")).not_to_contain_text("Fatal Error")
