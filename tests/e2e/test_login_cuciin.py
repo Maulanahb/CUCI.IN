@@ -21,7 +21,7 @@ def test_login_staff_berhasil(page: Page):
     page.get_by_role("textbox", name="Password").fill("password")
     page.get_by_role("button", name="Masuk").click()
 
-    # Assert: Berhasil redirect ke dashboard staff
+    # Assert: Berhasil redirect ke dashboard staff (Solusi Normal)
     expect(page).to_have_url("http://localhost:8000/staff/dashboard")
 
 
