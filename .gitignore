@@ -77,6 +77,8 @@ docs/pines_ui_guidelines.md
 # Python & Playwright Testing Artefacts
 /.pytest_cache/
 /test-results/
+__pycache__/
+*.pyc
 docs/generate_humanized_docx.php
 docs/screenshot_terminal_asli.jpg
 docs/screenshot_trace_viewer_asli.jpg
