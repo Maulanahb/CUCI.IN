@@ -49,6 +49,7 @@ desktop.ini
 # Superpowers & AI plans
 /docs/superpowers/
 /.superpowers/
+.agents/teamwork/
 
 # Dokumen Laporan PBL & Jobsheet
 /docs/*laporan*
@@ -73,6 +74,10 @@ desktop.ini
 /.graphifyignore
 docs/pines_ui_guidelines.md
 
+# Python & Playwright Testing Artefacts
+/.pytest_cache/
+/test-results/
 docs/generate_humanized_docx.php
 docs/screenshot_terminal_asli.jpg
 docs/screenshot_trace_viewer_asli.jpg
+

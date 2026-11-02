@@ -274,9 +274,10 @@
                     target="_self"
                     action="{{ route("{$currentRoutePrefix}.transactions.store") }}"
                     class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xs"
-                    @submit="isSubmitting = true"
+                    @submit="if (isSubmitting) { $event.preventDefault(); return false; } isSubmitting = true;"
                 >
                     @csrf
+                    <input type="hidden" name="idempotency_key" :value="idempotencyKey">
 
                     {{-- Header Nota Kasir --}}
                     <div class="border-b border-slate-100 bg-slate-50/70 p-4 sm:p-5">
@@ -745,9 +746,21 @@
     </div>
 
     <script>
+        // Generator UUID v4 dengan RFC 4122 fallback
+        function generateUuidV4() {
+            if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+                return crypto.randomUUID();
+            }
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
         // Alpine POS Manager
         function posTransactionManager() {
             return {
+                idempotencyKey: generateUuidV4(),
                 selectedCategory: 'all',
                 searchQuery: '',
                 isSubmitting: false,
@@ -760,6 +773,14 @@
                 dpAmount: @js(old('payment_amount', '')),
 
                 init() {
+                    // Reset submitting state and refresh idempotency key on bfcache restore
+                    window.addEventListener('pageshow', (event) => {
+                        this.isSubmitting = false;
+                        if (event.persisted) {
+                            this.idempotencyKey = generateUuidV4();
+                        }
+                    });
+
                     window.addEventListener('keydown', (e) => {
                         // F2 atau Alt+P atau Ctrl+P -> Tambah / Pilih Pelanggan Baru (mencegah default print browser)
                         if (e.key === 'F2' || (e.altKey && (e.key === 'p' || e.key === 'P')) || ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P'))) {
