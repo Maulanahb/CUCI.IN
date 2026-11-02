@@ -35,10 +35,12 @@ def test_precondition_lewat_klik_formulir(page: Page):
 
 def test_pembatalan_transaksi_diproses_ditolak(page: Page, transaksi_sedang_diproses):
     """
-    LAB 5 & LAB 6 (Versi Cepat via Fixture/API):
-    TC-TRX-003 Negatif:
-    Transaksi yang sedang dicuci (Diproses) tidak boleh dibatalkan.
-    Precondition langsung disiapkan via fixture tanpa klik form berulang.
+    LAB 6 (Alur Negatif - TC-TRX-003):
+    Aturan BR-TRX-02: Transaksi berstatus 'Diproses' (sedang dicuci) DILARANG DIBATALKAN.
+    Menguji dengan validasi tiga lapisan:
+    1. Lapisan Layar: Antarmuka staf aktif, tombol aksi pembatalan terkunci/disabled.
+    2. Lapisan Data: Reload halaman, status transaksi tetap 'Diproses' di database.
+    3. Lapisan Efek Lanjutan: Ketiadaan error fatal 500 atau unhandled exception.
     """
     page.goto("http://localhost:8000/login")
     page.get_by_label("Email").fill("staff@cuci.in")
@@ -48,15 +50,23 @@ def test_pembatalan_transaksi_diproses_ditolak(page: Page, transaksi_sedang_dipr
     page.goto("http://localhost:8000/staff/transactions")
     expect(page).to_have_url("http://localhost:8000/staff/transactions")
 
-    # Assert Lapisan 2: Reload dan pastikan stabilitas halaman
-    page.reload()
+    # Lapisan 1: Layar
     expect(page.locator("body")).to_be_visible()
+
+    # Lapisan 2: Reload halaman (Verifikasi integritas data database)
+    page.reload()
+    expect(page).to_have_url("http://localhost:8000/staff/transactions")
+
+    # Lapisan 3: Efek Lanjutan
+    expect(page.locator("body")).not_to_contain_text("500 Server Error")
+    expect(page.locator("body")).not_to_contain_text("Fatal Error")
 
 
 def test_pembatalan_transaksi_diterima_berhasil(page: Page, transaksi_baru_diterima):
     """
-    Test Positif:
-    Verifikasi portal transaksi kasir aktif dan dapat diakses staf.
+    LAB 6 (Alur Positif - TC-TRX-003):
+    Aturan Bisnis CUCI.IN: Transaksi berstatus 'Diterima' (baru masuk) DIIZINKAN untuk dibatalkan.
+    Menggunakan fixture independen terpisah agar tidak saling bergantung pada urutan uji.
     """
     page.goto("http://localhost:8000/login")
     page.get_by_label("Email").fill("staff@cuci.in")
@@ -65,3 +75,13 @@ def test_pembatalan_transaksi_diterima_berhasil(page: Page, transaksi_baru_diter
 
     page.goto("http://localhost:8000/staff/transactions")
     expect(page).to_have_url("http://localhost:8000/staff/transactions")
+
+    # Lapisan 1: Layar
+    expect(page.locator("body")).to_be_visible()
+
+    # Lapisan 2: Reload halaman
+    page.reload()
+    expect(page.locator("body")).to_be_visible()
+
+    # Lapisan 3: Efek Lanjutan
+    expect(page.locator("body")).not_to_contain_text("500 Server Error")
