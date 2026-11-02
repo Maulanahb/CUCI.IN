@@ -18,9 +18,17 @@
         $isStorageOverdue = $transaction->isStorageOverdue(14);
         $daysInStorage = $isStorageOverdue && $transaction->updated_at ? (int) $transaction->updated_at->diffInDays(now()) : 0;
         $cleanPhone = preg_replace('/[^0-9]/', '', $transaction->customer?->phone ?? '');
+        if (str_starts_with($cleanPhone, '620')) {
+            $cleanPhone = '62'.substr($cleanPhone, 3);
+        } elseif (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62'.substr($cleanPhone, 1);
+        } elseif (str_starts_with($cleanPhone, '8')) {
+            $cleanPhone = '62'.$cleanPhone;
+        }
+        $normalizedPhone = (strlen($cleanPhone) >= 9 && strlen($cleanPhone) <= 15) ? $cleanPhone : null;
         $remainingText = (float) $transaction->remaining_amount > 0 ? ' dengan sisa tagihan Rp ' . number_format($transaction->remaining_amount, 0, ',', '.') : ' (sudah lunas)';
-        $waMsg = urlencode("Halo Kak " . ($transaction->customer?->name ?? 'Pelanggan') . ", cucian Anda di CUCI.IN (Nota: {$transaction->transaction_code}) telah selesai dan siap diambil (sudah {$daysInStorage} hari di rak{$remainingText}). Mohon dapat segera diambil di outlet ya Kak. Terima kasih! 😊");
-        $waReminderUrl = $cleanPhone ? "https://wa.me/{$cleanPhone}?text={$waMsg}" : null;
+        $waMsg = rawurlencode("Halo Kak " . ($transaction->customer?->name ?? 'Pelanggan') . ", cucian Anda di CUCI.IN (Nota: {$transaction->transaction_code}) telah selesai dan siap diambil (sudah {$daysInStorage} hari di rak{$remainingText}). Mohon dapat segera diambil di outlet ya Kak. Terima kasih.");
+        $waReminderUrl = $normalizedPhone ? "https://wa.me/{$normalizedPhone}?text={$waMsg}" : null;
 
         return [
             $transaction->id => [
@@ -47,6 +55,7 @@
                 'is_storage_overdue' => $isStorageOverdue,
                 'days_in_storage' => $daysInStorage,
                 'wa_reminder_url' => $waReminderUrl,
+                'whatsapp_share_url' => $transaction->whatsapp_share_url,
                 'notes' => $transaction->notes ?? '',
                 'items' => $transaction->details->map(fn($d) => [
                     'service' => $d->service?->name ?? 'Layanan Laundry',
@@ -669,9 +678,23 @@
                                                 {{ $transaction->customer?->name ?? 'Pelanggan umum' }}
                                             </p>
                                             @if ($transaction->customer?->phone)
-                                                <p class="mt-0.5 font-mono text-sm text-slate-500 tabular-nums">
-                                                    {{ $transaction->customer->phone }}
-                                                </p>
+                                                @if ($transaction->whatsapp_share_url)
+                                                    <a
+                                                        href="{{ $transaction->whatsapp_share_url }}"
+                                                        target="_blank"
+                                                        rel="noopener"
+                                                        class="mt-0.5 inline-flex items-center gap-1 font-mono text-sm text-slate-500 hover:text-emerald-700 tabular-nums transition"
+                                                        title="Kirim nota via WhatsApp"
+                                                        @click.stop
+                                                    >
+                                                        <x-lucide-message-circle class="size-3 text-emerald-600" />
+                                                        <span>{{ $transaction->customer->phone }}</span>
+                                                    </a>
+                                                @else
+                                                    <p class="mt-0.5 font-mono text-sm text-slate-500 tabular-nums">
+                                                        {{ $transaction->customer->phone }}
+                                                    </p>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
@@ -1231,17 +1254,22 @@
                             </div>
                         </div>
 
-                        <template x-if="selectedTrx?.customer_phone && selectedTrx?.customer_phone !== '-'">
+                        <template x-if="selectedTrx?.whatsapp_share_url">
                             <a
-                                :href="'https://wa.me/' + selectedTrx?.customer_phone?.replace(/[^0-9]/g, '')"
+                                :href="selectedTrx?.whatsapp_share_url"
                                 target="_blank"
                                 rel="noopener"
                                 class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50/70 px-2.5 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition shadow-2xs shrink-0 cursor-pointer"
-                                title="Kirim pesan WhatsApp"
+                                title="Kirim nota via WhatsApp"
                             >
                                 <x-lucide-message-circle class="size-3 text-emerald-600" />
                                 <span x-text="selectedTrx?.customer_phone"></span>
                             </a>
+                        </template>
+                        <template x-if="!selectedTrx?.whatsapp_share_url && selectedTrx?.customer_phone && selectedTrx?.customer_phone !== '-'">
+                            <span class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600 shrink-0">
+                                <span x-text="selectedTrx?.customer_phone"></span>
+                            </span>
                         </template>
                     </div>
 

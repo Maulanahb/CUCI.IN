@@ -20,14 +20,26 @@
                     class="w-full rounded-xl border border-slate-200 bg-slate-50/70 py-3 sm:py-2.5 pl-10 pr-4 text-xs sm:text-sm font-semibold font-mono text-slate-900 transition placeholder:text-slate-400 placeholder:font-sans placeholder:font-normal focus:border-brand-600 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 uppercase tracking-wider min-h-[44px]"
                 >
             </div>
-            <x-ui.button
-                type="submit"
-                variant="primary"
-                class="w-full sm:w-auto h-11 px-6 shadow-xs"
-            >
-                <x-lucide-search class="size-4" />
-                <span>Cek Transaksi</span>
-            </x-ui.button>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                    type="button"
+                    id="btn-scan-qr"
+                    onclick="openQrScannerModal()"
+                    class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-brand-300 hover:text-brand-700 transition active:scale-98 cursor-pointer shadow-2xs shrink-0"
+                    title="Pindai QR Code pada struk fisik menggunakan kamera"
+                >
+                    <x-lucide-qr-code class="size-4 text-brand-600" />
+                    <span>Pindai QR</span>
+                </button>
+                <x-ui.button
+                    type="submit"
+                    variant="primary"
+                    class="flex-1 sm:flex-initial h-11 px-6 shadow-xs"
+                >
+                    <x-lucide-search class="size-4" />
+                    <span>Cek Transaksi</span>
+                </x-ui.button>
+            </div>
         </div>
         <p class="text-xs text-slate-500">
             *Nomor nota tercantum di bagian atas struk fisik atau pesan WhatsApp konfirmasi saat penyerahan pakaian.
@@ -48,6 +60,79 @@
             <div id="recent-searches-chips" class="mt-2 flex flex-wrap gap-1.5"></div>
         </div>
     </form>
+</div>
+
+{{-- Modal Pemindai Kamera QR Code --}}
+<div
+    id="qr-scanner-modal"
+    onclick="if (event.target === this) closeQrScannerModal()"
+    class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-4 flex items-center justify-center transition-opacity"
+    aria-labelledby="qr-scanner-title"
+    role="dialog"
+    aria-modal="true"
+>
+    <div class="relative w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-xl border border-slate-100 space-y-4">
+        {{-- Header Modal --}}
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div class="flex items-center gap-2.5">
+                <div class="flex size-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+                    <x-lucide-qr-code class="size-5" />
+                </div>
+                <div>
+                    <h3 id="qr-scanner-title" class="text-sm font-bold text-slate-900">Pindai QR Nota</h3>
+                    <p class="text-xs text-slate-500">Arahkan kamera ke QR Code di struk fisik</p>
+                </div>
+            </div>
+            <button
+                type="button"
+                onclick="closeQrScannerModal()"
+                class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition cursor-pointer"
+                aria-label="Tutup pemindai"
+            >
+                <x-lucide-x class="size-5" />
+            </button>
+        </div>
+
+        {{-- Area Viewport Kamera --}}
+        <div class="relative overflow-hidden rounded-xl bg-slate-950 aspect-square flex items-center justify-center">
+            <div id="qr-scanner-view" class="w-full h-full"></div>
+
+            {{-- Loading & Placeholder State --}}
+            <div id="qr-scanner-loading" class="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-900 text-white text-xs p-4 text-center">
+                <x-lucide-loader-2 class="size-6 animate-spin text-brand-400" />
+                <span>Menyiapkan modul kamera...</span>
+            </div>
+        </div>
+
+        {{-- Pesan Error Jika Akses Ditolak --}}
+        <div id="qr-scanner-error" class="hidden rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700 flex items-start gap-2">
+            <x-lucide-camera-off class="size-4 text-rose-600 shrink-0 mt-0.5" />
+            <span id="qr-scanner-error-text">Tidak dapat mengakses kamera. Pastikan izin kamera telah diberikan di browser.</span>
+        </div>
+
+        {{-- Footer & Tombol Aksi --}}
+        <div class="flex items-center justify-between gap-2 pt-2">
+            <button
+                type="button"
+                id="btn-switch-camera"
+                onclick="switchCamera()"
+                class="hidden inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+            >
+                <x-lucide-refresh-cw class="size-3.5" />
+                <span>Ganti Kamera</span>
+            </button>
+            <div class="ml-auto">
+                <button
+                    type="button"
+                    onclick="closeQrScannerModal()"
+                    class="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                >
+                    <x-lucide-camera-off class="size-3.5 text-slate-500" />
+                    <span>Tutup</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{-- Hasil Pencarian: Data Tidak Ditemukan --}}
@@ -665,13 +750,219 @@
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-mono font-medium text-slate-700 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 transition active:scale-95 cursor-pointer';
-            btn.innerHTML = `<span class="size-1.5 rounded-full bg-brand-500"></span><span>${code}</span>`;
+            const dot = document.createElement('span');
+            dot.className = 'size-1.5 rounded-full bg-brand-500';
+            const label = document.createElement('span');
+            label.textContent = code;
+            btn.appendChild(dot);
+            btn.appendChild(label);
             btn.onclick = () => selectRecentCode(code);
             chips.appendChild(btn);
         });
 
         container.classList.remove('hidden');
     }
+
+    let html5QrScannerInstance = null;
+    let cameraDevices = [];
+    let currentCameraIndex = 0;
+
+    function loadHtml5QrcodeScript() {
+        return new Promise((resolve, reject) => {
+            if (window.Html5Qrcode) {
+                return resolve(window.Html5Qrcode);
+            }
+            const existing = document.getElementById('html5-qrcode-cdn-script');
+            if (existing) {
+                existing.addEventListener('load', () => resolve(window.Html5Qrcode));
+                existing.addEventListener('error', () => reject(new Error('Gagal memuat modul scanner kamera.')));
+                return;
+            }
+            const script = document.createElement('script');
+            script.id = 'html5-qrcode-cdn-script';
+            script.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+            script.async = true;
+            script.onload = () => resolve(window.Html5Qrcode);
+            script.onerror = () => reject(new Error('Gagal memuat pustaka scanner kamera.'));
+            document.head.appendChild(script);
+        });
+    }
+
+    function extractTransactionCode(rawText) {
+        if (!rawText) return '';
+        let code = String(rawText).trim();
+
+        try {
+            if (code.includes('code=')) {
+                // Normalize raw query strings lacking leading '?' so URLSearchParams parses them correctly
+                const queryPart = code.includes('?') ? code.slice(code.indexOf('?')) : ('?' + code);
+                const parsedUrl = new URL(queryPart, 'http://localhost');
+                const queryCode = parsedUrl.searchParams.get('code');
+                if (queryCode) {
+                    return queryCode.trim().toUpperCase();
+                }
+            }
+        } catch (e) {
+            // URL parse fallback
+        }
+
+        const match = code.match(/(?:^|[?&])code=([^&#]+)/i);
+        if (match && match[1]) {
+            return decodeURIComponent(match[1]).trim().toUpperCase();
+        }
+
+        return code.toUpperCase();
+    }
+
+    async function openQrScannerModal() {
+        const modal = document.getElementById('qr-scanner-modal');
+        const loading = document.getElementById('qr-scanner-loading');
+        const errorBox = document.getElementById('qr-scanner-error');
+        const errorText = document.getElementById('qr-scanner-error-text');
+        const switchBtn = document.getElementById('btn-switch-camera');
+
+        if (!modal) return;
+        modal.classList.remove('hidden');
+        if (loading) loading.classList.remove('hidden');
+        if (errorBox) errorBox.classList.add('hidden');
+
+        try {
+            await loadHtml5QrcodeScript();
+
+            if (!html5QrScannerInstance) {
+                html5QrScannerInstance = new Html5Qrcode('qr-scanner-view', {
+                    useBarCodeDetectorIfSupported: true,
+                });
+            }
+
+            cameraDevices = await Html5Qrcode.getCameras();
+            if (!cameraDevices || cameraDevices.length === 0) {
+                throw new Error('Tidak ada perangkat kamera yang terdeteksi.');
+            }
+
+            if (switchBtn) {
+                if (cameraDevices.length > 1) {
+                    switchBtn.classList.remove('hidden');
+                } else {
+                    switchBtn.classList.add('hidden');
+                }
+            }
+
+            currentCameraIndex = cameraDevices.findIndex(c => /back|rear|environment/i.test(c.label));
+            if (currentCameraIndex === -1) currentCameraIndex = 0;
+
+            if (modal.classList.contains('hidden')) return;
+            await startScanningWithCurrentCamera();
+        } catch (err) {
+            if (loading) loading.classList.add('hidden');
+            if (errorBox) {
+                errorBox.classList.remove('hidden');
+                let message = 'Tidak dapat mengakses kamera. Pastikan izin kamera telah diberikan di browser.';
+                const errStr = (err && (err.message || err.name || String(err))) || '';
+                if (/notfound|device/i.test(errStr)) {
+                    message = 'Tidak ada perangkat kamera yang terdeteksi di perangkat Anda. Gunakan input kode manual.';
+                } else if (/denied|permission|notallowed/i.test(errStr)) {
+                    message = 'Izin akses kamera ditolak oleh browser. Silakan izinkan akses kamera pada pengaturan browser.';
+                }
+                if (errorText) errorText.textContent = message;
+            }
+        }
+    }
+
+    async function startScanningWithCurrentCamera() {
+        const modal = document.getElementById('qr-scanner-modal');
+        if (!modal || modal.classList.contains('hidden')) return;
+
+        const loading = document.getElementById('qr-scanner-loading');
+        if (!html5QrScannerInstance || cameraDevices.length === 0) return;
+
+        try {
+            if (html5QrScannerInstance.isScanning) {
+                await html5QrScannerInstance.stop();
+            }
+
+            const cameraId = cameraDevices[currentCameraIndex].id;
+            await html5QrScannerInstance.start(
+                cameraId,
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0,
+                    useBarCodeDetectorIfSupported: true,
+                },
+                onQrScanSuccess,
+                () => {}
+            );
+
+            if (loading) loading.classList.add('hidden');
+        } catch (e) {
+            if (loading) loading.classList.add('hidden');
+            const errorBox = document.getElementById('qr-scanner-error');
+            const errorText = document.getElementById('qr-scanner-error-text');
+            if (errorBox) {
+                errorBox.classList.remove('hidden');
+                if (errorText) errorText.textContent = 'Gagal memulai video kamera: ' + (e.message || e);
+            }
+        }
+    }
+
+    async function switchCamera() {
+        if (cameraDevices.length <= 1) return;
+        currentCameraIndex = (currentCameraIndex + 1) % cameraDevices.length;
+        const loading = document.getElementById('qr-scanner-loading');
+        if (loading) loading.classList.remove('hidden');
+        await startScanningWithCurrentCamera();
+    }
+
+    async function onQrScanSuccess(decodedText) {
+        if (!decodedText) return;
+
+        if (navigator.vibrate) {
+            try { navigator.vibrate(80); } catch (e) {}
+        }
+
+        const extractedCode = extractTransactionCode(decodedText);
+
+        await closeQrScannerModal();
+
+        const input = document.getElementById('code');
+        if (input) {
+            input.value = extractedCode;
+            input.form?.submit();
+        }
+    }
+
+    async function closeQrScannerModal() {
+        const modal = document.getElementById('qr-scanner-modal');
+        if (modal) modal.classList.add('hidden');
+
+        if (html5QrScannerInstance) {
+            try {
+                if (html5QrScannerInstance.isScanning) {
+                    await html5QrScannerInstance.stop();
+                }
+            } catch (e) {
+                console.warn('Gagal menghentikan scanner kamera:', e);
+            }
+        }
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('qr-scanner-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                closeQrScannerModal();
+            }
+        }
+    });
+
+    window.addEventListener('beforeunload', () => {
+        if (html5QrScannerInstance && html5QrScannerInstance.isScanning) {
+            try {
+                html5QrScannerInstance.stop();
+            } catch (e) {}
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
         renderRecentSearches();

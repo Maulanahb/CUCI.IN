@@ -16,6 +16,7 @@
 
         @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @livewireStyles
     </head>
     <body class="min-h-screen bg-slate-50/70 font-sans text-slate-800 antialiased flex flex-col justify-between selection:bg-brand-500 selection:text-white">
         {{-- Header / Navbar Publik --}}
@@ -60,6 +61,7 @@
                 &copy; {{ date('Y') }} CUCI.IN — Sistem Manajemen Operasional Laundry.
             </div>
         </footer>
+        @livewireScripts
     </body>
     </html>
 @endif
