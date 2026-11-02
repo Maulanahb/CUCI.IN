@@ -73,3 +73,6 @@ desktop.ini
 /.graphifyignore
 docs/pines_ui_guidelines.md
 
+docs/generate_humanized_docx.php
+docs/screenshot_terminal_asli.jpg
+docs/screenshot_trace_viewer_asli.jpg
