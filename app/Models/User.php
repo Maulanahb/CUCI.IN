@@ -90,4 +90,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Complaint::class, 'handled_by');
     }
+
+    /**
+     * Relasi ke riwayat kunci idempotensi yang dibuat oleh user ini.
+     */
+    public function idempotencyKeys(): HasMany
+    {
+        return $this->hasMany(IdempotencyKey::class, 'user_id');
+    }
 }
