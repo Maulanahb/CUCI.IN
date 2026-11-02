@@ -151,6 +151,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('transactions.index');
 
                 Route::post('/transactions', [StaffTransactionController::class, 'store'])
+                    ->middleware('idempotent')
                     ->name('transactions.store');
 
                 Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
@@ -163,6 +164,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('transactions.status');
 
                 Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
+                    ->middleware('idempotent')
                     ->name('transactions.payments.store');
 
                 // Verifikasi Bukti Pembayaran Transfer/QRIS
@@ -220,6 +222,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('transactions.create');
 
                 Route::post('/transactions', [StaffTransactionController::class, 'store'])
+                    ->middleware('idempotent')
                     ->name('transactions.store');
 
                 Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
@@ -232,6 +235,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('transactions.status');
 
                 Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
+                    ->middleware('idempotent')
                     ->name('transactions.payments.store');
 
                 // Verifikasi Bukti Pembayaran Transfer/QRIS
