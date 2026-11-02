@@ -49,6 +49,7 @@ desktop.ini
 # Superpowers & AI plans
 /docs/superpowers/
 /.superpowers/
+.agents/teamwork/
 
 # Dokumen Laporan PBL & Jobsheet
 /docs/*laporan*
