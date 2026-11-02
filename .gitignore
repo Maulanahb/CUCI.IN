@@ -74,3 +74,8 @@ desktop.ini
 /.graphifyignore
 docs/pines_ui_guidelines.md
 
+# Python & Playwright Testing Artefacts
+/.pytest_cache/
+/test-results/
+
+
