@@ -233,13 +233,13 @@
                                         <div class="flex items-center gap-1.5">
                                             <span @class([
                                                 'font-medium',
-                                                'text-red-600 font-semibold' => $isOverdue,
+                                                'text-rose-600 font-semibold' => $isOverdue,
                                                 'text-slate-600' => ! $isOverdue,
                                             ])>
                                                 {{ $complaint->deadline_at->translatedFormat('d M Y') }}
                                             </span>
                                             @if ($isOverdue)
-                                                <span class="rounded bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-700">Terlambat</span>
+                                                <span class="rounded bg-rose-100 px-1.5 py-0.5 text-xs font-bold text-rose-700">Terlambat</span>
                                             @endif
                                         </div>
                                         <p class="text-sm text-slate-500">{{ $complaint->deadline_at->diffForHumans() }}</p>

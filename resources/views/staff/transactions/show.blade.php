@@ -630,15 +630,15 @@
 
                             <div class="mb-2 flex flex-wrap gap-1.5">
                                 <button type="button" @click="paymentAmount = remaining; cashReceived = remaining"
-                                    class="min-h-8 rounded-lg border border-brand-200 bg-brand-50 px-2.5 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-100 cursor-pointer shadow-2xs">
+                                    class="min-h-8 pointer-coarse:min-h-11 rounded-lg border border-brand-200 bg-brand-50 px-2.5 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-100 cursor-pointer shadow-2xs">
                                     Uang Pas
                                 </button>
                                 <button type="button" @click="paymentAmount = Math.min(remaining, 50000); cashReceived = paymentAmount"
-                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs">
+                                    class="min-h-8 pointer-coarse:min-h-11 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs">
                                     Rp 50.000
                                 </button>
                                 <button type="button" @click="paymentAmount = Math.min(remaining, 100000); cashReceived = paymentAmount"
-                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs">
+                                    class="min-h-8 pointer-coarse:min-h-11 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs">
                                     Rp 100.000
                                 </button>
                             </div>
@@ -752,7 +752,7 @@
                             <button
                                 type="button"
                                 @click="closePayment()"
-                                class="min-h-[38px] rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
+                                class="min-h-[38px] pointer-coarse:min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                             >
                                 Batal
                             </button>
@@ -760,7 +760,7 @@
                                 type="submit"
                                 x-bind:disabled="submitting || (method === 'Tunai' && shortfall > 0) || ! paymentAmount || paymentAmount > remaining"
                                 @click="if ($event.ctrlKey || $event.metaKey) { $event.preventDefault(); $event.stopPropagation(); submitPayment(); }"
-                                class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs transition hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+                                class="inline-flex min-h-[38px] pointer-coarse:min-h-11 items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs transition hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
                             >
                                 <svg x-show="submitting" class="size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true" x-cloak>
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -852,7 +852,7 @@
                             'relative flex flex-col justify-between rounded-xl border p-3.5 transition-all select-none',
                             'border-emerald-300 bg-emerald-50/70 text-emerald-950 shadow-2xs' => $isPassed,
                             'border-brand-500 bg-brand-50/80 text-brand-950 ring-2 ring-brand-500/20 shadow-xs' => $isCurrent,
-                            'border-slate-200 bg-white text-slate-400 opacity-60' => ! $isPassed && ! $isCurrent,
+                            'border-slate-200 bg-white text-slate-500 opacity-60' => ! $isPassed && ! $isCurrent,
                         ])>
                             <div class="flex items-center justify-between">
                                 <div @class([

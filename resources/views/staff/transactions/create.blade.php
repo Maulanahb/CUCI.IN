@@ -724,14 +724,14 @@
                     <button
                         type="button"
                         @click="quickCustomerModalOpen = false"
-                        class="min-h-[38px] rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
+                        class="min-h-[38px] pointer-coarse:min-h-11 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 cursor-pointer"
                     >
                         Batal
                     </button>
                     <button
                         type="submit"
                         id="btn-save-quick-customer"
-                        class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-2xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 cursor-pointer"
+                        class="inline-flex min-h-[38px] pointer-coarse:min-h-11 items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-2xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 cursor-pointer"
                     >
                         <svg id="btn-save-quick-customer-spinner" class="hidden size-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

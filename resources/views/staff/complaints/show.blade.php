@@ -168,7 +168,7 @@
                         {{-- Pilihan Status --}}
                         <div>
                             <label for="status" class="block text-sm font-semibold text-slate-700">
-                                Status Penanganan <span class="text-red-500">*</span>
+                                Status Penanganan <span class="text-rose-500">*</span>
                             </label>
                             <select
                                 id="status"
@@ -187,7 +187,7 @@
                                 </option>
                             </select>
                             @error('status')
-                                <p class="mt-1 text-sm text-red-700">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-rose-700">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -205,7 +205,7 @@
                             >{{ old('response', $complaint->response) }}</textarea>
                             <p class="mt-1 text-sm text-slate-500">Tanggapan ini akan dapat dibaca langsung oleh pelanggan di dashboard mereka.</p>
                             @error('response')
-                                <p class="mt-1 text-sm text-red-700">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-rose-700">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -241,20 +241,20 @@
                 {{-- Kartu Komitmen SLA --}}
                 <div @class([
                     'rounded-xl border p-5 transition',
-                    'border-red-200 bg-red-50/50' => $isOverdue,
+                    'border-rose-200 bg-rose-50/50' => $isOverdue,
                     'border-slate-200/80 bg-white' => ! $isOverdue,
                 ])>
                     <div class="flex flex-wrap items-center gap-2.5">
                         <div @class([
                             'flex size-8 items-center justify-center rounded-lg',
-                            'bg-red-100 text-red-600' => $isOverdue,
+                            'bg-rose-100 text-rose-600' => $isOverdue,
                             'bg-brand-50 text-brand-700' => ! $isOverdue,
                         ])>
                             <x-lucide-clock class="size-4" />
                         </div>
                         <h3 @class([
                             'text-xs font-bold uppercase tracking-wider',
-                            'text-red-800' => $isOverdue,
+                            'text-rose-800' => $isOverdue,
                             'text-slate-700' => ! $isOverdue,
                         ])>
                             Target SLA (2 Hari Kerja)
@@ -268,7 +268,7 @@
                         </p>
                         <p @class([
                             'mt-1 text-sm font-medium',
-                            'text-red-600' => $isOverdue,
+                            'text-rose-600' => $isOverdue,
                             'text-emerald-600' => ! $isOverdue,
                         ])>
                             @if ($complaint->status === 'Selesai')

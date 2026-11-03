@@ -43,14 +43,26 @@ class DesignSystemGuardTest extends TestCase
     }
 
     /**
+     * Pemindaian per baris, atau per berkas utuh ($wholeFile) agar tag multi-baris ikut terperiksa.
+     *
      * @param  array<int, string>  $allowedPaths
      */
-    private function assertNoMatches(string $pattern, string $message, array $allowedPaths = []): void
+    private function assertNoMatches(string $pattern, string $message, array $allowedPaths = [], bool $wholeFile = false): void
     {
         $violations = [];
 
         foreach ($this->viewFiles() as $path => $contents) {
             if (in_array($path, $allowedPaths, true)) {
+                continue;
+            }
+
+            if ($wholeFile) {
+                preg_match_all($pattern, $contents, $matches, PREG_OFFSET_CAPTURE);
+
+                foreach ($matches[0] as [, $offset]) {
+                    $violations[] = $path.':'.(substr_count($contents, "\n", 0, $offset) + 1);
+                }
+
                 continue;
             }
 
@@ -66,7 +78,7 @@ class DesignSystemGuardTest extends TestCase
 
     public function test_views_have_no_gradients_or_decorative_blur(): void
     {
-        $this->assertNoMatches('/bg-gradient-|bg-linear-|bg-clip-text|blur-3xl/', 'Gradien dan blur dekoratif dilarang DESIGN.md.');
+        $this->assertNoMatches('/bg-gradient-|bg-linear-|bg-clip-text|\bblur-(?:xl|2xl|3xl)\b/', 'Gradien dan blur dekoratif dilarang DESIGN.md.');
 
         $this->assertNoMatches('/^(?!.*\bsticky\b).*backdrop-blur/', 'Blur hanya untuk header lengket, modal, dan sheet.', [
             'components/ui/modal.blade.php',
@@ -76,13 +88,13 @@ class DesignSystemGuardTest extends TestCase
 
     public function test_views_have_no_hover_lift_effects(): void
     {
-        $this->assertNoMatches('/hover:shadow-|hover:scale-|active:scale-|\bshadow-xl\b/', 'Flat Counter Rule: tanpa efek angkat atau bayangan besar.');
+        $this->assertNoMatches('/hover(?:\/[\w-]+)?:(?:shadow-|scale-)|active:scale-|\bshadow-(?:xl|2xl)\b/', 'Flat Counter Rule: tanpa efek angkat atau bayangan besar.');
     }
 
     public function test_views_use_only_design_system_palettes(): void
     {
         $this->assertNoMatches(
-            '/\b(?:bg|text|border|ring|from|via|to|fill|stroke)-(?:purple|indigo|blue|violet|fuchsia|pink|cyan)-\d/',
+            '/\b(?:bg|text|border|ring|from|via|to|fill|stroke)-(?:purple|indigo|blue|violet|fuchsia|pink|cyan|red|green|gray|zinc|neutral|stone|lime|teal|orange|yellow)-\d/',
             'Pakai brand-*, slate, dan warna status resmi.'
         );
     }
@@ -94,7 +106,13 @@ class DesignSystemGuardTest extends TestCase
 
     public function test_table_headers_declare_scope(): void
     {
-        $this->assertNoMatches('/<th(?![^>]*\bscope=)[\s>]/', 'Setiap <th> wajib punya scope="col" atau scope="row".');
+        $this->assertNoMatches('/<th(?![^>]*\bscope=)[\s>]/', 'Setiap <th> wajib punya scope="col" atau scope="row".', [], true);
+    }
+
+    public function test_small_touch_targets_grow_on_coarse_pointers(): void
+    {
+        $this->assertNoMatches('/^(?!.*pointer-coarse).*(?:min-h-\[3\dpx\]|\bmin-h-8\b)/', 'Kontrol dengan tinggi minimum kecil wajib punya pointer-coarse:min-h-11.');
+        $this->assertNoMatches('/^(?!.*pointer-coarse)(?=.*\bcursor-pointer\b).*\b(?:size-8|h-8)\b/', 'Kontrol interaktif size-8/h-8 wajib punya varian pointer-coarse.');
     }
 
     public function test_views_have_no_tiny_text(): void
@@ -105,7 +123,7 @@ class DesignSystemGuardTest extends TestCase
     public function test_views_do_not_use_low_contrast_slate_for_text(): void
     {
         $this->assertNoMatches(
-            '/^(?!.*(?:<svg|x-lucide|placeholder|<kbd|disabled)).*(?=.*\btext-slate-400\b)(?=.*(?:\btext-(?:xs|sm|2xs)\b|\btext-\[|\bblock\b|\bitalic\b|\bfont-(?:medium|normal|semibold|bold)\b))/',
+            '/^(?!.*(?:<svg|x-lucide|placeholder|<kbd|disabled)).*(?=.*\btext-slate-400\b)(?=.*(?:\btext-(?:xs|sm|2xs)\b|\btext-\[|\bblock\b|\bitalic\b|\bfont-(?:medium|normal|semibold|bold|mono|sans)\b|\btext-slate-400[^>]*>[^<]*[A-Za-z{]))/',
             'text-slate-400 kontrasnya kurang dari 4,5:1; pakai text-slate-500.'
         );
     }

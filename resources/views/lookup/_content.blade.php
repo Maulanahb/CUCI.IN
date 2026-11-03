@@ -172,7 +172,7 @@
                             id="btn-copy-link"
                             onclick="copyTrackingLink()"
                             data-url="{{ route('transactions.lookup', ['code' => $transaction->transaction_code]) }}"
-                            class="inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-100 transition cursor-pointer print:hidden"
+                            class="inline-flex min-h-8 pointer-coarse:min-h-11 items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-100 transition cursor-pointer print:hidden"
                             title="Salin tautan pelacakan untuk dibagikan"
                         >
                             <x-lucide-copy id="icon-copy" class="size-3.5 text-slate-500" />
@@ -664,7 +664,7 @@
         recents.forEach(code => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-mono font-medium text-slate-700 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 transition cursor-pointer';
+            btn.className = 'inline-flex min-h-8 pointer-coarse:min-h-11 items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-mono font-medium text-slate-700 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 transition cursor-pointer';
             btn.innerHTML = `<span class="size-1.5 rounded-full bg-brand-500"></span><span>${code}</span>`;
             btn.onclick = () => selectRecentCode(code);
             chips.appendChild(btn);

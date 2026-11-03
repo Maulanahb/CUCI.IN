@@ -685,7 +685,7 @@
                                     <p class="mt-0.5 text-sm text-slate-500 font-mono tabular-nums">
                                         {{ number_format((float) $totalWeight, 1, ',', '.') }} kg
                                         @if ($itemCount > 1)
-                                            <span class="text-slate-400 font-sans">· +{{ $itemCount - 1 }} item lainnya</span>
+                                            <span class="text-slate-500 font-sans">· +{{ $itemCount - 1 }} item lainnya</span>
                                         @endif
                                     </p>
                                 </td>
@@ -768,7 +768,7 @@
                                         <button
                                             type="button"
                                             @click="openDrawer({{ $transaction->id }})"
-                                            class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 shadow-2xs hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition cursor-pointer"
+                                            class="inline-flex size-8 pointer-coarse:size-11 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 shadow-2xs hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition cursor-pointer"
                                             title="Buka panel edit cepat"
                                         >
                                             <x-lucide-sliders-horizontal class="size-4" aria-hidden="true" />
@@ -1011,7 +1011,7 @@
                                             :class="{
                                                 'bg-brand-600 text-white shadow-xs ring-4 ring-brand-100 scale-105': selectedTrx?.status === '{{ $st['key'] }}',
                                                 'bg-brand-700 text-white': rank(selectedTrx?.status) > {{ $st['num'] }},
-                                                'bg-white text-slate-400 border-2 border-slate-200': rank(selectedTrx?.status) < {{ $st['num'] }}
+                                                'bg-white text-slate-500 border-2 border-slate-200': rank(selectedTrx?.status) < {{ $st['num'] }}
                                             }"
                                         >
                                             <template x-if="rank(selectedTrx?.status) > {{ $st['num'] }}">

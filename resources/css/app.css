@@ -27,8 +27,6 @@
     --color-brand-950: #083344;
 }
 
-/* Varian untuk layar sentuh: target sentuh dibesarkan tanpa mengubah kepadatan desktop. */
-@custom-variant pointer-coarse (@media (pointer: coarse));
 
 @utility text-2xs {
     font-size: 0.6875rem;

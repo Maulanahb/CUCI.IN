@@ -48,12 +48,12 @@
                         @class([
                             'w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
                             'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('email'),
-                            'border-red-400 bg-red-50/30 text-red-900 focus:border-red-500 focus:ring-red-500/20' => $errors->has('email'),
+                            'border-rose-400 bg-rose-50/30 text-rose-900 focus:border-rose-500 focus:ring-rose-500/20' => $errors->has('email'),
                         ])
                     />
                 </div>
                 @error('email')
-                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600">
+                    <p class="mt-1 flex items-center gap-1 text-xs text-rose-600">
                         <x-lucide-alert-circle class="size-3.5" />
                         <span>{{ $message }}</span>
                     </p>

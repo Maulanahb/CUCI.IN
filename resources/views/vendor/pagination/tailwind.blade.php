@@ -20,7 +20,7 @@
                     <span>Sebelumnya</span>
                 </span>
             @else
-                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900">
+                <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="inline-flex h-8 pointer-coarse:h-11 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900">
                     <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
@@ -38,7 +38,7 @@
             @if ($windowStart > 1)
                 <a
                     href="{{ $paginator->url(1) }}"
-                    class="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
+                    class="inline-flex size-8 pointer-coarse:size-11 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
                     aria-label="Halaman 1"
                 >
                     1
@@ -56,7 +56,7 @@
                 @else
                     <a
                         href="{{ $url }}"
-                        class="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
+                        class="inline-flex size-8 pointer-coarse:size-11 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
                         aria-label="Halaman {{ $page }}"
                     >
                         {{ $page }}
@@ -70,7 +70,7 @@
                 @endif
                 <a
                     href="{{ $paginator->url($lastPage) }}"
-                    class="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
+                    class="inline-flex size-8 pointer-coarse:size-11 cursor-pointer items-center justify-center rounded-lg text-xs font-semibold text-slate-600 transition-colors hover:bg-brand-50 hover:text-brand-700"
                     aria-label="Halaman {{ $lastPage }}"
                 >
                     {{ $lastPage }}
@@ -79,7 +79,7 @@
 
             {{-- Berikutnya --}}
             @if ($paginator->hasMorePages())
-                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="inline-flex h-8 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900">
+                <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="inline-flex h-8 pointer-coarse:h-11 cursor-pointer items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900">
                     <span>Berikutnya</span>
                     <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />

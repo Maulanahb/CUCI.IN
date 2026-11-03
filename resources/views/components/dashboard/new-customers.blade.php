@@ -72,7 +72,7 @@
                         <p class="mt-0.5 min-w-0 truncate text-xs text-slate-500">
                             <span class="font-medium text-slate-600 tabular-nums">{{ $customer->phone ?? 'Tanpa nomor HP' }}</span>
                             <span class="mx-1 text-slate-300">&bull;</span>
-                            <span class="text-slate-400">Terdaftar {{ $customer->created_at?->locale('id')->diffForHumans() ?? '-' }}</span>
+                            <span class="text-slate-500">Terdaftar {{ $customer->created_at?->locale('id')->diffForHumans() ?? '-' }}</span>
                         </p>
                     </div>
                 </li>

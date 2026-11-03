@@ -554,7 +554,7 @@
 
                 <div class="mt-8 border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-2xs">
                     <p>&copy; {{ date('Y') }} CUCI.IN Laundry System. Seluruh Hak Cipta Dilindungi.</p>
-                    <p class="font-mono text-slate-400">D4 Sistem Informasi Bisnis — Milestone 2</p>
+                    <p class="font-mono text-slate-500">D4 Sistem Informasi Bisnis — Milestone 2</p>
                 </div>
             </div>
         </footer>

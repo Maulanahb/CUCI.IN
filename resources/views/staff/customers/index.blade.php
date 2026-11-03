@@ -191,7 +191,7 @@
                                             class="inline-flex items-center gap-1.5 font-bold font-mono tabular-nums text-slate-800 hover:text-emerald-700 transition group/wa"
                                             title="Buka obrolan WhatsApp ke {{ $customer->name }}"
                                         >
-                                            <x-lucide-message-circle class="size-3.5 text-emerald-600 transition group-hover/wa:scale-110" />
+                                            <x-lucide-message-circle class="size-3.5 text-emerald-600" />
                                             <span class="group-hover/wa:underline underline-offset-2">{{ $customer->phone }}</span>
                                         </a>
                                     @else
