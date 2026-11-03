@@ -62,9 +62,13 @@
         scroll-behavior: auto !important;
     }
 
-    .transition-transform,
+    *,
+    ::before,
+    ::after {
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow !important;
+    }
+
     .animate-pulse {
-        transition-duration: 0.01ms !important;
         animation: none !important;
     }
 
