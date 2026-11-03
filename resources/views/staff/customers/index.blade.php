@@ -150,11 +150,11 @@
                 <table class="w-full text-left text-sm">
                     <thead class="border-b border-slate-100 bg-slate-50/60 text-xs font-bold tracking-wider text-slate-500 uppercase">
                         <tr>
-                            <th class="w-3/12 px-5 py-3.5">Pelanggan</th>
-                            <th class="w-2/12 px-5 py-3.5">Kontak / WhatsApp</th>
-                            <th class="w-3/12 px-5 py-3.5">Alamat Domisili</th>
-                            <th class="w-2/12 px-5 py-3.5">Total Nota</th>
-                            <th class="w-2/12 px-5 py-3.5 text-right">Aksi</th>
+                            <th scope="col" class="w-3/12 px-5 py-3.5">Pelanggan</th>
+                            <th scope="col" class="w-2/12 px-5 py-3.5">Kontak / WhatsApp</th>
+                            <th scope="col" class="w-3/12 px-5 py-3.5">Alamat Domisili</th>
+                            <th scope="col" class="w-2/12 px-5 py-3.5">Total Nota</th>
+                            <th scope="col" class="w-2/12 px-5 py-3.5 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">

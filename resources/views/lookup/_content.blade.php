@@ -230,10 +230,10 @@
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-50/70 border-b border-slate-100 text-xs font-bold uppercase text-slate-500">
                             <tr>
-                                <th class="p-3">Layanan</th>
-                                <th class="p-3">Berat</th>
-                                <th class="p-3">Tarif</th>
-                                <th class="p-3 text-right">Subtotal</th>
+                                <th scope="col" class="p-3">Layanan</th>
+                                <th scope="col" class="p-3">Berat</th>
+                                <th scope="col" class="p-3">Tarif</th>
+                                <th scope="col" class="p-3 text-right">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 text-slate-700">

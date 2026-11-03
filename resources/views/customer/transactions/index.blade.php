@@ -394,10 +394,10 @@
                                 <table class="w-full text-left text-xs">
                                     <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
                                         <tr>
-                                            <th class="py-2.5 px-3">Layanan</th>
-                                            <th class="py-2.5 px-3 text-center">Berat</th>
-                                            <th class="py-2.5 px-3 text-right">Harga/kg</th>
-                                            <th class="py-2.5 px-3 text-right">Subtotal</th>
+                                            <th scope="col" class="py-2.5 px-3">Layanan</th>
+                                            <th scope="col" class="py-2.5 px-3 text-center">Berat</th>
+                                            <th scope="col" class="py-2.5 px-3 text-right">Harga/kg</th>
+                                            <th scope="col" class="py-2.5 px-3 text-right">Subtotal</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-100 text-slate-700">

@@ -495,8 +495,8 @@
                         <table class="mt-2 w-full text-left text-xs">
                             <thead>
                                 <tr class="border-b border-slate-100 text-slate-500">
-                                    <th class="pb-2 font-semibold">Tanggal</th>
-                                    <th class="pb-2 text-right font-semibold">Pemasukan</th>
+                                    <th scope="col" class="pb-2 font-semibold">Tanggal</th>
+                                    <th scope="col" class="pb-2 text-right font-semibold">Pemasukan</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -723,11 +723,11 @@
                             <table class="w-full text-left text-xs">
                                 <thead>
                                     <tr class="border-b border-slate-100 text-slate-500">
-                                        <th class="pb-2.5 font-semibold">Nota</th>
-                                        <th class="pb-2.5 font-semibold">Pelanggan</th>
-                                        <th class="pb-2.5 font-semibold">Total</th>
-                                        <th class="pb-2.5 font-semibold">Status</th>
-                                        <th class="pb-2.5 text-right font-semibold">Aksi</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Nota</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Pelanggan</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Total</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Status</th>
+                                        <th scope="col" class="pb-2.5 text-right font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-slate-700">

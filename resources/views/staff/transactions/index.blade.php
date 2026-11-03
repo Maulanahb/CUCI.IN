@@ -604,7 +604,7 @@
                 <table class="w-full text-left text-sm">
                     <thead class="border-b border-slate-200/80 bg-slate-50/75 text-xs font-bold text-slate-500">
                         <tr>
-                            <th class="w-10 px-4 py-3 text-center">
+                            <th scope="col" class="w-10 px-4 py-3 text-center">
                                 <input
                                     type="checkbox"
                                     :checked="selectAll"
@@ -612,12 +612,12 @@
                                     class="size-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
                                 >
                             </th>
-                            <th class="px-5 py-3">Kode Nota</th>
-                            <th class="px-5 py-3">Pelanggan</th>
-                            <th class="px-5 py-3">Layanan & Bobot</th>
-                            <th class="px-5 py-3">Total & Pembayaran</th>
-                            <th class="px-5 py-3">Status Operasional</th>
-                            <th class="px-5 py-3 text-right">Aksi</th>
+                            <th scope="col" class="px-5 py-3">Kode Nota</th>
+                            <th scope="col" class="px-5 py-3">Pelanggan</th>
+                            <th scope="col" class="px-5 py-3">Layanan & Bobot</th>
+                            <th scope="col" class="px-5 py-3">Total & Pembayaran</th>
+                            <th scope="col" class="px-5 py-3">Status Operasional</th>
+                            <th scope="col" class="px-5 py-3 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">

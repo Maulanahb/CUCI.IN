@@ -1187,10 +1187,10 @@
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-50/80 text-sm font-bold text-slate-500 border-b border-slate-100">
                             <tr>
-                                <th class="px-5 py-3 font-semibold">Waktu Perubahan</th>
-                                <th class="px-5 py-3 font-semibold">Status</th>
-                                <th class="px-5 py-3 font-semibold">Petugas (Diubah Oleh)</th>
-                                <th class="px-5 py-3 font-semibold">Catatan / Alasan</th>
+                                <th scope="col" class="px-5 py-3 font-semibold">Waktu Perubahan</th>
+                                <th scope="col" class="px-5 py-3 font-semibold">Status</th>
+                                <th scope="col" class="px-5 py-3 font-semibold">Petugas (Diubah Oleh)</th>
+                                <th scope="col" class="px-5 py-3 font-semibold">Catatan / Alasan</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">

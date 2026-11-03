@@ -151,11 +151,11 @@
                 <table class="w-full text-left text-xs sm:text-sm">
                     <thead>
                         <tr class="border-b border-slate-100 bg-slate-50/75 text-2xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th class="px-5 py-3.5">Pengguna</th>
-                            <th class="px-4 py-3.5">Peran (Role)</th>
-                            <th class="px-4 py-3.5">Status Keaktifan</th>
-                            <th class="px-4 py-3.5">Tanggal Dibuat</th>
-                            <th class="px-5 py-3.5 text-right">Aksi</th>
+                            <th scope="col" class="px-5 py-3.5">Pengguna</th>
+                            <th scope="col" class="px-4 py-3.5">Peran (Role)</th>
+                            <th scope="col" class="px-4 py-3.5">Status Keaktifan</th>
+                            <th scope="col" class="px-4 py-3.5">Tanggal Dibuat</th>
+                            <th scope="col" class="px-5 py-3.5 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
