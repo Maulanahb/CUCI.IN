@@ -445,7 +445,7 @@
                                 <td class="block px-5 py-2 text-slate-600 lg:table-cell lg:py-4 lg:text-center">
                                     <span class="mr-1 lg:hidden">Riwayat transaksi:</span>
                                     @if ($service->transaction_details_count > 0)
-                                        <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-sm font-semibold text-blue-700">
+                                        <span class="inline-flex items-center gap-1 rounded-md bg-sky-50 px-2 py-0.5 text-sm font-semibold text-sky-700">
                                             <span class="tabular-nums">{{ $service->transaction_details_count }}</span>
                                             <span class="text-xs font-normal">order</span>
                                         </span>

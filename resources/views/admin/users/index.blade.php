@@ -46,15 +46,15 @@
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
                     <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Administrator</span>
-                    <p class="mt-1 text-lg font-bold text-purple-700 sm:text-2xl">{{ number_format($counts['admin']) }}</p>
+                    <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['admin']) }}</p>
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
                     <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Staf & Kasir</span>
-                    <p class="mt-1 text-lg font-bold text-brand-700 sm:text-2xl">{{ number_format($counts['staff']) }}</p>
+                    <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['staff']) }}</p>
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
                     <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Akun Aktif</span>
-                    <p class="mt-1 text-lg font-bold text-emerald-600 sm:text-2xl">{{ number_format($counts['active']) }}</p>
+                    <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['active']) }}</p>
                 </div>
             </div>
         </div>
@@ -163,9 +163,9 @@
                             @php
                                 $isSelf = $user->id === auth()->id();
                                 $roleBadge = match ($user->role) {
-                                    'admin' => ['label' => 'Administrator', 'class' => 'bg-purple-50 text-purple-700 border-purple-200'],
-                                    'staff' => ['label' => 'Staf / Kasir', 'class' => 'bg-brand-50 text-brand-700 border-brand-200'],
-                                    'owner' => ['label' => 'Owner', 'class' => 'bg-amber-50 text-amber-700 border-amber-200'],
+                                    'admin' => ['label' => 'Administrator', 'class' => 'bg-brand-50 text-brand-700 border-brand-200'],
+                                    'staff' => ['label' => 'Staf / Kasir', 'class' => 'bg-slate-100 text-slate-700 border-slate-200'],
+                                    'owner' => ['label' => 'Owner', 'class' => 'bg-slate-100 text-slate-700 border-slate-200'],
                                     'customer' => ['label' => 'Pelanggan', 'class' => 'bg-slate-100 text-slate-700 border-slate-200'],
                                     default => ['label' => ucfirst($user->role), 'class' => 'bg-slate-100 text-slate-700 border-slate-200'],
                                 };

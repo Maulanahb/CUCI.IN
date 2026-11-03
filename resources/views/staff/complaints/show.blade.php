@@ -41,8 +41,8 @@
                                 Menunggu
                             </span>
                         @elseif ($complaint->status === 'Diproses')
-                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700 ring-1 ring-inset ring-blue-600/20">
-                                <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                            <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-sm font-semibold text-sky-700 ring-1 ring-inset ring-sky-600/20">
+                                <span class="size-1.5 rounded-full bg-sky-500 animate-pulse"></span>
                                 Sedang Diproses
                             </span>
                         @else
