@@ -335,12 +335,12 @@
                 {{-- 1. Kartu Detail Keluhan --}}
                 <div class="rounded-2xl border border-slate-200/90 bg-white p-4.5 space-y-3.5 shadow-2xs">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Subjek Keluhan</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Subjek Keluhan</span>
                         <h3 class="mt-1 font-bold text-slate-900 text-base" x-text="selectedComplaint?.subject"></h3>
                     </div>
 
                     <div class="border-t border-slate-100 pt-3">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Uraian Masalah / Kendala</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Uraian Masalah / Kendala</span>
                         <p class="mt-1 text-slate-700 leading-relaxed whitespace-pre-line" x-text="selectedComplaint?.description"></p>
                     </div>
 
@@ -348,7 +348,7 @@
                     <template x-if="selectedComplaint?.photo_url">
                         <div class="border-t border-slate-100 pt-3">
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Bukti Foto Kendala / Pakaian</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kendala / Pakaian</span>
                                 <a
                                     :href="selectedComplaint?.photo_url"
                                     target="_blank"
@@ -387,19 +387,19 @@
 
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">Nomor Nota</span>
+                            <span class="text-slate-500 block font-medium">Nomor Nota</span>
                             <span class="font-mono font-bold text-slate-900 mt-0.5 block text-sm" x-text="selectedComplaint?.transaction_code"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">Status Cucian</span>
+                            <span class="text-slate-500 block font-medium">Status Cucian</span>
                             <span class="font-semibold text-slate-800 mt-0.5 block text-sm" x-text="selectedComplaint?.transaction_status"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">Pelanggan</span>
+                            <span class="text-slate-500 block font-medium">Pelanggan</span>
                             <span class="font-semibold text-slate-900 mt-0.5 block" x-text="selectedComplaint?.customer_name"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">No. Telepon / WA</span>
+                            <span class="text-slate-500 block font-medium">No. Telepon / WA</span>
                             <span class="font-mono text-slate-800 mt-0.5 block" x-text="selectedComplaint?.customer_phone"></span>
                         </div>
                     </div>

@@ -1026,7 +1026,7 @@
                                             :class="{
                                                 'text-brand-900 font-extrabold': selectedTrx?.status === '{{ $st['key'] }}',
                                                 'text-slate-700 font-medium': rank(selectedTrx?.status) > {{ $st['num'] }},
-                                                'text-slate-400 font-normal': rank(selectedTrx?.status) < {{ $st['num'] }}
+                                                'text-slate-500 font-normal': rank(selectedTrx?.status) < {{ $st['num'] }}
                                             }"
                                         >{{ $st['label'] }}</span>
                                     </div>
@@ -1457,7 +1457,7 @@
                             </div>
                         </template>
                         <template x-if="!selectedTrx?.items || selectedTrx?.items.length === 0">
-                            <p class="text-sm text-slate-400 italic py-3 text-center">Tidak ada item layanan yang tercatat.</p>
+                            <p class="text-sm text-slate-500 italic py-3 text-center">Tidak ada item layanan yang tercatat.</p>
                         </template>
                     </div>
 
@@ -1468,19 +1468,19 @@
                                 <div class="space-y-0.5">
                                     <div class="flex items-center gap-1.5">
                                         <span class="inline-block rounded-md bg-slate-100 border border-slate-200/80 px-1.5 py-0.5 font-mono text-xs font-bold text-slate-700" x-text="pay.method"></span>
-                                        <span class="text-xs text-slate-400 font-mono" x-text="pay.created_at"></span>
+                                        <span class="text-xs text-slate-500 font-mono" x-text="pay.created_at"></span>
                                     </div>
                                 </div>
                                 <div class="text-right">
                                     <p class="font-mono font-bold text-emerald-700 tabular-nums" x-text="pay.amount_formatted"></p>
-                                    <p class="text-xs text-slate-400 font-medium" x-text="pay.status"></p>
+                                    <p class="text-xs text-slate-500 font-medium" x-text="pay.status"></p>
                                 </div>
                             </div>
                         </template>
                         <template x-if="!selectedTrx?.payments || selectedTrx?.payments.length === 0">
                             <div class="py-4 text-center">
                                 <x-lucide-receipt class="size-5 text-slate-300 mx-auto mb-1" />
-                                <p class="text-sm text-slate-400 italic">Belum ada riwayat pembayaran yang tercatat.</p>
+                                <p class="text-sm text-slate-500 italic">Belum ada riwayat pembayaran yang tercatat.</p>
                             </div>
                         </template>
                     </div>

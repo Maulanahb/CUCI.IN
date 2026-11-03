@@ -22,7 +22,7 @@
                 <x-lucide-arrow-left class="size-3.5" />
                 <span>Kembali ke Beranda</span>
             </a>
-            <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">CUCI.IN Portal</span>
+            <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">CUCI.IN Portal</span>
         </div>
 
         {{-- Main Container Content --}}

@@ -55,19 +55,19 @@
             <span class="text-slate-300">•</span>
             <div class="flex items-center gap-1.5">
                 <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-xs font-mono font-bold text-slate-800 shadow-2xs">F2</kbd>
-                <span class="text-[10px] text-slate-400 font-mono">(Alt+P)</span>
+                <span class="text-xs text-slate-500 font-mono">(Alt+P)</span>
                 <span class="text-slate-600">Pelanggan Baru</span>
             </div>
             <span class="text-slate-300">•</span>
             <div class="flex items-center gap-1.5">
                 <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-xs font-mono font-bold text-slate-800 shadow-2xs">F4</kbd>
-                <span class="text-[10px] text-slate-400 font-mono">(Alt+T)</span>
+                <span class="text-xs text-slate-500 font-mono">(Alt+T)</span>
                 <span class="text-slate-600">Tambah Baris</span>
             </div>
             <span class="text-slate-300">•</span>
             <div class="flex items-center gap-1.5">
                 <kbd class="rounded-md bg-slate-100 border border-slate-200/90 px-1.5 py-0.5 text-xs font-mono font-bold text-slate-800 shadow-2xs">F9</kbd>
-                <span class="text-[10px] text-slate-400 font-mono">(Ctrl+Enter)</span>
+                <span class="text-xs text-slate-500 font-mono">(Ctrl+Enter)</span>
                 <span class="text-slate-600">Simpan Nota</span>
             </div>
         </div>
@@ -141,7 +141,7 @@
                                 class="rounded-lg px-3 py-1.5 text-sm font-semibold transition cursor-pointer shrink-0 flex items-center gap-1"
                             >
                                 <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" x-bind:class="selectedCategory === 'express' ? 'text-white fill-white' : ''" />
-                                <span>⚡ Paket Kilat</span>
+                                <span>Paket Kilat</span>
                             </button>
                             <button
                                 type="button"
@@ -198,7 +198,7 @@
                                     <span class="flex flex-wrap items-center justify-end gap-1">
                                         <template x-if="service.is_express">
                                             <span class="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-800 border border-amber-300">
-                                                ⚡ KILAT
+                                                <x-lucide-zap class="size-3" aria-hidden="true" /> KILAT
                                             </span>
                                         </template>
                                         <x-ui.badge tone="neutral" size="sm" class="gap-1 font-mono tabular-nums text-slate-600">
@@ -415,7 +415,7 @@
                                                     <option value="">-- Pilih Layanan --</option>
                                                     @foreach ($services as $service)
                                                         <option value="{{ $service->id }}">
-                                                            {{ $service->name }} (Rp {{ number_format($service->price, 0, ',', '.') }}/{{ $service->unit_label }}) {{ $service->is_express ? '⚡ [KILAT ' . $service->estimated_duration . ' Jam]' : '[' . $service->estimated_duration . ' Jam]' }}
+                                                            {{ $service->name }} (Rp {{ number_format($service->price, 0, ',', '.') }}/{{ $service->unit_label }}) {{ $service->is_express ? '[KILAT ' . $service->estimated_duration . ' Jam]' : '[' . $service->estimated_duration . ' Jam]' }}
                                                         </option>
                                                     @endforeach
                                                 </select>
@@ -492,7 +492,7 @@
                                 <div class="flex items-center gap-1.5">
                                     <template x-if="hasExpressItem()">
                                         <span class="inline-flex items-center gap-0.5 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-bold text-amber-800 border border-amber-300">
-                                            ⚡ KILAT
+                                            <x-lucide-zap class="size-3" aria-hidden="true" /> KILAT
                                         </span>
                                     </template>
                                     <span class="font-bold font-mono tabular-nums text-slate-900" x-text="getMaxDuration() + ' Jam'">0 Jam</span>
@@ -685,7 +685,7 @@
                         <label for="quick_customer_phone" class="block text-sm font-bold text-slate-700">
                             Nomor Telepon / WhatsApp <span class="text-rose-500">*</span>
                         </label>
-                        <span class="text-xs text-slate-400">Format: 08xxx</span>
+                        <span class="text-xs text-slate-500">Format: 08xxx</span>
                     </div>
                     <div class="relative mt-1.5">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
@@ -704,7 +704,7 @@
 
                 <div>
                     <label for="quick_customer_address" class="block text-sm font-bold text-slate-700">
-                        Alamat <span class="text-slate-400 font-normal">(Opsional)</span>
+                        Alamat <span class="text-slate-500 font-normal">(Opsional)</span>
                     </label>
                     <div class="relative mt-1.5">
                         <div class="pointer-events-none absolute top-3 left-0 flex items-center pl-3.5 text-slate-400">

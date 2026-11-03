@@ -30,7 +30,7 @@
                     <x-ui.button :href="route('admin.transactions.create')" size="sm" class="shadow-xs">
                         <x-lucide-plus class="size-4" aria-hidden="true" />
                         <span>Transaksi Baru</span>
-                        <kbd class="hidden rounded-md border border-brand-500/40 bg-brand-800/80 px-1.5 py-0.5 text-[10px] font-mono font-bold text-white sm:inline shadow-2xs">F2</kbd>
+                        <kbd class="hidden rounded-md border border-brand-500/40 bg-brand-800/80 px-1.5 py-0.5 text-xs font-mono font-bold text-white sm:inline shadow-2xs">F2</kbd>
                     </x-ui.button>
                     <x-ui.button :href="route('admin.services.index')" variant="secondary" size="sm">
                         <x-lucide-sparkles class="size-4 text-brand-600" aria-hidden="true" />
@@ -57,7 +57,7 @@
                 <p class="mt-2 text-xl font-bold font-mono tabular-nums text-slate-900 sm:text-2xl">
                     {{ number_format($stats['total_users'], 0, ',', '.') }}
                 </p>
-                <p class="mt-0.5 text-xs text-slate-400">Admin &amp; Kasir</p>
+                <p class="mt-0.5 text-xs text-slate-500">Admin &amp; Kasir</p>
             </div>
 
             {{-- Total Pelanggan --}}
@@ -276,14 +276,14 @@
                             <div class="flex items-center gap-2 rounded-lg border border-amber-200/80 bg-amber-50/70 px-2.5 py-1.5 shadow-2xs">
                                 <span class="size-1.5 rounded-full bg-amber-500 ring-2 ring-amber-200"></span>
                                 <div class="text-left">
-                                    <p class="text-[10px] font-semibold uppercase tracking-wider text-amber-700 leading-none">Puncak ({{ $peakDay['label'] }})</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 leading-none">Puncak ({{ $peakDay['label'] }})</p>
                                     <p class="mt-0.5 font-mono text-xs font-bold text-amber-950 leading-none">Rp {{ number_format($peakDay['total'], 0, ',', '.') }}</p>
                                 </div>
                             </div>
                         @endif
                         <div class="flex items-center gap-2 rounded-lg border border-slate-200/80 bg-slate-50/80 px-3 py-1.5 shadow-2xs">
                             <div class="text-left sm:text-right">
-                                <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 leading-none">Total 7 Hari</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 leading-none">Total 7 Hari</p>
                                 <p class="mt-0.5 font-mono text-sm font-bold text-brand-700 leading-none tabular-nums">
                                     <x-ui.money :value="$weeklyTotal" />
                                 </p>
@@ -445,13 +445,13 @@
                             <div class="flex items-center gap-2">
                                 <span class="text-2xs font-semibold text-slate-500" x-text="points[activeIdx]?.label + ', ' + points[activeIdx]?.full_label"></span>
                                 <template x-if="points[activeIdx]?.is_peak">
-                                    <span class="rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-inset ring-amber-500/20">Puncak</span>
+                                    <span class="rounded-md bg-amber-50 px-1.5 py-0.5 text-xs font-bold text-amber-700 ring-1 ring-inset ring-amber-500/20">Puncak</span>
                                 </template>
                             </div>
                             <p class="mt-1 font-mono text-sm font-bold text-slate-900" x-text="points[activeIdx]?.formatted"></p>
                             @if ($avgRevenue > 0)
                                 <template x-if="points[activeIdx]?.total >= {{ $avgRevenue }}">
-                                    <div class="mt-1 flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600">
+                                    <div class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
                                         <span class="size-1.5 rounded-full bg-emerald-500"></span>
                                         <span>Di atas rata-rata</span>
                                     </div>
@@ -525,7 +525,7 @@
                                 </span>
                             @endforeach
                         @else
-                            <span class="text-xs text-slate-400">Belum ada pembayaran sah.</span>
+                            <span class="text-xs text-slate-500">Belum ada pembayaran sah.</span>
                         @endif
                     </div>
                 </div>
@@ -859,7 +859,7 @@
                                     <p class="text-xs font-bold font-mono text-brand-700">
                                         Rp {{ number_format($service->price, 0, ',', '.') }}
                                     </p>
-                                    <span class="text-xs text-slate-400">/ kg</span>
+                                    <span class="text-xs text-slate-500">/ kg</span>
                                 </div>
                             </div>
                         @empty

@@ -44,7 +44,7 @@
                     1
                 </a>
                 @if ($windowStart > 2)
-                    <span class="inline-flex size-8 items-center justify-center text-xs text-slate-400" aria-hidden="true">&hellip;</span>
+                    <span class="inline-flex size-8 items-center justify-center text-xs text-slate-500" aria-hidden="true">&hellip;</span>
                 @endif
             @endif
 
@@ -66,7 +66,7 @@
 
             @if ($windowEnd < $lastPage)
                 @if ($windowEnd < $lastPage - 1)
-                    <span class="inline-flex size-8 items-center justify-center text-xs text-slate-400" aria-hidden="true">&hellip;</span>
+                    <span class="inline-flex size-8 items-center justify-center text-xs text-slate-500" aria-hidden="true">&hellip;</span>
                 @endif
                 <a
                     href="{{ $paginator->url($lastPage) }}"

@@ -41,19 +41,19 @@
             {{-- Kartu Statistik Ringkas --}}
             <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
-                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Total Akun</span>
+                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">Total Akun</span>
                     <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['all']) }}</p>
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
-                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Administrator</span>
+                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">Administrator</span>
                     <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['admin']) }}</p>
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
-                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Staf & Kasir</span>
+                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">Staf & Kasir</span>
                     <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['staff']) }}</p>
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
-                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Akun Aktif</span>
+                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">Akun Aktif</span>
                     <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['active']) }}</p>
                 </div>
             </div>
@@ -215,7 +215,7 @@
                                             >
                                             <div class="h-5 w-9 rounded-full bg-slate-200 transition-colors peer-checked:bg-emerald-500 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"></div>
                                             <div class="absolute left-0.5 top-0.5 size-4 rounded-full bg-white shadow-xs transition-transform peer-checked:translate-x-4"></div>
-                                            <span class="text-xs font-medium {{ $user->is_active ? 'text-emerald-700' : 'text-slate-400' }}">
+                                            <span class="text-xs font-medium {{ $user->is_active ? 'text-emerald-700' : 'text-slate-500' }}">
                                                 {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
                                             </span>
                                         </label>

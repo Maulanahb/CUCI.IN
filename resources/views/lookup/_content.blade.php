@@ -40,7 +40,7 @@
                 <button
                     type="button"
                     onclick="clearRecentSearches()"
-                    class="text-xs text-slate-400 hover:text-rose-600 transition cursor-pointer"
+                    class="text-xs text-slate-500 hover:text-rose-600 transition cursor-pointer"
                 >
                     Hapus Riwayat
                 </button>
@@ -186,7 +186,7 @@
                     <p class="mt-0.5 text-xs sm:text-sm font-bold text-slate-800">
                         {{ $maskedCustomerName }}
                     </p>
-                    <p class="mt-0.5 text-xs text-slate-400">Nama disamarkan untuk perlindungan privasi.</p>
+                    <p class="mt-0.5 text-xs text-slate-500">Nama disamarkan untuk perlindungan privasi.</p>
                 </div>
             </div>
 
@@ -385,14 +385,14 @@
                             </p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-600 pt-1">
                                 <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                                    <span class="text-[11px] text-slate-400 block font-semibold">BCA Outlet CUCI.IN</span>
+                                    <span class="text-xs text-slate-500 block font-semibold">BCA Outlet CUCI.IN</span>
                                     <span class="font-mono font-bold text-slate-900 text-sm">822 0192 881</span>
-                                    <span class="text-[10px] text-slate-500 block">a.n CUCI IN LAUNDRY</span>
+                                    <span class="text-xs text-slate-500 block">a.n CUCI IN LAUNDRY</span>
                                 </div>
                                 <div class="p-2.5 rounded-lg bg-slate-50 border border-slate-100">
-                                    <span class="text-[11px] text-slate-400 block font-semibold">QRIS Outlet</span>
+                                    <span class="text-xs text-slate-500 block font-semibold">QRIS Outlet</span>
                                     <span class="font-bold text-slate-900 text-sm">Semua E-Wallet / Mobile Banking</span>
-                                    <span class="text-[10px] text-slate-500 block">Scan QR pada struk fisik atau hubungi kasir</span>
+                                    <span class="text-xs text-slate-500 block">Scan QR pada struk fisik atau hubungi kasir</span>
                                 </div>
                             </div>
                         </div>
@@ -456,7 +456,7 @@
                                     class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-mono font-bold text-slate-900 tracking-widest placeholder:tracking-normal placeholder:font-sans placeholder:font-normal transition focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
                                 />
                             </div>
-                            <p class="mt-1 text-[11px] text-slate-500">
+                            <p class="mt-1 text-xs text-slate-500">
                                 Masukkan 4 angka terakhir nomor telepon yang Anda berikan ke kasir saat menitipkan cucian.
                             </p>
                             @error('phone_last_4')
@@ -478,7 +478,7 @@
                                 @change="handleFile($event)"
                                 class="block w-full text-xs text-slate-600 file:mr-3 file:rounded-xl file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-brand-700 hover:file:bg-brand-100 cursor-pointer"
                             />
-                            <p class="mt-1 text-[11px] text-slate-500">Format JPG, PNG, atau WEBP (Maksimal 5 MB).</p>
+                            <p class="mt-1 text-xs text-slate-500">Format JPG, PNG, atau WEBP (Maksimal 5 MB).</p>
                             @error('proof_file')
                                 <p class="mt-1 text-xs text-rose-600 font-semibold">{{ $message }}</p>
                             @enderror

@@ -69,7 +69,7 @@
                                 <span>mengubah status</span>
                             </p>
                             <time
-                                class="shrink-0 text-2xs text-slate-400"
+                                class="shrink-0 text-2xs text-slate-500"
                                 datetime="{{ $activity->changed_at?->toIso8601String() }}"
                                 title="{{ $activity->changed_at?->locale('id')->translatedFormat('d F Y, H:i') }}"
                             >

@@ -138,7 +138,7 @@
                     {{-- Layanan Dalam Transaksi --}}
                     @if ($complaint->transaction?->details && $complaint->transaction->details->isNotEmpty())
                         <div class="mt-5 border-t border-slate-100 pt-4">
-                            <p class="text-sm font-medium text-slate-400 mb-2">Item Layanan</p>
+                            <p class="text-sm font-medium text-slate-500 mb-2">Item Layanan</p>
                             <div class="space-y-1.5">
                                 @foreach ($complaint->transaction->details as $detail)
                                     <div class="flex items-center justify-between border-b border-slate-100 py-3 text-sm">

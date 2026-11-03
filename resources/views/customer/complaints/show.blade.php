@@ -102,7 +102,7 @@
                                 <x-lucide-clock class="size-5" aria-hidden="true" />
                             </div>
                         @else
-                            <div class="relative flex size-10 items-center justify-center rounded-full bg-white border-2 border-slate-200 text-slate-400 font-bold">
+                            <div class="relative flex size-10 items-center justify-center rounded-full bg-white border-2 border-slate-200 text-slate-500 font-bold">
                                 <x-lucide-clock class="size-5" aria-hidden="true" />
                             </div>
                         @endif
@@ -123,7 +123,7 @@
                                 <x-lucide-check-circle-2 class="size-5" aria-hidden="true" />
                             </div>
                         @else
-                            <div class="relative flex size-10 items-center justify-center rounded-full bg-white border-2 border-slate-200 text-slate-400 font-bold">
+                            <div class="relative flex size-10 items-center justify-center rounded-full bg-white border-2 border-slate-200 text-slate-500 font-bold">
                                 <x-lucide-check-circle-2 class="size-5" aria-hidden="true" />
                             </div>
                         @endif

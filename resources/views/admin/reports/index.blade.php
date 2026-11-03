@@ -323,7 +323,7 @@
                                     <div class="font-bold text-slate-900">
                                         {{ $tx->transaction_code }}
                                     </div>
-                                    <div class="text-[11px] text-slate-400">
+                                    <div class="text-xs text-slate-500">
                                         Kasir: {{ $tx->creator?->name ?? 'Staf' }}
                                     </div>
                                 </td>
@@ -333,7 +333,7 @@
                                     <div class="text-xs font-medium text-slate-800">
                                         {{ $tx->created_at->format('d M Y') }}
                                     </div>
-                                    <div class="text-[11px] text-slate-400">
+                                    <div class="text-xs text-slate-500">
                                         {{ $tx->created_at->format('H:i') }} WIB
                                     </div>
                                 </td>
@@ -343,7 +343,7 @@
                                     <div class="font-semibold text-slate-800">
                                         {{ $tx->customer?->name ?? 'Pelanggan Umum' }}
                                     </div>
-                                    <div class="text-[11px] text-slate-500">
+                                    <div class="text-xs text-slate-500">
                                         {{ $tx->customer?->phone ?? '-' }}
                                     </div>
                                 </td>
@@ -355,7 +355,7 @@
                                             {{ $tx->details->first()->service?->name ?? 'Layanan' }}
                                             <span class="font-semibold text-brand-600">({{ $tx->details->first()->weight }} {{ $tx->details->first()->service?->unit ?? 'kg' }})</span>
                                             @if ($tx->details->count() > 1)
-                                                <span class="text-slate-400 text-[11px]">+{{ $tx->details->count() - 1 }} lainnya</span>
+                                                <span class="text-slate-500 text-xs">+{{ $tx->details->count() - 1 }} lainnya</span>
                                             @endif
                                         @else
                                             <span class="text-slate-400">-</span>
@@ -377,7 +377,7 @@
                                             default => 'bg-slate-100 text-slate-700 border-slate-200',
                                         };
                                     @endphp
-                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold {{ $statusClass }}">
+                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $statusClass }}">
                                         {{ $tx->status->value ?? $tx->status }}
                                     </span>
                                 </td>
@@ -391,7 +391,7 @@
                                             default => 'bg-rose-50 text-rose-700 border-rose-200',
                                         };
                                     @endphp
-                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold {{ $payClass }}">
+                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $payClass }}">
                                         {{ $tx->payment_status }}
                                     </span>
                                 </td>
@@ -402,7 +402,7 @@
                                         Rp {{ number_format($tx->total_amount, 0, ',', '.') }}
                                     </div>
                                     @if ($tx->remaining_amount > 0)
-                                        <div class="text-[11px] text-rose-600 font-medium">
+                                        <div class="text-xs text-rose-600 font-medium">
                                             Sisa: Rp {{ number_format($tx->remaining_amount, 0, ',', '.') }}
                                         </div>
                                     @endif

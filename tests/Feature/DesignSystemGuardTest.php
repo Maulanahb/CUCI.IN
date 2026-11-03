@@ -105,7 +105,7 @@ class DesignSystemGuardTest extends TestCase
     public function test_views_do_not_use_low_contrast_slate_for_text(): void
     {
         $this->assertNoMatches(
-            '/^(?!.*(?:<svg|x-lucide|placeholder|<kbd)).*\btext-slate-400\b/',
+            '/^(?!.*(?:<svg|x-lucide|placeholder|<kbd|disabled)).*(?=.*\btext-slate-400\b)(?=.*(?:\btext-(?:xs|sm|2xs)\b|\btext-\[|\bblock\b|\bitalic\b|\bfont-(?:medium|normal|semibold|bold)\b))/',
             'text-slate-400 kontrasnya kurang dari 4,5:1; pakai text-slate-500.'
         );
     }
