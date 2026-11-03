@@ -1,5 +1,5 @@
 <x-layouts::guest title="Daftar Akun Pelanggan" maxWidth="max-w-lg">
-    <div class="rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-xs backdrop-blur-xs sm:p-8">
+    <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs sm:p-8">
         {{-- Header & Logo Brand --}}
         <div class="flex flex-col items-center text-center">
             <a href="{{ route('home') }}" class="flex items-center gap-2.5 transition hover:opacity-90">
@@ -189,7 +189,7 @@
             <button
                 type="submit"
                 id="register-submit-button"
-                class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-2.5 text-center text-sm font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 active:scale-[0.99] cursor-pointer"
+                class="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-2.5 text-center text-sm font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 cursor-pointer"
             >
                 <x-lucide-user-plus class="size-4" />
                 <span>Daftar Sekarang</span>

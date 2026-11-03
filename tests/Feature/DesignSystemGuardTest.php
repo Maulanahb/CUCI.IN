@@ -68,8 +68,7 @@ class DesignSystemGuardTest extends TestCase
     {
         $this->assertNoMatches('/bg-gradient-|bg-linear-|bg-clip-text|blur-3xl/', 'Gradien dan blur dekoratif dilarang DESIGN.md.');
 
-        $this->assertNoMatches('/backdrop-blur/', 'Blur hanya untuk header lengket, modal, dan sheet.', [
-            'layouts/app.blade.php',
+        $this->assertNoMatches('/^(?!.*\bsticky\b).*backdrop-blur/', 'Blur hanya untuk header lengket, modal, dan sheet.', [
             'components/ui/modal.blade.php',
             'components/ui/sheet.blade.php',
         ]);

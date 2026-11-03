@@ -23,7 +23,7 @@
                     href="{{ route('admin.reports.export.pdf', request()->query()) }}"
                     target="_blank"
                     id="btn-export-pdf"
-                    class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 shadow-2xs transition hover:bg-rose-100 hover:border-rose-300 active:scale-95"
+                    class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 shadow-2xs transition hover:bg-rose-100 hover:border-rose-300"
                     title="Cetak atau Unduh Dokumen Ringkasan PDF (DomPDF)"
                 >
                     <svg class="size-4 shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -37,7 +37,7 @@
                 <a
                     href="{{ route('admin.reports.export.excel', request()->query()) }}"
                     id="btn-export-excel"
-                    class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-700 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-300 active:scale-95"
+                    class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-700 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-300"
                     title="Unduh Rekap Spreadsheet Excel (.xls)"
                 >
                     <svg class="size-4 shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -50,7 +50,7 @@
                 <a
                     href="{{ route('admin.reports.export.csv', request()->query()) }}"
                     id="btn-export-csv"
-                    class="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-2 text-xs font-bold text-brand-700 shadow-2xs transition hover:bg-brand-100 hover:border-brand-300 active:scale-95"
+                    class="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-2 text-xs font-bold text-brand-700 shadow-2xs transition hover:bg-brand-100 hover:border-brand-300"
                     title="Aliran CSV Cepat Hemat Memori untuk Dataset Besar (Materi P9)"
                 >
                     <svg class="size-4 shrink-0 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -64,7 +64,7 @@
         {{-- Kartu Metrik Ringkasan Kinerja (Agregasi SQL PostgreSQL/MySQL) --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {{-- Omzet Masuk (Pendapatan Terverifikasi) --}}
-            <div class="relative overflow-hidden rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50/50 to-white p-5 shadow-xs">
+            <div class="relative overflow-hidden rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold uppercase tracking-wider text-emerald-700">Omzet Masuk</p>
                     <div class="flex size-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
@@ -82,7 +82,7 @@
             </div>
 
             {{-- Total Tagihan Transaksi --}}
-            <div class="relative overflow-hidden rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50/50 to-white p-5 shadow-xs">
+            <div class="relative overflow-hidden rounded-2xl border border-brand-100 bg-white p-5 shadow-xs">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Nilai Tagihan Bruto</p>
                     <div class="flex size-9 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
@@ -100,7 +100,7 @@
             </div>
 
             {{-- Piutang Belum Lunas --}}
-            <div class="relative overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50/50 to-white p-5 shadow-xs">
+            <div class="relative overflow-hidden rounded-2xl border border-amber-100 bg-white p-5 shadow-xs">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold uppercase tracking-wider text-amber-700">Piutang Berjalan</p>
                     <div class="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
@@ -263,7 +263,7 @@
                         <button
                             type="submit"
                             id="btn-apply-filter"
-                            class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-700 transition active:scale-95"
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-700 transition"
                         >
                             <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />

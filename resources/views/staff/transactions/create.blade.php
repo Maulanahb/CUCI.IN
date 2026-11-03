@@ -130,7 +130,7 @@
                                 type="button"
                                 @click="selectedCategory = 'all'; searchQuery = ''"
                                 :class="selectedCategory === 'all' && searchQuery === '' ? 'bg-brand-700 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition active:scale-95 cursor-pointer shrink-0"
+                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition cursor-pointer shrink-0"
                             >
                                 Semua
                             </button>
@@ -138,7 +138,7 @@
                                 type="button"
                                 @click="selectedCategory = 'express'; searchQuery = ''"
                                 :class="selectedCategory === 'express' ? 'bg-amber-600 text-white font-bold shadow-2xs' : 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100'"
-                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition active:scale-95 cursor-pointer shrink-0 flex items-center gap-1"
+                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition cursor-pointer shrink-0 flex items-center gap-1"
                             >
                                 <x-lucide-zap class="size-3.5 text-amber-500 fill-amber-500" x-bind:class="selectedCategory === 'express' ? 'text-white fill-white' : ''" />
                                 <span>⚡ Paket Kilat</span>
@@ -147,7 +147,7 @@
                                 type="button"
                                 @click="selectedCategory = 'kiloan'; searchQuery = ''"
                                 :class="selectedCategory === 'kiloan' ? 'bg-brand-700 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition active:scale-95 cursor-pointer shrink-0"
+                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition cursor-pointer shrink-0"
                             >
                                 Kiloan (Kg)
                             </button>
@@ -155,7 +155,7 @@
                                 type="button"
                                 @click="selectedCategory = 'satuan'; searchQuery = ''"
                                 :class="selectedCategory === 'satuan' ? 'bg-brand-700 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition active:scale-95 cursor-pointer shrink-0"
+                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition cursor-pointer shrink-0"
                             >
                                 Satuan (Pcs)
                             </button>
@@ -163,7 +163,7 @@
                                 type="button"
                                 @click="selectedCategory = 'khusus'; searchQuery = ''"
                                 :class="selectedCategory === 'khusus' ? 'bg-brand-700 text-white font-bold shadow-2xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
-                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition active:scale-95 cursor-pointer shrink-0"
+                                class="rounded-lg px-3 py-1.5 text-sm font-semibold transition cursor-pointer shrink-0"
                             >
                                 Khusus
                             </button>
@@ -463,7 +463,7 @@
                                                         <button
                                                             type="button"
                                                             @click="stepWeight(index, w)"
-                                                            class="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm font-bold font-mono tabular-nums text-slate-600 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition active:scale-95 cursor-pointer shadow-2xs"
+                                                            class="rounded-md border border-slate-200 bg-white px-2 py-1 text-sm font-bold font-mono tabular-nums text-slate-600 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition cursor-pointer shadow-2xs"
                                                             :title="'Tambah ' + w"
                                                         >
                                                             <span x-text="'+' + w"></span>
@@ -594,7 +594,7 @@
                                 :disabled="isSubmitting"
                                 title="Pintasan keyboard: F9 (atau Ctrl + Enter)"
                                 @click="if ($event.ctrlKey || $event.metaKey) { $event.preventDefault(); $event.stopPropagation(); const f = document.getElementById('transaction-form'); if (f?.reportValidity()) { isSubmitting = true; f.submit(); } }"
-                                class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-60 cursor-pointer shadow-sm active:scale-[0.99]"
+                                class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-5 text-sm font-bold text-white transition-colors hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-60 cursor-pointer shadow-sm"
                             >
                                 <svg x-show="isSubmitting" x-cloak class="size-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -622,7 +622,7 @@
             x-transition:leave="ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 translate-y-full"
-            class="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-slate-200/90 bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
+            class="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-slate-200/90 bg-white px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
         >
             <div class="flex items-center justify-between gap-3">
                 <div class="min-w-0">
@@ -635,7 +635,7 @@
                 </div>
                 <a
                     href="#kasir-ticket-panel"
-                    class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-brand-800 active:scale-98"
+                    class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-brand-800"
                 >
                     <x-lucide-receipt class="size-4" />
                     <span>Lihat Nota & Bayar</span>
@@ -731,7 +731,7 @@
                     <button
                         type="submit"
                         id="btn-save-quick-customer"
-                        class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-2xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 active:scale-98 cursor-pointer"
+                        class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-2xs transition hover:bg-brand-800 focus:outline-none focus:ring-2 focus:ring-brand-500/20 cursor-pointer"
                     >
                         <svg id="btn-save-quick-customer-spinner" class="hidden size-3.5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

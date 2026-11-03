@@ -469,7 +469,7 @@
                         <button
                             type="submit"
                             :disabled="isSubmitting"
-                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-brand-800 active:scale-98 disabled:opacity-50 cursor-pointer"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-brand-800 disabled:opacity-50 cursor-pointer"
                         >
                             <template x-if="isSubmitting">
                                 <x-lucide-loader-2 class="size-4 animate-spin text-white" />

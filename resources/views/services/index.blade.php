@@ -423,7 +423,7 @@
                                                 type="submit"
                                                 title="Klik untuk mengubah status ketersediaan"
                                                 @class([
-                                                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset transition cursor-pointer select-none active:scale-95',
+                                                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset transition cursor-pointer select-none',
                                                     'bg-emerald-50 text-emerald-700 ring-emerald-600/20 hover:bg-emerald-100/70' => $service->is_active,
                                                     'bg-slate-50 text-slate-600 ring-slate-600/15 hover:bg-slate-100' => ! $service->is_active,
                                                 ])

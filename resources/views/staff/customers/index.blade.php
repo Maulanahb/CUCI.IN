@@ -17,7 +17,7 @@
             <x-ui.button
                 type="button"
                 @click="openCreate()"
-                class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-98"
+                class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
             >
                 <x-lucide-user-plus class="size-4" />
                 <span>Tambah Pelanggan</span>
@@ -234,7 +234,7 @@
                                         <button
                                             type="button"
                                             @click="openDetail({{ $customer->id }})"
-                                            class="group/act inline-flex min-h-9 items-center justify-center gap-1 rounded-lg border border-brand-200/80 bg-brand-50/90 px-2 py-1 text-xs font-bold text-brand-800 shadow-2xs transition-all duration-150 hover:bg-brand-700 hover:text-white hover:border-brand-700 active:scale-95 cursor-pointer"
+                                            class="group/act inline-flex min-h-9 items-center justify-center gap-1 rounded-lg border border-brand-200/80 bg-brand-50/90 px-2 py-1 text-xs font-bold text-brand-800 shadow-2xs transition-all duration-150 hover:bg-brand-700 hover:text-white hover:border-brand-700 cursor-pointer"
                                             title="Buka panel profil dan riwayat cucian"
                                         >
                                             <x-lucide-eye class="size-3.5 text-brand-700 transition-colors duration-150 group-hover/act:text-white" />
@@ -245,7 +245,7 @@
                                         <button
                                             type="button"
                                             @click="openEdit({{ $customer->id }})"
-                                            class="group/act inline-flex min-h-9 items-center justify-center gap-1 rounded-lg border border-amber-200/80 bg-amber-50/90 px-2 py-1 text-xs font-bold text-amber-900 shadow-2xs transition-all duration-150 hover:bg-amber-700 hover:text-white hover:border-amber-700 active:scale-95 cursor-pointer"
+                                            class="group/act inline-flex min-h-9 items-center justify-center gap-1 rounded-lg border border-amber-200/80 bg-amber-50/90 px-2 py-1 text-xs font-bold text-amber-900 shadow-2xs transition-all duration-150 hover:bg-amber-700 hover:text-white hover:border-amber-700 cursor-pointer"
                                             title="Edit data kontak dan alamat domisili"
                                         >
                                             <x-lucide-pencil class="size-3.5 text-amber-700 transition-colors duration-150 group-hover/act:text-white" />
@@ -257,7 +257,7 @@
                                             <button
                                                 type="button"
                                                 @click="openDelete({{ json_encode($cData) }})"
-                                                class="group/act inline-flex min-h-9 w-[76px] items-center justify-center gap-1 rounded-lg border border-rose-200/80 bg-rose-50/90 px-2 py-1 text-xs font-bold text-rose-900 shadow-2xs transition-all duration-150 hover:bg-rose-600 hover:text-white hover:border-rose-600 active:scale-95 cursor-pointer"
+                                                class="group/act inline-flex min-h-9 w-[76px] items-center justify-center gap-1 rounded-lg border border-rose-200/80 bg-rose-50/90 px-2 py-1 text-xs font-bold text-rose-900 shadow-2xs transition-all duration-150 hover:bg-rose-600 hover:text-white hover:border-rose-600 cursor-pointer"
                                                 title="Hapus pelanggan (hanya diperbolehkan untuk yang belum memiliki riwayat transaksi)"
                                             >
                                                 <x-lucide-trash-2 class="size-3.5 text-rose-700 transition-colors duration-150 group-hover/act:text-white" />
@@ -340,7 +340,7 @@
                                 <button
                                     type="button"
                                     @click="openEdit({{ $customer->id }})"
-                                    class="inline-flex items-center gap-1 min-h-11 rounded-lg border border-amber-200/80 bg-amber-50/80 px-2.5 py-2 text-xs font-bold text-amber-800 shadow-2xs hover:bg-amber-700 hover:text-white transition cursor-pointer active:scale-95"
+                                    class="inline-flex items-center gap-1 min-h-11 rounded-lg border border-amber-200/80 bg-amber-50/80 px-2.5 py-2 text-xs font-bold text-amber-800 shadow-2xs hover:bg-amber-700 hover:text-white transition cursor-pointer"
                                 >
                                     <x-lucide-pencil class="size-3 text-amber-600" />
                                     <span>Edit</span>
@@ -348,7 +348,7 @@
                                 <button
                                     type="button"
                                     @click="openDetail({{ $customer->id }})"
-                                    class="inline-flex items-center gap-1 min-h-11 rounded-lg bg-brand-700 px-3 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-700 transition cursor-pointer active:scale-95"
+                                    class="inline-flex items-center gap-1 min-h-11 rounded-lg bg-brand-700 px-3 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-700 transition cursor-pointer"
                                 >
                                     <x-lucide-eye class="size-3 text-brand-200" />
                                     <span>Buka Panel &rarr;</span>
@@ -448,7 +448,7 @@
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                     <a
                         :href="selectedCustomer?.create_order_url"
-                        class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs hover:bg-brand-800 transition active:scale-98 cursor-pointer"
+                        class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs hover:bg-brand-800 transition cursor-pointer"
                         title="Buka Kasir POS untuk membuat nota cucian baru bagi pelanggan ini"
                     >
                         <x-lucide-plus-circle class="size-4 text-brand-200" />
@@ -460,7 +460,7 @@
                             :href="selectedCustomer?.whatsapp_url"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm font-bold text-emerald-800 hover:bg-emerald-100 transition active:scale-98 cursor-pointer shadow-2xs shrink-0"
+                            class="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm font-bold text-emerald-800 hover:bg-emerald-100 transition cursor-pointer shadow-2xs shrink-0"
                             title="Buka obrolan WhatsApp"
                         >
                             <x-lucide-message-circle class="size-4 text-emerald-600" />
@@ -477,7 +477,7 @@
                             <button
                                 type="button"
                                 @click="openEdit(selectedCustomerId)"
-                                class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-2xs hover:border-amber-700 hover:bg-amber-50 hover:text-amber-800 transition cursor-pointer active:scale-95"
+                                class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-2xs hover:border-amber-700 hover:bg-amber-50 hover:text-amber-800 transition cursor-pointer"
                             >
                                 <x-lucide-pencil class="size-3 text-slate-500" />
                                 <span>Edit Profil</span>
@@ -766,7 +766,7 @@
                     <button
                         type="button"
                         @click="closeDrawer()"
-                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer active:scale-98"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
                     >
                         Tutup Panel
                     </button>
@@ -777,7 +777,7 @@
                     <button
                         type="button"
                         @click="drawerMode = 'detail'"
-                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer active:scale-98"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
                     >
                         Batal
                     </button>
@@ -785,7 +785,7 @@
                         type="button"
                         @click="const f = document.getElementById('form-edit-customer'); if (f?.reportValidity()) { isSubmitting = true; f.submit(); }"
                         :disabled="isSubmitting"
-                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs hover:bg-brand-800 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs hover:bg-brand-800 transition cursor-pointer disabled:opacity-50"
                     >
                         <x-lucide-check class="size-3.5" />
                         <span x-text="isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'">Simpan Perubahan</span>
@@ -798,7 +798,7 @@
                     <button
                         type="button"
                         @click="closeDrawer()"
-                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer active:scale-98"
+                        class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition shadow-2xs cursor-pointer"
                     >
                         Batal
                     </button>
@@ -806,7 +806,7 @@
                         type="button"
                         @click="const f = document.getElementById('form-create-customer'); if (f?.reportValidity()) { isSubmitting = true; f.submit(); }"
                         :disabled="isSubmitting"
-                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs hover:bg-brand-800 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                        class="inline-flex items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs hover:bg-brand-800 transition cursor-pointer disabled:opacity-50"
                     >
                         <x-lucide-check class="size-3.5" />
                         <span x-text="isSubmitting ? 'Mendaftarkan...' : 'Daftarkan Pelanggan'">Daftarkan Pelanggan</span>

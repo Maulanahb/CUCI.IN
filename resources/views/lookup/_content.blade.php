@@ -172,7 +172,7 @@
                             id="btn-copy-link"
                             onclick="copyTrackingLink()"
                             data-url="{{ route('transactions.lookup', ['code' => $transaction->transaction_code]) }}"
-                            class="inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-100 transition active:scale-95 cursor-pointer print:hidden"
+                            class="inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-100 transition cursor-pointer print:hidden"
                             title="Salin tautan pelacakan untuk dibagikan"
                         >
                             <x-lucide-copy id="icon-copy" class="size-3.5 text-slate-500" />
@@ -323,7 +323,7 @@
         {{-- Form Unggah Bukti Pembayaran untuk Pelanggan Umum / Guest (Tanpa Login) --}}
         @if (($paymentSummary['submittable_amount'] ?? 0) > 0 && ! $isCanceled)
             <div
-                class="rounded-2xl border border-brand-200 bg-linear-to-br from-brand-50/50 to-white p-5 sm:p-6 shadow-xs space-y-4 print:hidden"
+                class="rounded-2xl border border-brand-200 bg-brand-50/40 p-5 sm:p-6 shadow-xs space-y-4 print:hidden"
                 x-data="{
                     openUpload: {{ $errors->has('phone_last_4') || $errors->has('amount') || $errors->has('proof_file') ? 'true' : 'false' }},
                     method: 'Transfer',
@@ -664,7 +664,7 @@
         recents.forEach(code => {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-mono font-medium text-slate-700 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 transition active:scale-95 cursor-pointer';
+            btn.className = 'inline-flex min-h-[32px] items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-mono font-medium text-slate-700 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 transition cursor-pointer';
             btn.innerHTML = `<span class="size-1.5 rounded-full bg-brand-500"></span><span>${code}</span>`;
             btn.onclick = () => selectRecentCode(code);
             chips.appendChild(btn);

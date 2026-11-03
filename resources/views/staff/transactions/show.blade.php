@@ -156,7 +156,7 @@
                         <button
                             type="button"
                             @click="copyCode()"
-                            class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-2xs transition-colors hover:bg-slate-50 hover:text-slate-700 cursor-pointer active:scale-95"
+                            class="inline-flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 shadow-2xs transition-colors hover:bg-slate-50 hover:text-slate-700 cursor-pointer"
                             :aria-label="copied ? 'Kode nota tersalin' : 'Salin kode nota'"
                             title="Salin kode nota"
                         >
@@ -223,7 +223,7 @@
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="status" value="Diambil">
-                                    <x-ui.button type="submit" variant="primary" size="sm" class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98">
+                                    <x-ui.button type="submit" variant="primary" size="sm" class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer">
                                         <x-lucide-check-circle class="size-4" />
                                         <span>Tandai Diambil</span>
                                     </x-ui.button>
@@ -235,7 +235,7 @@
                                     size="sm"
                                     x-ref="paymentTrigger"
                                     @click="openPayment($event)"
-                                    class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98"
+                                    class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer"
                                 >
                                     <x-lucide-credit-card class="size-4" />
                                     <span>Catat Pembayaran</span>
@@ -250,7 +250,7 @@
                             size="sm"
                             target="_blank"
                             rel="noopener"
-                            class="inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98"
+                            class="inline-flex items-center gap-1.5 shadow-2xs cursor-pointer"
                         >
                             <x-lucide-printer class="size-4 text-slate-500" />
                             <span>Cetak Nota</span>
@@ -261,7 +261,7 @@
                             :href="route($currentRoutePrefix . '.transactions.index')"
                             variant="secondary"
                             size="sm"
-                            class="inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98"
+                            class="inline-flex items-center gap-1.5 shadow-2xs cursor-pointer"
                         >
                             <x-lucide-arrow-left class="size-4 text-slate-500" />
                             <span>Kembali</span>
@@ -436,7 +436,7 @@
                             variant="primary"
                             size="sm"
                             @click="openPayment($event)"
-                            class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98"
+                            class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer"
                         >
                             <x-lucide-plus class="size-4" />
                             <span>Catat Pembayaran / Pelunasan</span>
@@ -630,15 +630,15 @@
 
                             <div class="mb-2 flex flex-wrap gap-1.5">
                                 <button type="button" @click="paymentAmount = remaining; cashReceived = remaining"
-                                    class="min-h-8 rounded-lg border border-brand-200 bg-brand-50 px-2.5 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-100 cursor-pointer shadow-2xs active:scale-95">
+                                    class="min-h-8 rounded-lg border border-brand-200 bg-brand-50 px-2.5 text-sm font-bold text-brand-700 transition-colors hover:bg-brand-100 cursor-pointer shadow-2xs">
                                     Uang Pas
                                 </button>
                                 <button type="button" @click="paymentAmount = Math.min(remaining, 50000); cashReceived = paymentAmount"
-                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs active:scale-95">
+                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs">
                                     Rp 50.000
                                 </button>
                                 <button type="button" @click="paymentAmount = Math.min(remaining, 100000); cashReceived = paymentAmount"
-                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs active:scale-95">
+                                    class="min-h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-sm font-bold text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 cursor-pointer shadow-2xs">
                                     Rp 100.000
                                 </button>
                             </div>
@@ -760,7 +760,7 @@
                                 type="submit"
                                 x-bind:disabled="submitting || (method === 'Tunai' && shortfall > 0) || ! paymentAmount || paymentAmount > remaining"
                                 @click="if ($event.ctrlKey || $event.metaKey) { $event.preventDefault(); $event.stopPropagation(); submitPayment(); }"
-                                class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs transition hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-50 cursor-pointer active:scale-98"
+                                class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs transition hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
                             >
                                 <svg x-show="submitting" class="size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true" x-cloak>
                                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -897,7 +897,7 @@
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="status" value="{{ $nextStatus }}">
-                            <x-ui.button type="submit" variant="primary" size="sm" class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-98">
+                            <x-ui.button type="submit" variant="primary" size="sm" class="w-full sm:w-auto inline-flex items-center gap-1.5 shadow-2xs cursor-pointer">
                                 <span>Majukan ke {{ $nextStatus }}</span>
                                 <x-lucide-arrow-right class="size-3.5" />
                             </x-ui.button>
@@ -1004,7 +1004,7 @@
                             <x-ui.button
                                 type="submit"
                                 variant="primary"
-                                class="w-full sm:w-auto sm:min-w-48 cursor-pointer shadow-2xs active:scale-98"
+                                class="w-full sm:w-auto sm:min-w-48 cursor-pointer shadow-2xs"
                                 x-bind:disabled="submitting"
                                 @click="if (! selectedStatus || selectedStatus === currentStatus) { $event.preventDefault(); showStatusHint = true; $refs.statusSelect?.focus(); }"
                             >
@@ -1093,7 +1093,7 @@
                             </p>
                         </div>
 
-                        <x-ui.button type="button" variant="danger-outline" size="sm" @click="confirming = true" class="cursor-pointer active:scale-98">
+                        <x-ui.button type="button" variant="danger-outline" size="sm" @click="confirming = true" class="cursor-pointer">
                             Batalkan transaksi
                         </x-ui.button>
                     </div>

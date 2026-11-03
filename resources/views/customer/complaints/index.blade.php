@@ -274,7 +274,7 @@
                                         <button
                                             type="button"
                                             @click="openSheet({{ $complaint->id }})"
-                                            class="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 active:scale-95 cursor-pointer"
+                                            class="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 cursor-pointer"
                                             aria-label="Buka panel rincian pengaduan {{ $complaint->complaint_code }}"
                                         >
                                             <span>Rincian</span>
@@ -497,7 +497,7 @@
                         <div class="border-t border-slate-100 pt-3">
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 block">Foto Bukti Pakaian</span>
                             <a :href="selectedComplaint?.photo_url" target="_blank" rel="noopener noreferrer" class="block overflow-hidden rounded-xl border border-slate-200 bg-slate-50 max-h-56">
-                                <img :src="selectedComplaint?.photo_url" alt="Foto Bukti Pengaduan" class="max-h-56 w-full object-contain hover:scale-102 transition duration-200" />
+                                <img :src="selectedComplaint?.photo_url" alt="Foto Bukti Pengaduan" class="max-h-56 w-full object-contain" />
                             </a>
                         </div>
                     </template>

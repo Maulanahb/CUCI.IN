@@ -63,7 +63,7 @@
             {{-- Total Pelanggan --}}
             <a
                 href="{{ route('admin.customers.index') }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300 hover:shadow-sm"
+                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300"
             >
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-medium text-slate-500 transition group-hover:text-brand-700">Total Pelanggan</span>
@@ -83,7 +83,7 @@
             {{-- Layanan Aktif --}}
             <a
                 href="{{ route('admin.services.index') }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300 hover:shadow-sm"
+                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300"
             >
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-medium text-slate-500 transition group-hover:text-brand-700">Layanan Aktif</span>
@@ -103,7 +103,7 @@
             {{-- Total Transaksi --}}
             <a
                 href="{{ route('admin.transactions.index') }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300 hover:shadow-sm"
+                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300"
             >
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-medium text-slate-500 transition group-hover:text-brand-700">Total Transaksi</span>
@@ -300,7 +300,7 @@
                         points: {{ Js::from($chartPoints) }}
                     }"
                 >
-                    <div class="relative w-full rounded-2xl border border-slate-100 bg-gradient-to-b from-brand-50/25 via-slate-50/15 to-white/0 p-3 pt-4 sm:p-4 sm:pt-5">
+                    <div class="relative w-full rounded-2xl border border-slate-100 bg-slate-50/50 p-3 pt-4 sm:p-4 sm:pt-5">
                         {{-- SVG Canvas --}}
                         <svg viewBox="0 0 700 250" class="h-52 w-full overflow-visible sm:h-60" preserveAspectRatio="none">
                             <defs>
@@ -433,7 +433,7 @@
                             x-transition:leave="transition ease-in duration-100"
                             x-transition:leave-start="opacity-100 scale-100"
                             x-transition:leave-end="opacity-0 scale-95"
-                            class="pointer-events-none absolute z-30 mb-2.5 -translate-y-full rounded-xl border border-slate-200/80 bg-white/95 px-3.5 py-2.5 text-slate-800 shadow-xl shadow-slate-300/40 ring-1 ring-slate-900/5 backdrop-blur-md whitespace-nowrap transition-all duration-150"
+                            class="pointer-events-none absolute z-30 mb-2.5 -translate-y-full rounded-xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-slate-800 shadow-md ring-1 ring-slate-900/5 whitespace-nowrap transition-all duration-150"
                             :class="{
                                 '-translate-x-[92%]': activeIdx >= 5,
                                 '-translate-x-[8%]': activeIdx <= 1,
@@ -626,7 +626,7 @@
                     </div>
                     <div class="mt-2 flex items-baseline justify-between gap-2">
                         <p class="text-2xl font-bold font-mono tabular-nums text-sky-900">{{ $statusCounts['diterima'] ?? 0 }}</p>
-                        <x-lucide-inbox class="size-4 text-sky-600 transition-transform group-hover:scale-110" />
+                        <x-lucide-inbox class="size-4 text-sky-600" />
                     </div>
                     <p class="mt-1 text-xs text-sky-700">Antrean masuk baru</p>
                 </a>
@@ -658,7 +658,7 @@
                     </div>
                     <div class="mt-2 flex items-baseline justify-between gap-2">
                         <p class="text-2xl font-bold font-mono tabular-nums text-emerald-900">{{ $statusCounts['selesai'] ?? 0 }}</p>
-                        <x-lucide-check-circle-2 class="size-4 text-emerald-600 transition-transform group-hover:scale-110" />
+                        <x-lucide-check-circle-2 class="size-4 text-emerald-600" />
                     </div>
                     <p class="mt-1 text-xs text-emerald-700">Siap diambil pelanggan</p>
                 </a>
@@ -674,7 +674,7 @@
                     </div>
                     <div class="mt-2 flex items-baseline justify-between gap-2">
                         <p class="text-2xl font-bold font-mono tabular-nums text-slate-900">{{ $statusCounts['diambil'] ?? 0 }}</p>
-                        <x-lucide-package-check class="size-4 text-slate-500 transition-transform group-hover:scale-110" />
+                        <x-lucide-package-check class="size-4 text-slate-500" />
                     </div>
                     <p class="mt-1 text-xs text-slate-600">Selesai diserahkan</p>
                 </a>
@@ -881,7 +881,7 @@
         </div>
 
         {{-- Catatan Operasional Eksekutif --}}
-        <div class="flex items-start gap-3 rounded-2xl border border-brand-200/80 bg-gradient-to-r from-brand-50/70 via-white to-brand-50/30 px-5 py-4 shadow-xs">
+        <div class="flex items-start gap-3 rounded-2xl border border-brand-200/80 bg-brand-50/50 px-5 py-4 shadow-xs">
             <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
                 <x-lucide-shield class="size-4" aria-hidden="true" />
             </div>

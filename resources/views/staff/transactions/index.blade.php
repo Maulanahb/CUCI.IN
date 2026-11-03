@@ -78,7 +78,7 @@
             :href="route($routePrefix . '.transactions.create')"
             size="sm"
             aria-label="Buka Kasir POS"
-            class="shadow-2xs active:scale-98 cursor-pointer gap-1.5"
+            class="shadow-2xs cursor-pointer gap-1.5"
         >
             <x-lucide-plus class="size-4" aria-hidden="true" />
             <span>Buka Kasir POS</span>
@@ -543,7 +543,7 @@
                         type="submit"
                         variant="primary"
                         size="sm"
-                        class="cursor-pointer shadow-2xs active:scale-98"
+                        class="cursor-pointer shadow-2xs"
                     >
                         <x-lucide-search class="size-3.5" aria-hidden="true" />
                         <span>Cari</span>
@@ -572,7 +572,7 @@
                 @endphp
                 <a
                     href="{{ route($routePrefix . '.transactions.index', array_filter(array_merge(request()->except(['page', 'status']), ['status' => $tab['status']]))) }}"
-                    class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition active:scale-95 {{ $isActive ? 'border-brand-700 bg-brand-700 text-white font-semibold' : 'border-slate-200/90 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-2xs' }}"
+                    class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition {{ $isActive ? 'border-brand-700 bg-brand-700 text-white font-semibold' : 'border-slate-200/90 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-2xs' }}"
                 >
                     <span>{{ $tab['label'] }}</span>
                     @if (!empty($tab['count']))
@@ -768,7 +768,7 @@
                                         <button
                                             type="button"
                                             @click="openDrawer({{ $transaction->id }})"
-                                            class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 shadow-2xs hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition active:scale-95 cursor-pointer"
+                                            class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 shadow-2xs hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition cursor-pointer"
                                             title="Buka panel edit cepat"
                                         >
                                             <x-lucide-sliders-horizontal class="size-4" aria-hidden="true" />
@@ -780,7 +780,7 @@
                                             target="_blank"
                                             rel="noopener"
                                             title="Cetak struk kasir"
-                                            class="cursor-pointer shadow-2xs active:scale-95"
+                                            class="cursor-pointer shadow-2xs"
                                         >
                                             <x-lucide-printer class="size-3.5 text-slate-500" aria-hidden="true" />
                                             <span class="sr-only">Cetak</span>
@@ -916,7 +916,7 @@
                                     size="xs"
                                     target="_blank"
                                     rel="noopener"
-                                    class="cursor-pointer shadow-2xs active:scale-95"
+                                    class="cursor-pointer shadow-2xs"
                                 >
                                     <x-lucide-printer class="size-3.5 text-slate-500" aria-hidden="true" />
                                     <span>Cetak</span>
@@ -1067,7 +1067,7 @@
                                     type="button"
                                     @click="advanceStatus('Diproses')"
                                     :disabled="isSubmitting"
-                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition disabled:opacity-50 cursor-pointer"
                                 >
                                     <template x-if="isSubmitting">
                                         <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1085,7 +1085,7 @@
                                     type="button"
                                     @click="advanceStatus('Selesai')"
                                     :disabled="isSubmitting"
-                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition disabled:opacity-50 cursor-pointer"
                                 >
                                     <template x-if="isSubmitting">
                                         <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1105,7 +1105,7 @@
                                             type="button"
                                             @click="advanceStatus('Diambil')"
                                             :disabled="isSubmitting"
-                                            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-emerald-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-emerald-700 transition disabled:opacity-50 cursor-pointer"
                                         >
                                             <template x-if="isSubmitting">
                                                 <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1192,7 +1192,7 @@
                                         type="button"
                                         @click="advanceStatus(newStatus)"
                                         :disabled="!canSubmitStatus() || isSubmitting"
-                                        class="w-full rounded-lg py-2 text-sm font-semibold shadow-xs transition active:scale-98 disabled:opacity-50"
+                                        class="w-full rounded-lg py-2 text-sm font-semibold shadow-xs transition disabled:opacity-50"
                                         :class="canSubmitStatus()
                                             ? (newStatus === 'Dibatalkan' ? 'bg-rose-600 hover:bg-rose-700 text-white cursor-pointer' : 'bg-slate-900 hover:bg-slate-800 text-white cursor-pointer')
                                             : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
@@ -1304,7 +1304,7 @@
                                 type="button"
                                 @click="quickPayExact()"
                                 :disabled="isSubmitting"
-                                class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition disabled:opacity-50 cursor-pointer"
                             >
                                 <template x-if="isSubmitting">
                                     <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1385,7 +1385,7 @@
                                     type="button"
                                     @click="submitCustomPayment()"
                                     :disabled="isSubmitting"
-                                    class="w-full rounded-lg bg-brand-600 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                                    class="w-full rounded-lg bg-brand-600 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition cursor-pointer disabled:opacity-50"
                                 >
                                     <span x-show="isSubmitting" class="inline-flex items-center gap-1.5">
                                         <x-lucide-loader-2 class="size-3.5 animate-spin" />
@@ -1409,7 +1409,7 @@
                             type="button"
                             @click="saveNotes()"
                             :disabled="isSubmitting"
-                            class="inline-flex items-center gap-1 rounded-lg bg-brand-50 border border-brand-200/80 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                            class="inline-flex items-center gap-1 rounded-lg bg-brand-50 border border-brand-200/80 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition cursor-pointer disabled:opacity-50"
                         >
                             <x-lucide-check class="size-3" />
                             <span>Simpan Memo</span>
@@ -1511,7 +1511,7 @@
                             :href="selectedTrx?.print_url"
                             target="_blank"
                             rel="noopener"
-                            class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition active:scale-95"
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition"
                         >
                             <x-lucide-printer class="size-3.5" />
                             <span>Cetak Struk</span>
@@ -1553,7 +1553,7 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 translate-y-4"
-            class="fixed bottom-6 inset-x-0 mx-auto z-40 w-fit max-w-lg rounded-2xl border border-slate-200/90 bg-white/95 px-4 py-3 shadow-2xl backdrop-blur-md flex items-center gap-3 sm:gap-4 ring-1 ring-slate-900/5"
+            class="fixed bottom-6 inset-x-0 mx-auto z-40 w-fit max-w-lg rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-lg flex items-center gap-3 sm:gap-4 ring-1 ring-slate-900/5"
         >
             <div class="flex items-center gap-2">
                 <span class="flex size-6 items-center justify-center rounded-lg bg-brand-600 font-mono text-sm font-bold text-white" x-text="selectedIds.length"></span>
@@ -1571,7 +1571,7 @@
                 <button
                     type="button"
                     @click="window.print()"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-bold text-white shadow-2xs hover:bg-slate-800 transition active:scale-95 cursor-pointer"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-bold text-white shadow-2xs hover:bg-slate-800 transition cursor-pointer"
                 >
                     <x-lucide-printer class="size-3.5" />
                     <span>Cetak Terpilih</span>
