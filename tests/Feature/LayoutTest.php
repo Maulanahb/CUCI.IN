@@ -34,4 +34,15 @@ class LayoutTest extends TestCase
         $this->assertStringContainsString('Sari Staff', $html);
         $this->assertStringContainsString('staff', $html);
     }
+
+    public function test_app_layout_marks_closed_mobile_sidebar_inert(): void
+    {
+        $this->withoutVite();
+        $this->actingAs(User::factory()->staff()->create());
+
+        $html = Blade::render('<x-layouts::app title="Dashboard">Konten App</x-layouts::app>');
+
+        $this->assertStringContainsString('isDesktop', $html);
+        $this->assertStringContainsString(':inert="! sidebarOpen && ! isDesktop"', $html);
+    }
 }
