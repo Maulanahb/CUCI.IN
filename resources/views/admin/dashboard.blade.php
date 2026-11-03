@@ -302,25 +302,26 @@
                 >
                     <div class="relative w-full rounded-2xl border border-slate-100 bg-slate-50/50 p-3 pt-4 sm:p-4 sm:pt-5">
                         {{-- SVG Canvas --}}
-                        <svg viewBox="0 0 700 250" class="h-52 w-full overflow-visible sm:h-60" preserveAspectRatio="none">
+                        <svg viewBox="0 0 700 250" class="h-52 w-full overflow-visible sm:h-60" preserveAspectRatio="none" role="img" aria-labelledby="revenue-chart-title">
+                            <title id="revenue-chart-title">Grafik pemasukan 7 hari terakhir, total Rp {{ number_format($weeklyTotal ?? 0, 0, ',', '.') }}</title>
                             <defs>
                                 {{-- Gradient for Area Fill --}}
                                 <linearGradient id="revenueAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#0284c7" stop-opacity="0.30" />
-                                    <stop offset="65%" stop-color="#0ea5e9" stop-opacity="0.08" />
-                                    <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.00" />
+                                    <stop offset="0%" style="stop-color: var(--color-brand-700)" stop-opacity="0.30" />
+                                    <stop offset="65%" style="stop-color: var(--color-brand-500)" stop-opacity="0.08" />
+                                    <stop offset="100%" style="stop-color: var(--color-brand-500)" stop-opacity="0.00" />
                                 </linearGradient>
 
                                 {{-- Line Gradient --}}
                                 <linearGradient id="revenueLineGrad" x1="0" y1="0" x2="1" y2="0">
-                                    <stop offset="0%" stop-color="#0284c7" />
-                                    <stop offset="50%" stop-color="#0ea5e9" />
-                                    <stop offset="100%" stop-color="#06b6d4" />
+                                    <stop offset="0%" style="stop-color: var(--color-brand-700)" />
+                                    <stop offset="50%" style="stop-color: var(--color-brand-600)" />
+                                    <stop offset="100%" style="stop-color: var(--color-brand-500)" />
                                 </linearGradient>
 
                                 {{-- Drop Shadow for Line --}}
                                 <filter id="areaGlow" x="-10%" y="-10%" width="120%" height="120%">
-                                    <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0284c7" flood-opacity="0.25" />
+                                    <feDropShadow dx="0" dy="3" stdDeviation="3" style="flood-color: var(--color-brand-700)" flood-opacity="0.25" />
                                 </filter>
                             </defs>
 
@@ -359,7 +360,7 @@
                                     y1="{{ $avgY }}"
                                     x2="{{ $viewWidth - $padX }}"
                                     y2="{{ $avgY }}"
-                                    stroke="#94a3b8"
+                                    stroke="currentColor" class="text-slate-400"
                                     stroke-width="1.25"
                                     stroke-dasharray="3 3"
                                 />
@@ -396,7 +397,7 @@
                                     :y1="{{ $padYTop }}"
                                     :x2="points[activeIdx].x"
                                     :y2="{{ $viewHeight - $padYBottom }}"
-                                    stroke="#0284c7"
+                                    stroke="currentColor" class="text-brand-700"
                                     stroke-width="1.5"
                                     stroke-dasharray="3 3"
                                 />

@@ -52,14 +52,25 @@
     }
 }
 
-/* Hormati preferensi pengguna yang meminta animasi diminimalkan. */
+/*
+ * Hormati preferensi gerak berkurang: gerakan spasial (geser sidebar, pulsa, skala)
+ * dimatikan, tetapi transisi warna tetap hidup sebagai umpan balik status, dan
+ * .animate-spin tetap berputar karena itu satu-satunya sinyal "sedang memproses".
+ */
 @media (prefers-reduced-motion: reduce) {
-    *,
-    ::before,
-    ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+    html {
         scroll-behavior: auto !important;
+    }
+
+    .transition-transform,
+    .animate-pulse,
+    .animate-bounce,
+    .animate-ping {
+        transition-duration: 0.01ms !important;
+        animation: none !important;
+    }
+
+    .animate-spin {
+        animation-duration: 1.5s !important;
     }
 }
