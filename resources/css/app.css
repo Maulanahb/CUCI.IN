@@ -63,9 +63,7 @@
     }
 
     .transition-transform,
-    .animate-pulse,
-    .animate-bounce,
-    .animate-ping {
+    .animate-pulse {
         transition-duration: 0.01ms !important;
         animation: none !important;
     }
