@@ -53,7 +53,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
     </head>
-    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false }" x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)" @keydown.escape.window="sidebarOpen = false">
+    <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased" x-data="{ sidebarOpen: false, isDesktop: window.matchMedia('(min-width: 64rem)').matches }" x-init="window.matchMedia('(min-width: 64rem)').addEventListener('change', (event) => { isDesktop = event.matches; if (event.matches) { sidebarOpen = false; } }); $watch('sidebarOpen', (open) => { if (! isDesktop) { $nextTick(() => document.getElementById(open ? 'sidebar-close' : 'sidebar-toggle').focus()); } })" x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)" @keydown.escape.window="sidebarOpen = false">
         {{-- Skip to main content link (Aksesibilitas Keyboard WCAG 2.2 AA) --}}
         <a
             href="#main-content"
@@ -70,11 +70,12 @@
             id="sidebar"
             class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-slate-200 bg-white transition-transform duration-200 lg:translate-x-0"
             :class="{ 'translate-x-0': sidebarOpen }"
+            :inert="! sidebarOpen && ! isDesktop"
         >
             <div class="flex h-16 items-center gap-2 border-b border-slate-100 px-5">
                 <x-app-logo class="size-8" />
                 <span class="text-lg font-semibold tracking-tight text-brand-700">CUCI<span class="text-brand-600">.IN</span></span>
-                <button type="button" class="ml-auto flex size-11 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = false; $nextTick(() => document.getElementById('sidebar-toggle').focus())" aria-label="Tutup menu">
+                <button type="button" id="sidebar-close" class="ml-auto flex size-11 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 lg:hidden" @click="sidebarOpen = false" aria-label="Tutup menu">
                     <x-lucide-x class="size-5" aria-hidden="true" />
                 </button>
             </div>
@@ -117,7 +118,7 @@
                     @if (Route::has('logout'))
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" id="logout-button" class="mt-1 w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-600">
+                            <button type="submit" id="logout-button" class="mt-1 w-full rounded-lg px-3 py-2 pointer-coarse:min-h-11 text-left text-sm font-medium text-slate-600 transition-colors hover:bg-rose-50 hover:text-rose-600">
                                 Keluar
                             </button>
                         </form>

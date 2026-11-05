@@ -259,7 +259,7 @@
                 {{-- 1. Pratinjau Foto Bukti Pembayaran --}}
                 <div class="rounded-2xl border border-slate-200/90 bg-white p-4.5 space-y-3.5 shadow-2xs">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Bukti Transfer / Struk QRIS</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Transfer / Struk QRIS</span>
                         <template x-if="selectedPayment?.proof_url">
                             <a
                                 :href="selectedPayment?.proof_url"
@@ -297,11 +297,11 @@
 
                     <div class="grid grid-cols-2 gap-2.5 text-center text-xs">
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">Total Tagihan</span>
+                            <span class="text-slate-500 block font-medium">Total Tagihan</span>
                             <span class="font-mono font-bold text-slate-900 mt-0.5 block text-sm" x-text="selectedPayment?.total_amount_formatted"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">Sisa Tagihan</span>
+                            <span class="text-slate-500 block font-medium">Sisa Tagihan</span>
                             <span class="font-mono font-bold text-amber-700 mt-0.5 block text-sm" x-text="selectedPayment?.remaining_formatted"></span>
                         </div>
                     </div>

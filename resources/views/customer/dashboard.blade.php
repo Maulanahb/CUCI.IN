@@ -174,7 +174,7 @@
                                 default => 1,
                             };
                         @endphp
-                        <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-4 sm:p-5 transition hover:border-brand-200 hover:bg-white hover:shadow-xs">
+                        <div class="rounded-xl border border-slate-200 bg-slate-50/40 p-4 sm:p-5 transition hover:border-brand-200 hover:bg-white">
                             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/70 pb-3.5">
                                 <div class="flex flex-wrap items-center gap-2">
                                     <span class="font-mono text-sm font-bold text-slate-900 bg-white border border-slate-200 rounded-lg px-2.5 py-1 shadow-2xs">

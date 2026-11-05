@@ -233,13 +233,13 @@
                                         <div class="flex items-center gap-1.5">
                                             <span @class([
                                                 'font-medium',
-                                                'text-red-600 font-semibold' => $isOverdue,
+                                                'text-rose-600 font-semibold' => $isOverdue,
                                                 'text-slate-600' => ! $isOverdue,
                                             ])>
                                                 {{ $complaint->deadline_at->translatedFormat('d M Y') }}
                                             </span>
                                             @if ($isOverdue)
-                                                <span class="rounded bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-700">Terlambat</span>
+                                                <span class="rounded bg-rose-100 px-1.5 py-0.5 text-xs font-bold text-rose-700">Terlambat</span>
                                             @endif
                                         </div>
                                         <p class="text-sm text-slate-500">{{ $complaint->deadline_at->diffForHumans() }}</p>
@@ -251,8 +251,8 @@
                                                 Menunggu
                                             </span>
                                         @elseif ($complaint->status === 'Diproses')
-                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700 ring-1 ring-inset ring-blue-600/20">
-                                                <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                                            <span class="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-2.5 py-1 text-sm font-semibold text-sky-700 ring-1 ring-inset ring-sky-600/20">
+                                                <span class="size-1.5 rounded-full bg-sky-500 animate-pulse"></span>
                                                 Diproses
                                             </span>
                                         @else
@@ -306,8 +306,8 @@
                                 </span>
                             </template>
                             <template x-if="selectedComplaint?.status === 'Diproses'">
-                                <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-600/20">
-                                    <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                                <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-xs font-semibold text-sky-700 ring-1 ring-inset ring-sky-600/20">
+                                    <span class="size-1.5 rounded-full bg-sky-500 animate-pulse"></span>
                                     Diproses
                                 </span>
                             </template>
@@ -335,12 +335,12 @@
                 {{-- 1. Kartu Detail Keluhan --}}
                 <div class="rounded-2xl border border-slate-200/90 bg-white p-4.5 space-y-3.5 shadow-2xs">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Subjek Keluhan</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Subjek Keluhan</span>
                         <h3 class="mt-1 font-bold text-slate-900 text-base" x-text="selectedComplaint?.subject"></h3>
                     </div>
 
                     <div class="border-t border-slate-100 pt-3">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Uraian Masalah / Kendala</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Uraian Masalah / Kendala</span>
                         <p class="mt-1 text-slate-700 leading-relaxed whitespace-pre-line" x-text="selectedComplaint?.description"></p>
                     </div>
 
@@ -348,7 +348,7 @@
                     <template x-if="selectedComplaint?.photo_url">
                         <div class="border-t border-slate-100 pt-3">
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Bukti Foto Kendala / Pakaian</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Bukti Foto Kendala / Pakaian</span>
                                 <a
                                     :href="selectedComplaint?.photo_url"
                                     target="_blank"
@@ -387,19 +387,19 @@
 
                     <div class="grid grid-cols-2 gap-3 text-xs">
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">Nomor Nota</span>
+                            <span class="text-slate-500 block font-medium">Nomor Nota</span>
                             <span class="font-mono font-bold text-slate-900 mt-0.5 block text-sm" x-text="selectedComplaint?.transaction_code"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">Status Cucian</span>
+                            <span class="text-slate-500 block font-medium">Status Cucian</span>
                             <span class="font-semibold text-slate-800 mt-0.5 block text-sm" x-text="selectedComplaint?.transaction_status"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">Pelanggan</span>
+                            <span class="text-slate-500 block font-medium">Pelanggan</span>
                             <span class="font-semibold text-slate-900 mt-0.5 block" x-text="selectedComplaint?.customer_name"></span>
                         </div>
                         <div class="p-2.5 rounded-xl bg-white border border-slate-200/80">
-                            <span class="text-slate-400 block font-medium">No. Telepon / WA</span>
+                            <span class="text-slate-500 block font-medium">No. Telepon / WA</span>
                             <span class="font-mono text-slate-800 mt-0.5 block" x-text="selectedComplaint?.customer_phone"></span>
                         </div>
                     </div>
@@ -469,7 +469,7 @@
                         <button
                             type="submit"
                             :disabled="isSubmitting"
-                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-brand-800 active:scale-98 disabled:opacity-50 cursor-pointer"
+                            class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs transition hover:bg-brand-800 disabled:opacity-50 cursor-pointer"
                         >
                             <template x-if="isSubmitting">
                                 <x-lucide-loader-2 class="size-4 animate-spin text-white" />

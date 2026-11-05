@@ -53,6 +53,16 @@ class AdminDashboardTest extends TestCase
         $this->assertSame(40000.0, $finance['receivables']);
     }
 
+    public function test_revenue_chart_has_text_alternative(): void
+    {
+        $response = $this->actingAs($this->admin)->get(route('admin.dashboard'));
+
+        $response->assertOk()
+            ->assertSee('role="img"', false)
+            ->assertSee('aria-labelledby="revenue-chart-title"', false)
+            ->assertSee('id="revenue-chart-title"', false);
+    }
+
     public function test_weekly_revenue_always_has_seven_days_and_fills_empty_days(): void
     {
         $this->travelTo(Carbon::parse('2026-10-20 10:00:00'));

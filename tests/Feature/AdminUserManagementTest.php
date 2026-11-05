@@ -41,6 +41,19 @@ class AdminUserManagementTest extends TestCase
             ->assertSee('admin@cuci.in');
     }
 
+    public function test_user_list_renders_a_badge_for_every_role(): void
+    {
+        User::factory()->staff()->create();
+        User::factory()->customer()->create();
+
+        $response = $this->actingAs($this->admin)->get(route('admin.users.index'));
+
+        $response->assertOk()
+            ->assertSee('Administrator')
+            ->assertSee('Staf / Kasir')
+            ->assertSee('Pelanggan');
+    }
+
     public function test_admin_can_filter_users_by_role_and_search_query(): void
     {
         $staff = User::factory()->create([

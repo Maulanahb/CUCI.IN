@@ -90,7 +90,7 @@
                     @if ($isSelf)
                         <input type="hidden" name="role" value="admin">
                         <div class="mt-1.5 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-medium text-slate-600 sm:text-sm">
-                            <span class="inline-flex items-center rounded-md border border-purple-200 bg-purple-50 px-2 py-0.5 text-2xs font-semibold text-purple-700">
+                            <span class="inline-flex items-center rounded-md border border-brand-200 bg-brand-50 px-2 py-0.5 text-2xs font-semibold text-brand-700">
                                 Administrator
                             </span>
                             <span class="text-2xs text-slate-500">(Terkunci untuk akun sendiri)</span>

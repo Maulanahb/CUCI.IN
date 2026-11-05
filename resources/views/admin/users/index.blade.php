@@ -41,20 +41,20 @@
             {{-- Kartu Statistik Ringkas --}}
             <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:gap-4">
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
-                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Total Akun</span>
+                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">Total Akun</span>
                     <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['all']) }}</p>
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
-                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Administrator</span>
-                    <p class="mt-1 text-lg font-bold text-purple-700 sm:text-2xl">{{ number_format($counts['admin']) }}</p>
+                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">Administrator</span>
+                    <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['admin']) }}</p>
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
-                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Staf & Kasir</span>
-                    <p class="mt-1 text-lg font-bold text-brand-700 sm:text-2xl">{{ number_format($counts['staff']) }}</p>
+                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">Staf & Kasir</span>
+                    <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['staff']) }}</p>
                 </div>
                 <div class="rounded-xl border border-slate-100 bg-slate-50/70 p-3 sm:p-4">
-                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-400">Akun Aktif</span>
-                    <p class="mt-1 text-lg font-bold text-emerald-600 sm:text-2xl">{{ number_format($counts['active']) }}</p>
+                    <span class="text-2xs font-semibold uppercase tracking-wider text-slate-500">Akun Aktif</span>
+                    <p class="mt-1 text-lg font-bold text-slate-900 sm:text-2xl">{{ number_format($counts['active']) }}</p>
                 </div>
             </div>
         </div>
@@ -151,11 +151,11 @@
                 <table class="w-full text-left text-xs sm:text-sm">
                     <thead>
                         <tr class="border-b border-slate-100 bg-slate-50/75 text-2xs font-semibold uppercase tracking-wider text-slate-500">
-                            <th class="px-5 py-3.5">Pengguna</th>
-                            <th class="px-4 py-3.5">Peran (Role)</th>
-                            <th class="px-4 py-3.5">Status Keaktifan</th>
-                            <th class="px-4 py-3.5">Tanggal Dibuat</th>
-                            <th class="px-5 py-3.5 text-right">Aksi</th>
+                            <th scope="col" class="px-5 py-3.5">Pengguna</th>
+                            <th scope="col" class="px-4 py-3.5">Peran (Role)</th>
+                            <th scope="col" class="px-4 py-3.5">Status Keaktifan</th>
+                            <th scope="col" class="px-4 py-3.5">Tanggal Dibuat</th>
+                            <th scope="col" class="px-5 py-3.5 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -163,9 +163,9 @@
                             @php
                                 $isSelf = $user->id === auth()->id();
                                 $roleBadge = match ($user->role) {
-                                    'admin' => ['label' => 'Administrator', 'class' => 'bg-purple-50 text-purple-700 border-purple-200'],
-                                    'staff' => ['label' => 'Staf / Kasir', 'class' => 'bg-brand-50 text-brand-700 border-brand-200'],
-                                    'owner' => ['label' => 'Owner', 'class' => 'bg-amber-50 text-amber-700 border-amber-200'],
+                                    'admin' => ['label' => 'Administrator', 'class' => 'bg-brand-50 text-brand-700 border-brand-200'],
+                                    'staff' => ['label' => 'Staf / Kasir', 'class' => 'bg-slate-100 text-slate-700 border-slate-200'],
+                                    'owner' => ['label' => 'Owner', 'class' => 'bg-slate-100 text-slate-700 border-slate-200'],
                                     'customer' => ['label' => 'Pelanggan', 'class' => 'bg-slate-100 text-slate-700 border-slate-200'],
                                     default => ['label' => ucfirst($user->role), 'class' => 'bg-slate-100 text-slate-700 border-slate-200'],
                                 };
@@ -215,7 +215,7 @@
                                             >
                                             <div class="h-5 w-9 rounded-full bg-slate-200 transition-colors peer-checked:bg-emerald-500 peer-disabled:cursor-not-allowed peer-disabled:opacity-50"></div>
                                             <div class="absolute left-0.5 top-0.5 size-4 rounded-full bg-white shadow-xs transition-transform peer-checked:translate-x-4"></div>
-                                            <span class="text-xs font-medium {{ $user->is_active ? 'text-emerald-700' : 'text-slate-400' }}">
+                                            <span class="text-xs font-medium {{ $user->is_active ? 'text-emerald-700' : 'text-slate-500' }}">
                                                 {{ $user->is_active ? 'Aktif' : 'Nonaktif' }}
                                             </span>
                                         </label>

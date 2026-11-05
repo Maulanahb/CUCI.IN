@@ -140,16 +140,13 @@
 
         <main>
             {{-- Hero Section --}}
-            <section class="relative overflow-hidden bg-gradient-to-b from-brand-50/70 via-white to-slate-50/40 pt-12 pb-16 sm:pt-20 sm:pb-24">
-                {{-- Decorative Glow Circles --}}
-                <div class="pointer-events-none absolute -top-24 left-1/2 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-brand-400/15 blur-3xl" aria-hidden="true"></div>
-                <div class="pointer-events-none absolute top-1/2 right-0 -z-10 h-72 w-72 rounded-full bg-sky-300/15 blur-3xl" aria-hidden="true"></div>
+            <section class="relative overflow-hidden bg-brand-50/40 pt-12 pb-16 sm:pt-20 sm:pb-24">
 
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="mx-auto max-w-3xl text-center">
                         {{-- Main Headline --}}
                         <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
-                            Laundry Bersih, Higienis &amp; <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-sky-600">Terpantau Real-Time</span>
+                            Laundry Bersih, Higienis &amp; <span class="text-brand-700">Terpantau Real-Time</span>
                         </h1>
 
                         {{-- Subheadline --}}
@@ -330,7 +327,7 @@
                         </div>
 
                         {{-- Output Panel: Estimasi Biaya & Waktu --}}
-                        <div class="mt-6 rounded-xl border border-brand-200/80 bg-gradient-to-br from-brand-50 via-white to-sky-50/50 p-5">
+                        <div class="mt-6 rounded-xl border border-brand-200/80 bg-brand-50/60 p-5">
                             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <p class="text-xs font-medium text-slate-500" x-text="current.name"></p>
@@ -372,7 +369,7 @@
 
                     <div class="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         {{-- Keunggulan 1 --}}
-                        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition hover:border-brand-300 hover:shadow-sm">
+                        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition hover:border-brand-300">
                             <div class="flex size-11 items-center justify-center rounded-xl bg-brand-50 text-brand-700">
                                 <x-lucide-shield-check class="size-5.5" />
                             </div>
@@ -383,7 +380,7 @@
                         </div>
 
                         {{-- Keunggulan 2 --}}
-                        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition hover:border-brand-300 hover:shadow-sm">
+                        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition hover:border-brand-300">
                             <div class="flex size-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700">
                                 <x-lucide-scale class="size-5.5" />
                             </div>
@@ -394,7 +391,7 @@
                         </div>
 
                         {{-- Keunggulan 3 --}}
-                        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition hover:border-brand-300 hover:shadow-sm">
+                        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition hover:border-brand-300">
                             <div class="flex size-11 items-center justify-center rounded-xl bg-sky-50 text-sky-700">
                                 <x-lucide-activity class="size-5.5" />
                             </div>
@@ -405,7 +402,7 @@
                         </div>
 
                         {{-- Keunggulan 4 --}}
-                        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition hover:border-brand-300 hover:shadow-sm">
+                        <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs transition hover:border-brand-300">
                             <div class="flex size-11 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
                                 <x-lucide-printer class="size-5.5" />
                             </div>
@@ -474,12 +471,10 @@
             {{-- CTA Banner --}}
             <section class="py-16">
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-700 via-brand-600 to-sky-700 p-8 sm:p-12 text-white shadow-xl">
-                        {{-- Background Glow --}}
-                        <div class="pointer-events-none absolute -right-16 -top-16 size-72 rounded-full bg-white/10 blur-2xl" aria-hidden="true"></div>
+                    <div class="relative overflow-hidden rounded-3xl bg-brand-700 p-8 sm:p-12 text-white">
 
                         <div class="relative z-10 max-w-2xl">
-                            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-xs">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">
                                 <x-lucide-sparkles class="size-3.5" />
                                 Outlet Laundry Terpercaya
                             </span>
@@ -559,7 +554,7 @@
 
                 <div class="mt-8 border-t border-slate-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-2xs">
                     <p>&copy; {{ date('Y') }} CUCI.IN Laundry System. Seluruh Hak Cipta Dilindungi.</p>
-                    <p class="font-mono text-slate-400">D4 Sistem Informasi Bisnis — Milestone 2</p>
+                    <p class="font-mono text-slate-500">D4 Sistem Informasi Bisnis — Milestone 2</p>
                 </div>
             </div>
         </footer>

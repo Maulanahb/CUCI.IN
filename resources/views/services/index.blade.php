@@ -364,7 +364,7 @@
                                                 <p class="text-base font-semibold text-slate-900">{{ $service->name }}</p>
                                                 @if ($service->is_express)
                                                     <span class="inline-flex items-center gap-0.5 rounded-md bg-amber-100 px-1.5 py-0.5 text-xs font-extrabold text-amber-800 border border-amber-300">
-                                                        ⚡ KILAT
+                                                        <x-lucide-zap class="size-3" aria-hidden="true" /> KILAT
                                                     </span>
                                                 @endif
                                                 <span class="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-xs font-semibold text-slate-600">
@@ -423,7 +423,7 @@
                                                 type="submit"
                                                 title="Klik untuk mengubah status ketersediaan"
                                                 @class([
-                                                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset transition cursor-pointer select-none active:scale-95',
+                                                    'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium ring-1 ring-inset transition cursor-pointer select-none',
                                                     'bg-emerald-50 text-emerald-700 ring-emerald-600/20 hover:bg-emerald-100/70' => $service->is_active,
                                                     'bg-slate-50 text-slate-600 ring-slate-600/15 hover:bg-slate-100' => ! $service->is_active,
                                                 ])
@@ -445,7 +445,7 @@
                                 <td class="block px-5 py-2 text-slate-600 lg:table-cell lg:py-4 lg:text-center">
                                     <span class="mr-1 lg:hidden">Riwayat transaksi:</span>
                                     @if ($service->transaction_details_count > 0)
-                                        <span class="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-sm font-semibold text-blue-700">
+                                        <span class="inline-flex items-center gap-1 rounded-md bg-sky-50 px-2 py-0.5 text-sm font-semibold text-sky-700">
                                             <span class="tabular-nums">{{ $service->transaction_details_count }}</span>
                                             <span class="text-xs font-normal">order</span>
                                         </span>
@@ -596,7 +596,7 @@
                                 class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                             >
                                 <option value="reguler">Reguler Standar</option>
-                                <option value="express">⚡ Paket Kilat / Express</option>
+                                <option value="express">Paket Kilat / Express</option>
                                 <option value="satuan">Cuci Satuan Khusus</option>
                                 <option value="khusus">Perawatan Khusus (Sepatu/Karpet)</option>
                             </select>
@@ -796,7 +796,7 @@
                                 class="mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 shadow-2xs transition focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/15 "
                             >
                                 <option value="reguler">Reguler Standar</option>
-                                <option value="express">⚡ Paket Kilat / Express</option>
+                                <option value="express">Paket Kilat / Express</option>
                                 <option value="satuan">Cuci Satuan Khusus</option>
                                 <option value="khusus">Perawatan Khusus (Sepatu/Karpet)</option>
                             </select>
@@ -1040,7 +1040,7 @@
                     </div>
                     <div>
                         <span class="text-xs text-slate-500">Estimasi Durasi</span>
-                        <p class="mt-0.5 text-sm font-bold tabular-nums text-slate-800" x-text="detailData.estimated_duration + ' Jam' + (detailData.is_express ? ' (⚡ Kilat)' : '')"></p>
+                        <p class="mt-0.5 text-sm font-bold tabular-nums text-slate-800" x-text="detailData.estimated_duration + ' Jam' + (detailData.is_express ? ' (Kilat)' : '')"></p>
                     </div>
                     <div>
                         <span class="text-xs text-slate-500">Kategori & Tipe</span>

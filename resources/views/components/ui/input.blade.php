@@ -21,7 +21,7 @@
     <div class="relative w-full">
         @if ($prefix)
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <span class="text-xs font-semibold text-slate-400 select-none">{{ $prefix }}</span>
+                <span class="text-xs font-semibold text-slate-500 select-none">{{ $prefix }}</span>
             </div>
         @endif
 
@@ -38,7 +38,7 @@
 
         @if ($suffix)
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                <span class="text-xs font-semibold text-slate-400 select-none">{{ $suffix }}</span>
+                <span class="text-xs font-semibold text-slate-500 select-none">{{ $suffix }}</span>
             </div>
         @endif
     </div>

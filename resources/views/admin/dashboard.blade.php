@@ -30,7 +30,7 @@
                     <x-ui.button :href="route('admin.transactions.create')" size="sm" class="shadow-xs">
                         <x-lucide-plus class="size-4" aria-hidden="true" />
                         <span>Transaksi Baru</span>
-                        <kbd class="hidden rounded-md border border-brand-500/40 bg-brand-800/80 px-1.5 py-0.5 text-[10px] font-mono font-bold text-white sm:inline shadow-2xs">F2</kbd>
+                        <kbd class="hidden rounded-md border border-brand-500/40 bg-brand-800/80 px-1.5 py-0.5 text-xs font-mono font-bold text-white sm:inline shadow-2xs">F2</kbd>
                     </x-ui.button>
                     <x-ui.button :href="route('admin.services.index')" variant="secondary" size="sm">
                         <x-lucide-sparkles class="size-4 text-brand-600" aria-hidden="true" />
@@ -57,13 +57,13 @@
                 <p class="mt-2 text-xl font-bold font-mono tabular-nums text-slate-900 sm:text-2xl">
                     {{ number_format($stats['total_users'], 0, ',', '.') }}
                 </p>
-                <p class="mt-0.5 text-xs text-slate-400">Admin &amp; Kasir</p>
+                <p class="mt-0.5 text-xs text-slate-500">Admin &amp; Kasir</p>
             </div>
 
             {{-- Total Pelanggan --}}
             <a
                 href="{{ route('admin.customers.index') }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300 hover:shadow-sm"
+                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300"
             >
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-medium text-slate-500 transition group-hover:text-brand-700">Total Pelanggan</span>
@@ -83,7 +83,7 @@
             {{-- Layanan Aktif --}}
             <a
                 href="{{ route('admin.services.index') }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300 hover:shadow-sm"
+                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300"
             >
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-medium text-slate-500 transition group-hover:text-brand-700">Layanan Aktif</span>
@@ -103,7 +103,7 @@
             {{-- Total Transaksi --}}
             <a
                 href="{{ route('admin.transactions.index') }}"
-                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300 hover:shadow-sm"
+                class="group block rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs transition hover:border-brand-300"
             >
                 <div class="flex items-center justify-between">
                     <span class="text-xs font-medium text-slate-500 transition group-hover:text-brand-700">Total Transaksi</span>
@@ -276,14 +276,14 @@
                             <div class="flex items-center gap-2 rounded-lg border border-amber-200/80 bg-amber-50/70 px-2.5 py-1.5 shadow-2xs">
                                 <span class="size-1.5 rounded-full bg-amber-500 ring-2 ring-amber-200"></span>
                                 <div class="text-left">
-                                    <p class="text-[10px] font-semibold uppercase tracking-wider text-amber-700 leading-none">Puncak ({{ $peakDay['label'] }})</p>
+                                    <p class="text-xs font-semibold uppercase tracking-wider text-amber-700 leading-none">Puncak ({{ $peakDay['label'] }})</p>
                                     <p class="mt-0.5 font-mono text-xs font-bold text-amber-950 leading-none">Rp {{ number_format($peakDay['total'], 0, ',', '.') }}</p>
                                 </div>
                             </div>
                         @endif
                         <div class="flex items-center gap-2 rounded-lg border border-slate-200/80 bg-slate-50/80 px-3 py-1.5 shadow-2xs">
                             <div class="text-left sm:text-right">
-                                <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-500 leading-none">Total 7 Hari</p>
+                                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 leading-none">Total 7 Hari</p>
                                 <p class="mt-0.5 font-mono text-sm font-bold text-brand-700 leading-none tabular-nums">
                                     <x-ui.money :value="$weeklyTotal" />
                                 </p>
@@ -300,27 +300,28 @@
                         points: {{ Js::from($chartPoints) }}
                     }"
                 >
-                    <div class="relative w-full rounded-2xl border border-slate-100 bg-gradient-to-b from-brand-50/25 via-slate-50/15 to-white/0 p-3 pt-4 sm:p-4 sm:pt-5">
+                    <div class="relative w-full rounded-2xl border border-slate-100 bg-slate-50/50 p-3 pt-4 sm:p-4 sm:pt-5">
                         {{-- SVG Canvas --}}
-                        <svg viewBox="0 0 700 250" class="h-52 w-full overflow-visible sm:h-60" preserveAspectRatio="none">
+                        <svg viewBox="0 0 700 250" class="h-52 w-full overflow-visible sm:h-60" preserveAspectRatio="none" role="img" aria-labelledby="revenue-chart-title">
+                            <title id="revenue-chart-title">Grafik pemasukan 7 hari terakhir, total Rp {{ number_format($weeklyTotal ?? 0, 0, ',', '.') }}</title>
                             <defs>
                                 {{-- Gradient for Area Fill --}}
                                 <linearGradient id="revenueAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#0284c7" stop-opacity="0.30" />
-                                    <stop offset="65%" stop-color="#0ea5e9" stop-opacity="0.08" />
-                                    <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.00" />
+                                    <stop offset="0%" style="stop-color: var(--color-brand-700)" stop-opacity="0.30" />
+                                    <stop offset="65%" style="stop-color: var(--color-brand-500)" stop-opacity="0.08" />
+                                    <stop offset="100%" style="stop-color: var(--color-brand-500)" stop-opacity="0.00" />
                                 </linearGradient>
 
                                 {{-- Line Gradient --}}
                                 <linearGradient id="revenueLineGrad" x1="0" y1="0" x2="1" y2="0">
-                                    <stop offset="0%" stop-color="#0284c7" />
-                                    <stop offset="50%" stop-color="#0ea5e9" />
-                                    <stop offset="100%" stop-color="#06b6d4" />
+                                    <stop offset="0%" style="stop-color: var(--color-brand-700)" />
+                                    <stop offset="50%" style="stop-color: var(--color-brand-600)" />
+                                    <stop offset="100%" style="stop-color: var(--color-brand-500)" />
                                 </linearGradient>
 
                                 {{-- Drop Shadow for Line --}}
                                 <filter id="areaGlow" x="-10%" y="-10%" width="120%" height="120%">
-                                    <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0284c7" flood-opacity="0.25" />
+                                    <feDropShadow dx="0" dy="3" stdDeviation="3" style="flood-color: var(--color-brand-700)" flood-opacity="0.25" />
                                 </filter>
                             </defs>
 
@@ -359,7 +360,7 @@
                                     y1="{{ $avgY }}"
                                     x2="{{ $viewWidth - $padX }}"
                                     y2="{{ $avgY }}"
-                                    stroke="#94a3b8"
+                                    stroke="currentColor" class="text-slate-400"
                                     stroke-width="1.25"
                                     stroke-dasharray="3 3"
                                 />
@@ -396,7 +397,7 @@
                                     :y1="{{ $padYTop }}"
                                     :x2="points[activeIdx].x"
                                     :y2="{{ $viewHeight - $padYBottom }}"
-                                    stroke="#0284c7"
+                                    stroke="currentColor" class="text-brand-700"
                                     stroke-width="1.5"
                                     stroke-dasharray="3 3"
                                 />
@@ -433,7 +434,7 @@
                             x-transition:leave="transition ease-in duration-100"
                             x-transition:leave-start="opacity-100 scale-100"
                             x-transition:leave-end="opacity-0 scale-95"
-                            class="pointer-events-none absolute z-30 mb-2.5 -translate-y-full rounded-xl border border-slate-200/80 bg-white/95 px-3.5 py-2.5 text-slate-800 shadow-xl shadow-slate-300/40 ring-1 ring-slate-900/5 backdrop-blur-md whitespace-nowrap transition-all duration-150"
+                            class="pointer-events-none absolute z-30 mb-2.5 -translate-y-full rounded-xl border border-slate-200/80 bg-white px-3.5 py-2.5 text-slate-800 shadow-md ring-1 ring-slate-900/5 whitespace-nowrap transition-all duration-150"
                             :class="{
                                 '-translate-x-[92%]': activeIdx >= 5,
                                 '-translate-x-[8%]': activeIdx <= 1,
@@ -445,13 +446,13 @@
                             <div class="flex items-center gap-2">
                                 <span class="text-2xs font-semibold text-slate-500" x-text="points[activeIdx]?.label + ', ' + points[activeIdx]?.full_label"></span>
                                 <template x-if="points[activeIdx]?.is_peak">
-                                    <span class="rounded-md bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 ring-1 ring-inset ring-amber-500/20">Puncak</span>
+                                    <span class="rounded-md bg-amber-50 px-1.5 py-0.5 text-xs font-bold text-amber-700 ring-1 ring-inset ring-amber-500/20">Puncak</span>
                                 </template>
                             </div>
                             <p class="mt-1 font-mono text-sm font-bold text-slate-900" x-text="points[activeIdx]?.formatted"></p>
                             @if ($avgRevenue > 0)
                                 <template x-if="points[activeIdx]?.total >= {{ $avgRevenue }}">
-                                    <div class="mt-1 flex items-center gap-1.5 text-[10px] font-semibold text-emerald-600">
+                                    <div class="mt-1 flex items-center gap-1.5 text-xs font-semibold text-emerald-600">
                                         <span class="size-1.5 rounded-full bg-emerald-500"></span>
                                         <span>Di atas rata-rata</span>
                                     </div>
@@ -495,8 +496,8 @@
                         <table class="mt-2 w-full text-left text-xs">
                             <thead>
                                 <tr class="border-b border-slate-100 text-slate-500">
-                                    <th class="pb-2 font-semibold">Tanggal</th>
-                                    <th class="pb-2 text-right font-semibold">Pemasukan</th>
+                                    <th scope="col" class="pb-2 font-semibold">Tanggal</th>
+                                    <th scope="col" class="pb-2 text-right font-semibold">Pemasukan</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -525,7 +526,7 @@
                                 </span>
                             @endforeach
                         @else
-                            <span class="text-xs text-slate-400">Belum ada pembayaran sah.</span>
+                            <span class="text-xs text-slate-500">Belum ada pembayaran sah.</span>
                         @endif
                     </div>
                 </div>
@@ -626,7 +627,7 @@
                     </div>
                     <div class="mt-2 flex items-baseline justify-between gap-2">
                         <p class="text-2xl font-bold font-mono tabular-nums text-sky-900">{{ $statusCounts['diterima'] ?? 0 }}</p>
-                        <x-lucide-inbox class="size-4 text-sky-600 transition-transform group-hover:scale-110" />
+                        <x-lucide-inbox class="size-4 text-sky-600" />
                     </div>
                     <p class="mt-1 text-xs text-sky-700">Antrean masuk baru</p>
                 </a>
@@ -658,7 +659,7 @@
                     </div>
                     <div class="mt-2 flex items-baseline justify-between gap-2">
                         <p class="text-2xl font-bold font-mono tabular-nums text-emerald-900">{{ $statusCounts['selesai'] ?? 0 }}</p>
-                        <x-lucide-check-circle-2 class="size-4 text-emerald-600 transition-transform group-hover:scale-110" />
+                        <x-lucide-check-circle-2 class="size-4 text-emerald-600" />
                     </div>
                     <p class="mt-1 text-xs text-emerald-700">Siap diambil pelanggan</p>
                 </a>
@@ -674,7 +675,7 @@
                     </div>
                     <div class="mt-2 flex items-baseline justify-between gap-2">
                         <p class="text-2xl font-bold font-mono tabular-nums text-slate-900">{{ $statusCounts['diambil'] ?? 0 }}</p>
-                        <x-lucide-package-check class="size-4 text-slate-500 transition-transform group-hover:scale-110" />
+                        <x-lucide-package-check class="size-4 text-slate-500" />
                     </div>
                     <p class="mt-1 text-xs text-slate-600">Selesai diserahkan</p>
                 </a>
@@ -723,11 +724,11 @@
                             <table class="w-full text-left text-xs">
                                 <thead>
                                     <tr class="border-b border-slate-100 text-slate-500">
-                                        <th class="pb-2.5 font-semibold">Nota</th>
-                                        <th class="pb-2.5 font-semibold">Pelanggan</th>
-                                        <th class="pb-2.5 font-semibold">Total</th>
-                                        <th class="pb-2.5 font-semibold">Status</th>
-                                        <th class="pb-2.5 text-right font-semibold">Aksi</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Nota</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Pelanggan</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Total</th>
+                                        <th scope="col" class="pb-2.5 font-semibold">Status</th>
+                                        <th scope="col" class="pb-2.5 text-right font-semibold">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100 text-slate-700">
@@ -859,7 +860,7 @@
                                     <p class="text-xs font-bold font-mono text-brand-700">
                                         Rp {{ number_format($service->price, 0, ',', '.') }}
                                     </p>
-                                    <span class="text-xs text-slate-400">/ kg</span>
+                                    <span class="text-xs text-slate-500">/ kg</span>
                                 </div>
                             </div>
                         @empty
@@ -881,7 +882,7 @@
         </div>
 
         {{-- Catatan Operasional Eksekutif --}}
-        <div class="flex items-start gap-3 rounded-2xl border border-brand-200/80 bg-gradient-to-r from-brand-50/70 via-white to-brand-50/30 px-5 py-4 shadow-xs">
+        <div class="flex items-start gap-3 rounded-2xl border border-brand-200/80 bg-brand-50/50 px-5 py-4 shadow-xs">
             <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
                 <x-lucide-shield class="size-4" aria-hidden="true" />
             </div>

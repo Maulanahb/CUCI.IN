@@ -1,5 +1,5 @@
 <x-layouts::guest title="Masuk">
-    <div class="rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-xs backdrop-blur-xs sm:p-8">
+    <div class="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs sm:p-8">
         {{-- Header & Logo Brand --}}
         <div class="flex flex-col items-center text-center">
             <a href="{{ route('home') }}" class="flex items-center gap-2.5 transition hover:opacity-90">
@@ -48,12 +48,12 @@
                         @class([
                             'w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
                             'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('email'),
-                            'border-red-400 bg-red-50/30 text-red-900 focus:border-red-500 focus:ring-red-500/20' => $errors->has('email'),
+                            'border-rose-400 bg-rose-50/30 text-rose-900 focus:border-rose-500 focus:ring-rose-500/20' => $errors->has('email'),
                         ])
                     />
                 </div>
                 @error('email')
-                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600">
+                    <p class="mt-1 flex items-center gap-1 text-xs text-rose-600">
                         <x-lucide-alert-circle class="size-3.5" />
                         <span>{{ $message }}</span>
                     </p>
@@ -76,7 +76,7 @@
                         @class([
                             'w-full rounded-xl border py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 transition focus:outline-none focus:ring-2',
                             'border-slate-300 focus:border-brand-600 focus:ring-brand-500/20' => ! $errors->has('password'),
-                            'border-red-400 bg-red-50/30 text-red-900 focus:border-red-500 focus:ring-red-500/20' => $errors->has('password'),
+                            'border-rose-400 bg-rose-50/30 text-rose-900 focus:border-rose-500 focus:ring-rose-500/20' => $errors->has('password'),
                         ])
                     />
                     <button
@@ -90,7 +90,7 @@
                     </button>
                 </div>
                 @error('password')
-                    <p class="mt-1 flex items-center gap-1 text-xs text-red-600">
+                    <p class="mt-1 flex items-center gap-1 text-xs text-rose-600">
                         <x-lucide-alert-circle class="size-3.5" />
                         <span>{{ $message }}</span>
                     </p>
@@ -113,7 +113,7 @@
             <button
                 type="submit"
                 id="login-submit-button"
-                class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-2.5 text-center text-sm font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 active:scale-[0.99] cursor-pointer"
+                class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 py-2.5 text-center text-sm font-semibold text-white shadow-xs transition hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-500/30 cursor-pointer"
             >
                 <x-lucide-log-in class="size-4" />
                 <span>Masuk</span>
