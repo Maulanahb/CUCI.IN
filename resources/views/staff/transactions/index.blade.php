@@ -18,9 +18,17 @@
         $isStorageOverdue = $transaction->isStorageOverdue(14);
         $daysInStorage = $isStorageOverdue && $transaction->updated_at ? (int) $transaction->updated_at->diffInDays(now()) : 0;
         $cleanPhone = preg_replace('/[^0-9]/', '', $transaction->customer?->phone ?? '');
+        if (str_starts_with($cleanPhone, '620')) {
+            $cleanPhone = '62'.substr($cleanPhone, 3);
+        } elseif (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62'.substr($cleanPhone, 1);
+        } elseif (str_starts_with($cleanPhone, '8')) {
+            $cleanPhone = '62'.$cleanPhone;
+        }
+        $normalizedPhone = (strlen($cleanPhone) >= 9 && strlen($cleanPhone) <= 15) ? $cleanPhone : null;
         $remainingText = (float) $transaction->remaining_amount > 0 ? ' dengan sisa tagihan Rp ' . number_format($transaction->remaining_amount, 0, ',', '.') : ' (sudah lunas)';
-        $waMsg = urlencode("Halo Kak " . ($transaction->customer?->name ?? 'Pelanggan') . ", cucian Anda di CUCI.IN (Nota: {$transaction->transaction_code}) telah selesai dan siap diambil (sudah {$daysInStorage} hari di rak{$remainingText}). Mohon dapat segera diambil di outlet ya Kak. Terima kasih! 😊");
-        $waReminderUrl = $cleanPhone ? "https://wa.me/{$cleanPhone}?text={$waMsg}" : null;
+        $waMsg = rawurlencode("Halo Kak " . ($transaction->customer?->name ?? 'Pelanggan') . ", cucian Anda di CUCI.IN (Nota: {$transaction->transaction_code}) telah selesai dan siap diambil (sudah {$daysInStorage} hari di rak{$remainingText}). Mohon dapat segera diambil di outlet ya Kak. Terima kasih.");
+        $waReminderUrl = $normalizedPhone ? "https://wa.me/{$normalizedPhone}?text={$waMsg}" : null;
 
         return [
             $transaction->id => [
@@ -47,6 +55,7 @@
                 'is_storage_overdue' => $isStorageOverdue,
                 'days_in_storage' => $daysInStorage,
                 'wa_reminder_url' => $waReminderUrl,
+                'whatsapp_share_url' => $transaction->whatsapp_share_url,
                 'notes' => $transaction->notes ?? '',
                 'items' => $transaction->details->map(fn($d) => [
                     'service' => $d->service?->name ?? 'Layanan Laundry',
@@ -78,7 +87,7 @@
             :href="route($routePrefix . '.transactions.create')"
             size="sm"
             aria-label="Buka Kasir POS"
-            class="shadow-2xs active:scale-98 cursor-pointer gap-1.5"
+            class="shadow-2xs cursor-pointer gap-1.5"
         >
             <x-lucide-plus class="size-4" aria-hidden="true" />
             <span>Buka Kasir POS</span>
@@ -543,7 +552,7 @@
                         type="submit"
                         variant="primary"
                         size="sm"
-                        class="cursor-pointer shadow-2xs active:scale-98"
+                        class="cursor-pointer shadow-2xs"
                     >
                         <x-lucide-search class="size-3.5" aria-hidden="true" />
                         <span>Cari</span>
@@ -572,7 +581,7 @@
                 @endphp
                 <a
                     href="{{ route($routePrefix . '.transactions.index', array_filter(array_merge(request()->except(['page', 'status']), ['status' => $tab['status']]))) }}"
-                    class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition active:scale-95 {{ $isActive ? 'border-brand-700 bg-brand-700 text-white font-semibold' : 'border-slate-200/90 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-2xs' }}"
+                    class="inline-flex min-h-11 items-center gap-1.5 rounded-xl border px-3.5 py-2 text-sm font-semibold transition {{ $isActive ? 'border-brand-700 bg-brand-700 text-white font-semibold' : 'border-slate-200/90 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-2xs' }}"
                 >
                     <span>{{ $tab['label'] }}</span>
                     @if (!empty($tab['count']))
@@ -604,7 +613,7 @@
                 <table class="w-full text-left text-sm">
                     <thead class="border-b border-slate-200/80 bg-slate-50/75 text-xs font-bold text-slate-500">
                         <tr>
-                            <th class="w-10 px-4 py-3 text-center">
+                            <th scope="col" class="w-10 px-4 py-3 text-center">
                                 <input
                                     type="checkbox"
                                     :checked="selectAll"
@@ -612,12 +621,12 @@
                                     class="size-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
                                 >
                             </th>
-                            <th class="px-5 py-3">Kode Nota</th>
-                            <th class="px-5 py-3">Pelanggan</th>
-                            <th class="px-5 py-3">Layanan & Bobot</th>
-                            <th class="px-5 py-3">Total & Pembayaran</th>
-                            <th class="px-5 py-3">Status Operasional</th>
-                            <th class="px-5 py-3 text-right">Aksi</th>
+                            <th scope="col" class="px-5 py-3">Kode Nota</th>
+                            <th scope="col" class="px-5 py-3">Pelanggan</th>
+                            <th scope="col" class="px-5 py-3">Layanan & Bobot</th>
+                            <th scope="col" class="px-5 py-3">Total & Pembayaran</th>
+                            <th scope="col" class="px-5 py-3">Status Operasional</th>
+                            <th scope="col" class="px-5 py-3 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -669,9 +678,23 @@
                                                 {{ $transaction->customer?->name ?? 'Pelanggan umum' }}
                                             </p>
                                             @if ($transaction->customer?->phone)
-                                                <p class="mt-0.5 font-mono text-sm text-slate-500 tabular-nums">
-                                                    {{ $transaction->customer->phone }}
-                                                </p>
+                                                @if ($transaction->whatsapp_share_url)
+                                                    <a
+                                                        href="{{ $transaction->whatsapp_share_url }}"
+                                                        target="_blank"
+                                                        rel="noopener"
+                                                        class="mt-0.5 inline-flex items-center gap-1 font-mono text-sm text-slate-500 hover:text-emerald-700 tabular-nums transition"
+                                                        title="Kirim nota via WhatsApp"
+                                                        @click.stop
+                                                    >
+                                                        <x-lucide-message-circle class="size-3 text-emerald-600" />
+                                                        <span>{{ $transaction->customer->phone }}</span>
+                                                    </a>
+                                                @else
+                                                    <p class="mt-0.5 font-mono text-sm text-slate-500 tabular-nums">
+                                                        {{ $transaction->customer->phone }}
+                                                    </p>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
@@ -685,7 +708,7 @@
                                     <p class="mt-0.5 text-sm text-slate-500 font-mono tabular-nums">
                                         {{ number_format((float) $totalWeight, 1, ',', '.') }} kg
                                         @if ($itemCount > 1)
-                                            <span class="text-slate-400 font-sans">· +{{ $itemCount - 1 }} item lainnya</span>
+                                            <span class="text-slate-500 font-sans">· +{{ $itemCount - 1 }} item lainnya</span>
                                         @endif
                                     </p>
                                 </td>
@@ -768,7 +791,7 @@
                                         <button
                                             type="button"
                                             @click="openDrawer({{ $transaction->id }})"
-                                            class="inline-flex size-8 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 shadow-2xs hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition active:scale-95 cursor-pointer"
+                                            class="inline-flex size-8 pointer-coarse:size-11 items-center justify-center rounded-lg border border-slate-200/90 bg-white text-slate-600 shadow-2xs hover:border-brand-500 hover:bg-brand-50 hover:text-brand-700 transition cursor-pointer"
                                             title="Buka panel edit cepat"
                                         >
                                             <x-lucide-sliders-horizontal class="size-4" aria-hidden="true" />
@@ -780,7 +803,7 @@
                                             target="_blank"
                                             rel="noopener"
                                             title="Cetak struk kasir"
-                                            class="cursor-pointer shadow-2xs active:scale-95"
+                                            class="cursor-pointer shadow-2xs"
                                         >
                                             <x-lucide-printer class="size-3.5 text-slate-500" aria-hidden="true" />
                                             <span class="sr-only">Cetak</span>
@@ -916,7 +939,7 @@
                                     size="xs"
                                     target="_blank"
                                     rel="noopener"
-                                    class="cursor-pointer shadow-2xs active:scale-95"
+                                    class="cursor-pointer shadow-2xs"
                                 >
                                     <x-lucide-printer class="size-3.5 text-slate-500" aria-hidden="true" />
                                     <span>Cetak</span>
@@ -1011,7 +1034,7 @@
                                             :class="{
                                                 'bg-brand-600 text-white shadow-xs ring-4 ring-brand-100 scale-105': selectedTrx?.status === '{{ $st['key'] }}',
                                                 'bg-brand-700 text-white': rank(selectedTrx?.status) > {{ $st['num'] }},
-                                                'bg-white text-slate-400 border-2 border-slate-200': rank(selectedTrx?.status) < {{ $st['num'] }}
+                                                'bg-white text-slate-500 border-2 border-slate-200': rank(selectedTrx?.status) < {{ $st['num'] }}
                                             }"
                                         >
                                             <template x-if="rank(selectedTrx?.status) > {{ $st['num'] }}">
@@ -1026,7 +1049,7 @@
                                             :class="{
                                                 'text-brand-900 font-extrabold': selectedTrx?.status === '{{ $st['key'] }}',
                                                 'text-slate-700 font-medium': rank(selectedTrx?.status) > {{ $st['num'] }},
-                                                'text-slate-400 font-normal': rank(selectedTrx?.status) < {{ $st['num'] }}
+                                                'text-slate-500 font-normal': rank(selectedTrx?.status) < {{ $st['num'] }}
                                             }"
                                         >{{ $st['label'] }}</span>
                                     </div>
@@ -1067,7 +1090,7 @@
                                     type="button"
                                     @click="advanceStatus('Diproses')"
                                     :disabled="isSubmitting"
-                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition disabled:opacity-50 cursor-pointer"
                                 >
                                     <template x-if="isSubmitting">
                                         <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1085,7 +1108,7 @@
                                     type="button"
                                     @click="advanceStatus('Selesai')"
                                     :disabled="isSubmitting"
-                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                    class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-brand-700 transition disabled:opacity-50 cursor-pointer"
                                 >
                                     <template x-if="isSubmitting">
                                         <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1105,7 +1128,7 @@
                                             type="button"
                                             @click="advanceStatus('Diambil')"
                                             :disabled="isSubmitting"
-                                            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-emerald-700 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                            class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-emerald-700 transition disabled:opacity-50 cursor-pointer"
                                         >
                                             <template x-if="isSubmitting">
                                                 <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1192,7 +1215,7 @@
                                         type="button"
                                         @click="advanceStatus(newStatus)"
                                         :disabled="!canSubmitStatus() || isSubmitting"
-                                        class="w-full rounded-lg py-2 text-sm font-semibold shadow-xs transition active:scale-98 disabled:opacity-50"
+                                        class="w-full rounded-lg py-2 text-sm font-semibold shadow-xs transition disabled:opacity-50"
                                         :class="canSubmitStatus()
                                             ? (newStatus === 'Dibatalkan' ? 'bg-rose-600 hover:bg-rose-700 text-white cursor-pointer' : 'bg-slate-900 hover:bg-slate-800 text-white cursor-pointer')
                                             : 'bg-slate-200 text-slate-400 cursor-not-allowed'"
@@ -1231,17 +1254,22 @@
                             </div>
                         </div>
 
-                        <template x-if="selectedTrx?.customer_phone && selectedTrx?.customer_phone !== '-'">
+                        <template x-if="selectedTrx?.whatsapp_share_url">
                             <a
-                                :href="'https://wa.me/' + selectedTrx?.customer_phone?.replace(/[^0-9]/g, '')"
+                                :href="selectedTrx?.whatsapp_share_url"
                                 target="_blank"
                                 rel="noopener"
                                 class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50/70 px-2.5 py-1 text-xs font-semibold text-emerald-700 hover:bg-emerald-100 transition shadow-2xs shrink-0 cursor-pointer"
-                                title="Kirim pesan WhatsApp"
+                                title="Kirim nota via WhatsApp"
                             >
                                 <x-lucide-message-circle class="size-3 text-emerald-600" />
                                 <span x-text="selectedTrx?.customer_phone"></span>
                             </a>
+                        </template>
+                        <template x-if="!selectedTrx?.whatsapp_share_url && selectedTrx?.customer_phone && selectedTrx?.customer_phone !== '-'">
+                            <span class="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600 shrink-0">
+                                <span x-text="selectedTrx?.customer_phone"></span>
+                            </span>
                         </template>
                     </div>
 
@@ -1304,7 +1332,7 @@
                                 type="button"
                                 @click="quickPayExact()"
                                 :disabled="isSubmitting"
-                                class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition active:scale-98 disabled:opacity-50 cursor-pointer"
+                                class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition disabled:opacity-50 cursor-pointer"
                             >
                                 <template x-if="isSubmitting">
                                     <x-lucide-loader-2 class="size-4 animate-spin text-white" />
@@ -1385,7 +1413,7 @@
                                     type="button"
                                     @click="submitCustomPayment()"
                                     :disabled="isSubmitting"
-                                    class="w-full rounded-lg bg-brand-600 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                                    class="w-full rounded-lg bg-brand-600 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-700 transition cursor-pointer disabled:opacity-50"
                                 >
                                     <span x-show="isSubmitting" class="inline-flex items-center gap-1.5">
                                         <x-lucide-loader-2 class="size-3.5 animate-spin" />
@@ -1409,7 +1437,7 @@
                             type="button"
                             @click="saveNotes()"
                             :disabled="isSubmitting"
-                            class="inline-flex items-center gap-1 rounded-lg bg-brand-50 border border-brand-200/80 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition active:scale-98 cursor-pointer disabled:opacity-50"
+                            class="inline-flex items-center gap-1 rounded-lg bg-brand-50 border border-brand-200/80 px-2.5 py-1 text-xs font-semibold text-brand-700 hover:bg-brand-100 transition cursor-pointer disabled:opacity-50"
                         >
                             <x-lucide-check class="size-3" />
                             <span>Simpan Memo</span>
@@ -1457,7 +1485,7 @@
                             </div>
                         </template>
                         <template x-if="!selectedTrx?.items || selectedTrx?.items.length === 0">
-                            <p class="text-sm text-slate-400 italic py-3 text-center">Tidak ada item layanan yang tercatat.</p>
+                            <p class="text-sm text-slate-500 italic py-3 text-center">Tidak ada item layanan yang tercatat.</p>
                         </template>
                     </div>
 
@@ -1468,19 +1496,19 @@
                                 <div class="space-y-0.5">
                                     <div class="flex items-center gap-1.5">
                                         <span class="inline-block rounded-md bg-slate-100 border border-slate-200/80 px-1.5 py-0.5 font-mono text-xs font-bold text-slate-700" x-text="pay.method"></span>
-                                        <span class="text-xs text-slate-400 font-mono" x-text="pay.created_at"></span>
+                                        <span class="text-xs text-slate-500 font-mono" x-text="pay.created_at"></span>
                                     </div>
                                 </div>
                                 <div class="text-right">
                                     <p class="font-mono font-bold text-emerald-700 tabular-nums" x-text="pay.amount_formatted"></p>
-                                    <p class="text-xs text-slate-400 font-medium" x-text="pay.status"></p>
+                                    <p class="text-xs text-slate-500 font-medium" x-text="pay.status"></p>
                                 </div>
                             </div>
                         </template>
                         <template x-if="!selectedTrx?.payments || selectedTrx?.payments.length === 0">
                             <div class="py-4 text-center">
                                 <x-lucide-receipt class="size-5 text-slate-300 mx-auto mb-1" />
-                                <p class="text-sm text-slate-400 italic">Belum ada riwayat pembayaran yang tercatat.</p>
+                                <p class="text-sm text-slate-500 italic">Belum ada riwayat pembayaran yang tercatat.</p>
                             </div>
                         </template>
                     </div>
@@ -1511,7 +1539,7 @@
                             :href="selectedTrx?.print_url"
                             target="_blank"
                             rel="noopener"
-                            class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition active:scale-95"
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-1.5 text-sm font-semibold text-white shadow-xs hover:bg-slate-800 transition"
                         >
                             <x-lucide-printer class="size-3.5" />
                             <span>Cetak Struk</span>
@@ -1553,7 +1581,7 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 translate-y-4"
-            class="fixed bottom-6 inset-x-0 mx-auto z-40 w-fit max-w-lg rounded-2xl border border-slate-200/90 bg-white/95 px-4 py-3 shadow-2xl backdrop-blur-md flex items-center gap-3 sm:gap-4 ring-1 ring-slate-900/5"
+            class="fixed bottom-6 inset-x-0 mx-auto z-40 w-fit max-w-lg rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-lg flex items-center gap-3 sm:gap-4 ring-1 ring-slate-900/5"
         >
             <div class="flex items-center gap-2">
                 <span class="flex size-6 items-center justify-center rounded-lg bg-brand-600 font-mono text-sm font-bold text-white" x-text="selectedIds.length"></span>
@@ -1571,7 +1599,7 @@
                 <button
                     type="button"
                     @click="window.print()"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-bold text-white shadow-2xs hover:bg-slate-800 transition active:scale-95 cursor-pointer"
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-bold text-white shadow-2xs hover:bg-slate-800 transition cursor-pointer"
                 >
                     <x-lucide-printer class="size-3.5" />
                     <span>Cetak Terpilih</span>

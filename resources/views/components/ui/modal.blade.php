@@ -79,7 +79,7 @@
                     <button
                         type="button"
                         @click="{{ $closeAction }}"
-                        class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer"
+                        class="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition min-h-9 min-w-9 pointer-coarse:min-h-11 pointer-coarse:min-w-11 flex items-center justify-center cursor-pointer"
                         aria-label="Tutup dialog"
                     >
                         <x-lucide-x class="size-4" />

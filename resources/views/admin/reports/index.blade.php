@@ -23,7 +23,7 @@
                     href="{{ route('admin.reports.export.pdf', request()->query()) }}"
                     target="_blank"
                     id="btn-export-pdf"
-                    class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 shadow-2xs transition hover:bg-rose-100 hover:border-rose-300 active:scale-95"
+                    class="inline-flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-bold text-rose-700 shadow-2xs transition hover:bg-rose-100 hover:border-rose-300"
                     title="Cetak atau Unduh Dokumen Ringkasan PDF (DomPDF)"
                 >
                     <svg class="size-4 shrink-0 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -37,7 +37,7 @@
                 <a
                     href="{{ route('admin.reports.export.excel', request()->query()) }}"
                     id="btn-export-excel"
-                    class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-700 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-300 active:scale-95"
+                    class="inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-700 shadow-2xs transition hover:bg-emerald-100 hover:border-emerald-300"
                     title="Unduh Rekap Spreadsheet Excel (.xls)"
                 >
                     <svg class="size-4 shrink-0 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -50,7 +50,7 @@
                 <a
                     href="{{ route('admin.reports.export.csv', request()->query()) }}"
                     id="btn-export-csv"
-                    class="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-2 text-xs font-bold text-brand-700 shadow-2xs transition hover:bg-brand-100 hover:border-brand-300 active:scale-95"
+                    class="inline-flex items-center gap-2 rounded-xl border border-brand-200 bg-brand-50 px-3.5 py-2 text-xs font-bold text-brand-700 shadow-2xs transition hover:bg-brand-100 hover:border-brand-300"
                     title="Aliran CSV Cepat Hemat Memori untuk Dataset Besar (Materi P9)"
                 >
                     <svg class="size-4 shrink-0 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -64,7 +64,7 @@
         {{-- Kartu Metrik Ringkasan Kinerja (Agregasi SQL PostgreSQL/MySQL) --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {{-- Omzet Masuk (Pendapatan Terverifikasi) --}}
-            <div class="relative overflow-hidden rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50/50 to-white p-5 shadow-xs">
+            <div class="relative overflow-hidden rounded-2xl border border-emerald-100 bg-white p-5 shadow-xs">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold uppercase tracking-wider text-emerald-700">Omzet Masuk</p>
                     <div class="flex size-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
@@ -82,7 +82,7 @@
             </div>
 
             {{-- Total Tagihan Transaksi --}}
-            <div class="relative overflow-hidden rounded-2xl border border-brand-100 bg-gradient-to-br from-brand-50/50 to-white p-5 shadow-xs">
+            <div class="relative overflow-hidden rounded-2xl border border-brand-100 bg-white p-5 shadow-xs">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold uppercase tracking-wider text-brand-700">Nilai Tagihan Bruto</p>
                     <div class="flex size-9 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
@@ -100,7 +100,7 @@
             </div>
 
             {{-- Piutang Belum Lunas --}}
-            <div class="relative overflow-hidden rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50/50 to-white p-5 shadow-xs">
+            <div class="relative overflow-hidden rounded-2xl border border-amber-100 bg-white p-5 shadow-xs">
                 <div class="flex items-center justify-between">
                     <p class="text-xs font-semibold uppercase tracking-wider text-amber-700">Piutang Berjalan</p>
                     <div class="flex size-9 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
@@ -263,7 +263,7 @@
                         <button
                             type="submit"
                             id="btn-apply-filter"
-                            class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-700 transition active:scale-95"
+                            class="inline-flex items-center gap-1.5 rounded-xl bg-brand-600 px-4 py-2 text-xs font-bold text-white shadow-2xs hover:bg-brand-700 transition"
                         >
                             <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -290,13 +290,13 @@
                 {{-- Status Pembayaran Badge Info --}}
                 <div class="flex items-center gap-3 text-xs">
                     <span class="inline-flex items-center gap-1.5 text-slate-600">
-                        <span class="size-2 rounded-full bg-emerald-500"></span> Tunai: Rp {{ number_format($summary['payment_methods']['Tunai'], 0, ',', '.') }}
+                        <span class="size-2 rounded-full bg-brand-700"></span> Tunai: Rp {{ number_format($summary['payment_methods']['Tunai'], 0, ',', '.') }}
                     </span>
                     <span class="inline-flex items-center gap-1.5 text-slate-600">
-                        <span class="size-2 rounded-full bg-cyan-500"></span> QRIS: Rp {{ number_format($summary['payment_methods']['QRIS'], 0, ',', '.') }}
+                        <span class="size-2 rounded-full bg-brand-400"></span> QRIS: Rp {{ number_format($summary['payment_methods']['QRIS'], 0, ',', '.') }}
                     </span>
                     <span class="inline-flex items-center gap-1.5 text-slate-600">
-                        <span class="size-2 rounded-full bg-indigo-500"></span> Transfer: Rp {{ number_format($summary['payment_methods']['Transfer'], 0, ',', '.') }}
+                        <span class="size-2 rounded-full bg-slate-400"></span> Transfer: Rp {{ number_format($summary['payment_methods']['Transfer'], 0, ',', '.') }}
                     </span>
                 </div>
             </div>
@@ -323,7 +323,7 @@
                                     <div class="font-bold text-slate-900">
                                         {{ $tx->transaction_code }}
                                     </div>
-                                    <div class="text-[11px] text-slate-400">
+                                    <div class="text-xs text-slate-500">
                                         Kasir: {{ $tx->creator?->name ?? 'Staf' }}
                                     </div>
                                 </td>
@@ -333,7 +333,7 @@
                                     <div class="text-xs font-medium text-slate-800">
                                         {{ $tx->created_at->format('d M Y') }}
                                     </div>
-                                    <div class="text-[11px] text-slate-400">
+                                    <div class="text-xs text-slate-500">
                                         {{ $tx->created_at->format('H:i') }} WIB
                                     </div>
                                 </td>
@@ -343,7 +343,7 @@
                                     <div class="font-semibold text-slate-800">
                                         {{ $tx->customer?->name ?? 'Pelanggan Umum' }}
                                     </div>
-                                    <div class="text-[11px] text-slate-500">
+                                    <div class="text-xs text-slate-500">
                                         {{ $tx->customer?->phone ?? '-' }}
                                     </div>
                                 </td>
@@ -355,7 +355,7 @@
                                             {{ $tx->details->first()->service?->name ?? 'Layanan' }}
                                             <span class="font-semibold text-brand-600">({{ $tx->details->first()->weight }} {{ $tx->details->first()->service?->unit ?? 'kg' }})</span>
                                             @if ($tx->details->count() > 1)
-                                                <span class="text-slate-400 text-[11px]">+{{ $tx->details->count() - 1 }} lainnya</span>
+                                                <span class="text-slate-500 text-xs">+{{ $tx->details->count() - 1 }} lainnya</span>
                                             @endif
                                         @else
                                             <span class="text-slate-400">-</span>
@@ -368,16 +368,16 @@
                                     @php
                                         $statusClass = match ($tx->status->value ?? (string) $tx->status) {
                                             'Diterima' => 'bg-slate-100 text-slate-700 border-slate-200',
-                                            'Dicuci' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                            'Dikeringkan' => 'bg-cyan-50 text-cyan-700 border-cyan-200',
+                                            'Dicuci' => 'bg-sky-50 text-sky-700 border-sky-200',
+                                            'Dikeringkan' => 'bg-brand-50 text-brand-700 border-brand-200',
                                             'Disetrika' => 'bg-amber-50 text-amber-700 border-amber-200',
                                             'Siap Diambil' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                                            'Selesai' => 'bg-green-100 text-green-800 border-green-300 font-bold',
+                                            'Selesai' => 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold',
                                             'Dibatalkan' => 'bg-rose-50 text-rose-700 border-rose-200',
                                             default => 'bg-slate-100 text-slate-700 border-slate-200',
                                         };
                                     @endphp
-                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold {{ $statusClass }}">
+                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $statusClass }}">
                                         {{ $tx->status->value ?? $tx->status }}
                                     </span>
                                 </td>
@@ -391,7 +391,7 @@
                                             default => 'bg-rose-50 text-rose-700 border-rose-200',
                                         };
                                     @endphp
-                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-semibold {{ $payClass }}">
+                                    <span class="inline-flex rounded-full border px-2.5 py-0.5 text-xs font-semibold {{ $payClass }}">
                                         {{ $tx->payment_status }}
                                     </span>
                                 </td>
@@ -402,7 +402,7 @@
                                         Rp {{ number_format($tx->total_amount, 0, ',', '.') }}
                                     </div>
                                     @if ($tx->remaining_amount > 0)
-                                        <div class="text-[11px] text-rose-600 font-medium">
+                                        <div class="text-xs text-rose-600 font-medium">
                                             Sisa: Rp {{ number_format($tx->remaining_amount, 0, ',', '.') }}
                                         </div>
                                     @endif

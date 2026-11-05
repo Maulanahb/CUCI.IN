@@ -43,4 +43,14 @@ Pada **setiap prompt atau tugas**, sebelum menulis kode atau mengajukan pertanya
   2. Gunakan `ask_question` atau pertanyaan terarah untuk mewawancarai pengguna: bedah edge cases, batasan hak akses (role), skenario kegagalan, dan preferensi implementasi.
   3. Hanya lanjutkan ke tahap `/plan` dan penulisan kode setelah seluruh asumsi terverifikasi dan disepakati.
 
+## 5. Protokol Percabangan Git (Feature Branch Guard)
+- **Zero Direct Work on Develop/Main**: DILARANG keras mengedit kode atau membuat komit langsung di cabang `develop` atau `main`.
+- **Pre-Flight Branch Check**: Sebelum menyentuh kode file aplikasi, periksa cabang aktif via `git branch --show-current`. Jika berada di `develop` atau `main`, segera buat cabang fitur baru: `git checkout -b feature/<nama-fitur>`.
+
+## 6. Standar Tipografi Bebas Emoji Default (No Default Emojis)
+- **Larangan Emoji Default**: DILARANG keras menggunakan emoji Unicode default (misal: 🧺, 📄, 📊, 💰, 👉, 😊, 🖨️, 💬, ✅, ❌) pada copywriting antarmuka, komponen Blade, template WhatsApp/notifikasi, maupun respons teks asisten.
+- **Ikon SVG Semantik**: Gunakan selalu komponen Blade `<x-lucide-... />` untuk visual ikon di tampilan.
+- **Format Teks & Notifikasi**: Gunakan simbol ASCII standar, huruf tebal (*bold*), garis pisah (`-`), atau penomoran telegrafis bersih tanpa karakter kartun/emoji.
+
+
 

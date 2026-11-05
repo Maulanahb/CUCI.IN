@@ -172,7 +172,7 @@
                                                 @if ($trx->estimated_completed_at)
                                                     <p class="mt-0.5 text-2xs text-slate-500 tabular-nums">{{ $trx->estimated_completed_at->format('d/m, H:i') }}</p>
                                                 @else
-                                                    <span class="text-2xs text-slate-400">-</span>
+                                                    <span class="text-2xs text-slate-500">-</span>
                                                 @endif
                                             </td>
 
@@ -371,7 +371,7 @@
                                     <p class="text-xs font-bold tabular-nums text-brand-700">
                                         Rp {{ number_format($service->price, 0, ',', '.') }}
                                     </p>
-                                    <span class="text-2xs text-slate-400">/ kg</span>
+                                    <span class="text-2xs text-slate-500">/ kg</span>
                                 </div>
                             </div>
                         @empty

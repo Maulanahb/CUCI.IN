@@ -197,6 +197,68 @@ class Transaction extends Model
     }
 
     /**
+     * URL tautan WhatsApp untuk mengirimkan nota dan link pelacakan online ke pelanggan.
+     */
+    public function getWhatsappShareUrlAttribute(): ?string
+    {
+        $rawPhone = $this->customer?->phone;
+        if (! $rawPhone) {
+            return null;
+        }
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', (string) $rawPhone);
+        if ($cleanPhone === '') {
+            return null;
+        }
+
+        if (str_starts_with($cleanPhone, '620')) {
+            $cleanPhone = '62'.substr($cleanPhone, 3);
+        } elseif (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62'.substr($cleanPhone, 1);
+        } elseif (str_starts_with($cleanPhone, '8')) {
+            $cleanPhone = '62'.$cleanPhone;
+        }
+
+        $phoneLen = strlen($cleanPhone);
+        if ($phoneLen < 9 || $phoneLen > 15) {
+            return null;
+        }
+
+        $customerName = $this->customer?->name ?? 'Pelanggan';
+        $statusLabel = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+        $paymentStatus = $this->payment_status;
+        $totalAmount = number_format((float) $this->total_amount, 0, ',', '.');
+        $remainingAmount = (float) $this->remaining_amount;
+        $lookupUrl = route('transactions.lookup', ['code' => $this->transaction_code]);
+
+        $lines = [
+            '*CUCI.IN - NOTIFIKASI LAUNDRY*',
+            '',
+            "Halo Kak {$customerName},",
+            'Berikut rincian status pesanan laundry Anda:',
+            '',
+            "- No. Nota: *{$this->transaction_code}*",
+            "- Status Cucian: *{$statusLabel}*",
+            "- Status Pembayaran: *{$paymentStatus}*",
+            "- Total Tagihan: *Rp {$totalAmount}*",
+        ];
+
+        if ($remainingAmount > 0) {
+            $lines[] = '- Sisa Tagihan: Rp '.number_format($remainingAmount, 0, ',', '.');
+        }
+
+        $lines[] = '';
+        $lines[] = 'Lacak progres cucian Anda secara real-time melalui tautan resmi:';
+        $lines[] = $lookupUrl;
+        $lines[] = '';
+        $lines[] = 'Terima kasih telah mempercayakan cucian Anda kepada CUCI.IN.';
+
+        $message = implode("\n", $lines);
+
+        return "https://wa.me/{$cleanPhone}?text=".rawurlencode($message);
+    }
+
+    /**
      * Scope untuk menyaring cucian yang selesai namun belum diambil melebihi ambang hari.
      */
     public function scopeUnclaimedStorage($query, int $days = 14)

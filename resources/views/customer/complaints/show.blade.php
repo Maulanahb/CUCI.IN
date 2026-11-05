@@ -102,7 +102,7 @@
                                 <x-lucide-clock class="size-5" aria-hidden="true" />
                             </div>
                         @else
-                            <div class="relative flex size-10 items-center justify-center rounded-full bg-white border-2 border-slate-200 text-slate-400 font-bold">
+                            <div class="relative flex size-10 items-center justify-center rounded-full bg-white border-2 border-slate-200 text-slate-500 font-bold">
                                 <x-lucide-clock class="size-5" aria-hidden="true" />
                             </div>
                         @endif
@@ -123,7 +123,7 @@
                                 <x-lucide-check-circle-2 class="size-5" aria-hidden="true" />
                             </div>
                         @else
-                            <div class="relative flex size-10 items-center justify-center rounded-full bg-white border-2 border-slate-200 text-slate-400 font-bold">
+                            <div class="relative flex size-10 items-center justify-center rounded-full bg-white border-2 border-slate-200 text-slate-500 font-bold">
                                 <x-lucide-check-circle-2 class="size-5" aria-hidden="true" />
                             </div>
                         @endif
@@ -169,7 +169,7 @@
                                     <img
                                         src="{{ $complaint->photo_url }}"
                                         alt="Foto Bukti Komplain {{ $complaint->complaint_code }}"
-                                        class="max-h-80 w-full object-contain transition duration-200 group-hover:scale-102"
+                                        class="max-h-80 w-full object-contain"
                                     >
                                     <div class="absolute inset-0 flex items-center justify-center bg-slate-900/40 opacity-0 transition group-hover:opacity-100">
                                         <span class="inline-flex items-center gap-1.5 rounded-lg bg-white/95 px-3 py-1.5 text-xs sm:text-sm font-semibold text-slate-800 shadow-sm">

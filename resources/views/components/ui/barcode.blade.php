@@ -13,7 +13,7 @@
         {!! $svg !!}
     </div>
     @if ($showText)
-        <p class="font-mono font-bold tracking-widest text-center mt-0.5 text-black text-[11px] uppercase select-all">
+        <p class="font-mono font-bold tracking-widest text-center mt-0.5 text-black text-xs uppercase select-all">
             {{ $code }}
         </p>
     @endif

@@ -274,7 +274,7 @@
                                         <button
                                             type="button"
                                             @click="openSheet({{ $complaint->id }})"
-                                            class="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 active:scale-95 cursor-pointer"
+                                            class="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-800 cursor-pointer"
                                             aria-label="Buka panel rincian pengaduan {{ $complaint->complaint_code }}"
                                         >
                                             <span>Rincian</span>
@@ -451,7 +451,7 @@
                                 <x-lucide-check class="size-4" />
                             </div>
                             <p class="mt-1.5 font-bold text-slate-900">Diajukan</p>
-                            <p class="text-[11px] text-slate-500" x-text="selectedComplaint?.created_at_human"></p>
+                            <p class="text-xs text-slate-500" x-text="selectedComplaint?.created_at_human"></p>
                         </div>
                         <div>
                             <div
@@ -466,7 +466,7 @@
                                 </template>
                             </div>
                             <p class="mt-1.5 font-bold text-slate-900">Pemeriksaan</p>
-                            <p class="text-[11px] text-slate-500" x-text="['Diproses', 'Selesai'].includes(selectedComplaint?.status) ? 'Sedang ditangani' : 'Dalam antrean'"></p>
+                            <p class="text-xs text-slate-500" x-text="['Diproses', 'Selesai'].includes(selectedComplaint?.status) ? 'Sedang ditangani' : 'Dalam antrean'"></p>
                         </div>
                         <div>
                             <div
@@ -476,7 +476,7 @@
                                 <x-lucide-check-circle-2 class="size-4" />
                             </div>
                             <p class="mt-1.5 font-bold text-slate-900">Selesai</p>
-                            <p class="text-[11px] text-slate-500" x-text="selectedComplaint?.status === 'Selesai' ? (selectedComplaint?.handled_at || 'Selesai') : 'Menunggu'"></p>
+                            <p class="text-xs text-slate-500" x-text="selectedComplaint?.status === 'Selesai' ? (selectedComplaint?.handled_at || 'Selesai') : 'Menunggu'"></p>
                         </div>
                     </div>
                 </div>
@@ -497,7 +497,7 @@
                         <div class="border-t border-slate-100 pt-3">
                             <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 block">Foto Bukti Pakaian</span>
                             <a :href="selectedComplaint?.photo_url" target="_blank" rel="noopener noreferrer" class="block overflow-hidden rounded-xl border border-slate-200 bg-slate-50 max-h-56">
-                                <img :src="selectedComplaint?.photo_url" alt="Foto Bukti Pengaduan" class="max-h-56 w-full object-contain hover:scale-102 transition duration-200" />
+                                <img :src="selectedComplaint?.photo_url" alt="Foto Bukti Pengaduan" class="max-h-56 w-full object-contain" />
                             </a>
                         </div>
                     </template>
@@ -519,14 +519,14 @@
                             <h4 class="text-xs font-bold text-slate-900">Tanggapan Resmi Tim Staf</h4>
                         </div>
                         <template x-if="selectedComplaint?.handled_at">
-                            <span class="text-[11px] text-slate-500" x-text="selectedComplaint?.handled_at"></span>
+                            <span class="text-xs text-slate-500" x-text="selectedComplaint?.handled_at"></span>
                         </template>
                     </div>
 
                     <template x-if="selectedComplaint?.response">
                         <div>
                             <div class="rounded-lg bg-white p-3 border border-emerald-100 text-xs text-slate-800 leading-relaxed whitespace-pre-line break-words break-all" x-text="selectedComplaint?.response"></div>
-                            <p class="mt-1.5 text-[11px] text-slate-500">
+                            <p class="mt-1.5 text-xs text-slate-500">
                                 Ditangani oleh: <strong class="font-semibold text-slate-800" x-text="selectedComplaint?.handler_name"></strong>
                             </p>
                         </div>
@@ -535,7 +535,7 @@
                     <template x-if="!selectedComplaint?.response">
                         <div class="rounded-lg border border-dashed border-slate-200 bg-slate-50/70 p-3.5 text-center">
                             <p class="text-xs font-semibold text-slate-700">Dalam antrean pemeriksaan tim operasional workshop.</p>
-                            <p class="mt-0.5 text-[11px] text-slate-500">Solusi penanganan akan diberikan maksimal 2 hari kerja.</p>
+                            <p class="mt-0.5 text-xs text-slate-500">Solusi penanganan akan diberikan maksimal 2 hari kerja.</p>
                         </div>
                     </template>
                 </div>

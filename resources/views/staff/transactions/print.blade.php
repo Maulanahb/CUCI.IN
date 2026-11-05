@@ -426,6 +426,14 @@
                 Kembali
             </a>
 
+            {{-- Tombol Kirim WhatsApp --}}
+            @if ($transaction->whatsapp_share_url)
+                <a href="{{ $transaction->whatsapp_share_url }}" target="_blank" rel="noopener" class="btn" style="color:#047857;border-color:#a7f3d0;background:#ecfdf5;" title="Kirim nota via WhatsApp">
+                    <x-lucide-message-circle style="width:14px;height:14px;" />
+                    Kirim WhatsApp
+                </a>
+            @endif
+
             {{-- Tombol Cetak Struk --}}
             <button type="button" onclick="window.print()" class="btn btn-primary" title="Cetak struk kasir (Ctrl+P)">
                 <x-lucide-printer style="width:14px;height:14px;" />

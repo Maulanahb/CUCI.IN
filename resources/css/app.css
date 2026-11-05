@@ -27,6 +27,7 @@
     --color-brand-950: #083344;
 }
 
+
 @utility text-2xs {
     font-size: 0.6875rem;
     line-height: 0.875rem;
@@ -49,14 +50,27 @@
     }
 }
 
-/* Hormati preferensi pengguna yang meminta animasi diminimalkan. */
+/*
+ * Hormati preferensi gerak berkurang: gerakan spasial (geser sidebar, pulsa, skala)
+ * dimatikan, tetapi transisi warna tetap hidup sebagai umpan balik status, dan
+ * .animate-spin tetap berputar karena itu satu-satunya sinyal "sedang memproses".
+ */
 @media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto !important;
+    }
+
     *,
     ::before,
     ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow !important;
+    }
+
+    .animate-pulse {
+        animation: none !important;
+    }
+
+    .animate-spin {
+        animation-duration: 1.5s !important;
     }
 }

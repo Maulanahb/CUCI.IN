@@ -63,7 +63,7 @@
             class="pointer-events-auto w-screen {{ $maxWidthClass }}"
         >
             <div {{ $attributes->class([
-                'flex h-full flex-col overflow-hidden bg-white shadow-2xl border-l border-slate-200/90 text-left transition-all',
+                'flex h-full flex-col overflow-hidden bg-white shadow-lg border-l border-slate-200/90 text-left transition-all',
             ]) }}>
                 {{-- Header --}}
                 @if ($title || $closable || isset($header))

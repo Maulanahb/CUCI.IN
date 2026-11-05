@@ -41,8 +41,8 @@
                                 Menunggu
                             </span>
                         @elseif ($complaint->status === 'Diproses')
-                            <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-1 text-sm font-semibold text-blue-700 ring-1 ring-inset ring-blue-600/20">
-                                <span class="size-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                            <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-sm font-semibold text-sky-700 ring-1 ring-inset ring-sky-600/20">
+                                <span class="size-1.5 rounded-full bg-sky-500 animate-pulse"></span>
                                 Sedang Diproses
                             </span>
                         @else
@@ -138,7 +138,7 @@
                     {{-- Layanan Dalam Transaksi --}}
                     @if ($complaint->transaction?->details && $complaint->transaction->details->isNotEmpty())
                         <div class="mt-5 border-t border-slate-100 pt-4">
-                            <p class="text-sm font-medium text-slate-400 mb-2">Item Layanan</p>
+                            <p class="text-sm font-medium text-slate-500 mb-2">Item Layanan</p>
                             <div class="space-y-1.5">
                                 @foreach ($complaint->transaction->details as $detail)
                                     <div class="flex items-center justify-between border-b border-slate-100 py-3 text-sm">
@@ -168,7 +168,7 @@
                         {{-- Pilihan Status --}}
                         <div>
                             <label for="status" class="block text-sm font-semibold text-slate-700">
-                                Status Penanganan <span class="text-red-500">*</span>
+                                Status Penanganan <span class="text-rose-500">*</span>
                             </label>
                             <select
                                 id="status"
@@ -187,7 +187,7 @@
                                 </option>
                             </select>
                             @error('status')
-                                <p class="mt-1 text-sm text-red-700">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-rose-700">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -205,7 +205,7 @@
                             >{{ old('response', $complaint->response) }}</textarea>
                             <p class="mt-1 text-sm text-slate-500">Tanggapan ini akan dapat dibaca langsung oleh pelanggan di dashboard mereka.</p>
                             @error('response')
-                                <p class="mt-1 text-sm text-red-700">{{ $message }}</p>
+                                <p class="mt-1 text-sm text-rose-700">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -241,20 +241,20 @@
                 {{-- Kartu Komitmen SLA --}}
                 <div @class([
                     'rounded-xl border p-5 transition',
-                    'border-red-200 bg-red-50/50' => $isOverdue,
+                    'border-rose-200 bg-rose-50/50' => $isOverdue,
                     'border-slate-200/80 bg-white' => ! $isOverdue,
                 ])>
                     <div class="flex flex-wrap items-center gap-2.5">
                         <div @class([
                             'flex size-8 items-center justify-center rounded-lg',
-                            'bg-red-100 text-red-600' => $isOverdue,
+                            'bg-rose-100 text-rose-600' => $isOverdue,
                             'bg-brand-50 text-brand-700' => ! $isOverdue,
                         ])>
                             <x-lucide-clock class="size-4" />
                         </div>
                         <h3 @class([
                             'text-xs font-bold uppercase tracking-wider',
-                            'text-red-800' => $isOverdue,
+                            'text-rose-800' => $isOverdue,
                             'text-slate-700' => ! $isOverdue,
                         ])>
                             Target SLA (2 Hari Kerja)
@@ -268,7 +268,7 @@
                         </p>
                         <p @class([
                             'mt-1 text-sm font-medium',
-                            'text-red-600' => $isOverdue,
+                            'text-rose-600' => $isOverdue,
                             'text-emerald-600' => ! $isOverdue,
                         ])>
                             @if ($complaint->status === 'Selesai')

@@ -19,10 +19,10 @@
     ];
 
     $sizes = [
-        'icon' => 'size-8 rounded-lg',
-        'xs' => 'h-8 gap-1.5 rounded-lg px-2.5 text-xs',
-        'row' => 'h-8 min-w-[5.5rem] gap-1 rounded-lg px-2.5 text-xs',
-        'sm' => 'h-9 gap-1.5 rounded-lg px-3 text-xs',
+        'icon' => 'size-8 pointer-coarse:size-11 rounded-lg',
+        'xs' => 'h-8 pointer-coarse:h-11 gap-1.5 rounded-lg px-2.5 text-xs',
+        'row' => 'h-8 pointer-coarse:h-11 min-w-[5.5rem] gap-1 rounded-lg px-2.5 text-xs',
+        'sm' => 'h-9 pointer-coarse:h-11 gap-1.5 rounded-lg px-3 text-xs',
         'md' => 'h-11 gap-2 rounded-xl px-4 text-sm',
     ];
 
