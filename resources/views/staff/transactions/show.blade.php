@@ -252,7 +252,7 @@
                                 size="sm"
                                 target="_blank"
                                 rel="noopener"
-                                class="inline-flex items-center gap-1.5 border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 hover:border-emerald-400 shadow-2xs cursor-pointer active:scale-98"
+                                class="inline-flex items-center gap-1.5 border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 hover:border-emerald-400 shadow-2xs cursor-pointer"
                                 title="Kirim bukti nota dan link tracking ke WhatsApp pelanggan"
                             >
                                 <x-lucide-message-circle class="size-4 text-emerald-600" />
@@ -300,7 +300,7 @@
                             href="{{ route($currentRoutePrefix . '.transactions.print', $transaction) }}"
                             target="_blank"
                             rel="noopener"
-                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50 transition active:scale-95"
+                            class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-2xs hover:bg-slate-50 transition cursor-pointer"
                         >
                             <x-lucide-printer class="size-3.5 text-slate-600" />
                             <span>Cetak Nota Thermal</span>
@@ -310,7 +310,7 @@
                                 href="{{ $waShareUrl }}"
                                 target="_blank"
                                 rel="noopener"
-                                class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-700 px-2.5 py-1 text-xs font-bold text-white shadow-2xs hover:bg-emerald-800 transition active:scale-95"
+                                class="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-700 px-2.5 py-1 text-xs font-bold text-white shadow-2xs hover:bg-emerald-800 transition cursor-pointer"
                             >
                                 <x-lucide-message-circle class="size-3.5 text-white" />
                                 <span>Kirim Nota via WhatsApp</span>

@@ -25,7 +25,7 @@
                     type="button"
                     id="btn-scan-qr"
                     onclick="openQrScannerModal()"
-                    class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-brand-300 hover:text-brand-700 transition active:scale-98 cursor-pointer shadow-2xs shrink-0"
+                    class="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 h-11 px-4 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:border-brand-300 hover:text-brand-700 transition cursor-pointer shadow-2xs shrink-0"
                     title="Pindai QR Code pada struk fisik menggunakan kamera"
                 >
                     <x-lucide-qr-code class="size-4 text-brand-600" />
@@ -66,12 +66,12 @@
 <div
     id="qr-scanner-modal"
     onclick="if (event.target === this) closeQrScannerModal()"
-    class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-xs p-4 flex items-center justify-center transition-opacity"
+    class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 p-4 flex items-center justify-center transition-opacity"
     aria-labelledby="qr-scanner-title"
     role="dialog"
     aria-modal="true"
 >
-    <div class="relative w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-xl border border-slate-100 space-y-4">
+    <div class="relative w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-md border border-slate-100 space-y-4">
         {{-- Header Modal --}}
         <div class="flex items-center justify-between pb-3 border-b border-slate-100">
             <div class="flex items-center gap-2.5">
