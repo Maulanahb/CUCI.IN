@@ -17,6 +17,7 @@
     <div
         class="space-y-6 pb-24 lg:pb-0"
         x-data="posTransactionManager()"
+        proofPreviewUrl: null,
     >
         {{-- Top Bar Navigasi Kasir --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -271,6 +272,7 @@
                 <form
                     id="transaction-form"
                     method="POST"
+                    enctype="multipart/form-data"
                     target="_self"
                     action="{{ route("{$currentRoutePrefix}.transactions.store") }}"
                     class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xs"
@@ -546,19 +548,121 @@
                             {{-- Detail Metode Pembayaran jika Bayar Sekarang --}}
                             <div x-show="paymentChoice !== 'unpaid'" x-transition class="space-y-3 pt-1">
                                 <div>
-                                    <label class="block mb-1 text-sm font-semibold text-slate-600">Metode Pembayaran</label>
+                                    <label class="block mb-1 text-sm font-semibold text-slate-600">
+                                        Metode Pembayaran
+                                    </label>
                                     <div class="grid grid-cols-3 gap-2">
                                         <template x-for="m in ['Tunai', 'QRIS', 'Transfer']" :key="m">
                                             <label
                                                 class="flex items-center justify-center gap-1.5 rounded-lg border py-1.5 text-sm font-bold cursor-pointer transition select-none"
                                                 :class="paymentMethod === m ? 'border-brand-500 bg-brand-50 text-brand-700 shadow-2xs' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'"
                                             >
-                                                <input type="radio" name="payment_method" :value="m" x-model="paymentMethod" class="sr-only" />
+                                                <input
+                                                    type="radio"
+                                                    name="payment_method"
+                                                    :value="m"
+                                                    x-model="paymentMethod"
+                                                    class="sr-only"
+                                                />
                                                 <span x-text="m"></span>
                                             </label>
                                         </template>
                                     </div>
                                 </div>
+                                {{-- TAMBAHKAN BAGIAN UPLOAD DI SINI --}}
+                                <div
+                                    x-show="paymentMethod === 'QRIS' || paymentMethod === 'Transfer'"
+                                    x-transition
+                                    class="rounded-xl border border-cyan-200 bg-cyan-50/50 p-3 space-y-3"
+                                >
+                                    <label class="block text-sm font-bold text-slate-800">
+                                        Bukti Pembayaran <span class="text-rose-600">*</span>
+                                    </label>
+                                    <label
+                                        for="payment-proof"
+                                        class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-cyan-400 bg-white px-4 py-4 text-sm font-bold text-cyan-700 hover:bg-cyan-50"
+                                    >
+                                        <x-lucide-upload-cloud class="size-5" />
+                                        Pilih File / Upload Bukti
+                                    </label>
+                                    <input
+                                        type="file"
+                                        id="payment-proof"
+                                        name="payment_proof"
+                                        accept=".jpg,.jpeg,.png,.webp"
+                                        class="sr-only"
+                                        :required="paymentMethod === 'QRIS' || paymentMethod === 'Transfer'"
+                                        @change="
+                                            const file = $event.target.files[0];
+
+                                            if (!file) {
+                                                proofPreviewUrl = null;
+                                                proofFileName = '';
+                                                return;
+                                            }
+
+                                            if (file.size > 5 * 1024 * 1024) {
+                                                alert('Ukuran foto maksimal 5 MB');
+                                                $event.target.value = '';
+                                                proofPreviewUrl = null;
+                                                proofFileName = '';
+                                                return;
+                                            }
+
+                                            if (!file.type.startsWith('image/')) {
+                                                alert('File harus berupa gambar');
+                                                $event.target.value = '';
+                                                proofPreviewUrl = null;
+                                                proofFileName = '';
+                                                return;
+                                            }
+
+                                            if (proofPreviewUrl) {
+                                                URL.revokeObjectURL(proofPreviewUrl);
+                                            }
+
+                                            proofPreviewUrl = URL.createObjectURL(file);
+                                            proofFileName = file.name;
+                                        "
+                                    />
+
+                                    {{-- Preview bukti pembayaran --}}
+                                    <div
+                                        x-show="proofPreviewUrl"
+                                        x-transition
+                                        class="mt-3 rounded-xl border border-slate-200 bg-white p-3"
+                                    >
+                                        <div class="mb-2 flex items-center justify-between gap-2">
+                                            <div class="min-w-0">
+                                                <p class="text-sm font-bold text-slate-700">
+                                                    Foto berhasil dipilih
+                                                </p>
+
+                                                <p
+                                                    class="truncate text-xs text-slate-500"
+                                                    x-text="proofFileName"
+                                                ></p>
+                                            </div>
+
+                                            <button
+                                                type="button"
+                                                @click="
+                                                    URL.revokeObjectURL(proofPreviewUrl);
+                                                    proofPreviewUrl = null;
+                                                    proofFileName = '';
+                                                    document.getElementById('payment-proof').value = '';
+                                                "
+                                                class="shrink-0 rounded-lg px-3 py-2 text-xs font-bold text-rose-600"
+                                            >
+                                                Hapus
+                                            </button>
+                                        </div>
+                                    </template>
+                                    <p class="text-xs text-slate-500">
+                                        Format JPG, JPEG, PNG, WEBP. Maksimal 5 MB.
+                                    </p>
+                                </div>
+                            </div>
 
                                 {{-- Input Nominal DP jika memilih DP --}}
                                 <div x-show="paymentChoice === 'dp'" x-transition>
@@ -770,6 +874,8 @@
                 servicesMap: @json($services->keyBy('id')),
                 paymentChoice: @js(old('payment_choice', old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid')),
                 paymentMethod: @js(old('payment_method', 'Tunai')),
+                proofPreviewUrl: null,
+                proofFileName: '',  
                 dpAmount: @js(old('payment_amount', '')),
 
                 init() {

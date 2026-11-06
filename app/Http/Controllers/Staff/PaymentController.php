@@ -9,9 +9,11 @@ use App\Models\Payment;
 use App\Models\Transaction;
 use App\Services\RecordPayment;
 use App\Services\VerifyPayment;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -97,6 +99,7 @@ class PaymentController extends Controller
             abort(404, 'Berkas bukti pembayaran tidak ditemukan.');
         }
 
+        /** @var FilesystemAdapter $disk */
         $disk = Storage::disk(Payment::PROOF_DISK);
         $stream = $disk->readStream($payment->proof_file);
 
@@ -104,11 +107,13 @@ class PaymentController extends Controller
             abort(404, 'Berkas bukti pembayaran tidak ditemukan.');
         }
 
+        $mimeType = $disk->mimeType($payment->proof_file) ?: 'application/octet-stream';
+
         return response()->stream(function () use ($stream): void {
             fpassthru($stream);
             fclose($stream);
         }, 200, [
-            'Content-Type' => $disk->mimeType($payment->proof_file) ?: 'application/octet-stream',
+            'Content-Type' => $mimeType,
             'Content-Disposition' => 'inline; filename="'.basename($payment->proof_file).'"',
         ]);
     }
@@ -116,51 +121,64 @@ class PaymentController extends Controller
     /**
      * Mencatat pembayaran baru dan mengunggah bukti jika diperlukan.
      */
+    
     public function store(
         StorePaymentRequest $request,
         Transaction $transaction
     ): JsonResponse|RedirectResponse {
         $validated = $request->validated();
 
+        $proofPath = null;
+
         try {
+            // Upload bukti terlebih dahulu untuk Transfer dan QRIS.
+            if (in_array($validated['method'], ['Transfer', 'QRIS'], true)) {
+                $proofPath = $request->file('proof_file')->store(
+                    Payment::PROOF_DIRECTORY,
+                    Payment::PROOF_DISK
+                );
+
+                if (! $proofPath) {
+                    throw new \RuntimeException('Gagal mengunggah bukti pembayaran.');
+                }
+            }
+
+            // Simpan pembayaran setelah proses upload berhasil.
             $payment = RecordPayment::execute(
                 transaction: $transaction,
                 amount: (float) $validated['amount'],
                 method: (string) $validated['method'],
-                userId: (int) auth()->id(),
+                userId: (int) Auth::id(),
+                proofFile: $proofPath,
                 cashReceived: isset($validated['cash_received'])
                     ? (float) $validated['cash_received']
                     : null
             );
 
-            // Bukti Transfer/QRIS disimpan dan status verifikasi disesuaikan
-            if (in_array($validated['method'], ['Transfer', 'QRIS'], true)) {
-                $updates = [];
-
-                if ($request->hasFile('proof_file')) {
-                    $path = $request->file('proof_file')->store(
-                        Payment::PROOF_DIRECTORY,
-                        Payment::PROOF_DISK
-                    );
-                    $updates['proof_file'] = $path;
-                }
-
-                if ($request->has('is_confirmed')) {
-                    $updates['verification_status'] = $request->boolean('is_confirmed')
-                        ? 'Terverifikasi'
-                        : 'Menunggu Verifikasi';
-                } elseif ($request->hasFile('proof_file')) {
-                    $updates['verification_status'] = 'Menunggu Verifikasi';
-                }
-
-                if (! empty($updates)) {
-                    $payment->update($updates);
-                }
+            if (
+                in_array($validated['method'], ['Transfer', 'QRIS'], true)
+                && ! $request->boolean('is_confirmed')
+            ) {
+                $payment->update([
+                    'verification_status' => 'Menunggu Verifikasi',
+                ]);
             }
+
         } catch (InvalidArgumentException $e) {
+            if ($proofPath) {
+                Storage::disk(Payment::PROOF_DISK)->delete($proofPath);
+            }
+
             throw ValidationException::withMessages([
                 'amount' => [$e->getMessage()],
             ]);
+
+        } catch (\Throwable $e) {
+            if ($proofPath) {
+                Storage::disk(Payment::PROOF_DISK)->delete($proofPath);
+            }
+
+            throw $e;
         }
 
         $formattedAmount = number_format(
@@ -172,12 +190,9 @@ class PaymentController extends Controller
 
         $successMessage = "Pembayaran sebesar Rp {$formattedAmount} ({$payment->method}) berhasil dicatat.";
 
-        // Jika dipanggil melalui AJAX/API, kembalikan respons JSON.
         if ($request->expectsJson()) {
             $transaction->refresh();
             $transaction->load('payments');
-
-            $paymentStatusValue = (string) $transaction->payment_status;
 
             return response()->json([
                 'success' => true,
@@ -198,7 +213,7 @@ class PaymentController extends Controller
                         ',',
                         '.'
                     ),
-                    'payment_status' => $paymentStatusValue,
+                    'payment_status' => (string) $transaction->payment_status,
                     'payments' => $transaction->payments->map(fn ($p) => [
                         'id' => $p->id,
                         'amount_formatted' => 'Rp '.number_format(
@@ -218,6 +233,7 @@ class PaymentController extends Controller
 
         return redirect()->back()->with('success', $successMessage);
     }
+
 
     /**
      * Memverifikasi (approve) atau menolak (reject) bukti pembayaran non-tunai.

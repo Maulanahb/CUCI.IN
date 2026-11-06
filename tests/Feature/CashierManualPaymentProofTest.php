@@ -59,7 +59,7 @@ class CashierManualPaymentProofTest extends TestCase
         $this->assertEquals('Terverifikasi', $payment->verification_status);
         $this->assertNotNull($payment->proof_file);
 
-        Storage::disk(Payment::PROOF_DISK)->assertExists($payment->proof_file);
+        $this->assertTrue(Storage::disk(Payment::PROOF_DISK)->exists($payment->proof_file));
     }
 
     public function test_cashier_can_upload_payment_proof_and_leave_pending_for_owner_audit(): void
@@ -83,7 +83,7 @@ class CashierManualPaymentProofTest extends TestCase
         $this->assertEquals('Menunggu Verifikasi', $payment->verification_status);
         $this->assertNotNull($payment->proof_file);
 
-        Storage::disk(Payment::PROOF_DISK)->assertExists($payment->proof_file);
+        $this->assertTrue(Storage::disk(Payment::PROOF_DISK)->exists($payment->proof_file));
     }
 
     public function test_uploading_non_image_file_is_rejected(): void
@@ -100,4 +100,52 @@ class CashierManualPaymentProofTest extends TestCase
         $response->assertSessionHasErrors('proof_file');
         $this->assertDatabaseCount('payments', 0);
     }
+
+    
+        public function test_cashier_cannot_record_transfer_without_payment_proof(): void
+        {
+            $response = $this->actingAs($this->staff)
+                ->from(route('staff.transactions.show', $this->transaction))
+                ->post(route('staff.transactions.payments.store', $this->transaction), [
+                    'amount' => 50000,
+                    'method' => 'Transfer',
+                ]);
+
+            $response->assertSessionHasErrors('proof_file');
+
+            $this->assertDatabaseCount('payments', 0);
+        }
+
+        public function test_cashier_cannot_record_qris_without_payment_proof(): void
+        {
+            $response = $this->actingAs($this->staff)
+                ->post(route('staff.transactions.payments.store', $this->transaction), [
+                    'amount' => 50000,
+                    'method' => 'QRIS',
+                ]);
+
+            $response->assertSessionHasErrors('proof_file');
+
+            $this->assertDatabaseCount('payments', 0);
+        }
+
+        public function test_cash_payment_does_not_require_payment_proof(): void
+        {
+            $response = $this->actingAs($this->staff)
+                ->post(route('staff.transactions.payments.store', $this->transaction), [
+                    'amount' => 50000,
+                    'method' => 'Tunai',
+                    'cash_received' => 50000,
+                ]);
+
+            $response->assertRedirect();
+            $response->assertSessionHasNoErrors();
+
+            $this->assertDatabaseHas('payments', [
+                'transaction_id' => $this->transaction->id,
+                'method' => 'Tunai',
+                'proof_file' => null,
+            ]);
+        }
+
 }

@@ -9,7 +9,7 @@ class StorePaymentRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check();
+        return $this->user() !== null;
     }
 
     public function rules(): array
@@ -45,12 +45,12 @@ class StorePaymentRequest extends FormRequest
                 'exclude_unless:method,Tunai',
             ],
 
-            'proof_file' => [
-                'nullable',
-                'file',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
+            'payment_proof' => [
+            'required_if:payment_method,QRIS,Transfer',
+            'nullable',
+            'file',
+            'mimes:jpg,jpeg,png,webp',
+            'max:5120',
             ],
 
             'is_confirmed' => [
@@ -76,6 +76,7 @@ class StorePaymentRequest extends FormRequest
             'cash_received.min' => 'Uang diterima tidak boleh negatif.',
             'cash_received.gte' => 'Uang diterima tidak boleh kurang dari nominal pembayaran.',
 
+            'proof_file.required_if' => 'Bukti pembayaran wajib diunggah untuk metode Transfer atau QRIS.',
             'proof_file.file' => 'Bukti pembayaran harus berupa berkas.',
             'proof_file.image' => 'Bukti pembayaran harus berupa gambar.',
             'proof_file.mimes' => 'Bukti pembayaran harus berformat JPG, JPEG, PNG, atau WEBP.',
