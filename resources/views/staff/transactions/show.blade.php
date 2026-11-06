@@ -16,7 +16,7 @@
     <div
         class="space-y-7"
         x-data="{
-            showPaymentModal: {{ $errors->has('amount') || $errors->has('method') || $errors->has('cash_received') ? 'true' : 'false' }},
+           showPaymentModal: {{ $errors->has('amount') || $errors->has('method') || $errors->has('cash_received') || $errors->has('proof_file') ? 'true' : 'false' }},
             submitting: false,
             method: @js(old('method', 'Tunai')),
             paymentAmount: @js(old('amount', $remainingAmount)),
@@ -92,13 +92,24 @@
                 }
             },
             submitPayment() {
-                if (this.submitting || (this.method === 'Tunai' && this.shortfall > 0) || !this.paymentAmount || this.paymentAmount > this.remaining) {
+                const proofInput = document.getElementById('payment-proof-file');
+
+                if (
+                    this.submitting ||
+                    (this.method === 'Tunai' && this.shortfall > 0) ||
+                    (this.method !== 'Tunai' && (!proofInput || !proofInput.files?.length)) ||
+                    !this.paymentAmount ||
+                    this.paymentAmount > this.remaining
+                ) {
                     return;
                 }
+
                 const form = document.getElementById('payment-form');
+
                 if (form && typeof form.reportValidity === 'function' && !form.reportValidity()) {
                     return;
                 }
+
                 this.submitting = true;
                 form?.submit();
             }
@@ -734,27 +745,83 @@
                         </div>
 
                         {{-- Area Upload Bukti untuk Transfer & QRIS --}}
-                        <div x-show="method === 'Transfer' || method === 'QRIS'" x-cloak class="space-y-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 shadow-2xs">
+                        <div
+                            x-show="method === 'Transfer' || method === 'QRIS'"
+                            x-cloak
+                            class="space-y-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3.5 shadow-2xs"
+                        >
                             <div class="flex items-center justify-between">
                                 <label for="payment-proof-file" class="block text-sm font-bold text-slate-800">
-                                    Bukti Pembayaran / Struk (Opsional)
+                                    Bukti Pembayaran / Struk
+                                    <span class="text-rose-600">*</span>
                                 </label>
-                                <span class="text-xs text-slate-500">Maks. 5 MB (JPG/PNG)</span>
+
+                                <span class="text-xs text-slate-500">
+                                    Maks. 5 MB
+                                </span>
                             </div>
+
                             <p class="text-xs text-slate-500 leading-relaxed">
-                                Lampirkan screenshot transfer WhatsApp pelanggan atau foto struk fisik/layar HP.
+                                Bukti pembayaran wajib diunggah sebelum pembayaran
+                                Transfer atau QRIS disimpan.
+                                Format JPG, JPEG, PNG, atau WEBP.
                             </p>
 
-                            <div class="relative">
-                                <input
-                                    type="file"
-                                    name="proof_file"
-                                    id="payment-proof-file"
-                                    accept="image/png,image/jpeg,image/webp"
-                                    @change="handleProofFile($event)"
-                                    class="block w-full text-xs text-slate-600 file:mr-2.5 file:rounded-lg file:border-0 file:bg-brand-50 file:px-3 file:py-2 file:text-xs file:font-semibold file:text-brand-700 hover:file:bg-brand-100 cursor-pointer"
-                                />
+                            <input
+                                type="file"
+                                name="proof_file"
+                                id="payment-proof-file"
+                                accept="image/png,image/jpeg,image/webp"
+                                x-bind:required="method === 'Transfer' || method === 'QRIS'"
+                                @change="handleProofFile($event)"
+                                class="block w-full text-xs text-slate-600"
+                            />
+
+                            {{-- Preview bukti pembayaran --}}
+                            <template x-if="proofPreviewUrl">
+                                <div class="relative mt-2 overflow-hidden rounded-lg border border-slate-200 bg-white p-1">
+                                    <img
+                                        :src="proofPreviewUrl"
+                                        alt="Pratinjau Bukti Pembayaran"
+                                        class="max-h-40 w-full object-contain rounded"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        @click="clearProofFile()"
+                                        class="absolute top-2 right-2 rounded-full bg-slate-900/70 p-1 text-white"
+                                        title="Hapus foto"
+                                    >
+                                        <x-lucide-x class="size-3.5" />
+                                    </button>
+                                </div>
+                            </template>
+
+                            {{-- Konfirmasi kasir --}}
+                            <div class="pt-2 border-t border-slate-200/80">
+                                <label class="flex items-start gap-2.5 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        name="is_confirmed"
+                                        value="1"
+                                        x-model="isConfirmed"
+                                        class="mt-0.5 size-4 rounded border-slate-300"
+                                    />
+
+                                    <span class="text-xs font-medium text-slate-700">
+                                        <strong>
+                                            Dana sudah masuk ke rekening outlet.
+                                        </strong>
+
+                                        <span class="block text-slate-500 mt-0.5">
+                                            Centang agar status langsung Terverifikasi.
+                                            Hapus centang jika perlu verifikasi Owner.
+                                        </span>
+                                    </span>
+                                </label>
                             </div>
+                        </div>
+
 
                             {{-- Pratinjau Gambar --}}
                             <template x-if="proofPreviewUrl">
@@ -798,19 +865,19 @@
                                 Batal
                             </button>
                             <button
-                                type="submit"
-                                x-bind:disabled="submitting || (method === 'Tunai' && shortfall > 0) || ! paymentAmount || paymentAmount > remaining"
-                                @click="if ($event.ctrlKey || $event.metaKey) { $event.preventDefault(); $event.stopPropagation(); submitPayment(); }"
-                                class="inline-flex min-h-[38px] pointer-coarse:min-h-11 items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white shadow-2xs transition hover:bg-brand-800 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
-                            >
-                                <svg x-show="submitting" class="size-4 animate-spin text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true" x-cloak>
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                                </svg>
-                                <x-lucide-check class="size-4" x-show="! submitting" />
-                                <span x-text="submitting ? 'Menyimpan...' : 'Konfirmasi & Simpan'">Konfirmasi & Simpan</span>
-                                <kbd class="hidden sm:inline-block rounded-md bg-brand-800/90 px-1.5 py-0.5 text-xs font-mono font-medium text-brand-100 border border-brand-600/50 ml-1">Ctrl+Enter</kbd>
-                            </button>
+                            type="submit"
+                            x-bind:disabled="
+                                submitting ||
+                                (method === 'Tunai' && shortfall > 0) ||
+                                (method !== 'Tunai' && !document.getElementById('payment-proof-file')?.files?.length) ||
+                                !paymentAmount ||
+                                paymentAmount > remaining
+                            "
+                            class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white disabled:pointer-events-none disabled:opacity-50"
+                        >
+                            <x-lucide-check class="size-4" />
+                            Konfirmasi & Simpan
+                        </button>
                         </div>
                     </form>
                 </x-ui.sheet>
