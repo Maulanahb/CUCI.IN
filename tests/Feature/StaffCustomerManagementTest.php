@@ -335,4 +335,58 @@ class StaffCustomerManagementTest extends TestCase
 
         $this->assertSame('https://wa.me/6281234567890', $customer->whatsapp_url);
     }
+
+    
+    public function test_staff_cannot_create_customer_with_duplicate_phone_number(): void
+    {
+        $staff = User::factory()->staff()->create();
+
+        Customer::create([
+            'name' => 'Pelanggan Pertama',
+            'phone' => '082233334444',
+        ]);
+
+        $response = $this->actingAs($staff)->post(
+            route('staff.customers.store'),
+            [
+                'name' => 'Pelanggan Kedua',
+                'phone' => '082233334444',
+            ]
+        );
+
+        $response->assertSessionHasErrors([
+            'phone' => 'Nomor telepon sudah terdaftar. Gunakan nomor telepon lain.',
+        ]);
+
+        $this->assertDatabaseMissing('customers', [
+            'name' => 'Pelanggan Kedua',
+            'phone' => '082233334444',
+        ]);
+    }
+
+    public function test_duplicate_phone_is_rejected_after_phone_normalization(): void
+    {
+        $staff = User::factory()->staff()->create();
+
+        Customer::create([
+            'name' => 'Pelanggan Pertama',
+            'phone' => '081234567890',
+        ]);
+
+        $response = $this->actingAs($staff)->post(
+            route('staff.customers.store'),
+            [
+                'name' => 'Pelanggan Kedua',
+                'phone' => '+6281234567890',
+            ]
+        );
+
+        $response->assertSessionHasErrors('phone');
+
+        $this->assertDatabaseMissing('customers', [
+            'name' => 'Pelanggan Kedua',
+            'phone' => '081234567890',
+        ]);
+    }
+
 }
