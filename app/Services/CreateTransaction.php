@@ -30,6 +30,7 @@ class CreateTransaction
         $paymentMethod = 'Tunai';
         $paymentAmount = null;
         $paymentChoice = null;
+        $proofFile = null;
 
         if (is_array($customerOrData)) {
             $customerId = $customerOrData['customer_id'] ?? null;
@@ -41,6 +42,7 @@ class CreateTransaction
                 ? (float) $customerOrData['payment_amount']
                 : null;
             $paymentChoice = $customerOrData['payment_choice'] ?? null;
+            $proofFile = $customerOrData['proof_file'] ?? null;
         } else {
             $customerId = $customerOrData;
         }
@@ -53,7 +55,7 @@ class CreateTransaction
             throw new InvalidArgumentException('Created by (user ID Staff) harus diisi.');
         }
 
-        return DB::transaction(function () use ($customerId, $createdBy, $items, $payNow, $paymentMethod, $paymentAmount, $paymentChoice): Transaction {
+        return DB::transaction(function () use ($customerId, $createdBy, $items, $payNow, $paymentMethod, $paymentAmount, $paymentChoice, $proofFile): Transaction {
             // 1. Pastikan customer ada di database
             $customer = Customer::find($customerId);
             if ($customer === null) {
@@ -115,7 +117,8 @@ class CreateTransaction
                     transaction: $transaction,
                     amount: $payAmount,
                     method: $paymentMethod,
-                    userId: (int) $createdBy
+                    userId: (int) $createdBy,
+                    proofFile: $proofFile
                 );
             }
 

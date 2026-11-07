@@ -557,8 +557,20 @@
                                         <td class="px-4 py-3">
                                             <div class="flex flex-col items-start gap-1">
                                                 <x-ui.verification-badge :status="$payment->verification_status" size="sm" />
+                                                @if ($payment->proof_file)
+                                                    <a
+                                                        href="{{ route("{$currentRoutePrefix}.payments.proof", $payment) }}"
+                                                        target="_blank"
+                                                        rel="noopener"
+                                                        class="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
+                                                        title="Buka bukti pembayaran"
+                                                    >
+                                                        <x-lucide-image class="size-3.5" />
+                                                        <span>Lihat bukti</span>
+                                                    </a>
+                                                @endif
                                                 @if ($payment->isPendingVerification())
-                                                    <a href="{{ route("{$currentRoutePrefix}.payments.show", $payment) }}" class="text-sm font-semibold text-brand-700 hover:text-brand-800">Tinjau bukti</a>
+                                                    <a href="{{ route("{$currentRoutePrefix}.payments.show", $payment) }}" class="text-xs font-semibold text-amber-700 hover:text-amber-800 hover:underline">Tinjau bukti</a>
                                                 @endif
                                             </div>
                                         </td>
@@ -608,8 +620,21 @@
                                     </p>
                                     <x-ui.verification-badge :status="$payment->verification_status" size="sm" />
                                 </div>
+                                @if ($payment->proof_file)
+                                    <div class="mt-2 flex items-center gap-3">
+                                        <a
+                                            href="{{ route("{$currentRoutePrefix}.payments.proof", $payment) }}"
+                                            target="_blank"
+                                            rel="noopener"
+                                            class="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:text-brand-800 hover:underline"
+                                        >
+                                            <x-lucide-image class="size-3.5" />
+                                            <span>Lihat bukti pembayaran</span>
+                                        </a>
+                                    </div>
+                                @endif
                                 @if ($payment->isPendingVerification())
-                                    <a href="{{ route("{$currentRoutePrefix}.payments.show", $payment) }}" class="mt-1 inline-block text-sm font-semibold text-brand-700 hover:text-brand-800">Tinjau bukti</a>
+                                    <a href="{{ route("{$currentRoutePrefix}.payments.show", $payment) }}" class="mt-1 inline-block text-xs font-semibold text-amber-700 hover:text-amber-800 hover:underline">Tinjau bukti</a>
                                 @endif
 
                                 @if ($payment->cash_received !== null)

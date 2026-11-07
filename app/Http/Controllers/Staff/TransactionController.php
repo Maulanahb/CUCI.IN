@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Customer;
 use App\Models\LaundryStatusHistory;
+use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Transaction;
 use App\Services\CreateTransaction;
@@ -14,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use InvalidArgumentException;
@@ -230,8 +232,24 @@ class TransactionController extends Controller
         $customerId = (int) $validated['customer_id'];
         $items = $validated['items'];
         $createdBy = (int) auth()->id();
+        $proofPath = null;
 
         try {
+            if (
+                $request->boolean('pay_now')
+                && in_array($validated['payment_method'] ?? 'Tunai', ['Transfer', 'QRIS'], true)
+                && $request->hasFile('payment_proof')
+            ) {
+                $proofPath = $request->file('payment_proof')->store(
+                    Payment::PROOF_DIRECTORY,
+                    Payment::PROOF_DISK
+                );
+
+                if (! $proofPath) {
+                    throw new \RuntimeException('Gagal mengunggah bukti pembayaran.');
+                }
+            }
+
             $transaction = CreateTransaction::execute([
                 'customer_id' => $customerId,
                 'created_by' => $createdBy,
@@ -240,8 +258,13 @@ class TransactionController extends Controller
                 'payment_method' => $validated['payment_method'] ?? 'Tunai',
                 'payment_amount' => $validated['payment_amount'] ?? null,
                 'payment_choice' => $validated['payment_choice'] ?? null,
+                'proof_file' => $proofPath,
             ]);
         } catch (InvalidArgumentException $e) {
+            if ($proofPath) {
+                Storage::disk(Payment::PROOF_DISK)->delete($proofPath);
+            }
+
             $errorMessage = $e->getMessage();
             $errorKey = str_contains(strtolower($errorMessage), 'dp') || str_contains(strtolower($errorMessage), 'pembayaran')
                 ? 'payment_amount'
