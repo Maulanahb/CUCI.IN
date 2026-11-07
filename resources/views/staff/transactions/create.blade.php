@@ -573,14 +573,14 @@
                                 <div
                                     x-show="paymentMethod === 'QRIS' || paymentMethod === 'Transfer'"
                                     x-transition
-                                    class="rounded-xl border border-cyan-200 bg-cyan-50/50 p-3 space-y-3"
+                                    class="rounded-xl border border-brand-200 bg-brand-50/50 p-3 space-y-3"
                                 >
                                     <label class="block text-sm font-bold text-slate-800">
                                         Bukti Pembayaran <span class="text-rose-600">*</span>
                                     </label>
                                     <label
                                         for="payment-proof"
-                                        class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-cyan-400 bg-white px-4 py-4 text-sm font-bold text-cyan-700 hover:bg-cyan-50"
+                                        class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-brand-300 bg-white px-4 py-4 text-sm font-bold text-brand-700 hover:bg-brand-50"
                                     >
                                         <x-lucide-upload-cloud class="size-5" />
                                         Pilih File / Upload Bukti

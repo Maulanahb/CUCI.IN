@@ -132,7 +132,7 @@ class PaymentController extends Controller
 
         try {
             // Upload bukti terlebih dahulu untuk Transfer dan QRIS.
-            if (in_array($validated['method'], ['Transfer', 'QRIS'], true)) {
+            if (in_array($validated['method'], ['Transfer', 'QRIS'], true) && $request->hasFile('proof_file')) {
                 $proofPath = $request->file('proof_file')->store(
                     Payment::PROOF_DIRECTORY,
                     Payment::PROOF_DISK

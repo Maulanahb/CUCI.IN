@@ -873,7 +873,7 @@
                                 !paymentAmount ||
                                 paymentAmount > remaining
                             "
-                            class="inline-flex min-h-[38px] items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white disabled:pointer-events-none disabled:opacity-50"
+                            class="inline-flex min-h-[38px] pointer-coarse:min-h-11 items-center gap-1.5 rounded-xl bg-brand-700 px-4 py-2 text-sm font-bold text-white disabled:pointer-events-none disabled:opacity-50"
                         >
                             <x-lucide-check class="size-4" />
                             Konfirmasi & Simpan

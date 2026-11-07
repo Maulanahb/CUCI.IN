@@ -45,12 +45,12 @@ class StorePaymentRequest extends FormRequest
                 'exclude_unless:method,Tunai',
             ],
 
-            'payment_proof' => [
-            'required_if:payment_method,QRIS,Transfer',
-            'nullable',
-            'file',
-            'mimes:jpg,jpeg,png,webp',
-            'max:5120',
+            'proof_file' => [
+                'required_if:method,Transfer,QRIS',
+                'nullable',
+                'file',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
             ],
 
             'is_confirmed' => [

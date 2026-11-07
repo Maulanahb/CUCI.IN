@@ -8,6 +8,8 @@ use App\Models\Payment;
 use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class RecordPaymentTest extends TestCase
@@ -137,10 +139,13 @@ class RecordPaymentTest extends TestCase
 
     public function test_admin_can_also_record_payment(): void
     {
+        Storage::fake(Payment::PROOF_DISK);
+
         $response = $this->actingAs($this->admin)
             ->post(route('admin.transactions.payments.store', $this->transaction), [
                 'amount' => 50000,
                 'method' => 'QRIS',
+                'proof_file' => UploadedFile::fake()->image('bukti_admin.jpg'),
             ]);
 
         $response->assertRedirect();
@@ -216,10 +221,14 @@ class RecordPaymentTest extends TestCase
 
     public function test_non_cash_payment_is_recorded_as_verified(): void
     {
+        Storage::fake(Payment::PROOF_DISK);
+
         $response = $this->actingAs($this->staff)
             ->post(route('staff.transactions.payments.store', $this->transaction), [
                 'amount' => 50000,
                 'method' => 'QRIS',
+                'proof_file' => UploadedFile::fake()->image('bukti_staff.jpg'),
+                'is_confirmed' => 1,
             ]);
 
         $response->assertRedirect();
