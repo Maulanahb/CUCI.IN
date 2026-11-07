@@ -81,3 +81,10 @@ docs/generate_humanized_docx.php
 docs/screenshot_terminal_asli.jpg
 docs/screenshot_trace_viewer_asli.jpg
 
+# Cloudflare Security Audit Skill & Artefacts
+.agents/skills/security-audit/
+/coverage-ledger.json
+/findings.json
+/findings.md
+/.security-audit/
+
