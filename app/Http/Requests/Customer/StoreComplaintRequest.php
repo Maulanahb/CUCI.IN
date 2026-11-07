@@ -17,9 +17,7 @@ class StoreComplaintRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = $this->user();
-
-        return $user !== null && $user->role === 'customer' && $user->customer !== null;
+        return (bool) $this->user()?->can('create', Complaint::class);
     }
 
     /**

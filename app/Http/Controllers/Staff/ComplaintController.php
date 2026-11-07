@@ -7,6 +7,7 @@ use App\Http\Requests\Staff\UpdateComplaintRequest;
 use App\Models\Complaint;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class ComplaintController extends Controller
@@ -66,6 +67,8 @@ class ComplaintController extends Controller
      */
     public function show(Complaint $complaint): View
     {
+        Gate::authorize('view', $complaint);
+
         $complaint->load([
             'transaction.customer',
             'transaction.details.service',
@@ -82,6 +85,8 @@ class ComplaintController extends Controller
      */
     public function update(UpdateComplaintRequest $request, Complaint $complaint): RedirectResponse
     {
+        Gate::authorize('update', $complaint);
+
         $validated = $request->validated();
 
         $complaint->status = $validated['status'];

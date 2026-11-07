@@ -261,4 +261,41 @@ class CustomerComplaintTest extends TestCase
 
         $response->assertSessionHasErrors('photo');
     }
+
+    public function test_complaint_policy_authorizes_owner_and_forbids_other_customer(): void
+    {
+        $userA = User::factory()->create(['role' => 'customer']);
+        $customerA = Customer::factory()->create(['user_id' => $userA->id]);
+        $transactionA = Transaction::factory()->create([
+            'customer_id' => $customerA->id,
+            'status' => TransactionStatus::Diproses,
+        ]);
+
+        $complaintA = Complaint::create([
+            'complaint_code' => ComplaintCodeGenerator::generate(),
+            'transaction_id' => $transactionA->id,
+            'subject' => 'Komplain kepemilikan A',
+            'description' => 'Milik user A.',
+            'status' => 'Menunggu',
+            'deadline_at' => now()->addDays(2),
+        ]);
+
+        $userB = User::factory()->create(['role' => 'customer']);
+        Customer::factory()->create(['user_id' => $userB->id]);
+
+        $staff = User::factory()->create(['role' => 'staff']);
+
+        // User A (pemilik) boleh melihat komplainnya sendiri
+        $this->actingAs($userA)->get(route('customer.complaints.show', $complaintA))->assertOk();
+
+        // User B (bukan pemilik) ditolak dengan 403 Forbidden oleh ComplaintPolicy
+        $this->actingAs($userB)->get(route('customer.complaints.show', $complaintA))->assertForbidden();
+
+        // Staf boleh melihat komplain milik siapa pun
+        $this->actingAs($staff)->get(route('staff.complaints.show', $complaintA))->assertOk();
+
+        // Pengguna role customer tanpa profil customer dilarang membuat komplain (Policy create)
+        $userWithoutProfile = User::factory()->create(['role' => 'customer']);
+        $this->actingAs($userWithoutProfile)->get(route('customer.complaints.create'))->assertForbidden();
+    }
 }

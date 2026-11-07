@@ -13,6 +13,7 @@ use App\Services\ComplaintCodeGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class ComplaintController extends Controller
@@ -91,6 +92,8 @@ class ComplaintController extends Controller
      */
     public function create(Request $request): View
     {
+        Gate::authorize('create', Complaint::class);
+
         /** @var User $user */
         $user = auth()->user();
         /** @var Customer|null $customer */
@@ -163,15 +166,7 @@ class ComplaintController extends Controller
      */
     public function show(Complaint $complaint): View
     {
-        /** @var User $user */
-        $user = auth()->user();
-        /** @var Customer|null $customer */
-        $customer = $user->customer;
-
-        // Otorisasi: pengaduan harus terkait dengan transaksi milik customer yang login
-        if (! $customer || $complaint->transaction?->customer_id !== $customer->id) {
-            abort(403, 'Anda tidak memiliki hak akses untuk melihat pengaduan ini.');
-        }
+        Gate::authorize('view', $complaint);
 
         $complaint->load([
             'transaction.details.service',

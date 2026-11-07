@@ -247,4 +247,33 @@ class CustomerTransactionTest extends TestCase
         $response->assertSee('0');
         $response->assertSee('Nota Aktif');
     }
+
+    public function test_transaction_policy_authorizes_owner_and_forbids_other_customer(): void
+    {
+        $customerA = Customer::factory()->withAccount()->create(['name' => 'Customer A']);
+        /** @var User $userA */
+        $userA = $customerA->user;
+
+        $customerB = Customer::factory()->withAccount()->create(['name' => 'Customer B']);
+        /** @var User $userB */
+        $userB = $customerB->user;
+
+        $staff = User::factory()->create(['role' => 'staff']);
+
+        $transactionA = Transaction::create([
+            'customer_id' => $customerA->id,
+            'transaction_code' => 'TRX-TEST-A-001',
+            'total_amount' => 50000,
+            'status' => 'Diproses',
+        ]);
+
+        // Customer A (pemilik) diotorisasi melihat transaksinya
+        $this->assertTrue($userA->can('view', $transactionA));
+
+        // Customer B (bukan pemilik) dilarang melihat transaksi A (Anti-IDOR)
+        $this->assertFalse($userB->can('view', $transactionA));
+
+        // Staf berhak melihat transaksi operasional
+        $this->assertTrue($staff->can('view', $transactionA));
+    }
 }
