@@ -66,4 +66,49 @@ class TransactionDetailPaymentViewTest extends TestCase
         $response->assertSee('Tunai');
         $response->assertDontSee('Catat Pembayaran / Pelunasan');
     }
+
+    public function test_displays_proof_link_when_payment_has_proof_file_and_is_verified(): void
+    {
+        $payment = Payment::create([
+            'transaction_id' => $this->transaction->id,
+            'amount' => 50000,
+            'payment_type' => 'Pembayaran Penuh',
+            'method' => 'QRIS',
+            'proof_file' => 'payments/proofs/sample.jpg',
+            'verification_status' => 'Terverifikasi',
+            'paid_at' => now(),
+            'created_by' => $this->staff->id,
+        ]);
+
+        $response = $this->actingAs($this->staff)
+            ->get(route('staff.transactions.show', $this->transaction));
+
+        $response->assertOk();
+        $response->assertSee('Lihat bukti');
+        $response->assertSee(route('staff.payments.proof', $payment));
+        $response->assertDontSee('Tinjau bukti');
+    }
+
+    public function test_displays_proof_link_and_review_link_when_payment_is_pending_verification(): void
+    {
+        $payment = Payment::create([
+            'transaction_id' => $this->transaction->id,
+            'amount' => 50000,
+            'payment_type' => 'Pembayaran Penuh',
+            'method' => 'Transfer',
+            'proof_file' => 'payments/proofs/sample_transfer.jpg',
+            'verification_status' => 'Menunggu Verifikasi',
+            'paid_at' => now(),
+            'created_by' => $this->staff->id,
+        ]);
+
+        $response = $this->actingAs($this->staff)
+            ->get(route('staff.transactions.show', $this->transaction));
+
+        $response->assertOk();
+        $response->assertSee('Lihat bukti');
+        $response->assertSee(route('staff.payments.proof', $payment));
+        $response->assertSee('Tinjau bukti');
+        $response->assertSee(route('staff.payments.show', $payment));
+    }
 }

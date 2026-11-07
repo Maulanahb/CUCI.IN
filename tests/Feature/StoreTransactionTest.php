@@ -4,12 +4,15 @@ namespace Tests\Feature;
 
 use App\Enums\TransactionStatus;
 use App\Models\Customer;
+use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Transaction;
 use App\Models\TransactionDetail;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class StoreTransactionTest extends TestCase
@@ -532,5 +535,43 @@ class StoreTransactionTest extends TestCase
 
         $response->assertSessionHasErrors(['payment_amount']);
         $this->assertDatabaseCount('transactions', 0);
+    }
+
+    public function test_cashier_can_create_transaction_with_payment_proof_upload(): void
+    {
+        Storage::fake(Payment::PROOF_DISK);
+
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $service = Service::create([
+            'name' => 'Cuci Kilat',
+            'price' => 15000.00,
+            'estimated_duration' => 24,
+            'is_active' => true,
+        ]);
+
+        $file = UploadedFile::fake()->image('bukti_pos_qris.jpg');
+
+        $response = $this->actingAs($staff)->post(route('staff.transactions.store'), [
+            'customer_id' => $customer->id,
+            'items' => [
+                ['service_id' => $service->id, 'weight' => 2],
+            ],
+            'pay_now' => true,
+            'payment_choice' => 'full',
+            'payment_method' => 'QRIS',
+            'payment_proof' => $file,
+        ]);
+
+        $response->assertRedirect();
+        $transaction = Transaction::latest('id')->first();
+        $this->assertNotNull($transaction);
+        $this->assertEquals('Lunas', $transaction->payment_status);
+
+        $payment = Payment::where('transaction_id', $transaction->id)->first();
+        $this->assertNotNull($payment);
+        $this->assertNotNull($payment->proof_file);
+        $this->assertEquals('QRIS', $payment->method);
+        $this->assertTrue(Storage::disk(Payment::PROOF_DISK)->exists($payment->proof_file));
     }
 }
