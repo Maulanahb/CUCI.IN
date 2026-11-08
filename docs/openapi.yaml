@@ -1,0 +1,235 @@
+openapi: 3.0.3
+info:
+  title: CUCI.IN REST API
+  description: |
+    Spesifikasi Kontrak REST API Sistem Informasi Manajemen Operasional Laundry CUCI.IN (Milestone 2 - Pertemuan 10 PWL).
+    Dokumentasi ini memetakan format keluaran Eloquent API Resource (`TransactionResource`) yang distandarisasi untuk pelacakan transaksi publik, integrasi mobile, dan pihak ketiga.
+  version: 1.0.0
+  contact:
+    name: Tim Pengembang SIB CUCI.IN
+    email: dev@cuci.in
+servers:
+  - url: https://portal-cuciin.web.id/api
+    description: Production Server (AWS EC2 Cloudflare Flexible)
+  - url: http://localhost:8000/api
+    description: Local Development Environment
+
+tags:
+  - name: Tracking
+    description: Endpoint publik pelacakan status nota cucian tanpa autentikasi (Guest Lookup)
+
+paths:
+  /v1/track/{transaction_code}:
+    get:
+      tags:
+        - Tracking
+      summary: Lacak Status Transaksi Cucian
+      description: |
+        Mengembalikan informasi status cucian, estimasi penyelesaian, rincian pembayaran, dan detail item layanan
+        berdasarkan nomor nota transaksi resmi (`TRX-XXXX`).
+      operationId: trackTransactionByCode
+      parameters:
+        - name: transaction_code
+          in: path
+          required: true
+          description: Kode unik nota transaksi (case-insensitive).
+          schema:
+            type: string
+            example: TRX-0001
+      responses:
+        '200':
+          description: Data transaksi berhasil ditemukan.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              examples:
+                success_example:
+                  summary: Transaksi Ditemukan Lengkap
+                  value:
+                    success: true
+                    message: Data transaksi berhasil ditemukan.
+                    data:
+                      transaction_code: TRX-0001
+                      status: Diproses
+                      customer:
+                        name: Rina Wulandari
+                        phone: "081234567804"
+                      total_amount: 35000
+                      total_paid: 35000
+                      remaining_amount: 0
+                      is_paid: true
+                      estimated_completed_at: "2026-11-09T14:00:00+07:00"
+                      created_at: "2026-11-07T10:00:00+07:00"
+                      last_updated_at: "2026-11-07T10:05:00+07:00"
+                      items:
+                        - id: 1
+                          service_name: Cuci Komplit Reguler
+                          service_category: Kiloan
+                          is_express: false
+                          weight: 3.5
+                          unit: kg
+                          unit_price: 10000
+                          subtotal: 35000
+        '404':
+          description: Transaksi tidak ditemukan di database.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+              examples:
+                not_found_example:
+                  summary: Nota Tidak Terdaftar
+                  value:
+                    success: false
+                    message: Transaksi tidak ditemukan.
+        '429':
+          description: Permintaan melebihi batas rate limit throttle.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+
+components:
+  schemas:
+    TransactionResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: Data transaksi berhasil ditemukan.
+        data:
+          $ref: '#/components/schemas/TransactionResourceData'
+      required:
+        - success
+        - message
+        - data
+
+    TransactionResourceData:
+      type: object
+      description: Representasi data dari Eloquent API Resource (TransactionResource).
+      properties:
+        transaction_code:
+          type: string
+          example: TRX-0001
+        status:
+          type: string
+          enum: [Diterima, Diproses, Selesai, Diambil, Dibatalkan]
+          example: Diproses
+        customer:
+          $ref: '#/components/schemas/CustomerSummary'
+        total_amount:
+          type: integer
+          description: Total tagihan dalam mata uang Rupiah (integer).
+          example: 35000
+        total_paid:
+          type: integer
+          description: Akumulasi pembayaran yang telah disetujui (integer).
+          example: 35000
+        remaining_amount:
+          type: integer
+          description: Sisa pembayaran yang belum terbayar (integer).
+          example: 0
+        is_paid:
+          type: boolean
+          description: Indikator apakah tagihan sudah lunas sepenuhnya.
+          example: true
+        estimated_completed_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2026-11-09T14:00:00+07:00"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-11-07T10:00:00+07:00"
+        last_updated_at:
+          type: string
+          format: date-time
+          example: "2026-11-07T10:05:00+07:00"
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionDetailItem'
+      required:
+        - transaction_code
+        - status
+        - total_amount
+        - total_paid
+        - remaining_amount
+        - is_paid
+
+    CustomerSummary:
+      type: object
+      description: Ringkasan profil pelanggan publik (tanpa mengekspos ID sensitif).
+      properties:
+        name:
+          type: string
+          example: Rina Wulandari
+        phone:
+          type: string
+          example: "081234567804"
+      required:
+        - name
+        - phone
+
+    TransactionDetailItem:
+      type: object
+      description: Representasi rincian layanan transaksi (TransactionDetailResource).
+      properties:
+        id:
+          type: integer
+          example: 1
+        service_name:
+          type: string
+          example: Cuci Komplit Reguler
+        service_category:
+          type: string
+          example: Kiloan
+        is_express:
+          type: boolean
+          example: false
+        weight:
+          type: number
+          format: float
+          example: 3.5
+        unit:
+          type: string
+          example: kg
+        unit_price:
+          type: integer
+          example: 10000
+        subtotal:
+          type: integer
+          example: 35000
+      required:
+        - id
+        - weight
+        - unit_price
+        - subtotal
+
+    NotFoundResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Transaksi tidak ditemukan.
+      required:
+        - success
+        - message
+
+    RateLimitResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Too Many Requests
+      required:
+        - message
+
