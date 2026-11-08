@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 
@@ -14,6 +15,11 @@ class TrackingController extends Controller
     public function show(string $transaction_code): JsonResponse
     {
         $transaction = Transaction::query()
+            ->with([
+                'customer',
+                'details.service',
+                'payments' => fn ($query) => $query->latest('id'),
+            ])
             ->whereRaw(
                 'UPPER(transaction_code) = ?',
                 [mb_strtoupper($transaction_code)]
@@ -21,25 +27,18 @@ class TrackingController extends Controller
             ->first();
 
         // Jika kode nota tidak ditemukan
-        if (!$transaction) {
+        if (! $transaction) {
             return response()->json([
                 'success' => false,
                 'message' => 'Transaksi tidak ditemukan.',
             ], 404);
         }
 
-        // Jika kode nota ditemukan
+        // Jika kode nota ditemukan, bentuk response via TransactionResource
         return response()->json([
             'success' => true,
             'message' => 'Data transaksi berhasil ditemukan.',
-            'data' => [
-                'transaction_code' => $transaction->transaction_code,
-                'status' => $transaction->status->value,
-                'estimated_completed_at' =>
-                    $transaction->estimated_completed_at?->toIso8601String(),
-                'last_updated_at' =>
-                    $transaction->updated_at?->toIso8601String(),
-            ],
+            'data' => new TransactionResource($transaction),
         ], 200);
     }
 }
