@@ -61,7 +61,9 @@ desktop.ini
 
 # Artefak Eksperimen Stitch & Scripts
 /docs/diagram/stitch/
-/scripts/
+/docs/design/*.commands.json
+/scripts/*
+!/scripts/figcraft/
 
 # Local Agent Credentials & Caches
 *mcp_config*.json
