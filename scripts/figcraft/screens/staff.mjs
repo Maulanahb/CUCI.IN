@@ -978,10 +978,8 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
   const f16b = f16bShell.root;
 
   // ========================================================
-  // PROTOTYPING WIRES: ALUR KASIR & OPERASIONAL (STAFF)
+  // PROTOTYPING WIRES: ALUR KASIR & OPERASIONAL (TERHUBUNG KE ALUR UTAMA)
   // ========================================================
-  b.flow({ start: f10, name: 'Alur Kasir & Operasional (Staff POS)' });
-
   if (publicAuthRefs.btnChipStaff) {
     b.wire({ id: publicAuthRefs.btnChipStaff, dest: f10 });
   }

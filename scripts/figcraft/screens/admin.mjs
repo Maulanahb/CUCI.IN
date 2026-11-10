@@ -543,10 +543,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   const f19c = f19cShell.root;
 
   // ========================================================
-  // PROTOTYPING WIRES: ALUR ADMINISTRATOR & EKSEKUTIF
+  // PROTOTYPING WIRES: ALUR ADMINISTRATOR (TERHUBUNG KE ALUR UTAMA)
   // ========================================================
-  b.flow({ start: f17, name: 'Alur Administrator & Eksekutif (Owner)' });
-
   if (publicAuthRefs.btnChipAdmin) {
     b.wire({ id: publicAuthRefs.btnChipAdmin, dest: f17 });
   }

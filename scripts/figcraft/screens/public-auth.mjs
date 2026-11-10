@@ -544,19 +544,19 @@ export function buildPublicAuthScreens(b) {
         height: 44,
       });
 
-      // Demo Quick Login Box
+      // Demo Quick Login Box (Pilih Role Masuk untuk Uji Prototipe 1 Alur)
       const demoBox = builder.frame({
         name: 'DemoBox',
         parent: card,
         width: 396,
-        height: 64,
-        props: { fill: COLORS.slate50, cornerRadius: 10, padding: 8, layout: 'vertical', gap: 6 },
+        height: 68,
+        props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 8, padding: 8, layout: 'vertical', gap: 6 },
       });
-      builder.text({ name: 'DT', parent: demoBox, text: 'Akun Cepat Pengujian (Role):', props: { fontSize: 10, fill: COLORS.slate500 } });
-      const chips = builder.frame({ name: 'Chips', parent: demoBox, width: 380, height: 26, props: { layout: 'horizontal', gap: 6 } });
-      btnChipAdmin = builder.badge({ parent: chips, label: 'Admin (Dawamul)', tone: 'brand', width: 120 });
-      btnChipStaff = builder.badge({ parent: chips, label: 'Kasir (Maulana)', tone: 'brand', width: 120 });
-      btnChipCustomer = builder.badge({ parent: chips, label: 'Customer (Budi)', tone: 'brand', width: 120 });
+      builder.text({ name: 'DT', parent: demoBox, text: 'Pilih Role Masuk (Uji Prototipe 1 Alur):', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate600 } });
+      const chips = builder.frame({ name: 'Chips', parent: demoBox, width: 380, height: 32, props: { layout: 'horizontal', gap: 6 } });
+      btnChipCustomer = builder.button({ parent: chips, label: 'Customer', variant: 'secondary', width: 120, height: 32 });
+      btnChipStaff = builder.button({ parent: chips, label: 'Kasir POS', variant: 'secondary', width: 120, height: 32 });
+      btnChipAdmin = builder.button({ parent: chips, label: 'Admin/Owner', variant: 'secondary', width: 120, height: 32 });
 
       btnLinkRegister = builder.text({
         name: 'LinkRegister',
@@ -819,9 +819,9 @@ export function buildPublicAuthScreens(b) {
   b.badge({ parent: badgeRow, label: 'Terlambat / Ditolak', tone: 'danger' });
 
   // ========================================================
-  // FIGCRAFT PROTOTYPING WIRES (Native Interactions)
+  // FIGCRAFT PROTOTYPING WIRES (Native Single Closed-Loop Flow)
   // ========================================================
-  b.flow({ start: f01, name: 'Alur Pelanggan & Pengunjung' });
+  b.flow({ start: f01, name: 'Alur Utama CUCI.IN (Master Prototype)' });
 
   // 1. From 01-Welcome-Landing-Page
   b.wire({ id: btnHeaderTrack, dest: f02 });

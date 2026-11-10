@@ -626,10 +626,8 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   const f09 = f09Shell.root;
 
   // --------------------------------------------------------
-  // PROTOTYPING WIRES: ALUR MANDIRI PELANGGAN
+  // PROTOTYPING WIRES: ALUR MANDIRI PELANGGAN (TERHUBUNG KE ALUR UTAMA)
   // --------------------------------------------------------
-  b.flow({ start: f06, name: 'Alur Mandiri Pelanggan (Customer Portal)' });
-
   if (publicAuthRefs.btnLoginSubmit) {
     b.wire({ id: publicAuthRefs.btnLoginSubmit, dest: f06 });
   }
