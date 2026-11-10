@@ -23,17 +23,17 @@ async function main() {
 
   const builder = new FigBuilder();
 
-  // 1. Compile all screen modules
-  console.log(' - Membangun 00 - Design System & 01 - Public & Auth...');
+  // 1. Compile all screen modules into Single Master Canvas
+  console.log(' - Membangun modul Publik & Autentikasi (Landing Page Hub)...');
   const publicAuthRefs = buildPublicAuthScreens(builder);
 
-  console.log(' - Membangun 02 - Customer Portal...');
+  console.log(' - Menghubungkan modul Portal Pelanggan ke Alur Utama...');
   const customerRefs = buildCustomerScreens(builder, publicAuthRefs);
 
-  console.log(' - Membangun 03 - Staff & Kasir Operasional (POS & Thermal)...');
+  console.log(' - Menghubungkan modul Staff & Kasir POS ke Alur Utama...');
   const staffRefs = buildStaffScreens(builder, publicAuthRefs);
 
-  console.log(' - Membangun 04 - Admin & Executive (Reports & Roles)...');
+  console.log(' - Menghubungkan modul Admin & Eksekutif ke Alur Utama...');
   buildAdminScreens(builder, publicAuthRefs, staffRefs);
 
   console.log(`[FigCraft] Total perintah yang digenerate: ${builder.commands.length} langkah.`);
@@ -62,7 +62,7 @@ async function main() {
   try {
     execFileSync(
       FIGCRAFT_CLI,
-      ['export', OUT_FILE, '--page', '01 - CUCI.IN Master Prototype', '--out', PREVIEWS_DIR, '--format', 'png'],
+      ['export', OUT_FILE, '--page', 'CUCI.IN - Master Prototype', '--out', PREVIEWS_DIR, '--format', 'png'],
       { encoding: 'utf-8' }
     );
   } catch (e) {

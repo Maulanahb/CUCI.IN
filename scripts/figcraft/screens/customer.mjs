@@ -628,6 +628,9 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   // --------------------------------------------------------
   // PROTOTYPING WIRES: ALUR MANDIRI PELANGGAN (TERHUBUNG KE ALUR UTAMA)
   // --------------------------------------------------------
+  if (publicAuthRefs.btnHeroCust) {
+    b.wire({ id: publicAuthRefs.btnHeroCust, dest: f06 });
+  }
   if (publicAuthRefs.btnLoginSubmit) {
     b.wire({ id: publicAuthRefs.btnLoginSubmit, dest: f06 });
   }

@@ -545,6 +545,9 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   // ========================================================
   // PROTOTYPING WIRES: ALUR ADMINISTRATOR (TERHUBUNG KE ALUR UTAMA)
   // ========================================================
+  if (publicAuthRefs.btnHeroAdmin) {
+    b.wire({ id: publicAuthRefs.btnHeroAdmin, dest: f17 });
+  }
   if (publicAuthRefs.btnChipAdmin) {
     b.wire({ id: publicAuthRefs.btnChipAdmin, dest: f17 });
   }

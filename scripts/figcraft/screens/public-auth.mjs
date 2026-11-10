@@ -2,9 +2,9 @@ import { COLORS, ICONS } from '../tokens.mjs';
 
 export function buildPublicAuthScreens(b) {
   // ========================================================
-  // SINGLE MASTER PAGE DECLARATION
+  // SINGLE MASTER PAGE DECLARATION (ONLY ONE PAGE)
   // ========================================================
-  b.page('01 - CUCI.IN Master Prototype', COLORS.slate100);
+  b.page('CUCI.IN - Master Prototype', COLORS.slate100);
 
   // ========================================================
   // FRAME 01: Welcome Landing Page (1440x900 Fold View)
@@ -77,23 +77,85 @@ export function buildPublicAuthScreens(b) {
       fill: COLORS.brand50,
       layout: 'vertical',
       crossAlign: 'center',
-      padding: [28, 60, 24, 60],
-      gap: 14,
+      padding: [18, 60, 18, 60],
+      gap: 10,
     },
+  });
+
+  // Role Showcase Bar: Hub Pintas Alur Prototipe Langsung Nyantol ke Setiap Role
+  const roleShowcaseBar = b.frame({
+    name: 'RoleShowcaseBar',
+    parent: heroSection,
+    width: 780,
+    height: 38,
+    props: {
+      fill: COLORS.white,
+      stroke: COLORS.brand200,
+      strokeWeight: 1,
+      cornerRadius: 19,
+      layout: 'horizontal',
+      mainAlign: 'center',
+      crossAlign: 'center',
+      gap: 8,
+      padding: [0, 12, 0, 12],
+    },
+  });
+
+  b.text({
+    name: 'RoleBarLabel',
+    parent: roleShowcaseBar,
+    text: 'Akses Cepat Role:',
+    props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.brand700 },
+  });
+
+  const btnHeroCust = b.button({
+    parent: roleShowcaseBar,
+    label: 'Portal Pelanggan',
+    variant: 'secondary',
+    icon: 'user',
+    width: 145,
+    height: 28,
+  });
+
+  const btnHeroStaff = b.button({
+    parent: roleShowcaseBar,
+    label: 'Kasir & POS',
+    variant: 'secondary',
+    icon: 'shopping-bag',
+    width: 125,
+    height: 28,
+  });
+
+  const btnHeroAdmin = b.button({
+    parent: roleShowcaseBar,
+    label: 'Admin / Owner',
+    variant: 'secondary',
+    icon: 'shield-check',
+    width: 135,
+    height: 28,
+  });
+
+  const btnHeroTrackDirect = b.button({
+    parent: roleShowcaseBar,
+    label: 'Lacak Nota',
+    variant: 'secondary',
+    icon: 'search',
+    width: 110,
+    height: 28,
   });
 
   b.text({
     name: 'HeroTitle1',
     parent: heroSection,
     text: 'Laundry Bersih, Higienis & Terpantau Real-Time',
-    props: { fontSize: 32, fontWeight: 'bold', fill: COLORS.slate900, textAlign: 'center' },
+    props: { fontSize: 28, fontWeight: 'bold', fill: COLORS.slate900, textAlign: 'center' },
   });
 
   b.text({
     name: 'HeroSub',
     parent: heroSection,
     text: 'Nikmati kemudahan mencuci tanpa rasa cemas. Timbangan presisi desimal, pakaian tidak dicampur,\ndan pantau status cucian langsung dari ponsel menggunakan kode nota fisik Anda.',
-    props: { fontSize: 13, fill: COLORS.slate600, textAlign: 'center' },
+    props: { fontSize: 12, fill: COLORS.slate600, textAlign: 'center' },
   });
 
   // Quick Tracking Box Form
@@ -826,6 +888,7 @@ export function buildPublicAuthScreens(b) {
   // 1. From 01-Welcome-Landing-Page
   b.wire({ id: btnHeaderTrack, dest: f02 });
   b.wire({ id: btnHeroTrack, dest: f02 });
+  b.wire({ id: btnHeroTrackDirect, dest: f02 });
   b.wire({ id: btnCtaTrack, dest: f02 });
 
   b.wire({ id: btnHeaderLogin, dest: f04 });
@@ -859,5 +922,21 @@ export function buildPublicAuthScreens(b) {
   b.wire({ id: btnResetLinkLogin, dest: f04 });
   b.wire({ id: btnResetSubmit, dest: f04 });
 
-  return { f01, f02, f03, f04, f05, f20, f21, btnLoginSubmit, btnChipAdmin, btnChipStaff, btnChipCustomer };
+  return {
+    f01,
+    f02,
+    f03,
+    f04,
+    f05,
+    f20,
+    f21,
+    btnLoginSubmit,
+    btnChipAdmin,
+    btnChipStaff,
+    btnChipCustomer,
+    btnHeroCust,
+    btnHeroStaff,
+    btnHeroAdmin,
+    btnHeroTrackDirect,
+  };
 }

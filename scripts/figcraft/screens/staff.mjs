@@ -980,6 +980,9 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
   // ========================================================
   // PROTOTYPING WIRES: ALUR KASIR & OPERASIONAL (TERHUBUNG KE ALUR UTAMA)
   // ========================================================
+  if (publicAuthRefs.btnHeroStaff) {
+    b.wire({ id: publicAuthRefs.btnHeroStaff, dest: f10 });
+  }
   if (publicAuthRefs.btnChipStaff) {
     b.wire({ id: publicAuthRefs.btnChipStaff, dest: f10 });
   }
