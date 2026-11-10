@@ -673,6 +673,15 @@ export class FigBuilder {
       props: { fontSize: 10, fill: COLORS.slate500 },
     });
 
+    const btnLogout = this.button({
+      parent: userFooter,
+      label: 'Keluar ke Beranda',
+      variant: 'ghost',
+      icon: 'log-out',
+      width: 224,
+      height: 32,
+    });
+
     // 2. Topbar Header (x: 256, y: 0, width: 1184, height: 64)
     const header = this.frame({
       name: 'Header',
@@ -742,10 +751,10 @@ export class FigBuilder {
     });
 
     if (typeof contentFn === 'function') {
-      contentFn(this, content, { navRefs, actionRefs });
+      contentFn(this, content, { navRefs, actionRefs, logoutRef: btnLogout });
     }
 
-    return returnRefs ? { root, navRefs, actionRefs } : root;
+    return returnRefs ? { root, navRefs, actionRefs, logoutRef: btnLogout } : root;
   }
 
   // --- Guest Shell (Public Landing & Auth matching guest.blade.php) ---

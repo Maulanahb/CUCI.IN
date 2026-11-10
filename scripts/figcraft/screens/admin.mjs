@@ -1,8 +1,6 @@
 import { COLORS, ICONS } from '../tokens.mjs';
 
 export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
-  b.page('04 - Admin & Executive', COLORS.slate50);
-
   let btnAdminPos, btnAdminServices, btnAdminCustomers;
   let btnRepPdf, btnUserAdd, btnUserEdit0;
 
@@ -10,7 +8,7 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   const f17Shell = b.appShell({
     name: '17-Admin-Dashboard',
     x: 40,
-    y: 40,
+    y: 3100,
     role: 'admin',
     activeLabel: 'Dashboard',
     pageTitle: 'Dashboard Administrator & Pemilik Laundry',
@@ -151,8 +149,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   // --- Frame 18: Admin Reports & Analytics ---
   const f18Shell = b.appShell({
     name: '18-Admin-Reports-Analytics',
-    x: 1520,
-    y: 40,
+    x: 1560,
+    y: 3100,
     role: 'admin',
     activeLabel: 'Laporan',
     pageTitle: 'Laporan Operasional & Keuangan Laundry',
@@ -229,22 +227,22 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   let btnPdfBack;
   const f18b = b.frame({
     name: '18b-Admin-Report-PDF-Preview',
-    x: 1520,
-    y: 1000,
+    x: 3080,
+    y: 3100,
     width: 1440,
-    height: 1120,
-    props: { fill: COLORS.slate200, layout: 'vertical', crossAlign: 'center', padding: [28, 0, 36, 0], gap: 20 },
+    height: 900,
+    props: { fill: COLORS.slate200, layout: 'vertical', crossAlign: 'center', padding: [16, 0, 20, 0], gap: 14 },
   });
 
   // Top PDF Viewer Bar
   const pdfBar = b.frame({
     name: 'PDFViewerToolbar',
     parent: f18b,
-    width: 980,
-    height: 56,
-    props: { fill: COLORS.slate900, cornerRadius: 12, padding: [10, 20, 10, 20], layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
+    width: 860,
+    height: 52,
+    props: { fill: COLORS.slate900, cornerRadius: 10, padding: [8, 16, 8, 16], layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
   });
-  b.text({ name: 'DocName', parent: pdfBar, text: 'laporan-operasional-cuciin-20261101-20261109.pdf (DomPDF A4 Portrait — 1/1 Halaman)', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.white } });
+  b.text({ name: 'DocName', parent: pdfBar, text: 'laporan-operasional-cuciin-20261101-20261109.pdf (DomPDF A4 Portrait)', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.white } });
   const pdfBtns = b.frame({ name: 'Btns', parent: pdfBar, width: 280, height: 36, props: { layout: 'horizontal', gap: 10, mainAlign: 'max', crossAlign: 'center' } });
   btnPdfBack = b.button({ parent: pdfBtns, label: 'Kembali ke Laporan', variant: 'secondary', icon: 'arrow-left', width: 155, height: 36 });
   b.button({ parent: pdfBtns, label: 'Unduh PDF', variant: 'primary', icon: 'download', width: 115, height: 36 });
@@ -254,8 +252,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
     name: 'A4PortraitPaper',
     parent: f18b,
     width: 860,
-    height: 980,
-    props: { fill: COLORS.white, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 4, padding: [36, 44, 36, 44], layout: 'vertical', gap: 16 },
+    height: 760,
+    props: { fill: COLORS.white, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 4, padding: [22, 36, 22, 36], layout: 'vertical', gap: 10 },
   });
 
   // Kop Surat Header
@@ -360,8 +358,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   // --- Frame 19: Admin User Role Management ---
   const f19Shell = b.appShell({
     name: '19-Admin-User-Role-Management',
-    x: 3000,
-    y: 40,
+    x: 4600,
+    y: 3100,
     role: 'admin',
     activeLabel: 'Kelola Pengguna',
     pageTitle: 'Manajemen Pengguna & Otorisasi Peran (Role Authorization)',
@@ -416,8 +414,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   let btnUserCreateBack, btnUserCreateCancel, btnUserCreateSave;
   const f19bShell = b.appShell({
     name: '19b-Admin-User-Create',
-    x: 4480,
-    y: 40,
+    x: 6120,
+    y: 3100,
     role: 'admin',
     activeLabel: 'Kelola Pengguna',
     pageTitle: 'Tambah Pengguna Baru',
@@ -431,38 +429,38 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
         name: 'CreateUserCard',
         parent: main,
         width: 780,
-        height: 740,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 32, layout: 'vertical', gap: 18 },
+        height: 680,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 28, layout: 'vertical', gap: 14 },
       });
 
-      const head = builder.frame({ name: 'H', parent: card, width: 716, height: 54, props: { layout: 'vertical', gap: 4 } });
+      const head = builder.frame({ name: 'H', parent: card, width: 716, height: 50, props: { layout: 'vertical', gap: 4 } });
       builder.text({ name: 'T1', parent: head, text: 'Tambah Akun Pengguna Baru', props: { fontSize: 20, fontWeight: 'bold', fill: COLORS.slate900 } });
       builder.text({ name: 'T2', parent: head, text: 'Buat akun staf operasional, kasir, atau administrator baru untuk sistem CUCI.IN.', props: { fontSize: 13, fill: COLORS.slate500 } });
 
-      builder.inputField({ parent: card, width: 716, height: 42, label: 'Nama Lengkap *', placeholder: 'Contoh: Rian Anggara', value: 'Gargarina Nanda Iswati' });
-      builder.inputField({ parent: card, width: 716, height: 42, label: 'Alamat Email *', placeholder: 'nama@cuci.in', value: 'ayiniswati22@gmail.com', icon: 'mail' });
-      builder.inputField({ parent: card, width: 716, height: 42, label: 'Peran & Hak Akses *', value: 'Staf / Kasir (Akses POS & Operasional)', icon: 'shield-check' });
+      builder.inputField({ parent: card, width: 716, height: 40, label: 'Nama Lengkap *', placeholder: 'Contoh: Rian Anggara', value: 'Gargarina Nanda Iswati' });
+      builder.inputField({ parent: card, width: 716, height: 40, label: 'Alamat Email *', placeholder: 'nama@cuci.in', value: 'ayiniswati22@gmail.com', icon: 'mail' });
+      builder.inputField({ parent: card, width: 716, height: 40, label: 'Peran & Hak Akses *', value: 'Staf / Kasir (Akses POS & Operasional)', icon: 'shield-check' });
 
-      const pwRow = builder.frame({ name: 'PasswordRow', parent: card, width: 716, height: 68, props: { layout: 'horizontal', gap: 16 } });
-      builder.inputField({ parent: pwRow, width: 350, height: 42, label: 'Kata Sandi * (Minimal 8 karakter)', value: '••••••••••••', icon: 'lock' });
-      builder.inputField({ parent: pwRow, width: 350, height: 42, label: 'Konfirmasi Kata Sandi *', value: '••••••••••••', icon: 'lock' });
+      const pwRow = builder.frame({ name: 'PasswordRow', parent: card, width: 716, height: 64, props: { layout: 'horizontal', gap: 16 } });
+      builder.inputField({ parent: pwRow, width: 350, height: 40, label: 'Kata Sandi * (Minimal 8 karakter)', value: '••••••••••••', icon: 'lock' });
+      builder.inputField({ parent: pwRow, width: 350, height: 40, label: 'Konfirmasi Kata Sandi *', value: '••••••••••••', icon: 'lock' });
 
       // Toggle Active Account
       const toggleBox = builder.frame({
         name: 'ActiveToggleBox',
         parent: card,
         width: 716,
-        height: 64,
-        props: { fill: COLORS.emerald50, stroke: COLORS.emerald100, strokeWeight: 1, cornerRadius: 12, padding: [12, 16, 12, 16], layout: 'horizontal', gap: 14, crossAlign: 'center' },
+        height: 60,
+        props: { fill: COLORS.emerald50, stroke: COLORS.emerald100, strokeWeight: 1, cornerRadius: 12, padding: [10, 16, 10, 16], layout: 'horizontal', gap: 14, crossAlign: 'center' },
       });
       builder.badge({ parent: toggleBox, label: 'AKTIF', tone: 'success', width: 70, height: 28 });
-      const tgTxt = builder.frame({ name: 'Txt', parent: toggleBox, width: 580, height: 40, props: { layout: 'vertical', gap: 2 } });
+      const tgTxt = builder.frame({ name: 'Txt', parent: toggleBox, width: 580, height: 38, props: { layout: 'vertical', gap: 2 } });
       builder.text({ name: 'L1', parent: tgTxt, text: 'Aktifkan Akun Langsung', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
       builder.text({ name: 'L2', parent: tgTxt, text: 'Jika dinonaktifkan, akun ini tidak dapat digunakan untuk masuk ke sistem.', props: { fontSize: 11, fill: COLORS.slate600 } });
 
-      const foot = builder.frame({ name: 'Footer', parent: card, width: 716, height: 52, props: { layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12 } });
-      btnUserCreateCancel = builder.button({ parent: foot, label: 'Batal', variant: 'secondary', width: 110, height: 44 });
-      btnUserCreateSave = builder.button({ parent: foot, label: 'Simpan Pengguna Baru', variant: 'primary', icon: 'check', width: 195, height: 44 });
+      const foot = builder.frame({ name: 'Footer', parent: card, width: 716, height: 48, props: { layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12 } });
+      btnUserCreateCancel = builder.button({ parent: foot, label: 'Batal', variant: 'secondary', width: 110, height: 40 });
+      btnUserCreateSave = builder.button({ parent: foot, label: 'Simpan Pengguna Baru', variant: 'primary', icon: 'check', width: 195, height: 40 });
     },
   });
   const f19b = f19bShell.root;
@@ -471,9 +469,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   let btnUserEditBack, btnUserEditCancel, btnUserEditSave;
   const f19cShell = b.appShell({
     name: '19c-Admin-User-Edit',
-    x: 5960,
-    y: 40,
-    height: 960,
+    x: 7640,
+    y: 3100,
     role: 'admin',
     activeLabel: 'Kelola Pengguna',
     pageTitle: 'Edit Data Pengguna — Muh. Zaky Dawamul',
@@ -488,11 +485,11 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
         name: 'SelfAccountGuardAlert',
         parent: main,
         width: 780,
-        height: 74,
-        props: { fill: COLORS.brand50, stroke: COLORS.brand200, strokeWeight: 1, cornerRadius: 14, padding: [14, 18, 14, 18], layout: 'horizontal', gap: 12, crossAlign: 'center' },
+        height: 64,
+        props: { fill: COLORS.brand50, stroke: COLORS.brand200, strokeWeight: 1, cornerRadius: 14, padding: [10, 16, 10, 16], layout: 'horizontal', gap: 12, crossAlign: 'center' },
       });
       builder.vector({ name: 'Ico', parent: selfAlert, width: 20, height: 20, path: ICONS['shield-check'], props: { stroke: COLORS.brand700 } });
-      const saTxt = builder.frame({ name: 'Txt', parent: selfAlert, width: 700, height: 44, props: { layout: 'vertical', gap: 2 } });
+      const saTxt = builder.frame({ name: 'Txt', parent: selfAlert, width: 700, height: 40, props: { layout: 'vertical', gap: 2 } });
       builder.text({ name: 'T1', parent: saTxt, text: 'Anda sedang mengedit akun Anda sendiri (Self-Lockout Guard Aktif)', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.brand900 } });
       builder.text({ name: 'T2', parent: saTxt, text: 'Untuk menjaga keamanan operasional, hak akses peran Administrator dan status aktif tidak dapat dicabut dari akun sendiri.', props: { fontSize: 11, fill: COLORS.brand800 } });
 
@@ -501,28 +498,28 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
         name: 'EditUserCard',
         parent: main,
         width: 780,
-        height: 750,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 32, layout: 'vertical', gap: 16 },
+        height: 680,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 26, layout: 'vertical', gap: 12 },
       });
 
-      const head = builder.frame({ name: 'H', parent: card, width: 716, height: 50, props: { layout: 'vertical', gap: 4 } });
+      const head = builder.frame({ name: 'H', parent: card, width: 716, height: 46, props: { layout: 'vertical', gap: 2 } });
       builder.text({ name: 'T1', parent: head, text: 'Edit Data Pengguna', props: { fontSize: 20, fontWeight: 'bold', fill: COLORS.slate900 } });
-      builder.text({ name: 'T2', parent: head, text: 'Perbarui profil, hak akses peran, atau setel ulang kata sandi pengguna Muh. Zaky Dawamul.', props: { fontSize: 13, fill: COLORS.slate500 } });
+      builder.text({ name: 'T2', parent: head, text: 'Perbarui profil, hak akses peran, atau setel ulang kata sandi pengguna Muh. Zaky Dawamul.', props: { fontSize: 12, fill: COLORS.slate500 } });
 
-      builder.inputField({ parent: card, width: 716, height: 42, label: 'Nama Lengkap *', value: 'Muh. Zaky Dawamul Busro' });
-      builder.inputField({ parent: card, width: 716, height: 42, label: 'Alamat Email *', value: 'zakydb091005@gmail.com', icon: 'mail' });
+      builder.inputField({ parent: card, width: 716, height: 40, label: 'Nama Lengkap *', value: 'Muh. Zaky Dawamul Busro' });
+      builder.inputField({ parent: card, width: 716, height: 40, label: 'Alamat Email *', value: 'zakydb091005@gmail.com', icon: 'mail' });
 
       // Locked Role Field
       const roleLocked = builder.frame({
         name: 'LockedRoleBox',
         parent: card,
         width: 716,
-        height: 64,
-        props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 12, padding: [10, 16, 10, 16], layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
+        height: 56,
+        props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 12, padding: [8, 16, 8, 16], layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
       });
-      const rlLeft = builder.frame({ name: 'RLL', parent: roleLocked, width: 460, height: 40, props: { layout: 'vertical', gap: 2 } });
-      builder.text({ name: 'L', parent: rlLeft, text: 'Peran & Hak Akses *', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate700 } });
-      builder.text({ name: 'S', parent: rlLeft, text: 'Administrator (Terkunci untuk akun sendiri • Akun berstatus Aktif)', props: { fontSize: 12, fill: COLORS.emerald700, fontWeight: 'medium' } });
+      const rlLeft = builder.frame({ name: 'RLL', parent: roleLocked, width: 460, height: 38, props: { layout: 'vertical', gap: 2 } });
+      builder.text({ name: 'L', parent: rlLeft, text: 'Peran & Hak Akses *', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate700 } });
+      builder.text({ name: 'S', parent: rlLeft, text: 'Administrator (Terkunci untuk akun sendiri • Akun berstatus Aktif)', props: { fontSize: 11, fill: COLORS.emerald700, fontWeight: 'medium' } });
       builder.badge({ parent: roleLocked, label: 'ADMINISTRATOR', tone: 'brand', width: 140 });
 
       // Optional Password Change Section
@@ -530,17 +527,17 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
         name: 'OptionalPasswordSection',
         parent: card,
         width: 716,
-        height: 150,
-        props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 14, padding: 18, layout: 'vertical', gap: 12 },
+        height: 130,
+        props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 14, padding: 14, layout: 'vertical', gap: 8 },
       });
-      builder.text({ name: 'PT', parent: pwSec, text: 'Ubah Kata Sandi (Opsional) — Biarkan kosong jika tidak ingin mengubah password lama', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate800 } });
-      const pwGrid = builder.frame({ name: 'PGrid', parent: pwSec, width: 680, height: 68, props: { layout: 'horizontal', gap: 16 } });
-      builder.inputField({ parent: pwGrid, width: 332, height: 40, label: 'Kata Sandi Baru', placeholder: 'Kosongkan jika tidak diubah', icon: 'lock' });
-      builder.inputField({ parent: pwGrid, width: 332, height: 40, label: 'Konfirmasi Kata Sandi Baru', placeholder: 'Ulangi kata sandi baru', icon: 'lock' });
+      builder.text({ name: 'PT', parent: pwSec, text: 'Ubah Kata Sandi (Opsional) — Biarkan kosong jika tidak ingin mengubah password lama', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate800 } });
+      const pwGrid = builder.frame({ name: 'PGrid', parent: pwSec, width: 680, height: 60, props: { layout: 'horizontal', gap: 16 } });
+      builder.inputField({ parent: pwGrid, width: 332, height: 38, label: 'Kata Sandi Baru', placeholder: 'Kosongkan jika tidak diubah', icon: 'lock' });
+      builder.inputField({ parent: pwGrid, width: 332, height: 38, label: 'Konfirmasi Kata Sandi Baru', placeholder: 'Ulangi kata sandi baru', icon: 'lock' });
 
-      const foot = builder.frame({ name: 'Footer', parent: card, width: 716, height: 50, props: { layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12 } });
-      btnUserEditCancel = builder.button({ parent: foot, label: 'Batal', variant: 'secondary', width: 110, height: 44 });
-      btnUserEditSave = builder.button({ parent: foot, label: 'Simpan Perubahan', variant: 'primary', icon: 'check', width: 175, height: 44 });
+      const foot = builder.frame({ name: 'Footer', parent: card, width: 716, height: 48, props: { layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12 } });
+      btnUserEditCancel = builder.button({ parent: foot, label: 'Batal', variant: 'secondary', width: 110, height: 40 });
+      btnUserEditSave = builder.button({ parent: foot, label: 'Simpan Perubahan', variant: 'primary', icon: 'check', width: 175, height: 40 });
     },
   });
   const f19c = f19cShell.root;
@@ -565,6 +562,9 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
     if (staffRefs.f15 && sh.navRefs['Data Pelanggan']) b.wire({ id: sh.navRefs['Data Pelanggan'], dest: staffRefs.f15 });
     if (staffRefs.f15 && sh.navRefs['Master Layanan']) b.wire({ id: sh.navRefs['Master Layanan'], dest: staffRefs.f15 });
     if (staffRefs.f16 && sh.navRefs['Pengaduan']) b.wire({ id: sh.navRefs['Pengaduan'], dest: staffRefs.f16 });
+    if (sh.logoutRef && publicAuthRefs.f01) {
+      b.wire({ id: sh.logoutRef, dest: publicAuthRefs.f01 });
+    }
   });
 
   if (staffRefs.f11 && btnAdminPos) b.wire({ id: btnAdminPos, dest: staffRefs.f11 });

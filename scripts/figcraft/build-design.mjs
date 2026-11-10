@@ -57,26 +57,16 @@ async function main() {
   console.log(infoOutput.trim());
   console.log('--------------------------------\n');
 
-  // 5. Export PNG previews for all pages
-  console.log('[FigCraft] Mengekspor pratinjau PNG seluruh halaman ke docs/design/previews/...');
-  const pages = [
-    '00 - Design System',
-    '01 - Public & Auth',
-    '02 - Customer Portal',
-    '03 - Staff & Kasir Operasional',
-    '04 - Admin & Executive',
-  ];
-
-  for (const p of pages) {
-    try {
-      execFileSync(
-        FIGCRAFT_CLI,
-        ['export', OUT_FILE, '--page', p, '--out', PREVIEWS_DIR, '--format', 'png'],
-        { encoding: 'utf-8' }
-      );
-    } catch (e) {
-      console.warn(`[Warning] Gagal mengekspor halaman ${p}:`, e.message);
-    }
+  // 5. Export PNG previews for all frames on the consolidated master page
+  console.log('[FigCraft] Mengekspor pratinjau PNG seluruh 29 frame dari Master Prototype ke docs/design/previews/...');
+  try {
+    execFileSync(
+      FIGCRAFT_CLI,
+      ['export', OUT_FILE, '--page', '01 - CUCI.IN Master Prototype', '--out', PREVIEWS_DIR, '--format', 'png'],
+      { encoding: 'utf-8' }
+    );
+  } catch (e) {
+    console.warn('[Warning] Gagal mengekspor Master Prototype:', e.message);
   }
 
   const duration = ((Date.now() - startTime) / 1000).toFixed(2);

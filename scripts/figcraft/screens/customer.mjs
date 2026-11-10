@@ -1,8 +1,6 @@
 import { COLORS, ICONS } from '../tokens.mjs';
 
 export function buildCustomerScreens(b, publicAuthRefs = {}) {
-  b.page('02 - Customer Portal', COLORS.slate50);
-
   // --------------------------------------------------------
   // FRAME 06: Customer Dashboard (1:1 customer/dashboard.blade.php)
   // --------------------------------------------------------
@@ -11,7 +9,7 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   const f06Shell = b.appShell({
     name: '06-Customer-Dashboard',
     x: 40,
-    y: 40,
+    y: 1060,
     role: 'customer',
     activeLabel: 'Beranda',
     pageTitle: 'Dashboard Pelanggan',
@@ -141,8 +139,8 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   // --------------------------------------------------------
   const f07Shell = b.appShell({
     name: '07-Customer-Transactions-History',
-    x: 1520,
-    y: 40,
+    x: 1560,
+    y: 1060,
     role: 'customer',
     activeLabel: 'Riwayat Transaksi',
     pageTitle: 'Riwayat Transaksi Pelanggan',
@@ -191,8 +189,8 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   let btnCompIdxCreate, btnCompIdxDetail0;
   const f08Shell = b.appShell({
     name: '08-Customer-Complaints-Index',
-    x: 3000,
-    y: 40,
+    x: 3080,
+    y: 1060,
     role: 'customer',
     activeLabel: 'Pengaduan',
     pageTitle: 'Daftar Pengaduan Pelanggan',
@@ -337,9 +335,8 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   let btnCompCreateBack, btnCompCreateCancel, btnCompCreateSubmit;
   const f08bShell = b.appShell({
     name: '08b-Customer-Complaints-Create',
-    x: 4480,
-    y: 40,
-    height: 980,
+    x: 4600,
+    y: 1060,
     role: 'customer',
     activeLabel: 'Pengaduan',
     pageTitle: 'Formulir Pengaduan Pelanggan',
@@ -354,17 +351,17 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
         name: 'SLABanner',
         parent: main,
         width: 1136,
-        height: 82,
-        props: { fill: COLORS.brand50, stroke: COLORS.brand200, strokeWeight: 1, cornerRadius: 16, padding: [16, 20, 16, 20], layout: 'horizontal', gap: 14, crossAlign: 'center' },
+        height: 68,
+        props: { fill: COLORS.brand50, stroke: COLORS.brand200, strokeWeight: 1, cornerRadius: 14, padding: [12, 16, 12, 16], layout: 'horizontal', gap: 12, crossAlign: 'center' },
       });
       builder.vector({ name: 'Ico', parent: slaBanner, width: 22, height: 22, path: ICONS['shield-check'], props: { stroke: COLORS.brand700 } });
-      const slaTxt = builder.frame({ name: 'Txt', parent: slaBanner, width: 1040, height: 50, props: { layout: 'vertical', gap: 4 } });
+      const slaTxt = builder.frame({ name: 'Txt', parent: slaBanner, width: 1040, height: 44, props: { layout: 'vertical', gap: 2 } });
       builder.text({ name: 'T1', parent: slaTxt, text: 'Komitmen Layanan & Batas Waktu (SLA 2 Hari Kerja)', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.brand900 } });
       builder.text({
         name: 'T2',
         parent: slaTxt,
         text: 'Setiap laporan pengaduan wajib terhubung ke nomor nota transaksi yang sah dan dijamin tuntas diselesaikan maksimal dalam 2 hari kerja oleh tim operasional workshop CUCI.IN.',
-        props: { fontSize: 12, fill: COLORS.brand800 },
+        props: { fontSize: 11, fill: COLORS.brand800 },
       });
 
       // Form Card
@@ -372,14 +369,14 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
         name: 'FormCard',
         parent: main,
         width: 1136,
-        height: 760,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 28, layout: 'vertical', gap: 18 },
+        height: 690,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 12 },
       });
 
       builder.inputField({
         parent: formCard,
         width: 1080,
-        height: 44,
+        height: 40,
         label: '1. Pilih Nota Transaksi *',
         value: 'TRX-20261024-0001 — 24 Okt 2026 • Diproses (Cuci Kering Setrika Reguler)',
         icon: 'receipt',
@@ -389,55 +386,55 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
       builder.inputField({
         parent: formCard,
         width: 1080,
-        height: 44,
+        height: 40,
         label: '2. Subjek / Judul Kendala * (Minimal 5 karakter)',
         value: 'Pakaian Kelunturan Warna Biru pada Kerah Kemeja Putih',
       });
 
       // Textarea Description
-      const descGroup = builder.frame({ name: 'DescGroup', parent: formCard, width: 1080, height: 150, props: { layout: 'vertical', gap: 6 } });
+      const descGroup = builder.frame({ name: 'DescGroup', parent: formCard, width: 1080, height: 125, props: { layout: 'vertical', gap: 6 } });
       builder.text({ name: 'Lbl', parent: descGroup, text: '3. Rincian Kendala & Kronologi Lengkap *', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate700 } });
       const descBox = builder.frame({
         name: 'TextareaBox',
         parent: descGroup,
         width: 1080,
-        height: 120,
-        props: { fill: COLORS.white, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 12, padding: 14, layout: 'vertical', gap: 6 },
+        height: 95,
+        props: { fill: COLORS.white, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 12, padding: 12, layout: 'vertical', gap: 4 },
       });
       builder.text({
         name: 'Val',
         parent: descBox,
         text: 'Saat bungkusan laundry saya periksa di rumah, terdapat bercak kelunturan warna biru muda pada kerah kemeja putih lengan panjang merk Alisan. Mohon dibantu pencucian ulang khusus penghilang noda luntur.',
-        props: { fontSize: 13, fill: COLORS.slate800 },
+        props: { fontSize: 12, fill: COLORS.slate800 },
         width: 1040,
       });
 
       // Photo Upload Dropzone & Live Preview (P9 Queue Compression Notice)
-      const upGroup = builder.frame({ name: 'UploadGroup', parent: formCard, width: 1080, height: 190, props: { layout: 'vertical', gap: 8 } });
+      const upGroup = builder.frame({ name: 'UploadGroup', parent: formCard, width: 1080, height: 170, props: { layout: 'vertical', gap: 6 } });
       builder.text({ name: 'ULbl', parent: upGroup, text: '4. Foto Bukti Pakaian Kendala / Noda (Opsional — JPG, PNG, WEBP maks. 5 MB)', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate700 } });
 
       const dropzone = builder.frame({
         name: 'DropzonePreview',
         parent: upGroup,
         width: 1080,
-        height: 156,
-        props: { fill: COLORS.slate50, stroke: COLORS.brand300, strokeWeight: 1, cornerRadius: 14, padding: 20, layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
+        height: 135,
+        props: { fill: COLORS.slate50, stroke: COLORS.brand300, strokeWeight: 1, cornerRadius: 14, padding: 16, layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
       });
-      const dzLeft = builder.frame({ name: 'DZLeft', parent: dropzone, width: 780, height: 116, props: { layout: 'horizontal', gap: 16, crossAlign: 'center' } });
+      const dzLeft = builder.frame({ name: 'DZLeft', parent: dropzone, width: 780, height: 100, props: { layout: 'horizontal', gap: 16, crossAlign: 'center' } });
       const thumb = builder.frame({
         name: 'PhotoThumb',
         parent: dzLeft,
-        width: 116,
-        height: 116,
-        props: { fill: COLORS.brand100, stroke: COLORS.brand300, strokeWeight: 1, cornerRadius: 12, layout: 'vertical', mainAlign: 'center', crossAlign: 'center', gap: 6 },
+        width: 100,
+        height: 100,
+        props: { fill: COLORS.brand100, stroke: COLORS.brand300, strokeWeight: 1, cornerRadius: 12, layout: 'vertical', mainAlign: 'center', crossAlign: 'center', gap: 4 },
       });
-      builder.vector({ name: 'Ico', parent: thumb, width: 28, height: 28, path: ICONS.eye, props: { stroke: COLORS.brand700 } });
+      builder.vector({ name: 'Ico', parent: thumb, width: 24, height: 24, path: ICONS.eye, props: { stroke: COLORS.brand700 } });
       builder.text({ name: 'T', parent: thumb, text: 'kemeja_noda.jpg', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.brand800 } });
 
-      const fMeta = builder.frame({ name: 'FileMeta', parent: dzLeft, width: 620, height: 90, props: { layout: 'vertical', gap: 6 } });
-      builder.text({ name: 'FN', parent: fMeta, text: 'bukti_kerah_kemeja_putih_luntur.jpg (1.84 MB)', props: { fontSize: 14, fontWeight: 'bold', fill: COLORS.slate900 } });
-      builder.text({ name: 'FS', parent: fMeta, text: 'Resolusi 1600x1200 px • Akan dikompresi otomatis di latar belakang via Queue Job (ProcessComplaintPhotoJob).', props: { fontSize: 12, fill: COLORS.slate600 } });
-      builder.badge({ parent: fMeta, label: 'Foto Siap Diunggah', tone: 'success', width: 150, height: 26 });
+      const fMeta = builder.frame({ name: 'FileMeta', parent: dzLeft, width: 620, height: 80, props: { layout: 'vertical', gap: 4 } });
+      builder.text({ name: 'FN', parent: fMeta, text: 'bukti_kerah_kemeja_putih_luntur.jpg (1.84 MB)', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'FS', parent: fMeta, text: 'Resolusi 1600x1200 px • Akan dikompresi otomatis di latar belakang via Queue Job (ProcessComplaintPhotoJob).', props: { fontSize: 11, fill: COLORS.slate600 } });
+      builder.badge({ parent: fMeta, label: 'Foto Siap Diunggah', tone: 'success', width: 140, height: 24 });
 
       builder.button({ parent: dropzone, label: 'Ganti Foto', variant: 'secondary', width: 120, height: 36 });
 
@@ -446,11 +443,11 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
         name: 'FormFooter',
         parent: formCard,
         width: 1080,
-        height: 56,
-        props: { stroke: COLORS.slate100, strokeWeight: 1, layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12, padding: [12, 0, 0, 0] },
+        height: 48,
+        props: { stroke: COLORS.slate100, strokeWeight: 1, layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12, padding: [8, 0, 0, 0] },
       });
-      btnCompCreateCancel = builder.button({ parent: fFoot, label: 'Batal', variant: 'secondary', width: 110, height: 44 });
-      btnCompCreateSubmit = builder.button({ parent: fFoot, label: 'Kirim Pengaduan', variant: 'primary', icon: 'check', width: 180, height: 44 });
+      btnCompCreateCancel = builder.button({ parent: fFoot, label: 'Batal', variant: 'secondary', width: 110, height: 40 });
+      btnCompCreateSubmit = builder.button({ parent: fFoot, label: 'Kirim Pengaduan', variant: 'primary', icon: 'check', width: 180, height: 40 });
     },
   });
   const f08b = f08bShell.root;
@@ -461,9 +458,8 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   let btnCompShowBack, btnCompShowNota;
   const f09Shell = b.appShell({
     name: '09-Customer-Complaint-Detail',
-    x: 5960,
-    y: 40,
-    height: 980,
+    x: 6120,
+    y: 1060,
     role: 'customer',
     activeLabel: 'Pengaduan',
     pageTitle: 'Rincian Pengaduan — CMP-20261024-001',
@@ -478,136 +474,136 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
         name: 'ComplaintStepperCard',
         parent: main,
         width: 1136,
-        height: 132,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: [18, 24, 18, 24], layout: 'vertical', gap: 12 },
+        height: 104,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 14, padding: [12, 20, 12, 20], layout: 'vertical', gap: 8 },
       });
-      const stHead = builder.frame({ name: 'SH', parent: stepCard, width: 1088, height: 24, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      const stHead = builder.frame({ name: 'SH', parent: stepCard, width: 1096, height: 22, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
       builder.text({ name: 'ST', parent: stHead, text: 'TAHAPAN PENANGANAN TIKET KELUHAN (CMP-20261024-001)', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate500 } });
       builder.badge({ parent: stHead, label: 'Sedang Diproses', tone: 'brand', width: 130 });
 
-      const stepRow = builder.frame({ name: 'StepRow', parent: stepCard, width: 1088, height: 64, props: { layout: 'horizontal', gap: 16 } });
+      const stepRow = builder.frame({ name: 'StepRow', parent: stepCard, width: 1096, height: 56, props: { layout: 'horizontal', gap: 14 } });
       const steps = [
         { num: '1', title: 'Laporan Diajukan', sub: '24 Okt 2026, 14:10 WIB (Tuntas)', tone: COLORS.emerald50, border: COLORS.emerald500, txt: COLORS.emerald700 },
-        { num: '2', title: 'Pemeriksaan Tim Workshop', sub: 'Sedang ditangani oleh Daysyani Sophi', tone: COLORS.brand50, border: COLORS.brand600, txt: COLORS.brand800 },
-        { num: '3', title: 'Tuntas & Solusi Diberikan', sub: 'Target SLA: 26 Okt 2026, 14:10 WIB', tone: COLORS.slate50, border: COLORS.slate200, txt: COLORS.slate500 },
+        { num: '2', title: 'Pemeriksaan Workshop', sub: 'Sedang ditangani oleh Daysyani', tone: COLORS.brand50, border: COLORS.brand600, txt: COLORS.brand800 },
+        { num: '3', title: 'Solusi Diberikan', sub: 'Target: 26 Okt 2026, 14:10 WIB', tone: COLORS.slate50, border: COLORS.slate200, txt: COLORS.slate500 },
       ];
       steps.forEach((s, i) => {
         const sc = builder.frame({
           name: `Step-${i}`,
           parent: stepRow,
-          width: 352,
-          height: 60,
-          props: { fill: s.tone, stroke: s.border, strokeWeight: i === 1 ? 2 : 1, cornerRadius: 12, padding: [10, 14, 10, 14], layout: 'horizontal', gap: 12, crossAlign: 'center' },
+          width: 356,
+          height: 54,
+          props: { fill: s.tone, stroke: s.border, strokeWeight: i === 1 ? 2 : 1, cornerRadius: 10, padding: [8, 12, 8, 12], layout: 'horizontal', gap: 10, crossAlign: 'center' },
         });
-        const badgeCircle = builder.frame({ name: 'Num', parent: sc, width: 32, height: 32, props: { fill: s.border, cornerRadius: 16, layout: 'horizontal', mainAlign: 'center', crossAlign: 'center' } });
-        builder.text({ name: 'N', parent: badgeCircle, text: s.num, props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.white } });
-        const meta = builder.frame({ name: 'M', parent: sc, width: 280, height: 38, props: { layout: 'vertical', gap: 2 } });
-        builder.text({ name: 'T', parent: meta, text: s.title, props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
-        builder.text({ name: 'S', parent: meta, text: s.sub, props: { fontSize: 11, fill: s.txt } });
+        const badgeCircle = builder.frame({ name: 'Num', parent: sc, width: 28, height: 28, props: { fill: s.border, cornerRadius: 14, layout: 'horizontal', mainAlign: 'center', crossAlign: 'center' } });
+        builder.text({ name: 'N', parent: badgeCircle, text: s.num, props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.white } });
+        const meta = builder.frame({ name: 'M', parent: sc, width: 280, height: 36, props: { layout: 'vertical', gap: 1 } });
+        builder.text({ name: 'T', parent: meta, text: s.title, props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate900 } });
+        builder.text({ name: 'S', parent: meta, text: s.sub, props: { fontSize: 10, fill: s.txt } });
       });
 
-      // 2. 2-Column Content Grid (Left 660px: Detail & Response, Right 456px: SLA & Transaction)
-      const grid = builder.frame({ name: 'DetailGrid', parent: main, width: 1136, height: 720, props: { layout: 'horizontal', gap: 20 } });
+      // 2. 2-Column Content Grid
+      const grid = builder.frame({ name: 'DetailGrid', parent: main, width: 1136, height: 640, props: { layout: 'horizontal', gap: 16 } });
 
       // Left Column
-      const leftCol = builder.frame({ name: 'LeftCol', parent: grid, width: 660, height: 720, props: { layout: 'vertical', gap: 16 } });
+      const leftCol = builder.frame({ name: 'LeftCol', parent: grid, width: 660, height: 640, props: { layout: 'vertical', gap: 14 } });
 
       const issueCard = builder.frame({
         name: 'IssueDetailCard',
         parent: leftCol,
         width: 660,
-        height: 430,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 24, layout: 'vertical', gap: 14 },
+        height: 360,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 14, padding: 18, layout: 'vertical', gap: 10 },
       });
-      builder.text({ name: 'H', parent: issueCard, text: 'Rincian Pengaduan Pelanggan', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
-      builder.text({ name: 'SLbl', parent: issueCard, text: 'SUBJEK KELUHAN', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate500 } });
-      builder.text({ name: 'SVal', parent: issueCard, text: 'Pakaian Kelunturan Warna Biru pada Kerah Kemeja Putih', props: { fontSize: 15, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'H', parent: issueCard, text: 'Rincian Pengaduan Pelanggan', props: { fontSize: 15, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'SLbl', parent: issueCard, text: 'SUBJEK KELUHAN', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
+      builder.text({ name: 'SVal', parent: issueCard, text: 'Pakaian Kelunturan Warna Biru pada Kerah Kemeja Putih', props: { fontSize: 14, fontWeight: 'bold', fill: COLORS.slate900 } });
 
-      builder.text({ name: 'DLbl', parent: issueCard, text: 'URAIAN MASALAH / KENDALA', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate500 } });
+      builder.text({ name: 'DLbl', parent: issueCard, text: 'URAIAN MASALAH / KENDALA', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
       const descBox = builder.frame({
         name: 'DescBox',
         parent: issueCard,
-        width: 612,
-        height: 86,
-        props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 12, padding: 12, layout: 'vertical' },
+        width: 624,
+        height: 64,
+        props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 10, padding: 10, layout: 'vertical' },
       });
       builder.text({
         name: 'DTxt',
         parent: descBox,
         text: 'Saat bungkusan laundry saya periksa di rumah, terdapat bercak kelunturan warna biru muda pada kerah kemeja putih lengan panjang merk Alisan. Mohon dibantu pencucian ulang khusus penghilang noda luntur.',
-        props: { fontSize: 12, fill: COLORS.slate800 },
-        width: 588,
+        props: { fontSize: 11, fill: COLORS.slate800 },
+        width: 604,
       });
 
-      builder.text({ name: 'PLbl', parent: issueCard, text: 'BUKTI FOTO KENDALA / PAKAIAN', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate500 } });
+      builder.text({ name: 'PLbl', parent: issueCard, text: 'BUKTI FOTO KENDALA / PAKAIAN', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
       const photoBox = builder.frame({
         name: 'PhotoAttachment',
         parent: issueCard,
-        width: 612,
-        height: 140,
-        props: { fill: COLORS.slate100, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 12, padding: 16, layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
+        width: 624,
+        height: 110,
+        props: { fill: COLORS.slate100, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 10, padding: 14, layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
       });
-      const pInfo = builder.frame({ name: 'PI', parent: photoBox, width: 420, height: 80, props: { layout: 'vertical', gap: 6 } });
-      builder.text({ name: 'PT', parent: pInfo, text: 'Foto Lampiran: bukti_kerah_kemeja_putih_luntur.webp', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
-      builder.text({ name: 'PS', parent: pInfo, text: 'Terverifikasi oleh sistem • Resolusi dioptimalkan (420 KB)', props: { fontSize: 12, fill: COLORS.slate600 } });
-      builder.badge({ parent: pInfo, label: 'Otorisasi Policy: ComplaintPolicy::view', tone: 'brand', width: 250 });
-      builder.button({ parent: photoBox, label: 'Lihat Ukuran Penuh', variant: 'secondary', icon: 'eye', width: 150, height: 36 });
+      const pInfo = builder.frame({ name: 'PI', parent: photoBox, width: 430, height: 75, props: { layout: 'vertical', gap: 4 } });
+      builder.text({ name: 'PT', parent: pInfo, text: 'Foto Lampiran: bukti_kerah_kemeja_putih_luntur.webp', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'PS', parent: pInfo, text: 'Terverifikasi oleh sistem • Resolusi dioptimalkan (420 KB)', props: { fontSize: 11, fill: COLORS.slate600 } });
+      builder.badge({ parent: pInfo, label: 'Otorisasi Policy: ComplaintPolicy::view', tone: 'brand', width: 235 });
+      builder.button({ parent: photoBox, label: 'Lihat Ukuran Penuh', variant: 'secondary', icon: 'eye', width: 145, height: 32 });
 
       // Staff Response Card
       const respCard = builder.frame({
         name: 'StaffResponseCard',
         parent: leftCol,
         width: 660,
-        height: 274,
-        props: { fill: COLORS.emerald50, stroke: COLORS.emerald500, strokeWeight: 1, cornerRadius: 16, padding: 24, layout: 'vertical', gap: 12 },
+        height: 264,
+        props: { fill: COLORS.emerald50, stroke: COLORS.emerald500, strokeWeight: 1, cornerRadius: 14, padding: 18, layout: 'vertical', gap: 8 },
       });
-      const rHead = builder.frame({ name: 'RH', parent: respCard, width: 612, height: 28, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
-      builder.text({ name: 'RT', parent: rHead, text: 'Tanggapan Resmi Tim Staf CUCI.IN', props: { fontSize: 15, fontWeight: 'bold', fill: COLORS.slate900 } });
+      const rHead = builder.frame({ name: 'RH', parent: respCard, width: 624, height: 24, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      builder.text({ name: 'RT', parent: rHead, text: 'Tanggapan Resmi Tim Staf CUCI.IN', props: { fontSize: 14, fontWeight: 'bold', fill: COLORS.slate900 } });
       builder.text({ name: 'RD', parent: rHead, text: 'Ditangani: 24 Okt 2026, 16:30 WIB', props: { fontSize: 11, fill: COLORS.emerald700, fontWeight: 'bold' } });
 
       const rBody = builder.frame({
         name: 'RBody',
         parent: respCard,
-        width: 612,
-        height: 130,
-        props: { fill: COLORS.white, stroke: COLORS.emerald100, strokeWeight: 1, cornerRadius: 12, padding: 14, layout: 'vertical', gap: 6 },
+        width: 624,
+        height: 120,
+        props: { fill: COLORS.white, stroke: COLORS.emerald100, strokeWeight: 1, cornerRadius: 10, padding: 12, layout: 'vertical', gap: 4 },
       });
       builder.text({
         name: 'RText',
         parent: rBody,
         text: 'Halo Bapak Budi Santoso, mohon maaf atas ketidaknyamanan yang dialami. Kemeja putih Anda telah kami jemput dan saat ini sedang melalui proses spotting chemical khusus penghilang kelunturan warna di workshop. Pakaian akan diantar kembali besok pagi pukul 09:00 WIB tanpa biaya tambahan.',
-        props: { fontSize: 12, fill: COLORS.slate800 },
-        width: 580,
+        props: { fontSize: 11, fill: COLORS.slate800 },
+        width: 600,
       });
-      builder.text({ name: 'Handler', parent: respCard, text: 'Ditindaklanjuti oleh: Daysyani Sophi Masayu (Staf Operasional)', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.emerald700 } });
+      builder.text({ name: 'Handler', parent: respCard, text: 'Ditindaklanjuti oleh: Daysyani Sophi Masayu (Staf Operasional)', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.emerald700 } });
 
       // Right Column: SLA & Linked Transaction
-      const rightCol = builder.frame({ name: 'RightCol', parent: grid, width: 456, height: 720, props: { layout: 'vertical', gap: 16 } });
+      const rightCol = builder.frame({ name: 'RightCol', parent: grid, width: 456, height: 640, props: { layout: 'vertical', gap: 14 } });
 
       const slaCard = builder.frame({
         name: 'SLACommitmentCard',
         parent: rightCol,
         width: 456,
-        height: 210,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 10 },
+        height: 180,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 14, padding: 18, layout: 'vertical', gap: 8 },
       });
-      builder.text({ name: 'SL1', parent: slaCard, text: 'WAKTU PENGAJUAN', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate500 } });
-      builder.text({ name: 'SV1', parent: slaCard, text: '24 Oktober 2026, 14:10 WIB (2 jam yang lalu)', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
-      builder.text({ name: 'SL2', parent: slaCard, text: 'TARGET SLA (MAKSIMAL 2 HARI KERJA)', props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate500 } });
-      builder.text({ name: 'SV2', parent: slaCard, text: '26 Oktober 2026, 14:10 WIB', props: { fontSize: 14, fontWeight: 'bold', fill: COLORS.slate900 } });
-      builder.badge({ parent: slaCard, label: 'Target SLA: Sisa 1 hari 21 jam', tone: 'warning', width: 220, height: 28 });
+      builder.text({ name: 'SL1', parent: slaCard, text: 'WAKTU PENGAJUAN', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
+      builder.text({ name: 'SV1', parent: slaCard, text: '24 Oktober 2026, 14:10 WIB (2 jam yang lalu)', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'SL2', parent: slaCard, text: 'TARGET SLA (MAKSIMAL 2 HARI KERJA)', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
+      builder.text({ name: 'SV2', parent: slaCard, text: '26 Oktober 2026, 14:10 WIB', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.badge({ parent: slaCard, label: 'Target SLA: Sisa 1 hari 21 jam', tone: 'warning', width: 220, height: 26 });
 
       const trxCard = builder.frame({
         name: 'LinkedTransactionCard',
         parent: rightCol,
         width: 456,
-        height: 360,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 12 },
+        height: 444,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 14, padding: 18, layout: 'vertical', gap: 10 },
       });
-      const trxHead = builder.frame({ name: 'TH', parent: trxCard, width: 412, height: 42, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
-      const trxTitleCol = builder.frame({ name: 'TTC', parent: trxHead, width: 240, height: 40, props: { layout: 'vertical', gap: 2 } });
+      const trxHead = builder.frame({ name: 'TH', parent: trxCard, width: 420, height: 38, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      const trxTitleCol = builder.frame({ name: 'TTC', parent: trxHead, width: 240, height: 36, props: { layout: 'vertical', gap: 2 } });
       builder.text({ name: 'TL', parent: trxTitleCol, text: 'NOTA TRANSAKSI TERKAIT', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
-      builder.text({ name: 'TC', parent: trxTitleCol, text: 'TRX-20261024-0001', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.brand700 } });
+      builder.text({ name: 'TC', parent: trxTitleCol, text: 'TRX-20261024-0001', props: { fontSize: 15, fontWeight: 'bold', fill: COLORS.brand700 } });
       btnCompShowNota = builder.button({ parent: trxHead, label: 'Buka Nota', variant: 'secondary', icon: 'arrow-right', width: 110, height: 32 });
 
       const metaRows = [
@@ -617,14 +613,14 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
         ['Total Tagihan', 'Rp 34.000'],
       ];
       metaRows.forEach(([k, v], idx) => {
-        const mr = builder.frame({ name: `MR-${idx}`, parent: trxCard, width: 412, height: 26, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
-        builder.text({ name: 'K', parent: mr, text: k, props: { fontSize: 12, fill: COLORS.slate500 } });
-        builder.text({ name: 'V', parent: mr, text: v, props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate900 } });
+        const mr = builder.frame({ name: `MR-${idx}`, parent: trxCard, width: 420, height: 24, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+        builder.text({ name: 'K', parent: mr, text: k, props: { fontSize: 11, fill: COLORS.slate500 } });
+        builder.text({ name: 'V', parent: mr, text: v, props: { fontSize: 11, fontWeight: 'bold', fill: COLORS.slate900 } });
       });
 
       builder.text({ name: 'ILbl', parent: trxCard, text: 'ITEM LAYANAN DALAM NOTA', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
-      builder.text({ name: 'I1', parent: trxCard, text: '• Cuci Kering Setrika Reguler (4.0 kg) — Rp 28.000', props: { fontSize: 12, fill: COLORS.slate700 } });
-      builder.text({ name: 'I2', parent: trxCard, text: '• Pewangi Premium Anti-Apek (1 paket) — Rp 6.000', props: { fontSize: 12, fill: COLORS.slate700 } });
+      builder.text({ name: 'I1', parent: trxCard, text: '• Cuci Kering Setrika Reguler (4.0 kg) — Rp 28.000', props: { fontSize: 11, fill: COLORS.slate700 } });
+      builder.text({ name: 'I2', parent: trxCard, text: '• Pewangi Premium Anti-Apek (1 paket) — Rp 6.000', props: { fontSize: 11, fill: COLORS.slate700 } });
     },
   });
   const f09 = f09Shell.root;
@@ -659,6 +655,9 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
     if (sh.navRefs['Pengaduan']) b.wire({ id: sh.navRefs['Pengaduan'], dest: f08 });
     if (sh.navRefs['Lacak Nota Fisik'] && publicAuthRefs.f02) {
       b.wire({ id: sh.navRefs['Lacak Nota Fisik'], dest: publicAuthRefs.f02 });
+    }
+    if (sh.logoutRef && publicAuthRefs.f01) {
+      b.wire({ id: sh.logoutRef, dest: publicAuthRefs.f01 });
     }
   });
 

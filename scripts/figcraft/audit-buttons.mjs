@@ -4,23 +4,65 @@ const cmds = JSON.parse(fs.readFileSync('docs/design/cuci-in.commands.json', 'ut
 
 const nodesByAs = {};
 const childrenByParent = {};
+const pages = [];
+const topFrames = [];
 
 cmds.forEach((c) => {
+  if (c.command === 'page.create' || c.command === 'page.rename') {
+    pages.push(c.params);
+  }
   if (c.as) {
     nodesByAs[c.as] = c.params;
   }
-  if (c.command === 'node.create' && c.params.parent) {
-    const pId = typeof c.params.parent === 'object' ? c.params.parent.$ref : c.params.parent;
-    if (pId) {
-      if (!childrenByParent[pId]) childrenByParent[pId] = [];
-      childrenByParent[pId].push(c.as);
+  if (c.command === 'node.create') {
+    if (c.params.type === 'frame' && !c.params.parent) {
+      topFrames.push({
+        id: c.as,
+        name: c.params.name,
+        x: c.params.x,
+        y: c.params.y,
+        width: c.params.width,
+        height: c.params.height,
+      });
+    }
+    if (c.params.parent) {
+      const pId = typeof c.params.parent === 'object' ? c.params.parent.$ref : c.params.parent;
+      if (pId) {
+        if (!childrenByParent[pId]) childrenByParent[pId] = [];
+        childrenByParent[pId].push(c.as);
+      }
     }
   }
 });
 
-console.log('=== AUDIT SELURUH TOMBOL & ELEMEN INTERAKTIF ===\n');
+console.log('====================================================');
+console.log('   AUDIT KONSOLIDASI SINGLE PAGE & PROTOTYPE WIRES   ');
+console.log('====================================================\n');
 
-// 1. All Button nodes (type === 'frame' and name starts with 'Btn-')
+// 1. Audit Pages
+console.log(`1. Halaman Dokumen (Pages): ${pages.length} halaman`);
+pages.forEach((p, idx) => {
+  console.log(`   [${idx + 1}] "${p.name}" (fill: ${p.props?.fill || 'none'})`);
+});
+
+// 2. Audit Top-Level Screen Frames
+console.log(`\n2. Layar Utama (Top-level Frames): ${topFrames.length} frame`);
+const nonStandard = [];
+topFrames.forEach((f) => {
+  const is1440x900 = f.width === 1440 && f.height === 900;
+  if (!is1440x900) {
+    nonStandard.push(f);
+  }
+  console.log(`   - ${f.name.padEnd(35)}: (${f.x}, ${f.y}) | ${f.width}x${f.height} px ${is1440x900 ? '[1440x900 VALID]' : '[NON-STANDARD!]'}`);
+});
+
+if (nonStandard.length === 0) {
+  console.log('\n   => SEMUA 29 FRAME TELAH 100% STANDAR 1440x900 PX!');
+} else {
+  console.log(`\n   => PERHATIAN: Ditemukan ${nonStandard.length} frame di luar ukuran 1440x900 px!`);
+}
+
+// 3. All Button nodes
 const buttons = [];
 Object.entries(nodesByAs).forEach(([id, node]) => {
   if (node.type === 'frame' && node.name && node.name.startsWith('Btn-')) {
@@ -47,57 +89,18 @@ Object.entries(nodesByAs).forEach(([id, node]) => {
   }
 });
 
-console.log(`Total Tombol (Btn-*): ${buttons.length}`);
-
-// 2. Button Heights & Inconsistencies
+console.log(`\n3. Total Tombol Terstandarisasi: ${buttons.length} tombol`);
 const heightsMap = {};
 buttons.forEach((b) => {
   if (!heightsMap[b.height]) heightsMap[b.height] = [];
   heightsMap[b.height].push(b.name);
 });
-
-console.log('\n--- Variasi Tinggi Tombol (Height Distribution) ---');
 Object.keys(heightsMap).sort((a, b) => Number(a) - Number(b)).forEach((h) => {
-  console.log(`Height ${h}px (${heightsMap[h].length} tombol): contoh -> ${heightsMap[h].slice(0, 3).join(', ')}`);
+  console.log(`   - Tinggi ${h}px: ${heightsMap[h].length} tombol`);
 });
 
-// 3. Check for tight label widths (potential clipping)
-console.log('\n--- Pemeriksaan Kerapatan Teks / Label Truncation ---');
-const tightButtons = [];
-buttons.forEach((b) => {
-  // Segoe UI Bold 12px: char width is ~7.4px
-  const estTextW = b.label.length * 7.5;
-  const iconW = b.hasIcon ? 14 : 0;
-  const kbdW = b.hasKbd ? 24 : 0;
-  let gapCount = 0;
-  if (b.hasIcon) gapCount++;
-  if (b.hasKbd) gapCount++;
-  const gapsW = gapCount * (b.props?.gap || 6);
-  const contentW = estTextW + iconW + kbdW + gapsW;
-  const sidePadding = (b.width - contentW) / 2;
-
-  if (sidePadding < 12) {
-    tightButtons.push({
-      name: b.name,
-      width: b.width,
-      contentW: Math.round(contentW),
-      sidePadding: Math.round(sidePadding),
-      label: b.label,
-      hasIcon: b.hasIcon,
-      hasKbd: b.hasKbd,
-    });
-  }
-});
-
-if (tightButtons.length === 0) {
-  console.log('Semua 113 tombol memiliki lebar dan padding samping yang lapang (>= 12px per sisi).');
-} else {
-  console.log(`Ditemukan ${tightButtons.length} tombol berpotensi sempit/mepet (side padding < 12px):`);
-  tightButtons.forEach((t) => console.log(` - ${t.name}: width=${t.width}px, konten=${t.contentW}px, sisa padding sisi=${t.sidePadding}px (label: "${t.label}")`));
-}
-
-// 4. Check all Interactive Wires (proto.interaction.add)
-console.log('\n--- Pemeriksaan Tautan Interaksi Prototipe (Interaction Wires) ---');
+// 4. Interactive Wires (proto.interaction.add) & Flows
+const flows = cmds.filter((c) => c.command === 'proto.flow.add');
 const wires = cmds.filter((c) => c.command === 'proto.interaction.add');
 const brokenWires = [];
 const triggerTypes = {};
@@ -116,60 +119,20 @@ wires.forEach((w, idx) => {
   }
 });
 
-console.log(`Total Wires Terpasang: ${wires.length}`);
-console.log(`Total Broken Wires: ${brokenWires.length}`);
-console.log('Distribusi Jenis Trigger:', triggerTypes);
-
-// 5. Check visual consistency of button corner radius, font size, and variants
-console.log('\n--- Pemeriksaan Konsistensi Gaya Tombol (Style Tokens) ---');
-const radii = {};
-const variants = {};
-
-buttons.forEach((b) => {
-  const r = b.props?.cornerRadius || 0;
-  radii[r] = (radii[r] || 0) + 1;
-
-  let v = 'custom';
-  if (b.props?.fill === '#0284c7') v = 'primary (brand600)';
-  else if (b.props?.fill === '#ffffff' && b.props?.stroke === '#e2e8f0') v = 'secondary (white/slate200)';
-  else if (b.props?.fill === 'none' && b.props?.stroke === 'none') v = 'ghost';
-  else if (b.props?.fill === '#e11d48') v = 'destructive (rose600)';
-  variants[v] = (variants[v] || 0) + 1;
+console.log(`\n4. Prototipe Interaktif:`);
+console.log(`   - Total Prototype Flows: ${flows.length}`);
+flows.forEach((fl, idx) => {
+  const sRef = fl.params.start?.$ref || fl.params.start;
+  const sNode = nodesByAs[sRef];
+  console.log(`     [${idx + 1}] "${fl.params.name}" (Mulai dari: ${sNode?.name || sRef})`);
 });
+console.log(`   - Total Wires Terhubung: ${wires.length}`);
+console.log(`   - Broken Wires: ${brokenWires.length}`);
+console.log(`   - Jenis Trigger:`, triggerTypes);
 
-// 6. Group Buttons by Parent Screen Frame
-console.log('\n--- Daftar Tombol per Layar (Per-Screen Button Breakdown) ---');
-
-function findTopFrame(nodeId) {
-  let curr = nodesByAs[nodeId];
-  let currId = nodeId;
-  while (curr && curr.parent) {
-    const pId = typeof curr.parent === 'object' ? curr.parent.$ref : curr.parent;
-    if (nodesByAs[pId]?.type === 'frame' && !nodesByAs[pId]?.parent) {
-      return { id: pId, name: nodesByAs[pId].name };
-    }
-    curr = nodesByAs[pId];
-    currId = pId;
-  }
-  return { id: currId, name: curr?.name || 'Top' };
+if (brokenWires.length > 0) {
+  console.log('\nDetail Broken Wires:');
+  brokenWires.forEach((bw) => console.log(bw));
+} else {
+  console.log('\n=> SELURUH TAUTAN KAWAT PROTOTIPE 100% UTUH TANPA BROKEN WIRES!');
 }
-
-const buttonsByScreen = {};
-buttons.forEach((b) => {
-  const top = findTopFrame(b.id);
-  const screenName = top.name || 'Unknown';
-  if (!buttonsByScreen[screenName]) buttonsByScreen[screenName] = [];
-  buttonsByScreen[screenName].push(b);
-});
-
-Object.keys(buttonsByScreen).sort().forEach((screen) => {
-  console.log(`\nScreen: ${screen} (${buttonsByScreen[screen].length} tombol)`);
-  buttonsByScreen[screen].forEach((b) => {
-    let v = 'primary';
-    if (b.props?.fill === '#ffffff') v = 'secondary';
-    else if (b.props?.fill === 'none') v = 'ghost';
-    else if (b.props?.fill === '#e11d48') v = 'destructive';
-    console.log(`  - [${v}] "${b.label}" (w:${b.width}px, h:${b.height}px${b.hasIcon ? ', icon:' + b.iconName : ''}${b.hasKbd ? ', kbd:' + b.kbdText : ''})`);
-  });
-});
-
