@@ -433,20 +433,20 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
   const actBar = b.frame({
     name: 'KasirActionToolbar',
     parent: f13b,
-    width: 680,
+    width: 800,
     height: 64,
-    props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 12, padding: [12, 18, 12, 18], layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
+    props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 12, padding: [12, 20, 12, 20], layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' },
   });
-  const abLeft = b.frame({ name: 'ABLeft', parent: actBar, width: 240, height: 40, props: { layout: 'horizontal', gap: 10, crossAlign: 'center' } });
+  const abLeft = b.frame({ name: 'ABLeft', parent: actBar, width: 280, height: 40, props: { layout: 'horizontal', gap: 10, crossAlign: 'center' } });
   b.vector({ name: 'Ico', parent: abLeft, width: 20, height: 20, path: ICONS.receipt, props: { stroke: COLORS.brand700 } });
-  const abMeta = b.frame({ name: 'Meta', parent: abLeft, width: 200, height: 36, props: { layout: 'vertical', gap: 2 } });
+  const abMeta = b.frame({ name: 'Meta', parent: abLeft, width: 240, height: 36, props: { layout: 'vertical', gap: 2 } });
   b.text({ name: 'T1', parent: abMeta, text: 'Struk Kasir Thermal', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
   b.text({ name: 'T2', parent: abMeta, text: 'TRX-20261109-0042 • Budi Santoso', props: { fontSize: 11, fill: COLORS.slate500 } });
 
-  const abRight = b.frame({ name: 'ABRight', parent: actBar, width: 400, height: 38, props: { layout: 'horizontal', gap: 8, crossAlign: 'center', mainAlign: 'max' } });
-  b.badge({ parent: abRight, label: '58mm [1] | 80mm [2]', tone: 'brand', width: 135, height: 34 });
+  const abRight = b.frame({ name: 'ABRight', parent: actBar, width: 440, height: 38, props: { layout: 'horizontal', gap: 10, crossAlign: 'center', mainAlign: 'max' } });
+  b.badge({ parent: abRight, label: '58mm [1] | 80mm [2]', tone: 'brand', width: 145, height: 34 });
   btnPrintBack = b.button({ parent: abRight, label: 'Kembali', variant: 'secondary', icon: 'arrow-left', width: 100, height: 34 });
-  b.button({ parent: abRight, label: 'Print Struk', variant: 'primary', icon: 'printer', kbd: 'Ctrl+P', width: 145, height: 34 });
+  b.button({ parent: abRight, label: 'Print Struk', variant: 'primary', icon: 'printer', kbd: 'Ctrl+P', width: 155, height: 34 });
 
   // 80mm Thermal Receipt Paper Container
   const paper = b.frame({
@@ -592,7 +592,7 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
     name: '14b-Staff-Payment-Proof-Detail',
     x: 5960,
     y: 1000,
-    height: 960,
+    height: 900,
     role: 'staff',
     activeLabel: 'Verifikasi Pembayaran',
     pageTitle: 'Tinjau Pembayaran — TRX-20261109-0042',
@@ -606,55 +606,57 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
       btnPayShowNota = actionRefs[0];
       btnPayShowBack = actionRefs[1];
 
-      const grid = builder.frame({ name: 'Grid5Col', parent: main, width: 1136, height: 830, props: { layout: 'horizontal', gap: 20 } });
+      const grid = builder.frame({ name: 'Grid5Col', parent: main, width: 1136, height: 770, props: { layout: 'horizontal', gap: 20 } });
 
       // Left (3/5 = 668px): Pratinjau Bukti Pembayaran
       const previewCard = builder.frame({
         name: 'ProofPreviewCard',
         parent: grid,
         width: 668,
-        height: 830,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 24, layout: 'vertical', gap: 14 },
+        height: 770,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 12 },
       });
-      const pvHead = builder.frame({ name: 'PVH', parent: previewCard, width: 620, height: 28, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
-      builder.text({ name: 'T', parent: pvHead, text: 'Pratinjau Bukti Pembayaran (QRIS)', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
+      const pvHead = builder.frame({ name: 'PVH', parent: previewCard, width: 624, height: 28, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      builder.text({ name: 'T', parent: pvHead, text: 'Pratinjau Bukti Pembayaran Digital (QRIS)', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
       builder.text({ name: 'Zoom', parent: pvHead, text: 'Buka ukuran penuh ->', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.brand700 } });
 
       const imgMock = builder.frame({
         name: 'QRISReceiptImage',
         parent: previewCard,
-        width: 620,
-        height: 730,
-        props: { fill: COLORS.slate100, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 14, padding: 32, layout: 'vertical', mainAlign: 'center', crossAlign: 'center', gap: 12 },
+        width: 624,
+        height: 680,
+        props: { fill: COLORS.slate100, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 14, padding: 20, layout: 'vertical', mainAlign: 'center', crossAlign: 'center', gap: 10 },
       });
       const qrisPaper = builder.frame({
         name: 'BankSlipMock',
         parent: imgMock,
         width: 380,
-        height: 520,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 24, layout: 'vertical', gap: 12 },
+        height: 590,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 10 },
       });
       builder.badge({ parent: qrisPaper, label: 'PEMBAYARAN QRIS BERHASIL', tone: 'success', width: 220, height: 28 });
       builder.text({ name: 'Amt', parent: qrisPaper, text: 'Rp 45.000', props: { fontSize: 28, fontWeight: 'bold', fill: COLORS.slate900 } });
-      builder.text({ name: 'Merchant', parent: qrisPaper, text: 'Merchant Tujuan: CUCI.IN LAUNDRY MALANG', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.brand700 } });
-      builder.text({ name: 'Ref', parent: qrisPaper, text: 'No. ReferensiRRN: 631409882716 • 09 Nov 2026, 10:14:22 WIB', props: { fontSize: 11, fill: COLORS.slate600 } });
-      builder.text({ name: 'Sender', parent: qrisPaper, text: 'Pengirim: BUDI SANTOSO (BCA Mobile)', props: { fontSize: 12, fontWeight: 'medium', fill: COLORS.slate800 } });
-      builder.text({ name: 'MimeInfo', parent: qrisPaper, text: 'Validasi Berkas: image/webp • Ukuran: 312 KB (Lolos MIME & Size Guard)', props: { fontSize: 11, fill: COLORS.emerald700 } });
+      builder.text({ name: 'Merchant', parent: qrisPaper, text: 'Merchant: CUCI.IN LAUNDRY OFFICIAL MALANG', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.brand700 } });
+      builder.text({ name: 'TrxNota', parent: qrisPaper, text: 'No. Nota Terkait: #TRX-20261109-0042', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'Layanan', parent: qrisPaper, text: 'Layanan: Cuci Komplit Kilat 6 Jam (5.0 Kg)', props: { fontSize: 11, fill: COLORS.slate700 } });
+      builder.text({ name: 'Sender', parent: qrisPaper, text: 'Pengirim: BUDI SANTOSO (0812-9988-7766 • BCA Mobile)', props: { fontSize: 11, fontWeight: 'medium', fill: COLORS.slate800 } });
+      builder.text({ name: 'Ref', parent: qrisPaper, text: 'No. Referensi RRN: 631409882716 • 09 Nov 2026, 10:14:22 WIB', props: { fontSize: 10, fill: COLORS.slate600 } });
+      builder.text({ name: 'MimeInfo', parent: qrisPaper, text: 'Status Berkas: image/webp • 312 KB • Lolos Pemeriksaan MIME & Ukuran', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.emerald700 } });
 
       // Right (2/5 = 448px): Ringkasan, Keputusan Verifikasi & Form Alasan Penolakan
-      const rightCol = builder.frame({ name: 'RightCol', parent: grid, width: 448, height: 830, props: { layout: 'vertical', gap: 16 } });
+      const rightCol = builder.frame({ name: 'RightCol', parent: grid, width: 448, height: 770, props: { layout: 'vertical', gap: 14 } });
 
       const sumCard = builder.frame({
         name: 'SummaryCard',
         parent: rightCol,
         width: 448,
-        height: 240,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 10 },
+        height: 220,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 18, layout: 'vertical', gap: 8 },
       });
-      const smTop = builder.frame({ name: 'SMT', parent: sumCard, width: 404, height: 64, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
-      const smAmt = builder.frame({ name: 'SMA', parent: smTop, width: 250, height: 60, props: { layout: 'vertical', gap: 4 } });
+      const smTop = builder.frame({ name: 'SMT', parent: sumCard, width: 412, height: 56, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      const smAmt = builder.frame({ name: 'SMA', parent: smTop, width: 250, height: 50, props: { layout: 'vertical', gap: 2 } });
       builder.text({ name: 'L', parent: smAmt, text: 'Nominal Diajukan', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate500 } });
-      builder.text({ name: 'V', parent: smAmt, text: 'Rp 45.000', props: { fontSize: 26, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'V', parent: smAmt, text: 'Rp 45.000', props: { fontSize: 24, fontWeight: 'bold', fill: COLORS.slate900 } });
       builder.badge({ parent: smTop, label: 'Menunggu Verifikasi', tone: 'warning', width: 145 });
 
       [
@@ -663,7 +665,7 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
         ['Sudah Dibayar (Valid)', 'Rp 0'],
         ['Sisa Tagihan Saat Ini', 'Rp 45.000'],
       ].forEach(([k, v], idx) => {
-        const r = builder.frame({ name: `SR-${idx}`, parent: sumCard, width: 404, height: 24, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+        const r = builder.frame({ name: `SR-${idx}`, parent: sumCard, width: 412, height: 22, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
         builder.text({ name: 'K', parent: r, text: k, props: { fontSize: 12, fill: COLORS.slate600 } });
         builder.text({ name: 'V', parent: r, text: v, props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate900 } });
       });
@@ -673,30 +675,30 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
         name: 'DecisionCard',
         parent: rightCol,
         width: 448,
-        height: 360,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 12 },
+        height: 350,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 20, layout: 'vertical', gap: 10 },
       });
-      builder.text({ name: 'DT', parent: decCard, text: 'Keputusan Verifikasi Kasir', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
-      builder.text({ name: 'DS', parent: decCard, text: 'Cocokkan nominal, tanggal, dan rekening/merchant tujuan pada bukti sebelum menyetujui.', props: { fontSize: 12, fill: COLORS.slate600 }, width: 404 });
+      builder.text({ name: 'DT', parent: decCard, text: 'Keputusan Verifikasi Kasir', props: { fontSize: 15, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'DS', parent: decCard, text: 'Cocokkan nominal, tanggal, dan rekening/merchant tujuan pada bukti sebelum menyetujui.', props: { fontSize: 11, fill: COLORS.slate600 }, width: 408 });
 
-      const btnPair = builder.frame({ name: 'BtnPair', parent: decCard, width: 404, height: 42, props: { layout: 'horizontal', gap: 10 } });
-      btnPayShowApprove = builder.button({ parent: btnPair, label: 'Setujui Pembayaran', variant: 'primary', icon: 'check', width: 197, height: 40 });
-      builder.button({ parent: btnPair, label: 'Tolak Bukti', variant: 'destructive', icon: 'x', width: 197, height: 40 });
+      const btnPair = builder.frame({ name: 'BtnPair', parent: decCard, width: 408, height: 40, props: { layout: 'horizontal', gap: 10 } });
+      btnPayShowApprove = builder.button({ parent: btnPair, label: 'Setujui Pembayaran', variant: 'primary', icon: 'check', width: 199, height: 38 });
+      builder.button({ parent: btnPair, label: 'Tolak Bukti', variant: 'destructive', icon: 'x', width: 199, height: 38 });
 
       builder.text({ name: 'RLbl', parent: decCard, text: 'Alasan Penolakan * (Wajib diisi jika menolak bukti)', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate700 } });
       const rBox = builder.frame({
         name: 'RejectNotesBox',
         parent: decCard,
-        width: 404,
-        height: 92,
-        props: { fill: COLORS.slate50, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 10, padding: 12, layout: 'vertical' },
+        width: 408,
+        height: 84,
+        props: { fill: COLORS.slate50, stroke: COLORS.slate300, strokeWeight: 1, cornerRadius: 10, padding: 10, layout: 'vertical' },
       });
       builder.text({
         name: 'Placeholder',
         parent: rBox,
         text: 'Contoh: Nominal pada bukti tidak sesuai, gambar buram, atau dana belum masuk ke rekening.',
         props: { fontSize: 11, fill: COLORS.slate500 },
-        width: 380,
+        width: 388,
       });
 
       // Other payments on this note
@@ -704,39 +706,43 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
         name: 'OtherPaymentsCard',
         parent: rightCol,
         width: 448,
-        height: 190,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 10 },
+        height: 160,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 18, layout: 'vertical', gap: 8 },
       });
-      builder.text({ name: 'OT', parent: othCard, text: 'Pembayaran pada Nota Ini', props: { fontSize: 15, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'OT', parent: othCard, text: 'Pembayaran pada Nota Ini', props: { fontSize: 14, fontWeight: 'bold', fill: COLORS.slate900 } });
       builder.text({ name: 'OI', parent: othCard, text: '• Rp 45.000 — 09 Nov 2026, 10:15 • QRIS (Sedang Ditinjau)', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.brand700 } });
     },
   });
   const f14b = f14bShell.root;
 
-  // --- Frame 15: Staff Customers & Services ---
+  // --- Frame 15: Staff Customers & Services (Direktori Pelanggan & Katalog Layanan) ---
   const f15Shell = b.appShell({
     name: '15-Staff-Customers-Services',
     x: 5960,
     y: 40,
+    height: 900,
     role: 'staff',
     activeLabel: 'Data Pelanggan',
-    pageTitle: 'Direktori Pelanggan & Daftar Layanan',
+    pageTitle: 'Direktori Pelanggan & Katalog Layanan',
     userName: 'Maulana Ahmad',
     returnRefs: true,
     actions: [{ label: '+ Pelanggan Baru', variant: 'primary', icon: 'plus', width: 155 }],
     contentFn: (builder, main) => {
+      // 1. Direktori Pelanggan Card
       const card = builder.frame({
         name: 'CustCard',
         parent: main,
         width: 1136,
-        height: 750,
-        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 24, layout: 'vertical', gap: 16 },
+        height: 340,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 20, layout: 'vertical', gap: 12 },
       });
-      builder.text({ name: 'H', parent: card, text: 'Direktori Pelanggan Terdaftar', props: { fontSize: 16, fontWeight: 'bold' } });
-      builder.inputField({ parent: card, width: 360, height: 40, placeholder: 'Cari nama atau no. telepon...', icon: 'search' });
 
-      const th = builder.frame({ name: 'TH', parent: card, width: 1088, height: 38, props: { fill: COLORS.slate50, cornerRadius: 8, layout: 'horizontal', crossAlign: 'center', padding: [0, 16, 0, 16] } });
-      [{ n: 'Nama Pelanggan', w: 220 }, { n: 'Nomor WhatsApp', w: 200 }, { n: 'Alamat', w: 340 }, { n: 'Total Nota', w: 120 }, { n: 'Aksi POS', w: 168 }].forEach(c => {
+      const custHead = builder.frame({ name: 'CH', parent: card, width: 1096, height: 38, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      builder.text({ name: 'H', parent: custHead, text: 'Direktori Pelanggan Terdaftar', props: { fontSize: 16, fontWeight: 'bold' } });
+      builder.inputField({ parent: custHead, width: 340, height: 36, placeholder: 'Cari nama atau no. telepon...', icon: 'search' });
+
+      const th = builder.frame({ name: 'TH', parent: card, width: 1096, height: 36, props: { fill: COLORS.slate50, cornerRadius: 8, layout: 'horizontal', crossAlign: 'center', padding: [0, 16, 0, 16] } });
+      [{ n: 'Nama Pelanggan', w: 220 }, { n: 'Nomor WhatsApp', w: 200 }, { n: 'Alamat Domisili', w: 340 }, { n: 'Total Nota', w: 120 }, { n: 'Aksi POS', w: 168 }].forEach(c => {
         builder.text({ name: c.n, parent: th, text: c.n, props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate600 }, width: c.w });
       });
 
@@ -746,13 +752,52 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
         { name: 'Ahmad Fauzi', phone: '0857-1122-3344', addr: 'Jl. Tenggilis Mejoyo Selatan No. 15', total: '21 Nota' },
       ];
       custs.forEach((c, idx) => {
-        const tr = builder.frame({ name: `R-${idx}`, parent: card, width: 1088, height: 50, props: { stroke: COLORS.slate100, strokeWeight: 1, layout: 'horizontal', crossAlign: 'center', padding: [0, 16, 0, 16] } });
+        const tr = builder.frame({ name: `R-${idx}`, parent: card, width: 1096, height: 46, props: { stroke: COLORS.slate100, strokeWeight: 1, layout: 'horizontal', crossAlign: 'center', padding: [0, 16, 0, 16] } });
         builder.text({ name: 'N', parent: tr, text: c.name, props: { fontSize: 13, fontWeight: 'bold' }, width: 220 });
         builder.text({ name: 'P', parent: tr, text: c.phone, props: { fontSize: 13, fill: COLORS.slate600 }, width: 200 });
         builder.text({ name: 'A', parent: tr, text: c.addr, props: { fontSize: 13, fill: COLORS.slate800 }, width: 340 });
         builder.badge({ parent: tr, label: c.total, tone: 'brand', width: 90 });
         const bPos = builder.button({ parent: tr, label: 'Buat Nota POS', variant: 'primary', width: 140, height: 32 });
         if (idx === 0) btnCustCreatePos0 = bPos;
+      });
+
+      // 2. Katalog Master Layanan Card (Modul Ayin P10 PWL)
+      const srvCard = builder.frame({
+        name: 'ServicesCard',
+        parent: main,
+        width: 1136,
+        height: 410,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 20, layout: 'vertical', gap: 12 },
+      });
+
+      const srvHead = builder.frame({ name: 'SH', parent: srvCard, width: 1096, height: 40, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      const shLeft = builder.frame({ name: 'SHL', parent: srvHead, width: 750, height: 40, props: { layout: 'vertical', gap: 2 } });
+      builder.text({ name: 'STitle', parent: shLeft, text: 'Katalog Master Layanan Laundry & Tarif Dinamis (P10 PWL)', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'SSub', parent: shLeft, text: 'Dikelola oleh Gargarina Nanda Iswati (Ayin) • Tarif dan durasi terintegrasi otomatis ke Kasir POS & Nota Publik', props: { fontSize: 11, fill: COLORS.slate500 } });
+      builder.badge({ parent: srvHead, label: '5 Layanan Aktif', tone: 'brand', width: 125 });
+
+      const sth = builder.frame({ name: 'STH', parent: srvCard, width: 1096, height: 36, props: { fill: COLORS.slate50, cornerRadius: 8, layout: 'horizontal', crossAlign: 'center', padding: [0, 16, 0, 16] } });
+      [{ n: 'Nama Paket Layanan', w: 260 }, { n: 'Satuan', w: 140 }, { n: 'Tarif / Unit', w: 160 }, { n: 'Estimasi Durasi Selesai', w: 200 }, { n: 'Status', w: 120 }, { n: 'Aksi Kasir', w: 168 }].forEach(c => {
+        builder.text({ name: c.n, parent: sth, text: c.n, props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate600 }, width: c.w });
+      });
+
+      const srvList = [
+        { name: 'Cuci Komplit Kilat', unit: 'Kiloan (Kg)', price: 'Rp 9.000 / Kg', est: '6 Jam (Paket Kilat)', fast: true },
+        { name: 'Cuci Lipat Reguler', unit: 'Kiloan (Kg)', price: 'Rp 6.000 / Kg', est: '48 Jam (2 Hari)', fast: false },
+        { name: 'Cuci Setrika Express', unit: 'Kiloan (Kg)', price: 'Rp 8.000 / Kg', est: '24 Jam (1 Hari)', fast: false },
+        { name: 'Bedcover Ukuran Jumbo', unit: 'Satuan (Pcs)', price: 'Rp 35.000 / Pcs', est: '48 Jam (2 Hari)', fast: false },
+        { name: 'Sepatu Sneaker Deep Clean', unit: 'Satuan (Pasang)', price: 'Rp 35.000 / Psg', est: '72 Jam (3 Hari)', fast: false },
+      ];
+      srvList.forEach((s, idx) => {
+        const str = builder.frame({ name: `SR-${idx}`, parent: srvCard, width: 1096, height: 46, props: { stroke: COLORS.slate100, strokeWeight: 1, layout: 'horizontal', crossAlign: 'center', padding: [0, 16, 0, 16] } });
+        const nameCol = builder.frame({ name: 'NC', parent: str, width: 260, height: 32, props: { layout: 'horizontal', gap: 6, crossAlign: 'center' } });
+        builder.text({ name: 'SN', parent: nameCol, text: s.name, props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
+        if (s.fast) builder.badge({ parent: nameCol, label: 'KILAT', tone: 'brand', width: 60, height: 20 });
+        builder.text({ name: 'SU', parent: str, text: s.unit, props: { fontSize: 13, fill: COLORS.slate600 }, width: 140 });
+        builder.text({ name: 'SP', parent: str, text: s.price, props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.emerald700 }, width: 160 });
+        builder.text({ name: 'SE', parent: str, text: s.est, props: { fontSize: 12, fill: s.fast ? COLORS.brand700 : COLORS.slate700, fontWeight: s.fast ? 'bold' : 'normal' }, width: 200 });
+        builder.badge({ parent: str, label: 'AKTIF', tone: 'success', width: 70 });
+        builder.button({ parent: str, label: '+ Pilih di POS', variant: 'secondary', width: 120, height: 30 });
       });
     },
   });

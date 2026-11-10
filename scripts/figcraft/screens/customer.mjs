@@ -6,183 +6,135 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   // --------------------------------------------------------
   // FRAME 06: Customer Dashboard (1:1 customer/dashboard.blade.php)
   // --------------------------------------------------------
-  let btnCustLookup, btnCustViewNote, btnCustLogout;
+  let btnCustLookup, btnCustViewNote, btnCustAllHistory, btnCustCompBanner, btnSecViewAll;
 
-  const f06 = b.frame({
+  const f06Shell = b.appShell({
     name: '06-Customer-Dashboard',
     x: 40,
     y: 40,
-    width: 1440,
-    height: 1100,
-    props: { fill: COLORS.slate50, layout: 'vertical', gap: 0 },
-  });
+    role: 'customer',
+    activeLabel: 'Beranda',
+    pageTitle: 'Dashboard Pelanggan',
+    userName: 'Budi Santoso',
+    returnRefs: true,
+    actions: [
+      { label: 'Semua Riwayat Transaksi', variant: 'primary', icon: 'receipt', width: 200 },
+      { label: 'Cek Kode Nota Fisik', variant: 'secondary', icon: 'search', width: 180 },
+    ],
+    contentFn: (builder, main, { actionRefs }) => {
+      btnCustAllHistory = actionRefs[0];
+      btnCustLookup = actionRefs[1];
 
-  // Topbar Navbar Shell (height: 64)
-  const topNav = b.frame({
-    name: 'CustomerTopNav',
-    parent: f06,
-    width: 1440,
-    height: 64,
-    props: {
-      fill: COLORS.white,
-      stroke: COLORS.slate200,
-      strokeWeight: 1,
-      layout: 'horizontal',
-      mainAlign: 'spaceBetween',
-      crossAlign: 'center',
-      padding: [0, 60, 0, 60],
+      // 1. Welcome Banner Card
+      const banner = builder.frame({
+        name: 'WelcomeBanner',
+        parent: main,
+        width: 1136,
+        height: 90,
+        props: {
+          fill: COLORS.white,
+          stroke: COLORS.slate200,
+          strokeWeight: 1,
+          cornerRadius: 16,
+          padding: [20, 24, 20, 24],
+          layout: 'horizontal',
+          mainAlign: 'spaceBetween',
+          crossAlign: 'center',
+        },
+      });
+
+      const bText = builder.frame({ name: 'Txt', parent: banner, width: 750, height: 50, props: { layout: 'vertical', gap: 4 } });
+      builder.text({ name: 'Title', parent: bText, text: 'Selamat Datang, Budi Santoso', props: { fontSize: 22, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.text({ name: 'Sub', parent: bText, text: 'Pantau status pengerjaan pakaian laundry Anda secara langsung serta cek riwayat transaksi dan rincian nota kapan saja.', props: { fontSize: 13, fill: COLORS.slate600 } });
+
+      // 2. Monolithic Stat Strip (FR-27)
+      builder.monolithicStatStrip({
+        parent: main,
+        x: 0,
+        y: 106,
+        width: 1136,
+        height: 110,
+        stats: [
+          { label: 'Cucian berjalan', value: '1', unit: 'Nota Aktif', sub: 'Sedang diproses di workshop', tone: 'brand' },
+          { label: 'Menunggu pelunasan', value: 'Rp 34.000', sub: 'Dapat dilunasi saat pengambilan', tone: 'warning' },
+          { label: 'Total riwayat nota', value: '12', unit: 'Nota', sub: 'Riwayat sejak akun terdaftar', tone: 'slate' },
+          { label: 'Pengaduan aktif', value: '1', unit: 'Tiket', sub: 'Sedang ditangani tim staf', tone: 'danger' },
+        ],
+      });
+
+      // 3. Active Complaint Notification Banner (FR-27)
+      const compBanner = builder.frame({
+        name: 'ComplaintNotificationBanner',
+        parent: main,
+        width: 1136,
+        height: 74,
+        props: {
+          fill: COLORS.rose50,
+          stroke: COLORS.rose200,
+          strokeWeight: 1,
+          cornerRadius: 14,
+          padding: [14, 20, 14, 20],
+          layout: 'horizontal',
+          mainAlign: 'spaceBetween',
+          crossAlign: 'center',
+        },
+      });
+
+      const compLeft = builder.frame({ name: 'CLeft', parent: compBanner, width: 840, height: 44, props: { layout: 'horizontal', crossAlign: 'center', gap: 12 } });
+      builder.vector({ name: 'CIco', parent: compLeft, width: 22, height: 22, path: ICONS['alert-triangle'], props: { stroke: COLORS.rose700 } });
+      const compText = builder.frame({ name: 'CTxt', parent: compLeft, width: 800, height: 44, props: { layout: 'vertical', gap: 2 } });
+      builder.text({ name: 'CTitle', parent: compText, text: 'Anda Memiliki 1 Pengaduan Cucian yang Sedang Ditangani', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.rose900 } });
+      builder.text({ name: 'CSub', parent: compText, text: 'Tiket terbaru: CMP-20261024-001 — Pakaian Kelunturan Warna Biru (Status: Sedang Ditangani oleh Daysyani)', props: { fontSize: 11, fill: COLORS.rose700 } });
+
+      btnCustCompBanner = builder.button({ parent: compBanner, label: 'Lihat Respons Petugas', variant: 'destructive', icon: 'arrow-right', width: 195, height: 38 });
+
+      // 4. Cucian Sedang Berjalan Section
+      const activeSec = builder.frame({
+        name: 'ActiveLaundriesSection',
+        parent: main,
+        width: 1136,
+        height: 230,
+        props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 22, layout: 'vertical', gap: 14 },
+      });
+
+      const secHead = builder.frame({ name: 'SecHead', parent: activeSec, width: 1092, height: 32, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      const secHeadLeft = builder.frame({ name: 'SHL', parent: secHead, width: 320, height: 32, props: { layout: 'horizontal', crossAlign: 'center', gap: 8 } });
+      builder.vector({ name: 'ActIco', parent: secHeadLeft, width: 18, height: 18, path: ICONS.activity, props: { stroke: COLORS.brand700 } });
+      builder.text({ name: 'SecTitle', parent: secHeadLeft, text: 'Cucian Sedang Berjalan', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.badge({ parent: secHeadLeft, label: '1 Aktif', tone: 'brand' });
+      btnSecViewAll = builder.text({ name: 'ViewAll', parent: secHead, text: 'Lihat Semua di Riwayat Transaksi ->', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.brand700 } });
+
+      // Active Laundry Item Card
+      const itemCard = builder.frame({
+        name: 'ItemCard-TRX-20261024-0001',
+        parent: activeSec,
+        width: 1092,
+        height: 136,
+        props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 12, padding: 16, layout: 'vertical', gap: 10 },
+      });
+
+      const itemHead = builder.frame({ name: 'IH', parent: itemCard, width: 1060, height: 26, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      builder.text({ name: 'NotaInfo', parent: itemHead, text: 'Nota #TRX-20261024-0001 • Cuci Kering Setrika Reguler (4.0 kg) • Total: Rp 34.000', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
+      builder.badge({ parent: itemHead, label: 'PROSES CUCI AKTIF', tone: 'brand' });
+
+      // Stepper Bar
+      const itemStepper = builder.frame({
+        name: 'ItemStepper',
+        parent: itemCard,
+        width: 1060,
+        height: 36,
+        props: { fill: COLORS.white, cornerRadius: 8, layout: 'horizontal', mainAlign: 'spaceAround', crossAlign: 'center' },
+      });
+      ['1. Diterima (Selesai)', '2. Sedang Dicuci (Aktif)', '3. Siap Diambil', '4. Selesai'].forEach((st, i) => {
+        builder.text({ name: `St-${i}`, parent: itemStepper, text: st, props: { fontSize: 11, fontWeight: i === 1 ? 'bold' : 'normal', fill: i === 1 ? COLORS.brand700 : (i === 0 ? COLORS.emerald700 : COLORS.slate400) } });
+      });
+
+      const itemFoot = builder.frame({ name: 'IF', parent: itemCard, width: 1060, height: 32, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
+      builder.text({ name: 'EstFoot', parent: itemFoot, text: 'Perkiraan Selesai: 25 Oktober 2026, 17:00 WIB (~12 Jam lagi)', props: { fontSize: 12, fill: COLORS.slate600 } });
+      btnCustViewNote = builder.button({ parent: itemFoot, label: 'Lihat Rincian Nota', variant: 'secondary', icon: 'receipt', width: 160, height: 30 });
     },
   });
-
-  const cLogo = b.frame({ name: 'Logo', parent: topNav, width: 140, height: 36, props: { layout: 'horizontal', crossAlign: 'center', gap: 8 } });
-  b.rect({ name: 'Ico', parent: cLogo, width: 30, height: 30, props: { fill: COLORS.brand600, cornerRadius: 8 } });
-  b.text({ name: 'T', parent: cLogo, text: 'CUCI.IN', props: { fontSize: 18, fontWeight: 'bold', fill: COLORS.brand700 } });
-
-  const cMenu = b.frame({ name: 'Menu', parent: topNav, width: 380, height: 36, props: { layout: 'horizontal', crossAlign: 'center', gap: 24 } });
-  b.text({ name: 'M1', parent: cMenu, text: 'Beranda', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.brand700 } });
-  const navCustHistory = b.text({ name: 'M2', parent: cMenu, text: 'Riwayat Transaksi', props: { fontSize: 13, fontWeight: 'medium', fill: COLORS.slate600 } });
-  const navCustComplaints = b.text({ name: 'M3', parent: cMenu, text: 'Pengaduan Saya', props: { fontSize: 13, fontWeight: 'medium', fill: COLORS.slate600 } });
-
-  const cUser = b.frame({ name: 'UserSec', parent: topNav, width: 260, height: 36, props: { layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12 } });
-  b.text({ name: 'UName', parent: cUser, text: 'Budi Santoso', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate800 } });
-  btnCustLogout = b.button({ parent: cUser, label: 'Keluar', variant: 'ghost', icon: 'log-out', width: 85, height: 32 });
-
-  // Main Dashboard Content
-  const mainContent = b.frame({
-    name: 'MainContent',
-    parent: f06,
-    width: 1440,
-    height: 1036,
-    props: { layout: 'vertical', crossAlign: 'center', padding: [32, 60, 40, 60], gap: 24 },
-  });
-
-  // 1. Welcome Banner Card
-  const banner = b.frame({
-    name: 'WelcomeBanner',
-    parent: mainContent,
-    width: 1180,
-    height: 96,
-    props: {
-      fill: COLORS.white,
-      stroke: COLORS.slate200,
-      strokeWeight: 1,
-      cornerRadius: 16,
-      padding: [20, 28, 20, 28],
-      layout: 'horizontal',
-      mainAlign: 'spaceBetween',
-      crossAlign: 'center',
-    },
-  });
-
-  const bText = b.frame({ name: 'Txt', parent: banner, width: 660, height: 56, props: { layout: 'vertical', gap: 4 } });
-  b.text({ name: 'Title', parent: bText, text: 'Selamat Datang, Budi Santoso', props: { fontSize: 22, fontWeight: 'bold', fill: COLORS.slate900 } });
-  b.text({ name: 'Sub', parent: bText, text: 'Pantau status pengerjaan pakaian laundry Anda secara langsung serta cek riwayat transaksi dan rincian nota kapan saja.', props: { fontSize: 12, fill: COLORS.slate600 } });
-
-  const bActs = b.frame({ name: 'Acts', parent: banner, width: 440, height: 40, props: { layout: 'horizontal', gap: 10, mainAlign: 'max', crossAlign: 'center' } });
-  const btnCustAllHistory = b.button({ parent: bActs, label: 'Semua Riwayat Transaksi', variant: 'primary', icon: 'receipt', width: 220, height: 40 });
-  btnCustLookup = b.button({ parent: bActs, label: 'Cek Kode Nota Fisik', variant: 'secondary', icon: 'search', width: 190, height: 40 });
-
-  // 2. Monolithic Stat Strip (FR-27)
-  const statStrip = b.frame({
-    name: 'MonolithicStatStrip',
-    parent: mainContent,
-    width: 1180,
-    height: 110,
-    props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, layout: 'horizontal' },
-  });
-
-  const stats = [
-    { label: 'Cucian berjalan', val: '1', unit: 'Nota Aktif', sub: 'Sedang diproses di workshop', tone: COLORS.brand700 },
-    { label: 'Menunggu pelunasan', val: 'Rp 34.000', unit: '', sub: 'Dapat dilunasi saat pengambilan', tone: COLORS.amber800 },
-    { label: 'Total riwayat nota', val: '12', unit: 'Nota Laundry', sub: 'Riwayat sejak akun terdaftar', tone: COLORS.slate900 },
-    { label: 'Pengaduan aktif', val: '1', unit: 'Tiket Kendala', sub: 'Sedang ditangani tim staf', tone: COLORS.rose700 },
-  ];
-
-  stats.forEach((s, idx) => {
-    const col = b.frame({
-      name: `Col-${s.label}`,
-      parent: statStrip,
-      width: 295,
-      height: 110,
-      props: { padding: 20, layout: 'vertical', gap: 6, stroke: idx < 3 ? COLORS.slate200 : 'none', strokeWeight: idx < 3 ? 1 : 0 },
-    });
-    b.text({ name: 'L', parent: col, text: s.label, props: { fontSize: 12, fontWeight: 'medium', fill: COLORS.slate600 } });
-    const valRow = b.frame({ name: 'VR', parent: col, width: 250, height: 32, props: { layout: 'horizontal', crossAlign: 'baseline', gap: 6 } });
-    b.text({ name: 'V', parent: valRow, text: s.val, props: { fontSize: 24, fontWeight: 'bold', fill: s.tone } });
-    if (s.unit) b.text({ name: 'U', parent: valRow, text: s.unit, props: { fontSize: 11, fill: COLORS.slate500 } });
-    b.text({ name: 'S', parent: col, text: s.sub, props: { fontSize: 11, fill: COLORS.slate500 } });
-  });
-
-  // 3. Active Complaint Notification Banner (FR-27)
-  const compBanner = b.frame({
-    name: 'ComplaintNotificationBanner',
-    parent: mainContent,
-    width: 1180,
-    height: 76,
-    props: {
-      fill: COLORS.rose50,
-      stroke: COLORS.rose200,
-      strokeWeight: 1,
-      cornerRadius: 14,
-      padding: [16, 24, 16, 24],
-      layout: 'horizontal',
-      mainAlign: 'spaceBetween',
-      crossAlign: 'center',
-    },
-  });
-
-  const compLeft = b.frame({ name: 'CLeft', parent: compBanner, width: 880, height: 44, props: { layout: 'horizontal', crossAlign: 'center', gap: 12 } });
-  b.vector({ name: 'CIco', parent: compLeft, width: 24, height: 24, path: ICONS['alert-triangle'], props: { stroke: COLORS.rose700 } });
-  const compText = b.frame({ name: 'CTxt', parent: compLeft, width: 840, height: 44, props: { layout: 'vertical', gap: 2 } });
-  b.text({ name: 'CTitle', parent: compText, text: 'Anda Memiliki 1 Pengaduan Cucian yang Sedang Ditangani', props: { fontSize: 14, fontWeight: 'bold', fill: COLORS.rose900 } });
-  b.text({ name: 'CSub', parent: compText, text: 'Tiket terbaru: CMP-20261024-001 — Pakaian Kelunturan Warna Biru (Status: Sedang Ditangani)', props: { fontSize: 12, fill: COLORS.rose700 } });
-
-  const btnCustCompBanner = b.button({ parent: compBanner, label: 'Lihat Respons Petugas', variant: 'destructive', icon: 'arrow-right', width: 190, height: 38 });
-
-  // 4. Cucian Sedang Berjalan Section
-  const activeSec = b.frame({
-    name: 'ActiveLaundriesSection',
-    parent: mainContent,
-    width: 1180,
-    height: 240,
-    props: { fill: COLORS.white, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 16, padding: 24, layout: 'vertical', gap: 16 },
-  });
-
-  const secHead = b.frame({ name: 'SecHead', parent: activeSec, width: 1132, height: 32, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
-  const secHeadLeft = b.frame({ name: 'SHL', parent: secHead, width: 300, height: 32, props: { layout: 'horizontal', crossAlign: 'center', gap: 8 } });
-  b.vector({ name: 'ActIco', parent: secHeadLeft, width: 18, height: 18, path: ICONS.activity, props: { stroke: COLORS.brand700 } });
-  b.text({ name: 'SecTitle', parent: secHeadLeft, text: 'Cucian Sedang Berjalan', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
-  b.badge({ parent: secHeadLeft, label: '1 Aktif', tone: 'brand' });
-  const btnSecViewAll = b.text({ name: 'ViewAll', parent: secHead, text: 'Lihat Semua di Riwayat Transaksi ->', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.brand700 } });
-
-  // Active Laundry Item Card
-  const itemCard = b.frame({
-    name: 'ItemCard-TRX-20261024-0001',
-    parent: activeSec,
-    width: 1132,
-    height: 140,
-    props: { fill: COLORS.slate50, stroke: COLORS.slate200, strokeWeight: 1, cornerRadius: 12, padding: 18, layout: 'vertical', gap: 10 },
-  });
-
-  const itemHead = b.frame({ name: 'IH', parent: itemCard, width: 1096, height: 28, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
-  b.text({ name: 'NotaInfo', parent: itemHead, text: 'Nota #TRX-20261024-0001 • Cuci Kering Setrika Reguler (4.0 kg) • Total: Rp 34.000', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
-  b.badge({ parent: itemHead, label: 'PROSES CUCI AKTIF', tone: 'brand' });
-
-  // Stepper Bar
-  const itemStepper = b.frame({
-    name: 'ItemStepper',
-    parent: itemCard,
-    width: 1096,
-    height: 38,
-    props: { fill: COLORS.white, cornerRadius: 8, layout: 'horizontal', mainAlign: 'spaceAround', crossAlign: 'center' },
-  });
-  ['1. Diterima (Selesai)', '2. Sedang Dicuci (Aktif)', '3. Siap Diambil', '4. Selesai'].forEach((st, i) => {
-    b.text({ name: `St-${i}`, parent: itemStepper, text: st, props: { fontSize: 11, fontWeight: i === 1 ? 'bold' : 'normal', fill: i === 1 ? COLORS.brand700 : (i === 0 ? COLORS.emerald700 : COLORS.slate400) } });
-  });
-
-  const itemFoot = b.frame({ name: 'IF', parent: itemCard, width: 1096, height: 32, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
-  b.text({ name: 'EstFoot', parent: itemFoot, text: 'Perkiraan Selesai: 25 Oktober 2026, 17:00 WIB (~12 Jam lagi)', props: { fontSize: 12, fill: COLORS.slate600 } });
-  btnCustViewNote = b.button({ parent: itemFoot, label: 'Lihat Rincian Nota', variant: 'secondary', icon: 'receipt', width: 160, height: 30 });
+  const f06 = f06Shell.root;
 
   // --------------------------------------------------------
   // FRAME 07: Customer Transactions History
@@ -361,8 +313,8 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
         builder.text({ name: 'Trx', parent: col1, text: r.trx, props: { fontSize: 11, fill: COLORS.slate500 } });
 
         const col2 = builder.frame({ name: 'C2', parent: tr, width: 410, height: 60, props: { layout: 'vertical', gap: 4 } });
-        builder.text({ name: 'Subj', parent: col2, text: r.subj, props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 } });
-        builder.text({ name: 'Desc', parent: col2, text: r.desc, props: { fontSize: 11, fill: COLORS.slate500 } });
+        builder.text({ name: 'Subj', parent: col2, text: r.subj, props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.slate900 }, width: 390 });
+        builder.text({ name: 'Desc', parent: col2, text: r.desc, props: { fontSize: 11, fill: COLORS.slate500 }, width: 390 });
         if (r.replied) builder.badge({ parent: col2, label: 'Telah ditanggapi staf', tone: 'success', width: 140, height: 20 });
 
         const col3 = builder.frame({ name: 'C3', parent: tr, width: 130, height: 40, props: { layout: 'horizontal', crossAlign: 'center' } });
@@ -689,23 +641,19 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
     b.wire({ id: publicAuthRefs.btnChipCustomer, dest: f06 });
   }
   if (publicAuthRefs.f02) {
-    b.wire({ id: btnCustLookup, dest: publicAuthRefs.f02 });
-    b.wire({ id: btnCustViewNote, dest: publicAuthRefs.f02 });
+    if (btnCustLookup) b.wire({ id: btnCustLookup, dest: publicAuthRefs.f02 });
+    if (btnCustViewNote) b.wire({ id: btnCustViewNote, dest: publicAuthRefs.f02 });
     if (f07Shell.actionRefs[0]) b.wire({ id: f07Shell.actionRefs[0], dest: publicAuthRefs.f02 });
-  }
-  if (publicAuthRefs.f01) {
-    b.wire({ id: btnCustLogout, dest: publicAuthRefs.f01 });
   }
 
   // Dashboard (06) <-> History (07) <-> Complaints (08 -> 08b -> 09)
-  b.wire({ id: navCustHistory, dest: f07 });
-  b.wire({ id: btnCustAllHistory, dest: f07 });
-  b.wire({ id: btnSecViewAll, dest: f07 });
-  b.wire({ id: navCustComplaints, dest: f08 });
-  b.wire({ id: btnCustCompBanner, dest: f09 });
+  if (btnCustAllHistory) b.wire({ id: btnCustAllHistory, dest: f07 });
+  if (btnSecViewAll) b.wire({ id: btnSecViewAll, dest: f07 });
+  if (btnCustCompBanner) b.wire({ id: btnCustCompBanner, dest: f09 });
 
-  // Sidebar navigation across Customer screens (07, 08, 08b, 09)
-  [f07Shell, f08Shell, f08bShell, f09Shell].forEach((sh) => {
+  // Sidebar navigation across ALL Customer screens (06, 07, 08, 08b, 09)
+  const custShells = [f06Shell, f07Shell, f08Shell, f08bShell, f09Shell];
+  custShells.forEach((sh) => {
     if (sh.navRefs['Beranda']) b.wire({ id: sh.navRefs['Beranda'], dest: f06 });
     if (sh.navRefs['Riwayat Transaksi']) b.wire({ id: sh.navRefs['Riwayat Transaksi'], dest: f07 });
     if (sh.navRefs['Pengaduan']) b.wire({ id: sh.navRefs['Pengaduan'], dest: f08 });
@@ -722,5 +670,5 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
   if (btnCompShowBack) b.wire({ id: btnCompShowBack, dest: f08 });
   if (btnCompShowNota) b.wire({ id: btnCompShowNota, dest: f07 });
 
-  return { f06, f07, f08, f08b, f09, btnCustLookup, btnCustViewNote, btnCustLogout };
+  return { f06, f07, f08, f08b, f09, btnCustLookup, btnCustViewNote };
 }
