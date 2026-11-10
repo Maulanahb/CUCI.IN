@@ -649,7 +649,7 @@ export function buildPublicAuthScreens(b) {
   b.text({ name: 'TrxCodeLbl', parent: f02TrxLeft, text: 'NOMOR NOTA TRANSAKSI', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
   const trxCodeRow = b.frame({ name: 'TCRow', parent: f02TrxLeft, width: 350, height: 26, props: { layout: 'horizontal', crossAlign: 'center', gap: 8 } });
   b.text({ name: 'Code', parent: trxCodeRow, text: 'TRX-20261024-0001', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
-  b.button({ parent: trxCodeRow, label: 'Salin Tautan', variant: 'secondary', icon: 'copy', width: 110, height: 26 });
+  b.button({ parent: trxCodeRow, label: 'Salin Tautan', variant: 'secondary', icon: 'copy', width: 120, height: 32 });
 
   const f02TrxRight = b.frame({ name: 'TR', parent: f02TrxInfo, width: 300, height: 44, props: { layout: 'vertical', crossAlign: 'max', gap: 2 } });
   b.text({ name: 'CustLbl', parent: f02TrxRight, text: 'NAMA PELANGGAN', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
@@ -718,7 +718,7 @@ export function buildPublicAuthScreens(b) {
   b.text({ name: 'DropText1', parent: dropzone, text: 'Klik untuk pilih foto bukti struk atau seret file ke sini', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.brand700 } });
   b.text({ name: 'DropText2', parent: dropzone, text: 'Format JPG, PNG, atau WEBP maksimal 2 MB', props: { fontSize: 10, fill: COLORS.slate500 } });
 
-  b.button({ parent: uploadBox, label: 'Kirim Bukti Pembayaran', variant: 'primary', icon: 'check-circle', width: 220, height: 38 });
+  b.button({ parent: uploadBox, label: 'Kirim Bukti Pembayaran', variant: 'primary', icon: 'check-circle', width: 220, height: 44 });
 
   // --------------------------------------------------------
   // FRAME 03: Public QR Scanner Modal (Overlay Modal)

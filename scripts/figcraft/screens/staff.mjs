@@ -369,7 +369,7 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
       });
       const pHead = builder.frame({ name: 'PH', parent: payCard, width: 1092, height: 32, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
       builder.text({ name: 'PT', parent: pHead, text: 'Informasi & Riwayat Pembayaran', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
-      btnTrxDetailReviewProof = builder.button({ parent: pHead, label: 'Tinjau Bukti QRIS', variant: 'secondary', icon: 'shield-check', width: 165, height: 34 });
+      btnTrxDetailReviewProof = builder.button({ parent: pHead, label: 'Tinjau Bukti QRIS', variant: 'secondary', icon: 'shield-check', width: 165, height: 36 });
 
       const pGrid = builder.frame({ name: 'PGrid', parent: payCard, width: 1092, height: 82, props: { layout: 'horizontal', gap: 16 } });
       [
@@ -445,8 +445,8 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
 
   const abRight = b.frame({ name: 'ABRight', parent: actBar, width: 440, height: 38, props: { layout: 'horizontal', gap: 10, crossAlign: 'center', mainAlign: 'max' } });
   b.badge({ parent: abRight, label: '58mm [1] | 80mm [2]', tone: 'brand', width: 145, height: 34 });
-  btnPrintBack = b.button({ parent: abRight, label: 'Kembali', variant: 'secondary', icon: 'arrow-left', width: 100, height: 34 });
-  b.button({ parent: abRight, label: 'Print Struk', variant: 'primary', icon: 'printer', kbd: 'Ctrl+P', width: 155, height: 34 });
+  btnPrintBack = b.button({ parent: abRight, label: 'Kembali', variant: 'secondary', icon: 'arrow-left', width: 100, height: 36 });
+  b.button({ parent: abRight, label: 'Print Struk', variant: 'primary', icon: 'printer', kbd: 'Ctrl+P', width: 155, height: 36 });
 
   // 80mm Thermal Receipt Paper Container
   const paper = b.frame({
@@ -681,9 +681,9 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
       builder.text({ name: 'DT', parent: decCard, text: 'Keputusan Verifikasi Kasir', props: { fontSize: 15, fontWeight: 'bold', fill: COLORS.slate900 } });
       builder.text({ name: 'DS', parent: decCard, text: 'Cocokkan nominal, tanggal, dan rekening/merchant tujuan pada bukti sebelum menyetujui.', props: { fontSize: 11, fill: COLORS.slate600 }, width: 408 });
 
-      const btnPair = builder.frame({ name: 'BtnPair', parent: decCard, width: 408, height: 40, props: { layout: 'horizontal', gap: 10 } });
-      btnPayShowApprove = builder.button({ parent: btnPair, label: 'Setujui Pembayaran', variant: 'primary', icon: 'check', width: 199, height: 38 });
-      builder.button({ parent: btnPair, label: 'Tolak Bukti', variant: 'destructive', icon: 'x', width: 199, height: 38 });
+      const btnPair = builder.frame({ name: 'BtnPair', parent: decCard, width: 408, height: 44, props: { layout: 'horizontal', gap: 10 } });
+      btnPayShowApprove = builder.button({ parent: btnPair, label: 'Setujui Pembayaran', variant: 'primary', icon: 'check', width: 199, height: 44 });
+      builder.button({ parent: btnPair, label: 'Tolak Bukti', variant: 'destructive', icon: 'x', width: 199, height: 44 });
 
       builder.text({ name: 'RLbl', parent: decCard, text: 'Alasan Penolakan * (Wajib diisi jika menolak bukti)', props: { fontSize: 12, fontWeight: 'bold', fill: COLORS.slate700 } });
       const rBox = builder.frame({
@@ -797,7 +797,7 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
         builder.text({ name: 'SP', parent: str, text: s.price, props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.emerald700 }, width: 160 });
         builder.text({ name: 'SE', parent: str, text: s.est, props: { fontSize: 12, fill: s.fast ? COLORS.brand700 : COLORS.slate700, fontWeight: s.fast ? 'bold' : 'normal' }, width: 200 });
         builder.badge({ parent: str, label: 'AKTIF', tone: 'success', width: 70 });
-        builder.button({ parent: str, label: '+ Pilih di POS', variant: 'secondary', width: 120, height: 30 });
+        builder.button({ parent: str, label: '+ Pilih di POS', variant: 'secondary', width: 120, height: 32 });
       });
     },
   });
@@ -914,7 +914,7 @@ export function buildStaffScreens(b, publicAuthRefs = {}) {
       });
       const pcHead = builder.frame({ name: 'PCH', parent: posCard, width: 620, height: 34, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
       builder.text({ name: 'PCT', parent: pcHead, text: 'Informasi Nota Transaksi Terkait', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.slate900 } });
-      btnStaffCompOpenPos = builder.button({ parent: pcHead, label: 'Buka Nota POS', variant: 'secondary', icon: 'arrow-up-right', width: 140, height: 34 });
+      btnStaffCompOpenPos = builder.button({ parent: pcHead, label: 'Buka Nota POS', variant: 'secondary', icon: 'arrow-up-right', width: 140, height: 32 });
 
       [
         ['Nomor Nota Transaksi', 'TRX-20261109-0042'],

@@ -86,7 +86,7 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
       builder.text({ name: 'CTitle', parent: compText, text: 'Anda Memiliki 1 Pengaduan Cucian yang Sedang Ditangani', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.rose900 } });
       builder.text({ name: 'CSub', parent: compText, text: 'Tiket terbaru: CMP-20261024-001 — Pakaian Kelunturan Warna Biru (Status: Sedang Ditangani oleh Daysyani)', props: { fontSize: 11, fill: COLORS.rose700 } });
 
-      btnCustCompBanner = builder.button({ parent: compBanner, label: 'Lihat Respons Petugas', variant: 'destructive', icon: 'arrow-right', width: 195, height: 38 });
+      btnCustCompBanner = builder.button({ parent: compBanner, label: 'Lihat Respons Petugas', variant: 'destructive', icon: 'arrow-right', width: 195, height: 36 });
 
       // 4. Cucian Sedang Berjalan Section
       const activeSec = builder.frame({
@@ -131,7 +131,7 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
 
       const itemFoot = builder.frame({ name: 'IF', parent: itemCard, width: 1060, height: 32, props: { layout: 'horizontal', mainAlign: 'spaceBetween', crossAlign: 'center' } });
       builder.text({ name: 'EstFoot', parent: itemFoot, text: 'Perkiraan Selesai: 25 Oktober 2026, 17:00 WIB (~12 Jam lagi)', props: { fontSize: 12, fill: COLORS.slate600 } });
-      btnCustViewNote = builder.button({ parent: itemFoot, label: 'Lihat Rincian Nota', variant: 'secondary', icon: 'receipt', width: 160, height: 30 });
+      btnCustViewNote = builder.button({ parent: itemFoot, label: 'Lihat Rincian Nota', variant: 'secondary', icon: 'receipt', width: 160, height: 32 });
     },
   });
   const f06 = f06Shell.root;
@@ -244,7 +244,7 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
 
       const sRow = builder.frame({ name: 'SearchRow', parent: fltCard, width: 400, height: 38, props: { layout: 'horizontal', gap: 8, crossAlign: 'center' } });
       builder.inputField({ parent: sRow, width: 310, height: 38, placeholder: 'Cari kode tiket, subjek, atau nota...', icon: 'search' });
-      builder.button({ parent: sRow, label: 'Cari', variant: 'primary', width: 70, height: 38 });
+      builder.button({ parent: sRow, label: 'Cari', variant: 'primary', width: 70, height: 36 });
 
       // Table Card
       const tbl = builder.frame({
@@ -324,7 +324,7 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
         builder.text({ name: 'SLA', parent: col4, text: r.sla, props: { fontSize: 12, fontWeight: 'medium', fill: COLORS.slate700 } });
         builder.text({ name: 'SLASub', parent: col4, text: r.slaSub, props: { fontSize: 11, fontWeight: 'bold', fill: r.status === 'Selesai' ? COLORS.emerald700 : COLORS.amber800 } });
 
-        const btn = builder.button({ parent: tr, label: 'Rincian', variant: 'secondary', icon: 'arrow-right', width: 100, height: 34 });
+        const btn = builder.button({ parent: tr, label: 'Rincian', variant: 'secondary', icon: 'arrow-right', width: 100, height: 32 });
         if (idx === 0) btnCompIdxDetail0 = btn;
       });
     },
@@ -439,7 +439,7 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
       builder.text({ name: 'FS', parent: fMeta, text: 'Resolusi 1600x1200 px • Akan dikompresi otomatis di latar belakang via Queue Job (ProcessComplaintPhotoJob).', props: { fontSize: 12, fill: COLORS.slate600 } });
       builder.badge({ parent: fMeta, label: 'Foto Siap Diunggah', tone: 'success', width: 150, height: 26 });
 
-      builder.button({ parent: dropzone, label: 'Ganti Foto', variant: 'secondary', width: 120, height: 38 });
+      builder.button({ parent: dropzone, label: 'Ganti Foto', variant: 'secondary', width: 120, height: 36 });
 
       // Footer Actions
       const fFoot = builder.frame({
@@ -449,8 +449,8 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
         height: 56,
         props: { stroke: COLORS.slate100, strokeWeight: 1, layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12, padding: [12, 0, 0, 0] },
       });
-      btnCompCreateCancel = builder.button({ parent: fFoot, label: 'Batal', variant: 'secondary', width: 110, height: 42 });
-      btnCompCreateSubmit = builder.button({ parent: fFoot, label: 'Kirim Pengaduan', variant: 'primary', icon: 'check', width: 180, height: 42 });
+      btnCompCreateCancel = builder.button({ parent: fFoot, label: 'Batal', variant: 'secondary', width: 110, height: 44 });
+      btnCompCreateSubmit = builder.button({ parent: fFoot, label: 'Kirim Pengaduan', variant: 'primary', icon: 'check', width: 180, height: 44 });
     },
   });
   const f08b = f08bShell.root;
@@ -608,7 +608,7 @@ export function buildCustomerScreens(b, publicAuthRefs = {}) {
       const trxTitleCol = builder.frame({ name: 'TTC', parent: trxHead, width: 240, height: 40, props: { layout: 'vertical', gap: 2 } });
       builder.text({ name: 'TL', parent: trxTitleCol, text: 'NOTA TRANSAKSI TERKAIT', props: { fontSize: 10, fontWeight: 'bold', fill: COLORS.slate500 } });
       builder.text({ name: 'TC', parent: trxTitleCol, text: 'TRX-20261024-0001', props: { fontSize: 16, fontWeight: 'bold', fill: COLORS.brand700 } });
-      btnCompShowNota = builder.button({ parent: trxHead, label: 'Buka Nota', variant: 'secondary', icon: 'arrow-right', width: 110, height: 34 });
+      btnCompShowNota = builder.button({ parent: trxHead, label: 'Buka Nota', variant: 'secondary', icon: 'arrow-right', width: 110, height: 32 });
 
       const metaRows = [
         ['Tanggal Transaksi', '24 Okt 2026'],

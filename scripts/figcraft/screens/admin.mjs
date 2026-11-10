@@ -197,7 +197,7 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
       builder.inputField({ parent: dInputs, width: 220, height: 38, label: null, value: '01 Nov 2026' });
       builder.text({ name: 'To', parent: dInputs, text: 'sampai', props: { fontSize: 12, fill: COLORS.slate500 } });
       builder.inputField({ parent: dInputs, width: 220, height: 38, label: null, value: '09 Nov 2026' });
-      builder.button({ parent: dInputs, label: 'Terapkan Filter', variant: 'primary', width: 130, height: 38 });
+      builder.button({ parent: dInputs, label: 'Terapkan Filter', variant: 'primary', width: 130, height: 36 });
       builder.badge({ parent: fltRow, label: 'Periode 9 Hari Terpilih', tone: 'slate', width: 160 });
 
       // Daily Breakdown Table
@@ -246,8 +246,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
   });
   b.text({ name: 'DocName', parent: pdfBar, text: 'laporan-operasional-cuciin-20261101-20261109.pdf (DomPDF A4 Portrait — 1/1 Halaman)', props: { fontSize: 13, fontWeight: 'bold', fill: COLORS.white } });
   const pdfBtns = b.frame({ name: 'Btns', parent: pdfBar, width: 280, height: 36, props: { layout: 'horizontal', gap: 10, mainAlign: 'max', crossAlign: 'center' } });
-  btnPdfBack = b.button({ parent: pdfBtns, label: 'Kembali ke Laporan', variant: 'secondary', icon: 'arrow-left', width: 155, height: 34 });
-  b.button({ parent: pdfBtns, label: 'Unduh PDF', variant: 'primary', icon: 'download', width: 115, height: 34 });
+  btnPdfBack = b.button({ parent: pdfBtns, label: 'Kembali ke Laporan', variant: 'secondary', icon: 'arrow-left', width: 155, height: 36 });
+  b.button({ parent: pdfBtns, label: 'Unduh PDF', variant: 'primary', icon: 'download', width: 115, height: 36 });
 
   // A4 Document Paper Sheet
   const a4 = b.frame({
@@ -461,8 +461,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
       builder.text({ name: 'L2', parent: tgTxt, text: 'Jika dinonaktifkan, akun ini tidak dapat digunakan untuk masuk ke sistem.', props: { fontSize: 11, fill: COLORS.slate600 } });
 
       const foot = builder.frame({ name: 'Footer', parent: card, width: 716, height: 52, props: { layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12 } });
-      btnUserCreateCancel = builder.button({ parent: foot, label: 'Batal', variant: 'secondary', width: 110, height: 42 });
-      btnUserCreateSave = builder.button({ parent: foot, label: 'Simpan Pengguna Baru', variant: 'primary', icon: 'check', width: 195, height: 42 });
+      btnUserCreateCancel = builder.button({ parent: foot, label: 'Batal', variant: 'secondary', width: 110, height: 44 });
+      btnUserCreateSave = builder.button({ parent: foot, label: 'Simpan Pengguna Baru', variant: 'primary', icon: 'check', width: 195, height: 44 });
     },
   });
   const f19b = f19bShell.root;
@@ -539,8 +539,8 @@ export function buildAdminScreens(b, publicAuthRefs = {}, staffRefs = {}) {
       builder.inputField({ parent: pwGrid, width: 332, height: 40, label: 'Konfirmasi Kata Sandi Baru', placeholder: 'Ulangi kata sandi baru', icon: 'lock' });
 
       const foot = builder.frame({ name: 'Footer', parent: card, width: 716, height: 50, props: { layout: 'horizontal', mainAlign: 'max', crossAlign: 'center', gap: 12 } });
-      btnUserEditCancel = builder.button({ parent: foot, label: 'Batal', variant: 'secondary', width: 110, height: 42 });
-      btnUserEditSave = builder.button({ parent: foot, label: 'Simpan Perubahan', variant: 'primary', icon: 'check', width: 175, height: 42 });
+      btnUserEditCancel = builder.button({ parent: foot, label: 'Batal', variant: 'secondary', width: 110, height: 44 });
+      btnUserEditSave = builder.button({ parent: foot, label: 'Simpan Perubahan', variant: 'primary', icon: 'check', width: 175, height: 44 });
     },
   });
   const f19c = f19cShell.root;

@@ -784,7 +784,7 @@ export class FigBuilder {
       variant: 'secondary',
       icon: 'arrow-left',
       width: 175,
-      height: 34,
+      height: 36,
     });
 
     this.text({
