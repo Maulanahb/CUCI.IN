@@ -52,6 +52,7 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('/login', [LoginController::class, 'store'])
+        ->middleware('throttle:login')
         ->name('login.store');
 
     Route::get('/register', [RegisterController::class, 'create'])
