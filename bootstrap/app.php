@@ -3,10 +3,14 @@
 use App\Http\Middleware\EnsureIdempotency;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\EnsureUserIsActive;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,6 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
 
+        $middleware->throttleApi();
+
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
             'active' => EnsureUserIsActive::class,
@@ -28,4 +34,38 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        $exceptions->render(function (TooManyRequestsHttpException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $headers = $e->getHeaders();
+                $retryAfter = (int) ($headers['Retry-After'] ?? 60);
+                $headers['Retry-After'] = (string) $retryAfter;
+
+                return response()->json([
+                    'message' => 'Terlalu banyak percobaan, coba lagi beberapa saat.',
+                    'retry_after' => $retryAfter,
+                ], 429, $headers);
+            }
+        });
+    })
+    ->booted(function (): void {
+        /**
+         * Rate limiter untuk autentikasi login (maks. 5 permintaan per menit).
+         * Menerapkan isolasi per email dan IP agar pengguna di jaringan yang sama tidak saling terkunci.
+         * Middleware throttle:login memotong permintaan ke-6 dengan HTTP 429 sebelum controller dijalankan,
+         * sedangkan ensureIsNotRateLimited di LoginRequest menangani kegagalan kredensial sebagai lapisan kedua.
+         */
+        RateLimiter::for('login', function (Request $request) {
+            $email = Str::transliterate(Str::lower($request->string('email')));
+
+            return Limit::perMinute(5)->by($email.'|'.$request->ip());
+        });
+
+        /**
+         * Rate limiter global untuk rute API (maks. 60 permintaan per menit).
+         * Menerapkan kunci id pengguna bila sudah login dan IP bila tamu (guest).
+         */
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
     })->create();
