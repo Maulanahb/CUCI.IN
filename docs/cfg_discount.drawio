@@ -1,0 +1,132 @@
+<mxfile host="app.diagrams.net" modified="2026-11-12T02:35:00.000Z" agent="Mozilla/5.0" version="24.0.0" type="device">
+  <diagram id="cfg-pmpl-p10" name="Control Flow Graph ShopRules discount">
+    <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- START -->
+        <mxCell id="start" value="START" style="ellipse;whiteSpace=wrap;html=1;fillColor=#10B981;strokeColor=#059669;fontColor=#FFFFFF;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="40" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- D1 -->
+        <mxCell id="d1" value="D1:&#xa;subtotal &lt; 0 ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontColor=#92400E;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="140" width="160" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- THROW EXCEPTION -->
+        <mxCell id="throw" value="THROW&#xa;InvalidArgumentException&#xa;('Subtotal negatif')" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEE2E2;strokeColor=#DC2626;fontColor=#991B1B;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="152.5" width="170" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- D2 -->
+        <mxCell id="d2" value="D2:&#xa;subtotal &gt;= 100000&#xa;&amp;&amp; member ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontColor=#92400E;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="310" y="280" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- RETURN 10% -->
+        <mxCell id="ret10" value="RETURN 10%&#xa;intdiv(subtotal * 10, 100)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;fontColor=#1E40AF;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="297.5" width="170" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- D3 -->
+        <mxCell id="d3" value="D3:&#xa;subtotal &gt;= 100000 ?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FEF3C7;strokeColor=#D97706;fontColor=#92400E;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="430" width="160" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- RETURN 5% -->
+        <mxCell id="ret5" value="RETURN 5%&#xa;intdiv(subtotal * 5, 100)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#2563EB;fontColor=#1E40AF;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="540" y="442.5" width="170" height="65" as="geometry" />
+        </mxCell>
+
+        <!-- RETURN 0 -->
+        <mxCell id="ret0" value="RETURN 0&#xa;(Tanpa Diskon)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F3F4F6;strokeColor=#6B7280;fontColor=#374151;fontStyle=1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="325" y="570" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- END -->
+        <mxCell id="end" value="END" style="ellipse;whiteSpace=wrap;html=1;fillColor=#EF4444;strokeColor=#DC2626;fontColor=#FFFFFF;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="450" y="680" width="120" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- EDGES -->
+        <!-- START to D1 -->
+        <mxCell id="e_start_d1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#4B5563;" edge="1" parent="1" source="start" target="d1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- D1 to THROW (True) -->
+        <mxCell id="e_d1_throw" value="True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#DC2626;fontColor=#DC2626;fontStyle=1;" edge="1" parent="1" source="d1" target="throw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- D1 to D2 (False) -->
+        <mxCell id="e_d1_d2" value="False" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#10B981;fontColor=#059669;fontStyle=1;" edge="1" parent="1" source="d1" target="d2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- D2 to RET10 (True) -->
+        <mxCell id="e_d2_ret10" value="True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2563EB;fontColor=#2563EB;fontStyle=1;" edge="1" parent="1" source="d2" target="ret10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- D2 to D3 (False) -->
+        <mxCell id="e_d2_d3" value="False" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#10B981;fontColor=#059669;fontStyle=1;" edge="1" parent="1" source="d2" target="d3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- D3 to RET5 (True) -->
+        <mxCell id="e_d3_ret5" value="True" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#2563EB;fontColor=#2563EB;fontStyle=1;" edge="1" parent="1" source="d3" target="ret5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- D3 to RET0 (False) -->
+        <mxCell id="e_d3_ret0" value="False" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#6B7280;fontColor=#374151;fontStyle=1;" edge="1" parent="1" source="d3" target="ret0">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- THROW to END -->
+        <mxCell id="e_throw_end" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9CA3AF;" edge="1" parent="1" source="throw" target="end">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="185" />
+              <mxPoint x="750" y="705" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- RET10 to END -->
+        <mxCell id="e_ret10_end" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9CA3AF;" edge="1" parent="1" source="ret10" target="end">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="730" y="330" />
+              <mxPoint x="730" y="705" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- RET5 to END -->
+        <mxCell id="e_ret5_end" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9CA3AF;" edge="1" parent="1" source="ret5" target="end">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="710" y="475" />
+              <mxPoint x="710" y="705" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- RET0 to END -->
+        <mxCell id="e_ret0_end" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#9CA3AF;" edge="1" parent="1" source="ret0" target="end">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="400" y="705" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+

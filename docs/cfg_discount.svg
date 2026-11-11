@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 780" width="850" height="780" style="background:#ffffff; font-family:system-ui, -apple-system, sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#4B5563"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#DC2626"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#2563EB"/>
+    </marker>
+  </defs>
+
+  <!-- START -->
+  <rect x="290" y="30" width="140" height="48" rx="24" fill="#10B981" stroke="#059669" stroke-width="2"/>
+  <text x="360" y="60" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="16">START</text>
+
+  <!-- Arrow START to D1 -->
+  <path d="M 360 78 L 360 135" fill="none" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- D1 (Diamond) -->
+  <polygon points="360,140 460,190 360,240 260,190" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+  <text x="360" y="185" text-anchor="middle" fill="#92400E" font-weight="bold" font-size="13">D1:</text>
+  <text x="360" y="202" text-anchor="middle" fill="#92400E" font-size="12">subtotal &lt; 0 ?</text>
+
+  <!-- D1 True to THROW -->
+  <path d="M 460 190 L 535 190" fill="none" stroke="#DC2626" stroke-width="2" marker-end="url(#arrow-red)"/>
+  <text x="495" y="180" text-anchor="middle" fill="#DC2626" font-weight="bold" font-size="12">True</text>
+
+  <!-- THROW BOX -->
+  <rect x="540" y="160" width="190" height="60" rx="8" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"/>
+  <text x="635" y="183" text-anchor="middle" fill="#991B1B" font-weight="bold" font-size="12">THROW Exception</text>
+  <text x="635" y="202" text-anchor="middle" fill="#991B1B" font-size="11">('Subtotal negatif')</text>
+
+  <!-- D1 False to D2 -->
+  <path d="M 360 240 L 360 295" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <text x="380" y="265" text-anchor="middle" fill="#059669" font-weight="bold" font-size="12">False</text>
+
+  <!-- D2 (Diamond) -->
+  <polygon points="360,300 470,355 360,410 250,355" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+  <text x="360" y="345" text-anchor="middle" fill="#92400E" font-weight="bold" font-size="13">D2:</text>
+  <text x="360" y="362" text-anchor="middle" fill="#92400E" font-size="11">subtotal &gt;= 100k &amp;&amp; member ?</text>
+
+  <!-- D2 True to RETURN 10% -->
+  <path d="M 470 355 L 535 355" fill="none" stroke="#2563EB" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="500" y="345" text-anchor="middle" fill="#2563EB" font-weight="bold" font-size="12">True</text>
+
+  <!-- RETURN 10% BOX -->
+  <rect x="540" y="325" width="190" height="60" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+  <text x="635" y="348" text-anchor="middle" fill="#1E40AF" font-weight="bold" font-size="12">RETURN 10%</text>
+  <text x="635" y="367" text-anchor="middle" fill="#1E40AF" font-size="11">intdiv(subtotal * 10, 100)</text>
+
+  <!-- D2 False to D3 -->
+  <path d="M 360 410 L 360 465" fill="none" stroke="#059669" stroke-width="2" marker-end="url(#arrow-green)"/>
+  <text x="380" y="435" text-anchor="middle" fill="#059669" font-weight="bold" font-size="12">False</text>
+
+  <!-- D3 (Diamond) -->
+  <polygon points="360,470 460,520 360,570 260,520" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+  <text x="360" y="513" text-anchor="middle" fill="#92400E" font-weight="bold" font-size="13">D3:</text>
+  <text x="360" y="530" text-anchor="middle" fill="#92400E" font-size="12">subtotal &gt;= 100k ?</text>
+
+  <!-- D3 True to RETURN 5% -->
+  <path d="M 460 520 L 535 520" fill="none" stroke="#2563EB" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="495" y="510" text-anchor="middle" fill="#2563EB" font-weight="bold" font-size="12">True</text>
+
+  <!-- RETURN 5% BOX -->
+  <rect x="540" y="490" width="190" height="60" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+  <text x="635" y="513" text-anchor="middle" fill="#1E40AF" font-weight="bold" font-size="12">RETURN 5%</text>
+  <text x="635" y="532" text-anchor="middle" fill="#1E40AF" font-size="11">intdiv(subtotal * 5, 100)</text>
+
+  <!-- D3 False to RETURN 0 -->
+  <path d="M 360 570 L 360 625" fill="none" stroke="#4B5563" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="380" y="595" text-anchor="middle" fill="#4B5563" font-weight="bold" font-size="12">False</text>
+
+  <!-- RETURN 0 BOX -->
+  <rect x="275" y="630" width="170" height="50" rx="8" fill="#F3F4F6" stroke="#6B7280" stroke-width="2"/>
+  <text x="360" y="653" text-anchor="middle" fill="#374151" font-weight="bold" font-size="12">RETURN 0</text>
+  <text x="360" y="669" text-anchor="middle" fill="#4B5563" font-size="11">(Tanpa Diskon)</text>
+
+  <!-- END OVAL -->
+  <rect x="470" y="710" width="130" height="48" rx="24" fill="#EF4444" stroke="#DC2626" stroke-width="2"/>
+  <text x="535" y="740" text-anchor="middle" fill="#FFFFFF" font-weight="bold" font-size="16">END</text>
+
+  <!-- Routing Lines to END -->
+  <!-- From THROW to END -->
+  <path d="M 730 190 L 760 190 L 760 734 L 605 734" fill="none" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- From RETURN 10% to END -->
+  <path d="M 730 355 L 750 355 L 750 734 L 605 734" fill="none" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- From RETURN 5% to END -->
+  <path d="M 730 520 L 740 520 L 740 734 L 605 734" fill="none" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- From RETURN 0 to END -->
+  <path d="M 360 680 L 360 734 L 465 734" fill="none" stroke="#9CA3AF" stroke-width="1.5" marker-end="url(#arrow)"/>
+</svg>
+
