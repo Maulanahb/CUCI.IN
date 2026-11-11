@@ -3,10 +3,13 @@
 use App\Http\Middleware\EnsureIdempotency;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\EnsureUserIsActive;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -28,4 +31,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+    })
+    ->booted(function (): void {
+        RateLimiter::for('login', function (Request $request) {
+            $email = Str::transliterate(Str::lower($request->string('email')));
+
+            return Limit::perMinute(5)->by($email.'|'.$request->ip());
+        });
     })->create();
