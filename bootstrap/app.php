@@ -49,12 +49,22 @@ return Application::configure(basePath: dirname(__DIR__))
         });
     })
     ->booted(function (): void {
+        /**
+         * Rate limiter untuk autentikasi login (maks. 5 permintaan per menit).
+         * Menerapkan isolasi per email dan IP agar pengguna di jaringan yang sama tidak saling terkunci.
+         * Middleware throttle:login memotong permintaan ke-6 dengan HTTP 429 sebelum controller dijalankan,
+         * sedangkan ensureIsNotRateLimited di LoginRequest menangani kegagalan kredensial sebagai lapisan kedua.
+         */
         RateLimiter::for('login', function (Request $request) {
             $email = Str::transliterate(Str::lower($request->string('email')));
 
             return Limit::perMinute(5)->by($email.'|'.$request->ip());
         });
 
+        /**
+         * Rate limiter global untuk rute API (maks. 60 permintaan per menit).
+         * Menerapkan kunci id pengguna bila sudah login dan IP bila tamu (guest).
+         */
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
