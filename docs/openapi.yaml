@@ -85,6 +85,12 @@ paths:
                     message: Transaksi tidak ditemukan.
         '429':
           description: Permintaan melebihi batas rate limit throttle.
+          headers:
+            Retry-After:
+              description: Jumlah detik sebelum permintaan berikutnya diizinkan.
+              schema:
+                type: integer
+                example: 60
           content:
             application/json:
               schema:
@@ -229,7 +235,12 @@ components:
       properties:
         message:
           type: string
-          example: Too Many Requests
+          example: Terlalu banyak percobaan, coba lagi beberapa saat.
+        retry_after:
+          type: integer
+          description: Durasi waktu tunggu dalam detik sebelum dapat melakukan permintaan kembali.
+          example: 60
       required:
         - message
+        - retry_after
 
