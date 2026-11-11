@@ -1,0 +1,501 @@
+[
+  {
+    "verdict": "confirmed",
+    "fingerprint": "CUCIIN-AUTH-AND-API-UNTHROTTLED-SURFACE",
+    "title": "Absence of Route-Level Throttle Middleware on Auth and Public API Endpoints",
+    "description": "Key authentication actions (login, register, forgot-password) and the public tracking API route lack route-level rate limiting middleware (throttle), permitting high-velocity automated enumeration and request flooding.",
+    "root_cause": "In routes/web.php and routes/api.php, routes for POST /login, POST /register, POST /forgot-password, and GET /api/v1/track/{transaction_code} are not assigned the 'throttle' middleware or named rate limiters.",
+    "intended_behavior": "Public unauthenticated endpoints and sensitive authentication handlers should be guarded by rate limiters (e.g., throttle:5,1 for login, throttle:60,1 for public tracking API).",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "routes/web.php",
+        "line": 54,
+        "scope": "routes/web.php:54",
+        "description": "POST /login route definition without throttle middleware."
+      },
+      {
+        "kind": "propagation",
+        "file": "routes/api.php",
+        "line": 9,
+        "scope": "routes/api.php:9",
+        "description": "GET /api/v1/track/{transaction_code} route definition without route throttle."
+      },
+      {
+        "kind": "sink",
+        "file": "app/Http/Controllers/Api/TrackingController.php",
+        "line": 14,
+        "scope": "TrackingController::show",
+        "description": "Public endpoint executes database lookup on every unthrottled incoming request."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "routes/web.php",
+        "line": 54,
+        "description": "Route::post('/login', [LoginController::class, 'store'])->name('login.store') lacks throttle middleware."
+      },
+      {
+        "file": "routes/api.php",
+        "line": 9,
+        "description": "Route::get('/track/{transaction_code}', [TrackingController::class, 'show']) lacks throttle middleware."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "network_routing",
+        "description": "Attacker can send high volumes of HTTP requests directly to the web or API endpoints."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "An unauthenticated remote attacker performs automated brute-force attacks or enumerates existing transaction codes.",
+      "payloads": [
+        "for i in {1..100}; do curl -s -X POST http://localhost:8000/login -d 'email=test@example.com&password=wrong'; done"
+      ],
+      "instructions": [
+        "Send 20 consecutive POST requests to /login within 5 seconds with invalid credentials.",
+        "Observe whether HTTP 429 Too Many Requests is returned by route middleware or if full execution occurs."
+      ],
+      "observed_result": "Requests bypass route-level rate limiting, executing full request pipeline."
+    },
+    "remediation": {
+      "strategy": "Attach named or inline throttle middleware (throttle:5,1 for login, throttle:60,1 for API) to protect authentication and tracking routes.",
+      "code_changes": [
+        {
+          "file_name": "routes/web.php",
+          "fixed_code": "Route::post('/login', [LoginController::class, 'store'])->middleware('throttle:5,1')->name('login.store');"
+        },
+        {
+          "file_name": "routes/api.php",
+          "fixed_code": "Route::get('/track/{transaction_code}', [TrackingController::class, 'show'])->middleware('throttle:60,1')->name('api.tracking.show');"
+        }
+      ]
+    },
+    "severity": {
+      "likelihood": {
+        "score": "high",
+        "reason": "Public endpoints are accessible to anyone on the internet without credentials."
+      },
+      "impact": {
+        "score": "low",
+        "reason": "Resource consumption and password guessing attempts; mitigated internally by LoginRequest attempt checks."
+      },
+      "overall_severity": "low"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Confirmed by route inspection via php artisan route:list."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "CUCIIN-GUEST-PAYMENT-PROOF-UNTHROTTLED-BRUTE-FORCE",
+    "title": "Unthrottled Guest Payment Proof Endpoint Allows Phone Verification Brute Force and Spurious Payment Injection",
+    "description": "The guest payment proof upload endpoint verifies customer identity solely via 4 phone digits without rate limiting, allowing an attacker to brute force the phone verification, upload arbitrary files, and inject spurious pending payments into legitimate transactions.",
+    "root_cause": "POST /lookup/payment-proof in routes/web.php has no throttle middleware. In TransactionLookupController::storePaymentProof, guest authentication is guarded only by matching phone_last_4 (10,000 combinations, 0000-9999).",
+    "intended_behavior": "The endpoint must be protected by strict rate limiting (e.g. throttle:5,1) and prevent multiple unauthenticated pending payment proofs from being injected into active transactions.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "routes/web.php",
+        "line": 25,
+        "scope": "routes/web.php:25",
+        "description": "Public POST /lookup/payment-proof route declared without throttle middleware."
+      },
+      {
+        "kind": "propagation",
+        "file": "app/Http/Controllers/TransactionLookupController.php",
+        "line": 91,
+        "scope": "TransactionLookupController::storePaymentProof",
+        "description": "Validates 4-digit phone suffix against customer record with no attempt limiting."
+      },
+      {
+        "kind": "sink",
+        "file": "app/Services/SubmitPaymentProof.php",
+        "line": 75,
+        "scope": "SubmitPaymentProof::execute",
+        "description": "Creates Payment record with status 'Menunggu Verifikasi' and stores uploaded proof file."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "routes/web.php",
+        "line": 25,
+        "description": "Route::post('/lookup/payment-proof', [TransactionLookupController::class, 'storePaymentProof'])->name('transactions.lookup.payment-proof'); lacks rate limiting."
+      },
+      {
+        "file": "app/Http/Controllers/TransactionLookupController.php",
+        "line": 104,
+        "description": "if ($customerPhone === '' || $last4 !== $validated['phone_last_4']) throws ValidationException without recording rate limit hits."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "authentication_level",
+        "description": "Unauthenticated guest access from public internet."
+      },
+      {
+        "kind": "data_state",
+        "description": "Target transaction has an outstanding unpaid balance and a linked customer with phone number."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "An unauthenticated remote attacker identifies a transaction code (e.g. from receipt, URL, or enumeration) and iterates phone_last_4 from 0000 to 9999.",
+      "payloads": [
+        "POST /lookup/payment-proof HTTP/1.1\r\nContent-Type: multipart/form-data\r\ntransaction_code=TRX-0001&phone_last_4=0000&method=Transfer&amount=50000&proof_file=@fake.jpg"
+      ],
+      "instructions": [
+        "Issue repeated POST requests with different 4-digit phone suffixes to /lookup/payment-proof.",
+        "When the matching 4 digits are guessed, observe HTTP 302 redirect with payment_proof_success session flash.",
+        "Inspect database to confirm a pending payment is created, locking submittable amount for legitimate customer."
+      ],
+      "observed_result": "A pending payment record is created, reducing submittable_amount and injecting unverified file into cashier verification queue without cashier or customer awareness."
+    },
+    "remediation": {
+      "strategy": "Apply strict IP and transaction-code rate limiting (e.g. throttle:5,1) on POST /lookup/payment-proof, and record failed phone verification attempts.",
+      "code_changes": [
+        {
+          "file_name": "routes/web.php",
+          "fixed_code": "Route::post('/lookup/payment-proof', [TransactionLookupController::class, 'storePaymentProof'])->middleware('throttle:5,1')->name('transactions.lookup.payment-proof');"
+        }
+      ]
+    },
+    "severity": {
+      "likelihood": {
+        "score": "high",
+        "reason": "Publicly accessible endpoint with only 10,000 combinations (0000-9999) and zero rate limiting."
+      },
+      "impact": {
+        "score": "high",
+        "reason": "Allows unauthorized manipulation of transaction financial state, denial of legitimate payment submission, and storage flooding."
+      },
+      "overall_severity": "high"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Verified by inspecting route definitions and controller logic."
+    }
+  },
+  {
+    "verdict": "needs_validation",
+    "fingerprint": "CUCIIN-INFRA-EC2-DIRECT-PORT-EXPOSURE",
+    "title": "Direct Public Access to EC2 Ports 80 and 443 Bypassing Cloudflare Edge Security Controls",
+    "description": "System documentation states that AWS EC2 security groups open ports 80 and 443 to 0.0.0.0/0 while domain traffic is routed through Cloudflare. If origin IP filtering is absent, attackers can bypass Cloudflare WAF, DDoS protection, and rate limiting by accessing the origin IP directly.",
+    "claimed_root_cause": "AWS EC2 security group inbound rules permit 0.0.0.0/0 on port 80/443 without restricting ingress to Cloudflare published IP ranges.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "docs/sistem.md",
+        "line": 12,
+        "scope": "docs/sistem.md:12",
+        "description": "Security Group Inbound Port 80 and 443 documented as open to 0.0.0.0/0."
+      },
+      {
+        "kind": "sink",
+        "file": "bootstrap/app.php",
+        "line": 19,
+        "scope": "bootstrap/app.php:19",
+        "description": "Application trusts all proxies, meaning direct requests without Cloudflare headers are processed as originating from untrusted client."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "docs/sistem.md",
+        "line": 12,
+        "description": "Security Group Inbound: Port 22 (SSH), Port 80 (HTTP), Port 443 (HTTPS) terbuka untuk 0.0.0.0/0."
+      }
+    ],
+    "blockers": [
+      "AWS EC2 security group live configuration and active Nginx IP allowlist blocks cannot be confirmed solely from source code in the repository."
+    ],
+    "validation_plan": {
+      "local": "Review Nginx configuration template in docs/sistem.md to confirm whether Cloudflare IP ranges and 'deny all;' directives are configured.",
+      "deployment": "Log in to AWS EC2 management console; inspect Security Group inbound rules for instance 3.25.167.8 and restrict port 80/443 to Cloudflare IP ranges."
+    }
+  },
+  {
+    "verdict": "rejected",
+    "fingerprint": "CUCIIN-REJECTED-SQL-INJECTION-LOOKUP",
+    "title": "Candidate SQL Injection in Transaction Code Lookup via mb_strtoupper",
+    "description": "Initial hypothesis that passing raw string input into UPPER(transaction_code) = ? could cause SQL injection.",
+    "claimed_root_cause": "TransactionLookupController::index and TrackingController::show execute whereRaw('UPPER(transaction_code) = ?', [mb_strtoupper($code)]).",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/Http/Controllers/TransactionLookupController.php",
+        "line": 43,
+        "scope": "TransactionLookupController::index",
+        "description": "Receives raw 'code' query parameter and passes it to whereRaw."
+      },
+      {
+        "kind": "sink",
+        "file": "app/Http/Controllers/TransactionLookupController.php",
+        "line": 43,
+        "scope": "TransactionLookupController::index",
+        "description": "Executes whereRaw with positional parameter binding."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/Http/Controllers/TransactionLookupController.php",
+        "line": 43,
+        "description": "whereRaw('UPPER(transaction_code) = ?', [mb_strtoupper($code)]) uses PDO parameterized binding."
+      }
+    ],
+    "reason": "The query uses PDO positional parameter binding ('?'), properly escaping and parameterizing the $code variable. No string concatenation or raw interpolation occurs. The claim is refuted by source analysis."
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "CUCIIN-REPORT-CONTROLLER-BROKEN-ACCESS-CONTROL",
+    "title": "Broken Access Control Allows Operational Staff to Access Executive Financial Reports and Customer PII",
+    "description": "Operational staff accounts can access confidential administrative financial reports, gross revenue aggregations, and export all customer transaction histories with phone numbers due to overly broad route middleware grouping.",
+    "root_cause": "In routes/web.php, the /admin/reports routes are enclosed inside Route::middleware('role:admin,staff'), and ReportController methods contain no role authorization checks.",
+    "intended_behavior": "Administrative reports and financial export routes must be restricted strictly to users with role 'admin'.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "routes/web.php",
+        "line": 125,
+        "scope": "routes/web.php:125",
+        "description": "Route::middleware('role:admin,staff') wraps all staff and admin sub-routes."
+      },
+      {
+        "kind": "propagation",
+        "file": "routes/web.php",
+        "line": 281,
+        "scope": "routes/web.php:281",
+        "description": "Route::get('/reports', [ReportController::class, 'index']) defined inside admin prefix but without role:admin middleware."
+      },
+      {
+        "kind": "sink",
+        "file": "app/Http/Controllers/ReportController.php",
+        "line": 22,
+        "scope": "ReportController::index",
+        "description": "Renders financial KPIs, revenue summaries, and full transaction listings without checking user role."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "routes/web.php",
+        "line": 125,
+        "description": "Route::middleware('role:admin,staff')->group(...) encompasses lines 125-293 including admin/reports."
+      },
+      {
+        "file": "app/Http/Controllers/ReportController.php",
+        "line": 22,
+        "description": "ReportController contains no Gate::authorize, abort(403), or role verification."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "authorization_role",
+        "description": "Attacker has valid credentials for a staff account (role: 'staff')."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "An authenticated staff user navigates directly to /admin/reports or export endpoints.",
+      "payloads": [
+        "GET /admin/reports HTTP/1.1\r\nCookie: cuciin_session=staff_session_cookie",
+        "GET /admin/reports/export/csv HTTP/1.1\r\nCookie: cuciin_session=staff_session_cookie"
+      ],
+      "instructions": [
+        "Log in as a user with role 'staff'.",
+        "Navigate to http://localhost:8000/admin/reports.",
+        "Observe HTTP 200 OK rendering full financial dashboard and export buttons."
+      ],
+      "observed_result": "Staff user successfully views total turnover, revenue KPIs, customer names, phone numbers, and downloads full financial reports."
+    },
+    "remediation": {
+      "strategy": "Move ReportController routes into a dedicated Route::middleware('role:admin') group, or add authorization check in ReportController.",
+      "code_changes": [
+        {
+          "file_name": "routes/web.php",
+          "fixed_code": "Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {\n    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');\n    Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])->name('reports.export.pdf');\n    Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])->name('reports.export.excel');\n    Route::get('/reports/export/csv', [ReportController::class, 'exportCsv'])->name('reports.export.csv');\n});"
+        }
+      ]
+    },
+    "severity": {
+      "likelihood": {
+        "score": "high",
+        "reason": "Any operational staff member can access the URL directly without special tools."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "Exposure of sensitive business financial figures and full customer PII database to non-managerial staff."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Confirmed by route inspection and lack of authorization guards in ReportController."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "CUCIIN-REPORT-CSV-FORMULA-INJECTION",
+    "title": "CSV Formula Injection via Unsanitized Customer Names in Operational Transaction Export",
+    "description": "Exporting transactions to CSV directly interpolates customer names and service summaries into spreadsheet cells without escaping formula trigger characters (=, +, -, @, \\t, \\r), enabling formula injection or command execution when opened in Excel.",
+    "root_cause": "ReportController::exportCsv streams raw customer name ($transaction->customer?->name) directly into fputcsv without prefixing an apostrophe or stripping leading formula characters.",
+    "intended_behavior": "Any cell value starting with '=', '+', '-', '@', tab, or carriage return must be sanitized (e.g. prepended with an apostrophe \"'\") before CSV output.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/Http/Controllers/Auth/RegisterController.php",
+        "line": 35,
+        "scope": "RegisterController::store",
+        "description": "Customer registers with a custom name containing formula triggers (e.g. =cmd|' /C calc'!A0)."
+      },
+      {
+        "kind": "propagation",
+        "file": "app/Http/Controllers/ReportController.php",
+        "line": 125,
+        "scope": "ReportController::exportCsv",
+        "description": "Query retrieves transactions and customer records for export."
+      },
+      {
+        "kind": "sink",
+        "file": "app/Http/Controllers/ReportController.php",
+        "line": 177,
+        "scope": "ReportController::exportCsv",
+        "description": "fputcsv writes unescaped customer name into CSV stream."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/Http/Controllers/ReportController.php",
+        "line": 180,
+        "description": "$transaction->customer?->name ?? 'Pelanggan Umum' passed directly to fputcsv without escaping."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "user_interaction",
+        "description": "Administrator or Owner downloads CSV export and opens it in Microsoft Excel without Protected View."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "A malicious user registers with name '=1+1' or '=cmd|' /C calc'!A0' and creates an order.",
+      "payloads": [
+        "=SUM(1+1)",
+        "=cmd|' /C calc'!A0"
+      ],
+      "instructions": [
+        "Register a customer account with name '=1+1'.",
+        "Create a laundry transaction for that customer.",
+        "As Admin, download CSV export from /admin/reports/export/csv.",
+        "Open the CSV file in spreadsheet software."
+      ],
+      "observed_result": "The cell is interpreted as a formula rather than a text string."
+    },
+    "remediation": {
+      "strategy": "Sanitize all string values written to CSV by prepending an apostrophe (') if the first character is in ['=', '+', '-', '@', \"\\t\", \"\\r\"].",
+      "code_changes": [
+        {
+          "file_name": "app/Http/Controllers/ReportController.php",
+          "fixed_code": "$safeName = preg_replace('/^[=+\\-@\\t\\r]/', \"'$0\", (string) ($transaction->customer?->name ?? 'Pelanggan Umum'));"
+        }
+      ]
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "Requires unauthenticated registration with crafted name and an administrator exporting and opening CSV."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "Client-side formula execution / arbitrary command execution on administrator workstation via spreadsheet software."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Confirmed by examining fputcsv payload handling in ReportController."
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "CUCIIN-TRUST-PROXIES-WILDCARD-IP-SPOOFING",
+    "title": "Overly Permissive Proxy Trust Configuration Enables Complete Bypass of IP-Based Rate Limiting",
+    "description": "Configuring trustProxies(at: '*') causes the application to trust client-supplied X-Forwarded-For headers indiscriminately, allowing attackers to forge arbitrary client IPs and bypass IP-based rate limiting (such as login throttling).",
+    "root_cause": "bootstrap/app.php configures $middleware->trustProxies(at: '*'). In direct server access or misconfigured reverse proxies, Laravel's getClientIp() reads the leftmost X-Forwarded-For IP supplied by the client.",
+    "intended_behavior": "trustProxies should specify the exact CIDR blocks of trusted proxies (e.g. Cloudflare IP ranges) or internal reverse proxies, rather than a blanket wildcard.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "bootstrap/app.php",
+        "line": 19,
+        "scope": "bootstrap/app.php:19",
+        "description": "$middleware->trustProxies(at: '*') trusts all incoming proxy headers."
+      },
+      {
+        "kind": "propagation",
+        "file": "app/Http/Requests/Auth/LoginRequest.php",
+        "line": 113,
+        "scope": "LoginRequest::throttleKey",
+        "description": "Rate limiter key incorporates $this->ip(), which resolves from untrusted X-Forwarded-For."
+      },
+      {
+        "kind": "sink",
+        "file": "app/Http/Requests/Auth/LoginRequest.php",
+        "line": 92,
+        "scope": "LoginRequest::ensureIsNotRateLimited",
+        "description": "RateLimiter check is bypassed for every request with a distinct spoofed IP."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "bootstrap/app.php",
+        "line": 19,
+        "description": "$middleware->trustProxies(at: '*'); sets proxy trust to all IP addresses."
+      },
+      {
+        "file": "app/Http/Requests/Auth/LoginRequest.php",
+        "line": 113,
+        "description": "return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip()); relies on untrusted IP."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "system_configuration",
+        "description": "Application is accessible directly or behind a proxy that forwards client-supplied X-Forwarded-For headers."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "An attacker performs credential stuffing against /login while rotating X-Forwarded-For headers on each request.",
+      "payloads": [
+        "X-Forwarded-For: 1.1.1.1",
+        "X-Forwarded-For: 1.1.1.2"
+      ],
+      "instructions": [
+        "Send 10 failed login attempts with header X-Forwarded-For: 10.0.0.1.",
+        "Send an 11th failed login attempt with header X-Forwarded-For: 10.0.0.2.",
+        "Observe that the 11th request is not throttled."
+      ],
+      "observed_result": "Throttle key recalculates with the spoofed IP, resetting the attempt counter and bypassing lockout."
+    },
+    "remediation": {
+      "strategy": "Configure trustProxies with explicit Cloudflare IP ranges or trusted internal load balancer IPs instead of wildcard '*'.",
+      "code_changes": [
+        {
+          "file_name": "bootstrap/app.php",
+          "fixed_code": "$middleware->trustProxies(at: [\n    '173.245.48.0/20',\n    '103.21.244.0/22',\n    '103.22.200.0/22',\n    '103.31.4.0/22',\n    '141.101.64.0/18',\n    '108.162.192.0/18',\n    '190.93.240.0/20',\n    '188.114.96.0/20',\n    '197.234.240.0/22',\n    '198.41.128.0/17',\n    '162.158.0.0/15',\n    '104.16.0.0/13',\n    '104.24.0.0/14',\n    '172.64.0.0/13',\n    '131.0.72.0/22',\n]);"
+        }
+      ]
+    },
+    "severity": {
+      "likelihood": {
+        "score": "high",
+        "reason": "Any client can supply custom X-Forwarded-For HTTP request headers."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "Enables bypass of rate limiting controls, credential stuffing, and IP-based access logs."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Confirmed in bootstrap/app.php."
+    }
+  }
+]

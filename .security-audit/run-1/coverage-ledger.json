@@ -1,0 +1,665 @@
+[
+  {
+    "coverage_id": "bootstrap%2Fapp.php%3Atrust-proxies::external-%3Eapp-trust-layer::bootstrap%2Fapp.php::WEB-PROTOCOL-AND-AUTH.md%23Core%20discipline",
+    "canonical_refs": {
+      "surface": "bootstrap/app.php:trust-proxies",
+      "boundary": "external->app-trust-layer",
+      "subsystem": "bootstrap/app.php",
+      "attack_class": "WEB-PROTOCOL-AND-AUTH.md#Core discipline"
+    },
+    "surface": "bootstrap/app.php:trust-proxies",
+    "boundary": "external->app-trust-layer",
+    "subsystem": "bootstrap/app.php",
+    "attack_class": "WEB-PROTOCOL-AND-AUTH.md#Core discipline",
+    "starting_paths": [
+      "bootstrap/app.php",
+      "app/Http/Requests/Auth/LoginRequest.php"
+    ],
+    "ordinary_attack_class_block": null,
+    "selected_companion_blocks": [
+      "WEB-PROTOCOL-AND-AUTH.md#Core discipline"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "candidate",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "bootstrap/app.php",
+      "app/Http/Requests/Auth/LoginRequest.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "bootstrap/app.php",
+          "app/Http/Requests/Auth/LoginRequest.php"
+        ],
+        "invariant": "Verify security controls and invariants across external->app-trust-layer",
+        "method": "source",
+        "result": "Candidate vulnerability identified",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [
+      "CUCIIN-TRUST-PROXIES-WILDCARD-IP-SPOOFING"
+    ],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "docs%2Fsistem.md%3Ainfra-ports::external-%3Einfra-boundary::docs%2Fsistem.md::ATTACK-CLASSES.md%23Access%20control",
+    "canonical_refs": {
+      "surface": "docs/sistem.md:infra-ports",
+      "boundary": "external->infra-boundary",
+      "subsystem": "docs/sistem.md",
+      "attack_class": "ATTACK-CLASSES.md#Access control"
+    },
+    "surface": "docs/sistem.md:infra-ports",
+    "boundary": "external->infra-boundary",
+    "subsystem": "docs/sistem.md",
+    "attack_class": "ATTACK-CLASSES.md#Access control",
+    "starting_paths": [
+      "docs/sistem.md",
+      "bootstrap/app.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Access control",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "candidate",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "docs/sistem.md",
+      "bootstrap/app.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "docs/sistem.md",
+          "bootstrap/app.php"
+        ],
+        "invariant": "Verify security controls and invariants across external->infra-boundary",
+        "method": "source",
+        "result": "Candidate vulnerability identified",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [
+      "CUCIIN-INFRA-EC2-DIRECT-PORT-EXPOSURE"
+    ],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fapi.php%3Atracking::guest-%3Eapi::app%2FHttp%2FControllers%2FApi%2FTrackingController.php::RESOURCE-EXHAUSTION-AND-AVAILABILITY.md%23Rate%20limiting%20and%20concurrency%20exhaustion",
+    "canonical_refs": {
+      "surface": "routes/api.php:tracking",
+      "boundary": "guest->api",
+      "subsystem": "app/Http/Controllers/Api/TrackingController.php",
+      "attack_class": "RESOURCE-EXHAUSTION-AND-AVAILABILITY.md#Rate limiting and concurrency exhaustion"
+    },
+    "surface": "routes/api.php:tracking",
+    "boundary": "guest->api",
+    "subsystem": "app/Http/Controllers/Api/TrackingController.php",
+    "attack_class": "RESOURCE-EXHAUSTION-AND-AVAILABILITY.md#Rate limiting and concurrency exhaustion",
+    "starting_paths": [
+      "app/Http/Controllers/Api/TrackingController.php",
+      "routes/api.php"
+    ],
+    "ordinary_attack_class_block": null,
+    "selected_companion_blocks": [
+      "RESOURCE-EXHAUSTION-AND-AVAILABILITY.md#Rate limiting and concurrency exhaustion"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "candidate",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/Api/TrackingController.php",
+      "routes/api.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/Api/TrackingController.php",
+          "routes/api.php"
+        ],
+        "invariant": "Verify security controls and invariants across guest->api",
+        "method": "source",
+        "result": "Candidate vulnerability identified",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [
+      "CUCIIN-AUTH-AND-API-UNTHROTTLED-SURFACE"
+    ],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Aadmin-reports-export-csv::customer-%3Eadmin-spreadsheet::app%2FHttp%2FControllers%2FReportController.php::ATTACK-CLASSES.md%23Injection",
+    "canonical_refs": {
+      "surface": "routes/web.php:admin-reports-export-csv",
+      "boundary": "customer->admin-spreadsheet",
+      "subsystem": "app/Http/Controllers/ReportController.php",
+      "attack_class": "ATTACK-CLASSES.md#Injection"
+    },
+    "surface": "routes/web.php:admin-reports-export-csv",
+    "boundary": "customer->admin-spreadsheet",
+    "subsystem": "app/Http/Controllers/ReportController.php",
+    "attack_class": "ATTACK-CLASSES.md#Injection",
+    "starting_paths": [
+      "app/Http/Controllers/ReportController.php",
+      "app/Http/Requests/Auth/RegisterRequest.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Injection",
+    "selected_companion_blocks": [
+      "CLIENT-SIDE.md#DOM and client rendering"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "candidate",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/ReportController.php",
+      "app/Http/Requests/Auth/RegisterRequest.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/ReportController.php",
+          "app/Http/Requests/Auth/RegisterRequest.php"
+        ],
+        "invariant": "Verify security controls and invariants across customer->admin-spreadsheet",
+        "method": "source",
+        "result": "Candidate vulnerability identified",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [
+      "CUCIIN-REPORT-CSV-FORMULA-INJECTION"
+    ],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Aadmin-reports::staff-%3Eadmin-boundary::app%2FHttp%2FControllers%2FReportController.php::ATTACK-CLASSES.md%23Access%20control",
+    "canonical_refs": {
+      "surface": "routes/web.php:admin-reports",
+      "boundary": "staff->admin-boundary",
+      "subsystem": "app/Http/Controllers/ReportController.php",
+      "attack_class": "ATTACK-CLASSES.md#Access control"
+    },
+    "surface": "routes/web.php:admin-reports",
+    "boundary": "staff->admin-boundary",
+    "subsystem": "app/Http/Controllers/ReportController.php",
+    "attack_class": "ATTACK-CLASSES.md#Access control",
+    "starting_paths": [
+      "app/Http/Controllers/ReportController.php",
+      "routes/web.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Access control",
+    "selected_companion_blocks": [
+      "DATA-ISOLATION-AND-LIFECYCLE.md#Multi-tenant and multi-user data isolation"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "candidate",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/ReportController.php",
+      "routes/web.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/ReportController.php",
+          "routes/web.php"
+        ],
+        "invariant": "Verify security controls and invariants across staff->admin-boundary",
+        "method": "source",
+        "result": "Candidate vulnerability identified",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [
+      "CUCIIN-REPORT-CONTROLLER-BROKEN-ACCESS-CONTROL"
+    ],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Aadmin-users::admin-%3Euser-management::app%2FHttp%2FControllers%2FAdmin%2FUserController.php::ATTACK-CLASSES.md%23Access%20control",
+    "canonical_refs": {
+      "surface": "routes/web.php:admin-users",
+      "boundary": "admin->user-management",
+      "subsystem": "app/Http/Controllers/Admin/UserController.php",
+      "attack_class": "ATTACK-CLASSES.md#Access control"
+    },
+    "surface": "routes/web.php:admin-users",
+    "boundary": "admin->user-management",
+    "subsystem": "app/Http/Controllers/Admin/UserController.php",
+    "attack_class": "ATTACK-CLASSES.md#Access control",
+    "starting_paths": [
+      "app/Http/Controllers/Admin/UserController.php",
+      "app/Http/Requests/Admin/UserRequest.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Access control",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/Admin/UserController.php",
+      "app/Http/Requests/Admin/UserRequest.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/Admin/UserController.php",
+          "app/Http/Requests/Admin/UserRequest.php"
+        ],
+        "invariant": "Verify security controls and invariants across admin->user-management",
+        "method": "source",
+        "result": "Controls verified, no defects found",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Acustomer-complaints::customer-%3Ecustomer-isolation::app%2FHttp%2FControllers%2FCustomer%2FComplaintController.php::ATTACK-CLASSES.md%23Access%20control",
+    "canonical_refs": {
+      "surface": "routes/web.php:customer-complaints",
+      "boundary": "customer->customer-isolation",
+      "subsystem": "app/Http/Controllers/Customer/ComplaintController.php",
+      "attack_class": "ATTACK-CLASSES.md#Access control"
+    },
+    "surface": "routes/web.php:customer-complaints",
+    "boundary": "customer->customer-isolation",
+    "subsystem": "app/Http/Controllers/Customer/ComplaintController.php",
+    "attack_class": "ATTACK-CLASSES.md#Access control",
+    "starting_paths": [
+      "app/Http/Controllers/Customer/ComplaintController.php",
+      "app/Policies/ComplaintPolicy.php",
+      "app/Http/Requests/Customer/StoreComplaintRequest.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Access control",
+    "selected_companion_blocks": [
+      "DATA-ISOLATION-AND-LIFECYCLE.md#Multi-tenant and multi-user data isolation"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/Customer/ComplaintController.php",
+      "app/Policies/ComplaintPolicy.php",
+      "app/Http/Requests/Customer/StoreComplaintRequest.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/Customer/ComplaintController.php",
+          "app/Policies/ComplaintPolicy.php",
+          "app/Http/Requests/Customer/StoreComplaintRequest.php"
+        ],
+        "invariant": "Verify security controls and invariants across customer->customer-isolation",
+        "method": "source",
+        "result": "Controls verified, no defects found",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Acustomer-payment-proofs::customer-%3Eprivate-storage::app%2FHttp%2FControllers%2FCustomer%2FPaymentProofController.php::DATA-ISOLATION-AND-LIFECYCLE.md%23Multi-tenant%20and%20multi-user%20data%20isolation",
+    "canonical_refs": {
+      "surface": "routes/web.php:customer-payment-proofs",
+      "boundary": "customer->private-storage",
+      "subsystem": "app/Http/Controllers/Customer/PaymentProofController.php",
+      "attack_class": "DATA-ISOLATION-AND-LIFECYCLE.md#Multi-tenant and multi-user data isolation"
+    },
+    "surface": "routes/web.php:customer-payment-proofs",
+    "boundary": "customer->private-storage",
+    "subsystem": "app/Http/Controllers/Customer/PaymentProofController.php",
+    "attack_class": "DATA-ISOLATION-AND-LIFECYCLE.md#Multi-tenant and multi-user data isolation",
+    "starting_paths": [
+      "app/Http/Controllers/Customer/PaymentProofController.php",
+      "app/Http/Requests/Customer/StorePaymentProofRequest.php"
+    ],
+    "ordinary_attack_class_block": null,
+    "selected_companion_blocks": [
+      "DATA-ISOLATION-AND-LIFECYCLE.md#Multi-tenant and multi-user data isolation"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/Customer/PaymentProofController.php",
+      "app/Http/Requests/Customer/StorePaymentProofRequest.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/Customer/PaymentProofController.php",
+          "app/Http/Requests/Customer/StorePaymentProofRequest.php"
+        ],
+        "invariant": "Verify security controls and invariants across customer->private-storage",
+        "method": "source",
+        "result": "Controls verified, no defects found",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Aguest-auth::guest-%3Eauth::app%2FHttp%2FControllers%2FAuth%2FLoginController.php::ATTACK-CLASSES.md%23Authentication%20and%20credential%20handling",
+    "canonical_refs": {
+      "surface": "routes/web.php:guest-auth",
+      "boundary": "guest->auth",
+      "subsystem": "app/Http/Controllers/Auth/LoginController.php",
+      "attack_class": "ATTACK-CLASSES.md#Authentication and credential handling"
+    },
+    "surface": "routes/web.php:guest-auth",
+    "boundary": "guest->auth",
+    "subsystem": "app/Http/Controllers/Auth/LoginController.php",
+    "attack_class": "ATTACK-CLASSES.md#Authentication and credential handling",
+    "starting_paths": [
+      "app/Http/Controllers/Auth/LoginController.php",
+      "app/Http/Requests/Auth/LoginRequest.php",
+      "routes/web.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Authentication and credential handling",
+    "selected_companion_blocks": [
+      "WEB-PROTOCOL-AND-AUTH.md#Core discipline"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "candidate",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/Auth/LoginController.php",
+      "app/Http/Requests/Auth/LoginRequest.php",
+      "routes/web.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/Auth/LoginController.php",
+          "app/Http/Requests/Auth/LoginRequest.php",
+          "routes/web.php"
+        ],
+        "invariant": "Verify security controls and invariants across guest->auth",
+        "method": "source",
+        "result": "Candidate vulnerability identified",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [
+      "CUCIIN-AUTH-AND-API-UNTHROTTLED-SURFACE"
+    ],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Aguest-lookup-sql::guest-%3Edatabase-query::app%2FHttp%2FControllers%2FTransactionLookupController.php::ATTACK-CLASSES.md%23Injection",
+    "canonical_refs": {
+      "surface": "routes/web.php:guest-lookup-sql",
+      "boundary": "guest->database-query",
+      "subsystem": "app/Http/Controllers/TransactionLookupController.php",
+      "attack_class": "ATTACK-CLASSES.md#Injection"
+    },
+    "surface": "routes/web.php:guest-lookup-sql",
+    "boundary": "guest->database-query",
+    "subsystem": "app/Http/Controllers/TransactionLookupController.php",
+    "attack_class": "ATTACK-CLASSES.md#Injection",
+    "starting_paths": [
+      "app/Http/Controllers/TransactionLookupController.php",
+      "app/Http/Controllers/Api/TrackingController.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Injection",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/TransactionLookupController.php",
+      "app/Http/Controllers/Api/TrackingController.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/TransactionLookupController.php",
+          "app/Http/Controllers/Api/TrackingController.php"
+        ],
+        "invariant": "Verify security controls and invariants across guest->database-query",
+        "method": "source",
+        "result": "Controls verified, no defects found",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Aguest-lookup::guest-%3Eledger::app%2FHttp%2FControllers%2FTransactionLookupController.php::ATTACK-CLASSES.md%23Access%20control",
+    "canonical_refs": {
+      "surface": "routes/web.php:guest-lookup",
+      "boundary": "guest->ledger",
+      "subsystem": "app/Http/Controllers/TransactionLookupController.php",
+      "attack_class": "ATTACK-CLASSES.md#Access control"
+    },
+    "surface": "routes/web.php:guest-lookup",
+    "boundary": "guest->ledger",
+    "subsystem": "app/Http/Controllers/TransactionLookupController.php",
+    "attack_class": "ATTACK-CLASSES.md#Access control",
+    "starting_paths": [
+      "app/Http/Controllers/TransactionLookupController.php",
+      "routes/web.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Access control",
+    "selected_companion_blocks": [
+      "WEB-PROTOCOL-AND-AUTH.md#Core discipline"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/TransactionLookupController.php",
+      "routes/web.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/TransactionLookupController.php",
+          "routes/web.php"
+        ],
+        "invariant": "Verify security controls and invariants across guest->ledger",
+        "method": "source",
+        "result": "Controls verified, no defects found",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Aguest-payment-proof::guest-%3Estorage-and-ledger::app%2FHttp%2FControllers%2FTransactionLookupController.php::RESOURCE-EXHAUSTION-AND-AVAILABILITY.md%23Rate%20limiting%20and%20concurrency%20exhaustion",
+    "canonical_refs": {
+      "surface": "routes/web.php:guest-payment-proof",
+      "boundary": "guest->storage-and-ledger",
+      "subsystem": "app/Http/Controllers/TransactionLookupController.php",
+      "attack_class": "RESOURCE-EXHAUSTION-AND-AVAILABILITY.md#Rate limiting and concurrency exhaustion"
+    },
+    "surface": "routes/web.php:guest-payment-proof",
+    "boundary": "guest->storage-and-ledger",
+    "subsystem": "app/Http/Controllers/TransactionLookupController.php",
+    "attack_class": "RESOURCE-EXHAUSTION-AND-AVAILABILITY.md#Rate limiting and concurrency exhaustion",
+    "starting_paths": [
+      "app/Http/Controllers/TransactionLookupController.php",
+      "app/Http/Requests/GuestPaymentProofRequest.php",
+      "app/Services/SubmitPaymentProof.php"
+    ],
+    "ordinary_attack_class_block": null,
+    "selected_companion_blocks": [
+      "RESOURCE-EXHAUSTION-AND-AVAILABILITY.md#Rate limiting and concurrency exhaustion"
+    ],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "candidate",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/TransactionLookupController.php",
+      "app/Http/Requests/GuestPaymentProofRequest.php",
+      "app/Services/SubmitPaymentProof.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/TransactionLookupController.php",
+          "app/Http/Requests/GuestPaymentProofRequest.php",
+          "app/Services/SubmitPaymentProof.php"
+        ],
+        "invariant": "Verify security controls and invariants across guest->storage-and-ledger",
+        "method": "source",
+        "result": "Candidate vulnerability identified",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [
+      "CUCIIN-GUEST-PAYMENT-PROOF-UNTHROTTLED-BRUTE-FORCE"
+    ],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Astaff-payment-verify::staff-%3Efinancial-ledger::app%2FHttp%2FControllers%2FStaff%2FPaymentController.php::ATTACK-CLASSES.md%23Business%20logic",
+    "canonical_refs": {
+      "surface": "routes/web.php:staff-payment-verify",
+      "boundary": "staff->financial-ledger",
+      "subsystem": "app/Http/Controllers/Staff/PaymentController.php",
+      "attack_class": "ATTACK-CLASSES.md#Business logic"
+    },
+    "surface": "routes/web.php:staff-payment-verify",
+    "boundary": "staff->financial-ledger",
+    "subsystem": "app/Http/Controllers/Staff/PaymentController.php",
+    "attack_class": "ATTACK-CLASSES.md#Business logic",
+    "starting_paths": [
+      "app/Http/Controllers/Staff/PaymentController.php",
+      "app/Services/VerifyPayment.php",
+      "app/Services/RecordPayment.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Business logic",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/Staff/PaymentController.php",
+      "app/Services/VerifyPayment.php",
+      "app/Services/RecordPayment.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/Staff/PaymentController.php",
+          "app/Services/VerifyPayment.php",
+          "app/Services/RecordPayment.php"
+        ],
+        "invariant": "Verify security controls and invariants across staff->financial-ledger",
+        "method": "source",
+        "result": "Controls verified, no defects found",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  },
+  {
+    "coverage_id": "routes%2Fweb.php%3Astaff-transactions-pos::staff-%3Efinancial-ledger::app%2FHttp%2FControllers%2FStaff%2FTransactionController.php::ATTACK-CLASSES.md%23Business%20logic",
+    "canonical_refs": {
+      "surface": "routes/web.php:staff-transactions-pos",
+      "boundary": "staff->financial-ledger",
+      "subsystem": "app/Http/Controllers/Staff/TransactionController.php",
+      "attack_class": "ATTACK-CLASSES.md#Business logic"
+    },
+    "surface": "routes/web.php:staff-transactions-pos",
+    "boundary": "staff->financial-ledger",
+    "subsystem": "app/Http/Controllers/Staff/TransactionController.php",
+    "attack_class": "ATTACK-CLASSES.md#Business logic",
+    "starting_paths": [
+      "app/Http/Controllers/Staff/TransactionController.php",
+      "app/Services/CreateTransaction.php",
+      "app/Http/Middleware/EnsureIdempotency.php"
+    ],
+    "ordinary_attack_class_block": "ATTACK-CLASSES.md#Business logic",
+    "selected_companion_blocks": [],
+    "excluded_blocks": [],
+    "prior_status": "new",
+    "attempts": [],
+    "wave": 1,
+    "status": "covered",
+    "agent_id": "hunter-1",
+    "reviewed_paths": [
+      "app/Http/Controllers/Staff/TransactionController.php",
+      "app/Services/CreateTransaction.php",
+      "app/Http/Middleware/EnsureIdempotency.php"
+    ],
+    "local_checks": [
+      {
+        "agent_id": "hunter-1",
+        "reviewed_paths": [
+          "app/Http/Controllers/Staff/TransactionController.php",
+          "app/Services/CreateTransaction.php",
+          "app/Http/Middleware/EnsureIdempotency.php"
+        ],
+        "invariant": "Verify security controls and invariants across staff->financial-ledger",
+        "method": "source",
+        "result": "Controls verified, no defects found",
+        "artifact": null
+      }
+    ],
+    "result_fingerprints": [],
+    "unresolved": []
+  }
+]
