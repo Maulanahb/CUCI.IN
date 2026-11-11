@@ -221,10 +221,11 @@ Guest tetap dapat disimpan sebagai data customer tanpa akun.
 Admin dapat mengelola:
 
 * Nama layanan.
-* Harga.
-* Estimasi durasi.
+* Satuan layanan (`kg`, `pcs`, `pasang`, `meter`).
+* Harga satuan.
+* Estimasi durasi pengerjaan (termasuk dukungan layanan reguler dan paket kilat/ekspres).
 * Deskripsi.
-* Status layanan.
+* Status layanan (`is_active`).
 
 Layanan yang tidak aktif tidak dapat dipilih untuk transaksi baru.
 
@@ -234,25 +235,25 @@ Layanan yang tidak aktif tidak dapat dipilih untuk transaksi baru.
 
 ## FR-05 — Pembuatan Transaksi
 
-Staff dapat membuat transaksi baru.
+Staff dapat membuat transaksi baru (termasuk memilih pelanggan terdaftar atau mendaftarkan pelanggan baru secara instan melalui modal *Quick Add Customer* di halaman kasir).
 
 Data transaksi:
 
 * Customer.
 * Kode transaksi.
 * Layanan.
-* Berat.
+* Jumlah/Berat.
 * Harga satuan.
 * Subtotal.
 * Total transaksi.
 
-Satu transaksi dapat memiliki beberapa layanan.
+Satu transaksi dapat memiliki beberapa layanan. Pengiriman formulir pembuatan transaksi dilindungi mekanisme *Idempotency Key* (`Idempotency-Key` UUID dan middleware `EnsureIdempotency`) untuk mencegah duplikasi nota transaksi akibat pengiriman berulang (*double-submit*).
 
 ## FR-06 — Perhitungan Transaksi
 
 Sistem menghitung subtotal berdasarkan:
 
-**Berat × Harga Satuan**
+**Jumlah/Berat × Harga Satuan**
 
 Total transaksi merupakan akumulasi seluruh subtotal detail transaksi.
 
@@ -260,7 +261,7 @@ Harga pada transaksi menggunakan nilai harga pada saat transaksi dibuat sehingga
 
 ## FR-07 — Kode Transaksi
 
-Setiap transaksi harus memiliki kode transaksi yang unik.
+Setiap transaksi harus memiliki kode transaksi yang unik (`TRX-YYYYMMDD-XXXX`).
 
 Kode transaksi digunakan untuk:
 
@@ -269,20 +270,22 @@ Kode transaksi digunakan untuk:
 * Akses guest.
 * Identifikasi transaksi.
 
-## FR-08 — Detail Transaksi
+## FR-08 — Detail Transaksi dan Cetak Struk Termal
 
 Sistem harus menampilkan:
 
 * Informasi customer.
 * Kode transaksi.
 * Daftar layanan.
-* Berat.
+* Jumlah/Berat.
 * Harga satuan.
 * Subtotal.
 * Total transaksi.
 * Status pembayaran.
 * Status cucian.
 * Estimasi selesai.
+
+Sistem juga menyediakan halaman cetak struk bukti transaksi kasir dalam format kertas termal (58mm / 80mm) yang memuat rincian item layanan, total tagihan, rincian pembayaran, dan kode transaksi.
 
 ---
 
@@ -328,9 +331,9 @@ Field `paid_amount`, `remaining_amount`, dan `dp_amount` tidak disimpan sebagai 
 
 ## FR-12 — Bukti Pembayaran
 
-Transfer dan QRIS dapat menggunakan bukti pembayaran.
+Transfer dan QRIS dapat menggunakan bukti pembayaran berupa berkas gambar (`JPG`, `PNG`, `WEBP` maksimal 2 MB) yang diunggah oleh Customer, Guest, maupun Staff.
 
-Bukti pembayaran dapat digunakan untuk proses verifikasi.
+Berkas bukti pembayaran disimpan pada penyimpanan privat (*private storage*) dan dioptimasi ukurannya secara asynchronous melalui *background queue job* (`OptimizePaymentProof`).
 
 ## FR-13 — Verifikasi Pembayaran
 
@@ -340,7 +343,7 @@ Pembayaran yang memerlukan verifikasi memiliki status:
 * Terverifikasi.
 * Ditolak.
 
-Tunai tidak memerlukan verifikasi.
+Tunai tidak memerlukan verifikasi (otomatis berstatus *Terverifikasi*).
 
 Pembayaran yang ditolak tidak diperhitungkan sebagai pembayaran valid.
 
@@ -358,11 +361,15 @@ Status utama transaksi:
 4. Diambil.
 5. Dibatalkan.
 
-## FR-15 — Perubahan Status
+## FR-15 — Perubahan Status dan Proteksi Pengambilan Cucian
 
 Staff dapat memperbarui status cucian sesuai alur operasional.
 
-Setiap perubahan status harus dicatat ke dalam riwayat status.
+Ketentuan perubahan status:
+
+* Setiap perubahan status harus dicatat ke dalam riwayat status.
+* Status transaksi tidak dapat diubah menjadi **Diambil** apabila status pembayaran belum **Lunas** (*Pickup Protection*).
+* Perubahan mundur (*rollback*) status operasional atau pembatalan wajib menyertakan catatan alasan perubahan untuk keperluan audit.
 
 ## FR-16 — Status History
 
@@ -371,6 +378,7 @@ Sistem menyimpan:
 * Transaksi.
 * Status.
 * User yang melakukan perubahan.
+* Catatan/alasan perubahan (bila ada).
 * Waktu perubahan.
 
 Status terkini disimpan pada transaksi, sedangkan riwayat perubahan disimpan pada `laundry_status_histories`.
@@ -391,9 +399,9 @@ Pembatalan tidak menghapus data transaksi.
 
 # 10. Customer and Guest Requirements
 
-## FR-18 — Cek Transaksi
+## FR-18 — Cek Transaksi (Web Lookup & Endpoint API Publik)
 
-Customer dan Guest dapat melakukan pengecekan transaksi berdasarkan kode transaksi.
+Customer dan Guest dapat melakukan pengecekan transaksi berdasarkan kode transaksi melalui halaman pencarian publik (`/lookup`) maupun melalui endpoint REST API publik (`GET /api/v1/track/{transaction_code}`) yang mengembalikan respons JSON terstruktur (`TransactionResource`).
 
 Informasi yang dapat ditampilkan:
 
@@ -401,7 +409,7 @@ Informasi yang dapat ditampilkan:
 * Detail layanan.
 * Total transaksi.
 * Status pembayaran.
-* Status cucian.
+* Status cucian beserta riwayat perubahannya.
 * Estimasi selesai.
 
 ## FR-19 — Riwayat Customer
@@ -412,7 +420,7 @@ Customer yang telah login dapat melihat transaksi yang terkait dengan akunnya.
 
 Guest dapat berpindah menjadi Customer melalui proses registrasi.
 
-Data customer yang sebelumnya tersimpan dapat dikaitkan dengan akun customer.
+Data customer yang sebelumnya tersimpan dapat dikaitkan dengan akun customer berdasarkan kesamaan nomor telepon/email.
 
 ---
 
@@ -420,15 +428,16 @@ Data customer yang sebelumnya tersimpan dapat dikaitkan dengan akun customer.
 
 ## FR-21 — Pengajuan Pengaduan
 
-Customer terdaftar dan Guest dapat mengajukan pengaduan.
+Customer terdaftar dan Guest dapat mengajukan pengaduan disertai unggahan foto bukti kendala/noda pakaian (dikompresi secara asynchronous melalui *queue job* `CompressComplaintPhoto`).
 
 Setiap pengaduan harus terkait dengan satu transaksi.
 
 Data pengaduan:
 
 * Transaksi.
-* Subject.
+* Subject / Kategori kendala.
 * Description.
+* Foto bukti kendala (opsional/pendukung).
 * Status.
 * Response.
 * Handler.
@@ -502,26 +511,26 @@ Dashboard Customer menampilkan:
 
 # 13. Report Requirements
 
-## FR-28 — Laporan Transaksi
+## FR-28 — Laporan Transaksi dan Ekspor Berkas
 
-Sistem menyediakan laporan transaksi berdasarkan data transaksi.
+Sistem menyediakan laporan rekapitulasi transaksi berdasarkan rentang tanggal, status cucian, status pembayaran, dan kata kunci pencarian, serta mendukung ekspor laporan ke dalam format dokumen siap cetak **PDF** (DomPDF), lembar kerja **Excel** (`.xls`), dan **CSV Streaming** (`streamDownload` + `lazyById`).
 
 ## FR-29 — Laporan Pembayaran
 
 Sistem menyediakan laporan pembayaran berdasarkan:
 
 * Transaksi.
-* Metode pembayaran.
+* Metode pembayaran (Tunai, Transfer, QRIS).
 * Waktu pembayaran.
 * Status verifikasi.
 
 ## FR-30 — Laporan Pendapatan
 
-Sistem menyediakan informasi pendapatan berdasarkan pembayaran yang valid.
+Sistem menyediakan informasi pendapatan bersih, total tagihan, rata-rata nilai transaksi, dan piutang berdasarkan pembayaran yang telah terverifikasi.
 
 ## FR-31 — Laporan Operasional
 
-Sistem menyediakan informasi terkait status dan aktivitas operasional laundry.
+Sistem menyediakan informasi terkait rincian jumlah transaksi per status cucian dan evaluasi durasi aktivitas operasional laundry.
 
 ---
 
@@ -535,7 +544,7 @@ Antarmuka harus:
 * Konsisten.
 * Mudah dipahami.
 * Tidak berlebihan secara visual.
-* Responsif pada perangkat yang digunakan.
+* Responsif pada perangkat yang digunakan (layar ponsel maupun desktop).
 
 ### NFR-01.1 Standar Desain & Palet Warna (Design System Token)
 
@@ -567,55 +576,51 @@ Untuk memastikan konsistensi antarmuka pengguna pada seluruh modul, antarmuka me
 
 Sistem harus:
 
-* Melindungi password dengan hashing.
-* Menerapkan authentication.
-* Menerapkan authorization berdasarkan role.
-* Melakukan validation terhadap input.
-* Membatasi akses data customer berdasarkan kepemilikan.
+* Melindungi password dengan hashing (`bcrypt`).
+* Menerapkan authentication berbasis session untuk web dan dukungan token (`Laravel Sanctum`).
+* Menerapkan pembatasan laju permintaan (*rate limiting*) pada login (`throttle:5,1`) dan endpoint API (`throttle:api`) beserta respons status `429 Too Many Requests` dan header `Retry-After`.
+* Menerapkan authorization berdasarkan role (`Admin`, `Staff`, `Customer`) serta sentralisasi kebijakan akses data berbasis kepemilikan (*Anti-IDOR*) menggunakan `TransactionPolicy` dan `ComplaintPolicy`.
+* Melakukan validation terhadap input dan berkas unggahan (format MIME dan ukuran berkas) serta menyimpan bukti pembayaran pada penyimpanan privat (*private storage*).
 
 ## NFR-03 — Performance
 
-Sistem harus mampu memberikan respons yang wajar pada proses:
+Sistem harus mampu memberikan respons yang wajar dan efisien pada proses:
 
-* Login.
-* Pencarian data.
-* Pembuatan transaksi.
-* Pencatatan pembayaran.
-* Pengecekan transaksi.
+* Login dan navigasi antarmuka.
+* Pencarian data pelanggan dan transaksi.
+* Pembuatan transaksi kasir dan pencatatan pembayaran.
+* Pengecekan transaksi publik (dilengkapi proteksi *N+1 query* via `whenLoaded()` pada `TransactionResource`).
+* Pemrosesan rekap laporan menggunakan agregasi SQL tingkat database (`selectRaw`), indeks komposit, dan ekspor CSV *streaming* (`lazyById`).
 
 ## NFR-04 — Data Integrity
 
 Sistem harus menjaga:
 
-* Keunikan kode transaksi.
-* Keunikan email.
-* Konsistensi foreign key.
-* Konsistensi total transaksi.
-* Konsistensi pembayaran.
-* Konsistensi status transaksi.
+* Keunikan kode transaksi (`TRX-YYYYMMDD-XXXX`) dan keunikan email pengguna.
+* Pencegahan duplikasi transaksi kasir dan pembayaran akibat *double-submit* atau *network retry* menggunakan mekanisme `Idempotency-Key` (tabel `idempotency_keys` dan middleware `EnsureIdempotency`).
+* Konsistensi foreign key dan pembungkusan operasi multi-tabel di dalam transaksi database atomik (`DB::transaction`).
+* Konsistensi perhitungan total transaksi, akumulasi pembayaran terverifikasi, dan status transaksi.
 
 ## NFR-05 — Maintainability
 
 Source code harus:
 
-* Mengikuti struktur Laravel.
-* Menggunakan Eloquent untuk ORM.
-* Memisahkan logic sesuai tanggung jawabnya.
-* Menggunakan component Livewire ketika diperlukan.
-* Menggunakan Alpine.js untuk interaksi UI ringan.
-* Menggunakan Git untuk version control.
+* Mengikuti struktur standar Laravel dan pemformatan kode otomatis (`Laravel Pint`).
+* Menggunakan Eloquent untuk ORM, Form Request untuk validasi, Policy untuk otorisasi, dan API Resource (`TransactionResource`, `TransactionDetailResource`) untuk serialisasi JSON.
+* Menyediakan dokumentasi spesifikasi kontrak endpoint API dalam format OpenAPI 3.0 (`docs/openapi.yaml`).
+* Menggunakan Alpine.js dan Blade component untuk interaksi UI ringan.
+* Menggunakan Git dan GitHub untuk version control dengan alur percabangan fitur (`feature/*` -> `develop` -> `main`) dan rangkaian pengujian otomatis PHPUnit.
 
 ## NFR-06 — Deployment & Infrastructure Environment
 
 Sistem harus dapat dioperasikan pada lingkungan server produksi dengan spesifikasi teknis:
 
-* **Sistem Operasi Server:** Linux (Ubuntu 22.04 LTS atau versi yang lebih baru).
-* **Komputasi & Memori:** Minimum 1 vCPU, 1–2 GB RAM.
-* **Penyimpanan Primer:** Minimum 20–40 GB SSD Storage.
-* **Web Server & Runtime:** Nginx / Apache, PHP 8.4 (beserta ekstensi pdo_pgsql, mbstring, openssl, gd, bcmath).
-* **Basis Data:** PostgreSQL versi 15 atau lebih baru.
-* **Penyimpanan Berkas (Object Storage):** Kompatibel dengan S3 API (Cloudflare R2 / AWS S3) untuk menampung gambar nota komplain pakaian dan struk bukti pembayaran.
-* **Keamanan Jaringan:** Protokol HTTPS dengan sertifikat SSL/TLS aktif.
+* **Sistem Operasi Server:** Linux Ubuntu Server pada AWS EC2 (`t3.micro`, region `ap-southeast-2`).
+* **Komputasi & Memori:** Minimum 1–2 vCPU, 1 GB RAM + 2 GB Swapfile.
+* **Penyimpanan Primer:** Minimum 20–40 GB SSD Storage dengan penyimpanan berkas privat lokal (`storage/app/private`) untuk bukti pembayaran dan foto komplain yang diproses oleh *background queue worker*.
+* **Web Server & Runtime:** Nginx 1.28+, PHP 8.4/8.5 FastCGI (PHP-FPM), Composer 2.x, Node.js 20+ LTS.
+* **Basis Data:** PostgreSQL 16+.
+* **Keamanan Jaringan & Domain:** Domain publik (`https://portal-cuciin.web.id`) terintegrasi dengan Cloudflare DNS dan proteksi SSL/HTTPS aktif.
 
 *Catatan Tata Kelola Pengadaan:* Analisis komparasi vendor cloud, evaluasi kredit pelajar Azure for Students, rincian anggaran biaya (RAB), dan skema pembiayaan tim didokumentasikan terpisah pada artefak [Rencana Pengadaan (docs/procurement_plan.md)](./procurement_plan.md).
 
@@ -681,9 +686,7 @@ PostgreSQL digunakan sebagai database sistem.
 
 ## AR-08 — API
 
-REST API tidak digunakan sebagai arsitektur utama sistem.
-
-React, Vue, dan SPA juga tidak digunakan sebagai frontend utama.
+Aplikasi utama menggunakan arsitektur **Full Laravel MPA** (tanpa frontend SPA React/Vue terpisah). Untuk kebutuhan pelacakan publik lintas-platform dan integrasi terstandar, sistem menyediakan endpoint REST API spesifik (`GET /api/v1/track/{transaction_code}`) menggunakan `Laravel Sanctum`, Eloquent API Resource (`TransactionResource`), dan spesifikasi kontrak OpenAPI 3.0 (`docs/openapi.yaml`).
 
 ---
 
@@ -699,6 +702,7 @@ Sistem menggunakan entitas utama:
 6. Payments.
 7. Laundry Status Histories.
 8. Complaints.
+9. Idempotency Keys (`idempotency_keys`).
 
 Relasi dan struktur data mengikuti ERD serta Kamus Data CUCI.IN yang telah ditetapkan.
 
@@ -709,6 +713,7 @@ Prinsip utama data:
 * Satu transaksi dapat memiliki beberapa pembayaran.
 * Riwayat status disimpan terpisah dari status transaksi saat ini.
 * Pengaduan selalu terkait dengan transaksi.
+* Kunci idempotensi (`idempotency_keys`) menyimpan hash permintaan dan respons transaksi/pembayaran untuk mencegah duplikasi data akibat *double-submit*.
 * Data historis operasional dipertahankan.
 
 ---
@@ -735,13 +740,13 @@ Hanya pembayaran yang valid/terverifikasi yang diperhitungkan dalam total pembay
 
 Nominal pembayaran tidak boleh melebihi sisa tagihan.
 
-## BR-06 — Status Transaksi
+## BR-06 — Status Transaksi dan Proteksi Pengambilan (*Pickup Protection*)
 
 Status utama transaksi terdiri dari:
 
 **Diterima → Diproses → Selesai → Diambil**
 
-Status **Dibatalkan** hanya dapat digunakan sesuai aturan pembatalan.
+Status **Diambil** hanya dapat ditetapkan apabila status pembayaran transaksi telah **Lunas**. Status **Dibatalkan** hanya dapat digunakan sesuai aturan pembatalan pada tahap awal.
 
 ## BR-07 — Riwayat Status
 
@@ -926,4 +931,5 @@ Mengadopsi materi perkuliahan Pemrograman Web Lanjut (Pertemuan 9) mengenai ETL,
 | :---: | :---: | :--- | :--- |
 | **v1.0** | Oktober 2026 | Tim CUCI.IN | Inisialisasi Product Requirements Document (PRD) mencakup Scope, User Stories, Data Models, Functional Requirements, dan Definition of Done. |
 | **v1.1** | 24 Oktober 2026 | Maulana Ahmad Bukhori | **Penambahan Seksi 24 (Technical Architecture: Data Processing, Export & Queue):** Integrasi standar materi Pertemuan 9 PWL (pencegahan cut-off date `endOfDay`, agregasi SQL PostgreSQL, pola streaming CSV, kompresi upload foto & notifikasi asynchronous via Laravel Queue). |
+| **v1.2** | 11 November 2026 | Tim CUCI.IN | **Penyelarasan Milestone 2 (FR/NFR, Aturan Bisnis, & Arsitektur P10):** Penambahan satuan layanan dinamis (`FR-04`), pencegahan *double-submit* via `Idempotency-Key` (`FR-05`, `NFR-04`), cetak struk termal (`FR-08`), aturan *Pickup Protection* dan *rollback* status (`FR-15`, `BR-06`), endpoint API pelacakan publik & OpenAPI (`FR-18`, `AR-08`, `NFR-05`), ekspor laporan multi-format (`FR-28`), kebijakan otorisasi *Laravel Policy* & *rate limiting* (`NFR-02`), serta spesifikasi server produksi AWS EC2 `portal-cuciin.web.id` (`NFR-06`). |
 
