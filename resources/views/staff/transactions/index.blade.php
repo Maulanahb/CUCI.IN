@@ -95,7 +95,7 @@
         </x-ui.button>
     </x-slot>
 
-    <div class="space-y-7" x-data="{
+    <div class="space-y-7 pb-16 lg:pb-0" x-data="{
         trxMap: {{ Js::from($transactionsPayloadMap) }},
         selectedTrx: null,
         isDrawerOpen: false,
@@ -1559,7 +1559,7 @@
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
             x-transition:leave-end="opacity-0 translate-y-3 scale-95"
-            class="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 rounded-xl border bg-white px-4 py-3 shadow-lg ring-1 ring-slate-900/5 max-w-sm"
+            class="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 sm:right-6 lg:bottom-6 z-50 flex items-center gap-2.5 rounded-xl border bg-white px-4 py-3 shadow-lg ring-1 ring-slate-900/5 max-w-sm"
             :class="toast.type === 'error' ? 'border-rose-200 text-rose-900' : 'border-slate-200 text-slate-900'"
         >
             <template x-if="toast.type === 'success'">
@@ -1581,7 +1581,7 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 translate-y-4"
-            class="fixed bottom-6 inset-x-0 mx-auto z-40 w-fit max-w-lg rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-lg flex items-center gap-3 sm:gap-4 ring-1 ring-slate-900/5"
+            class="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] inset-x-4 sm:inset-x-0 sm:mx-auto z-20 mx-auto w-[calc(100%-2rem)] sm:w-fit max-w-lg lg:bottom-6 rounded-2xl border border-slate-200/90 bg-white px-4 py-3 shadow-lg flex items-center justify-between sm:justify-start gap-3 sm:gap-4 ring-1 ring-slate-900/5"
         >
             <div class="flex items-center gap-2">
                 <span class="flex size-6 items-center justify-center rounded-lg bg-brand-600 font-mono text-sm font-bold text-white" x-text="selectedIds.length"></span>

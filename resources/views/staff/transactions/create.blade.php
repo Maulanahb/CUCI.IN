@@ -15,7 +15,7 @@
 
 <x-layouts::app title="Transaksi Baru (POS)">
     <div
-        class="space-y-6 pb-24 lg:pb-0"
+        class="space-y-6 pb-36 lg:pb-0"
         x-data="posTransactionManager()"
         proofPreviewUrl: null,
     >
@@ -726,7 +726,7 @@
             x-transition:leave="ease-in duration-200"
             x-transition:leave-start="opacity-100 translate-y-0"
             x-transition:leave-end="opacity-0 translate-y-full"
-            class="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-slate-200/90 bg-white px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
+            class="fixed bottom-[calc(4rem+env(safe-area-inset-bottom))] inset-x-0 z-20 lg:hidden border-t border-slate-200/90 bg-white px-4 sm:px-6 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]"
         >
             <div class="flex items-center justify-between gap-3">
                 <div class="min-w-0">
