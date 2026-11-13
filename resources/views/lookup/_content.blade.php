@@ -827,6 +827,10 @@
         if (errorBox) errorBox.classList.add('hidden');
 
         try {
+            if (!window.isSecureContext || !navigator.mediaDevices) {
+                throw new Error('SECURE_CONTEXT_REQUIRED');
+            }
+
             await loadHtml5QrcodeScript();
 
             if (!html5QrScannerInstance) {
@@ -848,18 +852,23 @@
                 }
             }
 
-            currentCameraIndex = cameraDevices.findIndex(c => /back|rear|environment/i.test(c.label));
-            if (currentCameraIndex === -1) currentCameraIndex = 0;
+            const rearIndex = cameraDevices.findIndex(c => /back|rear|environment/i.test(c.label));
+            currentCameraIndex = rearIndex !== -1 ? rearIndex : 0;
 
             if (modal.classList.contains('hidden')) return;
-            await startScanningWithCurrentCamera();
+            const initialTarget = (rearIndex === -1 && cameraDevices.length > 1)
+                ? { facingMode: 'environment' }
+                : null;
+            await startScanningWithCurrentCamera(initialTarget);
         } catch (err) {
             if (loading) loading.classList.add('hidden');
             if (errorBox) {
                 errorBox.classList.remove('hidden');
                 let message = 'Tidak dapat mengakses kamera. Pastikan izin kamera telah diberikan di browser.';
                 const errStr = (err && (err.message || err.name || String(err))) || '';
-                if (/notfound|device/i.test(errStr)) {
+                if (errStr === 'SECURE_CONTEXT_REQUIRED') {
+                    message = 'Kamera hanya dapat diakses melalui HTTPS atau localhost. Silakan buka lewat HTTPS atau masukkan kode nota secara manual.';
+                } else if (/notfound|device/i.test(errStr)) {
                     message = 'Tidak ada perangkat kamera yang terdeteksi di perangkat Anda. Gunakan input kode manual.';
                 } else if (/denied|permission|notallowed/i.test(errStr)) {
                     message = 'Izin akses kamera ditolak oleh browser. Silakan izinkan akses kamera pada pengaturan browser.';
@@ -869,30 +878,43 @@
         }
     }
 
-    async function startScanningWithCurrentCamera() {
+    async function startScanningWithCurrentCamera(explicitTarget = null) {
         const modal = document.getElementById('qr-scanner-modal');
         if (!modal || modal.classList.contains('hidden')) return;
 
         const loading = document.getElementById('qr-scanner-loading');
         if (!html5QrScannerInstance || cameraDevices.length === 0) return;
 
+        const scannerConfig = {
+            fps: 10,
+            qrbox: (viewfinderWidth, viewfinderHeight) => {
+                const edge = Math.max(150, Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.72));
+                return { width: edge, height: edge };
+            },
+            aspectRatio: 1.0,
+            useBarCodeDetectorIfSupported: true,
+        };
+
         try {
             if (html5QrScannerInstance.isScanning) {
                 await html5QrScannerInstance.stop();
             }
 
-            const cameraId = cameraDevices[currentCameraIndex].id;
-            await html5QrScannerInstance.start(
-                cameraId,
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 },
-                    aspectRatio: 1.0,
-                    useBarCodeDetectorIfSupported: true,
-                },
-                onQrScanSuccess,
-                () => {}
-            );
+            const target = explicitTarget || cameraDevices[currentCameraIndex].id;
+            try {
+                await html5QrScannerInstance.start(target, scannerConfig, onQrScanSuccess, () => {});
+            } catch (primaryErr) {
+                if (explicitTarget) {
+                    await html5QrScannerInstance.start(
+                        cameraDevices[currentCameraIndex].id,
+                        scannerConfig,
+                        onQrScanSuccess,
+                        () => {}
+                    );
+                } else {
+                    throw primaryErr;
+                }
+            }
 
             if (loading) loading.classList.add('hidden');
         } catch (e) {

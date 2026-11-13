@@ -84,15 +84,11 @@ class BarcodeService
         $poly = [1];
         for ($i = 0; $i < $ecLen; $i++) {
             $factor = self::$gfExp[$i];
-            $temp = [];
-            foreach ($poly as $c) {
-                $temp[] = self::gfMul($c, $factor);
+            $next = [...$poly, 0];
+            foreach ($poly as $j => $c) {
+                $next[$j + 1] ^= self::gfMul($c, $factor);
             }
-            $temp[] = 0;
-            $poly = [0, ...$poly];
-            for ($j = 0; $j < count($temp); $j++) {
-                $poly[$j] = $poly[$j] ^ $temp[$j];
-            }
+            $poly = $next;
         }
 
         return $poly;
@@ -179,15 +175,16 @@ class BarcodeService
     public function generateQrCodeSvg(string $text, int $size = 110): string
     {
         self::initGf();
-        $len = strlen($text);
+        // shortcut: max Version 4-L (78 bytes); add Version 5+ if lookup URLs exceed 78 chars
+        $rawLen = strlen($text);
 
-        if ($len <= 32) {
+        if ($rawLen <= 32) {
             $version = 2; // 25x25
             $dim = 25;
             $dataCap = 34;
             $ecLen = 10;
             $alignPos = [6, 18];
-        } elseif ($len <= 53) {
+        } elseif ($rawLen <= 53) {
             $version = 3; // 29x29
             $dim = 29;
             $dataCap = 55;
@@ -200,6 +197,8 @@ class BarcodeService
             $ecLen = 20;
             $alignPos = [6, 26];
         }
+
+        $len = min($rawLen, $dataCap - 2);
 
         // Mode 0100 (Byte) + Count 8 bits
         $bits = '0100';
@@ -332,8 +331,8 @@ class BarcodeService
             $dir = -$dir;
         }
 
-        // Format info Level L + Mask 0
-        $formatBits = '111011000110111';
+        // Format info Level L (01) + Mask 0 (000) -> BCH(15,5) ^ 0x5412
+        $formatBits = '111011111000100';
         $coords1 = [
             [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [8, 5], [8, 7], [8, 8],
             [7, 8], [5, 8], [4, 8], [3, 8], [2, 8], [1, 8], [0, 8],
