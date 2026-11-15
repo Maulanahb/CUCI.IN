@@ -4,8 +4,10 @@ namespace App\Http\Requests\Customer;
 
 use App\Models\Payment;
 use App\Models\Transaction;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 
 class StorePaymentProofRequest extends FormRequest
@@ -40,6 +42,16 @@ class StorePaymentProofRequest extends FormRequest
                 'mimes:jpg,jpeg,png,webp',
                 'max:5120',
                 'dimensions:min_width=200,min_height=200',
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    if (! $value instanceof UploadedFile || ! $value->isValid()) {
+                        return;
+                    }
+
+                    $dimensions = @getimagesize($value->getRealPath());
+                    if (! $dimensions || $dimensions[0] > 4096 || $dimensions[1] > 4096) {
+                        $fail('Dimensi gambar bukti pembayaran maksimal 4096×4096 piksel.');
+                    }
+                },
             ],
         ];
     }

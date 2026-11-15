@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Storage;
 class ImageOptimizer
 {
     /**
+     * Batas atas piksel gambar (4096 x 4096) sebelum dekode bitmap GD untuk mencegah OOM.
+     */
+    public const int MAX_IMAGE_PIXELS = 16_777_216;
+
+    /**
      * Perkecil dan kompres ulang gambar JPEG/PNG/WEBP di disk secara proporsional.
      *
      * Kompresi ulang juga membuang metadata EXIF (lokasi, perangkat) dari berkas unggahan.
@@ -26,6 +31,10 @@ class ImageOptimizer
         }
 
         [$width, $height, $type] = $imageInfo;
+
+        if ((int) $width <= 0 || (int) $height <= 0 || ((float) $width * (float) $height) > self::MAX_IMAGE_PIXELS) {
+            return null;
+        }
 
         $newWidth = $width;
         $newHeight = $height;

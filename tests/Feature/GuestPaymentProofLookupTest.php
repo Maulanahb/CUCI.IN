@@ -120,4 +120,21 @@ class GuestPaymentProofLookupTest extends TestCase
         $response->assertSessionHasErrors('amount');
         $this->assertDatabaseCount('payments', 0);
     }
+
+    public function test_guest_cannot_upload_payment_proof_exceeding_max_dimensions(): void
+    {
+        $oversized = UploadedFile::fake()->image('oversized_guest_proof.jpg', 4097, 1);
+
+        $response = $this->from(route('transactions.lookup', ['code' => $this->transaction->transaction_code]))
+            ->post(route('transactions.lookup.payment-proof'), [
+                'transaction_code' => $this->transaction->transaction_code,
+                'phone_last_4' => '7890',
+                'method' => 'Transfer',
+                'amount' => 50000,
+                'proof_file' => $oversized,
+            ]);
+
+        $response->assertSessionHasErrors('proof_file');
+        $this->assertDatabaseCount('payments', 0);
+    }
 }

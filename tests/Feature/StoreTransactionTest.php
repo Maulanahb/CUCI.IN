@@ -574,4 +574,35 @@ class StoreTransactionTest extends TestCase
         $this->assertEquals('QRIS', $payment->method);
         $this->assertTrue(Storage::disk(Payment::PROOF_DISK)->exists($payment->proof_file));
     }
+
+    public function test_cashier_cannot_create_transaction_with_oversized_payment_proof_dimensions(): void
+    {
+        Storage::fake(Payment::PROOF_DISK);
+
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $service = Service::create([
+            'name' => 'Cuci Kilat',
+            'price' => 15000.00,
+            'estimated_duration' => 24,
+            'is_active' => true,
+        ]);
+
+        $oversized = UploadedFile::fake()->image('oversized_checkout_qris.jpg', 4097, 1);
+
+        $response = $this->actingAs($staff)->post(route('staff.transactions.store'), [
+            'customer_id' => $customer->id,
+            'items' => [
+                ['service_id' => $service->id, 'weight' => 2],
+            ],
+            'pay_now' => true,
+            'payment_choice' => 'full',
+            'payment_method' => 'QRIS',
+            'payment_proof' => $oversized,
+        ]);
+
+        $response->assertSessionHasErrors('payment_proof');
+        $this->assertDatabaseCount('transactions', 0);
+        $this->assertDatabaseCount('payments', 0);
+    }
 }

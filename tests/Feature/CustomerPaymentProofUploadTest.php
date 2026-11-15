@@ -284,4 +284,15 @@ class CustomerPaymentProofUploadTest extends TestCase
             ->get(route('customer.payments.proof', $payment))
             ->assertForbidden();
     }
+
+    public function test_customer_cannot_upload_payment_proof_exceeding_max_dimensions(): void
+    {
+        $oversized = UploadedFile::fake()->image('oversized-proof.jpg', 4097, 200);
+
+        $this->actingAs($this->customerUser)
+            ->post($this->uploadUrl(), $this->validPayload(['proof_file' => $oversized]))
+            ->assertSessionHasErrors('proof_file');
+
+        $this->assertDatabaseCount('payments', 0);
+    }
 }

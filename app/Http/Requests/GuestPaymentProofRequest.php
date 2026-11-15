@@ -41,6 +41,7 @@ class GuestPaymentProofRequest extends FormRequest
                 'image',
                 'mimes:jpg,jpeg,png,webp',
                 'max:5120',
+                Rule::dimensions()->maxWidth(4096)->maxHeight(4096),
             ],
         ];
     }
@@ -61,6 +62,7 @@ class GuestPaymentProofRequest extends FormRequest
             'proof_file.image' => 'Berkas bukti pembayaran harus berupa gambar.',
             'proof_file.mimes' => 'Format gambar yang didukung adalah JPG, JPEG, PNG, atau WEBP.',
             'proof_file.max' => 'Ukuran berkas bukti pembayaran maksimal 5 MB.',
+            'proof_file.dimensions' => 'Dimensi gambar bukti pembayaran maksimal 4096×4096 piksel.',
         ];
     }
 }

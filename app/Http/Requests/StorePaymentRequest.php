@@ -49,8 +49,10 @@ class StorePaymentRequest extends FormRequest
                 'required_if:method,Transfer,QRIS',
                 'nullable',
                 'file',
+                'image',
                 'mimes:jpg,jpeg,png,webp',
                 'max:5120',
+                Rule::dimensions()->maxWidth(4096)->maxHeight(4096),
             ],
 
             'is_confirmed' => [
@@ -81,6 +83,7 @@ class StorePaymentRequest extends FormRequest
             'proof_file.image' => 'Bukti pembayaran harus berupa gambar.',
             'proof_file.mimes' => 'Bukti pembayaran harus berformat JPG, JPEG, PNG, atau WEBP.',
             'proof_file.max' => 'Ukuran bukti pembayaran maksimal 5 MB.',
+            'proof_file.dimensions' => 'Dimensi gambar bukti pembayaran maksimal 4096×4096 piksel.',
         ];
     }
 }

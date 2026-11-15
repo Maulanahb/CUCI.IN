@@ -101,51 +101,64 @@ class CashierManualPaymentProofTest extends TestCase
         $this->assertDatabaseCount('payments', 0);
     }
 
-    
-        public function test_cashier_cannot_record_transfer_without_payment_proof(): void
-        {
-            $response = $this->actingAs($this->staff)
-                ->from(route('staff.transactions.show', $this->transaction))
-                ->post(route('staff.transactions.payments.store', $this->transaction), [
-                    'amount' => 50000,
-                    'method' => 'Transfer',
-                ]);
-
-            $response->assertSessionHasErrors('proof_file');
-
-            $this->assertDatabaseCount('payments', 0);
-        }
-
-        public function test_cashier_cannot_record_qris_without_payment_proof(): void
-        {
-            $response = $this->actingAs($this->staff)
-                ->post(route('staff.transactions.payments.store', $this->transaction), [
-                    'amount' => 50000,
-                    'method' => 'QRIS',
-                ]);
-
-            $response->assertSessionHasErrors('proof_file');
-
-            $this->assertDatabaseCount('payments', 0);
-        }
-
-        public function test_cash_payment_does_not_require_payment_proof(): void
-        {
-            $response = $this->actingAs($this->staff)
-                ->post(route('staff.transactions.payments.store', $this->transaction), [
-                    'amount' => 50000,
-                    'method' => 'Tunai',
-                    'cash_received' => 50000,
-                ]);
-
-            $response->assertRedirect();
-            $response->assertSessionHasNoErrors();
-
-            $this->assertDatabaseHas('payments', [
-                'transaction_id' => $this->transaction->id,
-                'method' => 'Tunai',
-                'proof_file' => null,
+    public function test_cashier_cannot_record_transfer_without_payment_proof(): void
+    {
+        $response = $this->actingAs($this->staff)
+            ->from(route('staff.transactions.show', $this->transaction))
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 50000,
+                'method' => 'Transfer',
             ]);
-        }
 
+        $response->assertSessionHasErrors('proof_file');
+
+        $this->assertDatabaseCount('payments', 0);
+    }
+
+    public function test_cashier_cannot_record_qris_without_payment_proof(): void
+    {
+        $response = $this->actingAs($this->staff)
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 50000,
+                'method' => 'QRIS',
+            ]);
+
+        $response->assertSessionHasErrors('proof_file');
+
+        $this->assertDatabaseCount('payments', 0);
+    }
+
+    public function test_cash_payment_does_not_require_payment_proof(): void
+    {
+        $response = $this->actingAs($this->staff)
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 50000,
+                'method' => 'Tunai',
+                'cash_received' => 50000,
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('payments', [
+            'transaction_id' => $this->transaction->id,
+            'method' => 'Tunai',
+            'proof_file' => null,
+        ]);
+    }
+
+    public function test_cashier_cannot_upload_payment_proof_exceeding_max_dimensions(): void
+    {
+        $oversized = UploadedFile::fake()->image('oversized_pos_proof.jpg', 4097, 1);
+
+        $response = $this->actingAs($this->staff)
+            ->post(route('staff.transactions.payments.store', $this->transaction), [
+                'amount' => 50000,
+                'method' => 'Transfer',
+                'proof_file' => $oversized,
+            ]);
+
+        $response->assertSessionHasErrors('proof_file');
+        $this->assertDatabaseCount('payments', 0);
+    }
 }
