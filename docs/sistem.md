@@ -9,7 +9,7 @@ Dokumen ini memuat spesifikasi teknis infrastruktur cloud, alokasi domain, konfi
 ```mermaid
 flowchart TD
     User["Pengunjung / Tim Pengembang<br>(Browser / HP)"] -->|"HTTPS (Port 443)"| CF["Cloudflare Edge & DNS<br>(portal-cuciin.web.id)"]
-    CF -->|"HTTP Proxy (Port 80)<br>SSL Mode: Flexible"| AWS["AWS EC2 Instance<br>(t3.micro | 3.25.167.8)"]
+    CF -->|"HTTPS (Port 443)<br>Origin CA SSL (Full/Full Strict)"| AWS["AWS EC2 Instance<br>(t3.micro | 3.25.167.8)"]
     
     subgraph AWS_EC2 ["AWS EC2 Server (Ubuntu 26.04 Resolute)"]
         SG["Security Group Firewall<br>(Ports 22, 80, 443)"]
@@ -36,7 +36,7 @@ flowchart TD
 - **Domain Utama Production:** `https://portal-cuciin.web.id`
 - **Domain Cadangan / Demo / Staging:** `demo-cuciin.web.id`, `sistem-cuciin.web.id`, `pos-cuciin.web.id`
 - **DNS & CDN Manager:** Cloudflare Free Tier
-- **SSL / TLS Encryption Mode:** **Flexible** (Cloudflare mengenkripsi trafik publik via HTTPS dan meneruskannya ke Port 80 server EC2).
+- **SSL / TLS Encryption Mode:** **Full / Full (strict)** (Cloudflare meneruskan trafik HTTPS ke Port 443 Nginx EC2 memakai sertifikat Cloudflare Origin CA; HTTP port 80 di-redirect `301` ke HTTPS dan fitur *Always Use HTTPS* Cloudflare aktif).
 - **DNS Records (Cloudflare):**
   - `A Record`: Host `@` $\rightarrow$ `3.25.167.8` (Proxy: `Proxied`)
   - `CNAME Record`: Host `www` $\rightarrow$ `portal-cuciin.web.id` (Proxy: `Proxied`)
@@ -57,18 +57,20 @@ flowchart TD
 
 ### Aturan Firewall AWS (Security Group Inbound Rules):
 - **Port 22 (SSH):** Mengizinkan remote terminal dari IP administrator / AWS Instance Connect.
-- **Port 80 (HTTP):** Mengizinkan trafik web masuk dari Cloudflare / publik (`0.0.0.0/0`).
-- **Port 443 (HTTPS):** Mengizinkan trafik terenkripsi langsung (`0.0.0.0/0`).
+- **Port 80 (HTTP):** Dibatasi dari akses publik langsung (server block Nginx meredirect `301` ke HTTPS).
+- **Port 443 (HTTPS):** Menerima trafik terenkripsi menuju Origin CA Nginx; akses langsung publik ke IP origin terblokir firewall (pertahankan aturan Security Group khusus IP range Cloudflare).
 
 ---
 
 ## 4. Konfigurasi Web Stack & Basis Data
 
-### A. Web Server (Nginx)
+### A. Web Server (Nginx) & Konfigurasi Produksi
 - **File Konfigurasi:** `/etc/nginx/sites-available/cuci-in`
 - **Symlink Aktif:** `/etc/nginx/sites-enabled/cuci-in`
 - **Root Directory:** `/var/www/cuci-in/public`
+- **TLS Origin Server:** `listen 443 ssl;` memakai `/etc/ssl/certs/cloudflare_origin.crt` dan `/etc/ssl/private/cloudflare_origin.key`, serta blok `listen 80;` dengan `return 301 https://$host$request_uri;`
 - **FastCGI Socket:** `unix:/run/php/php-fpm.sock`
+- **Parameter `.env` Produksi Terverifikasi:** `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://portal-cuciin.web.id`, `SESSION_SECURE_COOKIE=true`
 
 ### B. Runtime PHP & Dependensi
 - **Versi PHP:** PHP 8.5.x (CLI & FPM)

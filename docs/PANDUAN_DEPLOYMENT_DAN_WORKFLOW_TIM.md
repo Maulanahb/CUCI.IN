@@ -12,7 +12,7 @@ Aplikasi **CUCI.IN** telah resmi aktif dan ter-deploy pada infrastruktur cloud p
 - **Alamat URL Utama:** [https://portal-cuciin.web.id](https://portal-cuciin.web.id)
 - **Pelacakan Nota Publik (Tanpa Login):** [https://portal-cuciin.web.id/lookup](https://portal-cuciin.web.id/lookup)
 - **Infrastruktur Host:** Amazon Web Services (AWS) EC2 `t3.micro` — Region Asia Pacific (`3.25.167.8`)
-- **DNS & Keamanan SSL:** Cloudflare (SSL Mode: Flexible)
+- **DNS & Keamanan SSL:** Cloudflare (SSL Mode: Full / Full Strict + Origin CA di Nginx EC2 Port 443)
 - **Web Server & Database:** Nginx 1.28+, PHP 8.5+, PostgreSQL 16+
 
 ---
@@ -129,5 +129,5 @@ J: Tidak. Perintah deploy menggunakan `php artisan migrate --force` (bukan `migr
 
 ---
 
-*Disusun oleh: Maulana Ahmad Bukhori (Project Leader CUCI.IN Milestone 2)*
+*Disusun oleh: Maulana Ahmad Bukhori 
 
