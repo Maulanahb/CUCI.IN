@@ -276,9 +276,9 @@ Aplikasi CUCI.IN telah ter-deploy langsung pada lingkungan cloud publik dan teri
 
 1. **Domain & Jaringan:**
    - URL Utama: `https://portal-cuciin.web.id`
-   - DNS & SSL: Dikelola via Cloudflare (SSL Mode: *Flexible*).
+   - DNS & SSL: Dikelola via Cloudflare (SSL Mode: *Full / Full (strict)* + Origin CA SSL di Nginx EC2 Port 443; HTTP Port 80 redirect `301` ke HTTPS).
    - Server Host: AWS EC2 Instance `t3.micro` (`ap-southeast-2`), IP Publik `3.25.167.8`.
-   - Security Group Inbound: Port 22 (SSH), Port 80 (HTTP), Port 443 (HTTPS) terbuka untuk `0.0.0.0/0`.
+   - Security Group Inbound: Port 22 (SSH) untuk admin; Port 80/443 dibatasi untuk trafik terproksi Cloudflare (akses langsung IP origin diblokir firewall).
 
 2. **Web Stack Server:**
    - Web Server: Nginx 1.28+ (`/etc/nginx/sites-available/cuci-in` -> `/var/www/cuci-in/public`).
@@ -291,10 +291,34 @@ Aplikasi CUCI.IN telah ter-deploy langsung pada lingkungan cloud publik dan teri
      ```bash
      cd /var/www/cuci-in && git pull origin develop && composer install --no-dev --optimize-autoloader && php artisan migrate --force && npm install && npm run build && php artisan optimize && sudo chown -R www-data:www-data storage bootstrap/cache
      ```
-   - Worker background job dijalankan di latar belakang:
+   - Worker background job dan scheduler harian (`model:prune` di `routes/console.php`) dijalankan di server:
      ```bash
      nohup php /var/www/cuci-in/artisan queue:work --tries=3 --timeout=60 > /dev/null 2>&1 &
+     # Pastikan crontab aktif untuk scheduler:
+     # * * * * * cd /var/www/cuci-in && php artisan schedule:run >> /dev/null 2>&1
      ```
+
+---
+
+## 6. Deteksi Otomatis Sprint Remediasi Audit Keamanan & Bug Log
+
+Sebagai lanjutan evaluasi keamanan aplikasi, asisten AI di IDE AGY juga **wajib mengenali tugas perbaikan bug keamanan** masing-masing anggota tim (detail lokasi baris, target uji, dan status mitigasi `Lead 1/2/4/5` yang sudah di-merge ke `develop` tercatat di [rules_milestone_2.md](file:///c:/laragon/www/cuci-in/docs/rules_milestone_2.md) Seksi 6):
+
+* **Deteksi Ayin (`ayinanda`) / Bug Keamanan API Resource & Ekspor:**
+  * Cabang: `fix/api-resource-and-export-sanitization`
+  * Fokus: Masking `customer.name` & hapus/masking penuh `customer.phone` di `app/Http/Resources/TransactionResource.php` (sinkron dengan `docs/openapi.yaml` & `TransactionResourceTest.php`), serta sanitasi spreadsheet formula injection (`=`, `+`, `-`, `@`, `\t`, `\r`) di `ReportController::exportCsv` & `resources/views/admin/reports/excel.blade.php`.
+* **Deteksi Nora (`annora1304`) / Bug Keamanan Lookup & SRI QR Scanner:**
+  * Cabang: `fix/tracking-lookup-security`
+  * Fokus: Tambah `throttle:20,1` pada `GET /lookup` dan `throttle:10,1` pada `POST /lookup/payment-proof` di `routes/web.php`, selaraskan `TrackingApiTest.php`, serta tambahkan SRI (`integrity` + `crossorigin`) atau Vite bundling untuk `html5-qrcode@2.3.8` di `resources/views/lookup/_content.blade.php`.
+* **Deteksi Daysyani (`daysyani`) / Bug Keamanan Foto Komplain & Validation Oracle:**
+  * Cabang: `fix/complaint-photo-privacy`
+  * Fokus: Pindahkan foto komplain dari disk `'public'` ke disk privat `'local'` di `ComplaintController::store` & `CompressComplaintPhoto`, sajikan lewat endpoint controller ber-`Gate::authorize('view', $complaint)`, update `Complaint::getPhotoUrlAttribute()`, serta pasang `'bail'` & filter `customer_id` di query pertama `StoreComplaintRequest`.
+* **Deteksi Zaky (`Zakydawamul`) / Bug Keamanan TrustProxies, Auth Throttle, & Sesi Reset:**
+  * Cabang: `fix/proxy-trust-and-auth-hardening`
+  * Fokus: Ganti `$middleware->trustProxies(at: '*')` di `bootstrap/app.php` agar membatasi proxy tepercaya (`TRUSTED_PROXIES`) & mengecualikan `HEADER_X_FORWARDED_HOST`, paksa `URL::forceRootUrl`/`forceScheme('https')` di `AppServiceProvider`, pasang regex telepon di `RegisterRequest`/`CustomerRequest`, hapus `sessions` di `ResetPasswordController`, dan tambah `throttle:6,1` pada auth routes tamu di `routes/web.php`.
+* **Deteksi Maulana (`Maulanahb`) / Bug Idempotency Scoping, RBAC Laporan, POS, & EC2:**
+  * Cabang: `fix/idempotency-scoping-and-role-reports`
+  * Fokus: Migrasi composite `unique(['user_id', 'route', 'key'])` pada `idempotency_keys`, filter lookup & `computePayloadHash()` (`$request->path()`) di `EnsureIdempotency`, pindahkan `/admin/reports*` ke grup `role:admin` (sinkron dengan `docs/prd.md` & `ReportExportTest.php`), ganti `.innerHTML` menjadi `.textContent` di `create.blade.php`, dan finalisasi verifikasi server EC2 (`Full (strict)`, `SERVER_SSH_FINGERPRINT`, audit kredensial, `memory_limit`, `crontab`).
 
 
 

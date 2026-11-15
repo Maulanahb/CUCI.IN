@@ -35,6 +35,14 @@ Saat sesi dimulai atau ketika pengembang menyebutkan nama maupun tugasnya, kenal
 
 *Aturan Deteksi Otomatis:* Jika pengembang menyebutkan nama (misal: "saya Nora", "saya Zaky") atau menyebutkan kata kunci tugasnya (misal: "mau buat policy", "mau pasang rate limit", "mau setup idempotency", "mau bikin tracking api", "mau bikin resource"), asisten IDE AGY harus langsung menyapa dengan nama mereka, mengingatkan pengaturan git author, dan memandu pengerjaan pada cabang fitur terkait.
 
+### 1A. Sprint Remediasi Audit Keamanan (Cabang `fix/...`)
+Catatan: Mitigasi awal Lead 1 (`b719351`), Lead 4 (`dcd6f20`), Lead 5 (`d2c829c`), dan Lead 2 (`c3285ed`) sudah masuk ke `develop`. Jika anggota tim menyebut ingin mengerjakan bug keamanan dari hasil audit, arahkan langsung ke cabang & fokus berikut (rincian lengkap di `docs/rules_milestone_2.md` Seksi 6):
+- **Ayin (`fix/api-resource-and-export-sanitization`):** Masking `customer.name` & hapus/masking penuh `customer.phone` di `TransactionResource.php` + `openapi.yaml` + `TransactionResourceTest.php` (`HIGH #1`); sanitasi formula CSV/Excel di `ReportController::exportCsv` & `excel.blade.php` (`LOW #5`).
+- **Nora (`fix/tracking-lookup-security`):** Throttle `/lookup` & `/lookup/payment-proof` di `routes/web.php` + penyesuaian `TrackingApiTest.php` (`HIGH #1`); pasang SRI (`integrity` + `crossorigin`) atau bundle Vite untuk `html5-qrcode@2.3.8` di `lookup/_content.blade.php`.
+- **Daysyani (`fix/complaint-photo-privacy`):** Pindahkan foto komplain dari disk `'public'` ke `'local'` (`ComplaintController`, `CompressComplaintPhoto`), buat endpoint ber-`Gate::authorize('view', $complaint)`, perbarui `Complaint::getPhotoUrlAttribute()` & `CustomerComplaintTest.php` (`MEDIUM #3`); tambah `'bail'` + filter `customer_id` di `StoreComplaintRequest`.
+- **Zaky (`fix/proxy-trust-and-auth-hardening`):** Ganti wildcard `trustProxies(at: '*')` di `bootstrap/app.php` (whitelist proxy + kecualikan `HEADER_X_FORWARDED_HOST`) + `URL::forceRootUrl`/`forceScheme` di `AppServiceProvider` (`HIGH #2`); tambah regex telepon di `RegisterRequest`/`CustomerRequest`, hapus `sessions` di `ResetPasswordController`, & pasang `throttle:6,1` pada auth tamu di `routes/web.php`.
+- **Maulana (`fix/idempotency-scoping-and-role-reports`):** Migrasi composite unique `idempotency_keys` (`user_id`, `route`, `key`) + scoping & `$request->path()` di `EnsureIdempotency` (`LOW #4`); pindahkan `/admin/reports*` ke `role:admin` + update `docs/prd.md` & `ReportExportTest` (`LOW #6`); ganti `.innerHTML` -> `.textContent` di `create.blade.php`; finalisasi cek EC2 (`Full (strict)`, `SERVER_SSH_FINGERPRINT`, DB/akun, `memory_limit`, `crontab`).
+
 ---
 
 ## 2. Alur Kerja Standar Pengembangan Fitur (Feature Lifecycle)
@@ -81,7 +89,9 @@ php artisan test --filter=NamaFiturTest
 ### Tahap 4: Format Kode Otomatis (Laravel Pint)
 Sebelum melakukan komit, jalankan linter agar format kode rapi:
 ```bash
-vendor/bin/pint --format agent
+vendor/bin/pint --dirty --format agent
+# Jika di Windows (PowerShell / cmd.exe), gunakan:
+php vendor/bin/pint --dirty --format agent
 ```
 
 ### Tahap 5: Komit Terstruktur (Conventional Commits)
@@ -132,7 +142,7 @@ Bila mendampingi pengembang pada modul pelaporan, ekspor dokumen, upload media, 
 
 Dokumentasi lengkap topologi cloud dan server tercatat pada [docs/sistem.md](file:///c:/laragon/www/cuci-in/docs/sistem.md):
 
-- **Domain Utama:** `https://portal-cuciin.web.id` (Cloudflare SSL Flexible $\rightarrow$ AWS EC2 `3.25.167.8`).
+- **Domain Utama:** `https://portal-cuciin.web.id` (Cloudflare SSL Full / Full (strict) + Origin CA Nginx port 443 $\rightarrow$ AWS EC2 `3.25.167.8`).
 - **Path Proyek Server:** `/var/www/cuci-in` (branch `develop`).
 - **Basis Data Server:** PostgreSQL 16+ (`cuci_in`), user `postgres`.
 - **Perintah Sinkronisasi Kode ke Server (One-Liner):**
@@ -146,8 +156,10 @@ Dokumentasi lengkap topologi cloud dan server tercatat pada [docs/sistem.md](fil
   php artisan optimize && \
   sudo chown -R www-data:www-data storage bootstrap/cache
   ```
-- **Eksekusi Queue Worker Background:**
+- **Eksekusi Queue Worker & Scheduler Harian (`model:prune`):**
   ```bash
   nohup php /var/www/cuci-in/artisan queue:work --tries=3 --timeout=60 > /dev/null 2>&1 &
+  # Cron scheduler (routes/console.php menjalankan model:prune harian):
+  # * * * * * cd /var/www/cuci-in && php artisan schedule:run >> /dev/null 2>&1
   ```
 

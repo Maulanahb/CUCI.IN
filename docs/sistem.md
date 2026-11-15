@@ -136,9 +136,9 @@ sudo chown -R www-data:www-data storage bootstrap/cache
 
 ---
 
-## 7. Pemeliharaan Antrean Background Job (Queue Worker P9)
+## 7. Pemeliharaan Antrean Background Job, Scheduler & Checklist Server Pending
 
-Untuk memproses kompresi foto noda komplain, optimasi berkas bukti transfer, dan notifikasi status cucian:
+Untuk memproses kompresi foto noda komplain, optimasi berkas bukti transfer, notifikasi status cucian, serta pembersihan harian `idempotency_keys` (`Schedule::command('model:prune')->daily()` di `routes/console.php`):
 
 ```bash
 # Menjalankan worker di latar belakang (background)
@@ -146,7 +146,16 @@ nohup php /var/www/cuci-in/artisan queue:work --tries=3 --timeout=60 > /dev/null
 
 # Memeriksa apakah proses queue worker sedang aktif
 ps aux | grep "queue:work"
+
+# Memeriksa & mengaktifkan cron scheduler Laravel untuk model:prune harian
+crontab -l
+# * * * * * cd /var/www/cuci-in && php artisan schedule:run >> /dev/null 2>&1
 ```
+
+### Checklist Verifikasi Server EC2 (Tindak Lanjut Audit Keamanan)
+- Konfirmasi mode SSL/TLS pada Dashboard Cloudflare sudah berada di **Full (strict)** dan tambahkan header `Strict-Transport-Security` (HSTS) bila diperlukan.
+- Ambil SSH host key fingerprint EC2 (`ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`), simpan sebagai GitHub Secret `SERVER_SSH_FINGERPRINT`, dan tambahkan `fingerprint: ${{ secrets.SERVER_SSH_FINGERPRINT }}` pada `.github/workflows/ci-cd.yml`.
+- Verifikasi password akun aplikasi maupun `DB_PASSWORD` di `/var/www/cuci-in/.env` tidak menggunakan nilai default (`password` / `postgres`), serta cek `php -i | grep memory_limit` untuk worker PHP-FPM dan CLI.
 
 ---
 

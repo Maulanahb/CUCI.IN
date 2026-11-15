@@ -28,6 +28,8 @@ Seluruh anggota tim dapat menguji coba fitur masing-masing langsung di server pr
 | **Pelanggan** | `customer@cuci.in` | Rina Wulandari | Dashboard Pelanggan (`/customer/dashboard`), Upload Bukti Transfer, Pengajuan Komplain |
 | **Tamu Outlet** | *(Tanpa Login)* | Pelanggan Umum | Cek status cucian mandiri via nomor nota di `/lookup` |
 
+> **Catatan Keamanan Seeder:** Mulai commit `c3285ed`, `DatabaseSeeder` dibatasi hanya untuk environment `local` dan `testing`. Pada server production EC2, akun default bersandi `password` wajib diaudit dan dirotasi oleh PIC Server.
+
 ---
 
 ## 3. Alur Kerja Pengembang (Git Workflow dari Laptop ke Server)
@@ -43,22 +45,26 @@ flowchart TD
     E --> F["6. Deploy 1-Baris di Server AWS<br>(Fitur Langsung Live! 🚀)"]
 ```
 
-### Langkah 1: Koding pada Cabang Fitur Sendiri
-Sebelum mulai mengoding fitur baru, selalu pastikan cabang `develop` lokal kamu adalah yang paling baru:
+### Langkah 1: Koding pada Cabang Fitur atau Fix Sendiri
+Sebelum mulai mengoding fitur baru maupun perbaikan bug audit keamanan (daftar pembagian bug & nama cabang per anggota tersedia di `docs/rules_milestone_2.md` Seksi 6), selalu pastikan cabang `develop` lokal kamu paling baru:
 ```bash
 git checkout develop
 git pull origin develop
 git checkout -b feature/<nama-fitur-kamu>
+# Atau untuk cabang perbaikan bug keamanan:
+# git checkout -b fix/<nama-cabang-bug>
 ```
 
 ### Langkah 2: Uji Coba Lokal & Rapikan Format Kode
 Sebelum melakukan komit dan push, pastikan seluruh automated test lulus dan kode terformat rapi:
 ```bash
-# Jalankan seluruh test
-php artisan test
+# Jalankan test terkait / seluruh test
+php artisan test --compact
 
 # Format kode otomatis sesuai standar tim
-vendor/bin/pint --format agent
+vendor/bin/pint --dirty --format agent
+# Jika di Windows (PowerShell / cmd.exe), gunakan:
+php vendor/bin/pint --dirty --format agent
 ```
 
 ### Langkah 3: Push Cabang Fitur ke GitHub
@@ -102,9 +108,9 @@ cd /var/www/cuci-in && git pull origin develop && composer install --no-dev --op
 
 ---
 
-## 5. Menjalankan Antrean Background Job (Queue Worker P9)
+## 5. Menjalankan Antrean Background Job & Scheduler (P9 & Cleanup Idempotency)
 
-Sesuai materi P9, tugas kompresi gambar dan notifikasi diproses di antrean background. Untuk memastikan worker tetap hidup di server AWS:
+Sesuai materi P9 dan penjadwalan pembersihan tabel `idempotency_keys` (`Schedule::command('model:prune')->daily()` di `routes/console.php`), pastikan worker antrean dan cron scheduler tetap aktif di server AWS:
 
 ```bash
 # Cek apakah worker sedang berjalan
@@ -112,6 +118,11 @@ ps aux | grep "queue:work"
 
 # Jika belum jalan, jalankan di latar belakang:
 nohup php /var/www/cuci-in/artisan queue:work --tries=3 --timeout=60 > /dev/null 2>&1 &
+
+# Cek cron scheduler untuk pembersihan harian model:prune:
+crontab -l
+# Entri crontab yang diperlukan:
+# * * * * * cd /var/www/cuci-in && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ---
@@ -129,5 +140,5 @@ J: Tidak. Perintah deploy menggunakan `php artisan migrate --force` (bukan `migr
 
 ---
 
-*Disusun oleh: Maulana Ahmad Bukhori 
+*Disusun oleh: Maulana Ahmad Bukhori (Project Leader CUCI.IN Milestone 2)*
 
