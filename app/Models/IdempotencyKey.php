@@ -75,7 +75,7 @@ class IdempotencyKey extends Model
      */
     public function prunable(): Builder
     {
-        return static::whereNotNull('expires_at')->where('expires_at', '<', now());
+        return static::whereNotNull('expires_at')->where('expires_at', '<=', now());
     }
 
     /**
@@ -115,6 +115,6 @@ class IdempotencyKey extends Model
      */
     public function isExpired(): bool
     {
-        return $this->expires_at !== null && $this->expires_at->isPast();
+        return $this->expires_at !== null && $this->expires_at->lessThanOrEqualTo(now());
     }
 }

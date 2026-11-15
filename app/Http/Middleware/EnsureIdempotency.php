@@ -54,7 +54,7 @@ class EnsureIdempotency
         // 3. Handle existing key (concurrency or replay)
         if (! $isNewRecord) {
             // Prune expired record and process anew
-            if ($record->expires_at && $record->expires_at->isPast()) {
+            if ($record->isExpired()) {
                 $record->delete();
 
                 return $this->handle($request, $next);

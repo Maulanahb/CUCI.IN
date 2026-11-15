@@ -3,6 +3,7 @@
 use App\Models\Transaction;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -34,3 +35,5 @@ Artisan::command('laundry:check-unclaimed {--days=14 : Batas hari cucian belum d
 
     return 0;
 })->purpose('Periksa dan tampilkan daftar cucian yang selesai namun belum diambil melebihi ambang batas hari');
+
+Schedule::command('model:prune')->daily();

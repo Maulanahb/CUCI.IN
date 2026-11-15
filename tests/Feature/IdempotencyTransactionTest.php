@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Transaction;
 use App\Models\User;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -441,5 +442,84 @@ class IdempotencyTransactionTest extends TestCase
             'user_id' => $this->admin->id,
             'status' => 'completed',
         ]);
+    }
+
+    /**
+     * Test 11: Expired idempotency key is discarded and reprocessed cleanly
+     */
+    public function test_expired_idempotency_key_is_purged_and_reprocessed_as_fresh_request(): void
+    {
+        $key = (string) Str::uuid();
+
+        IdempotencyKey::create([
+            'key' => $key,
+            'user_id' => $this->staff->id,
+            'route' => 'staff.transactions.store',
+            'request_hash' => hash('sha256', 'expired-old-payload'),
+            'status' => 'completed',
+            'response_code' => 201,
+            'response_body' => '{"stale":true}',
+            'expires_at' => now()->subMinute(),
+        ]);
+
+        $payload = [
+            'customer_id' => $this->customer->id,
+            'items' => [
+                ['service_id' => $this->service->id, 'weight' => 3.0],
+            ],
+        ];
+
+        $response = $this->actingAs($this->staff)->postJson(
+            route('staff.transactions.store'),
+            $payload,
+            ['Idempotency-Key' => $key]
+        );
+
+        $response->assertStatus(201);
+        $response->assertHeaderMissing('Idempotent-Replayed');
+        $this->assertDatabaseCount('transactions', 1);
+
+        $record = IdempotencyKey::where('key', $key)->firstOrFail();
+        $this->assertTrue($record->expires_at->isFuture());
+    }
+
+    /**
+     * Test 12: Scheduled model:prune command is registered daily and removes expired keys
+     */
+    public function test_model_prune_command_is_scheduled_daily_and_prunes_expired_idempotency_keys(): void
+    {
+        $schedule = $this->app->make(Schedule::class);
+        $pruneEvent = collect($schedule->events())->first(function ($event): bool {
+            return is_string($event->command) && str_contains($event->command, 'model:prune');
+        });
+
+        $this->assertNotNull($pruneEvent, 'Perintah model:prune belum terdaftar pada Laravel Scheduler.');
+        $this->assertSame('0 0 * * *', $pruneEvent->expression);
+
+        $this->freezeTime();
+
+        $expired = IdempotencyKey::create([
+            'key' => (string) Str::uuid(),
+            'user_id' => $this->staff->id,
+            'route' => 'staff.transactions.store',
+            'request_hash' => hash('sha256', 'expired-boundary'),
+            'status' => 'completed',
+            'expires_at' => now(),
+        ]);
+
+        $active = IdempotencyKey::create([
+            'key' => (string) Str::uuid(),
+            'user_id' => $this->staff->id,
+            'route' => 'staff.transactions.store',
+            'request_hash' => hash('sha256', 'active-key'),
+            'status' => 'completed',
+            'expires_at' => now()->addHour(),
+        ]);
+
+        $this->artisan('model:prune', ['--model' => [IdempotencyKey::class]])
+            ->assertExitCode(0);
+
+        $this->assertDatabaseMissing('idempotency_keys', ['id' => $expired->id]);
+        $this->assertDatabaseHas('idempotency_keys', ['id' => $active->id]);
     }
 }
