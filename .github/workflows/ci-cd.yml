@@ -68,6 +68,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
+          fingerprint: ${{ secrets.SERVER_SSH_FINGERPRINT }}
           script: |
             echo "🚀 Memulai proses deployment otomatis di server AWS..."
             cd /var/www/cuci-in
@@ -85,6 +86,7 @@ jobs:
             
             # Optimasi cache konfigurasi, routing, dan view
             php artisan optimize
+            php artisan queue:restart || true
             
             # Pastikan izin folder upload bukti bayar & komplain aman
             sudo chown -R www-data:www-data storage bootstrap/cache

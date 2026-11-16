@@ -19,7 +19,7 @@ Aplikasi **CUCI.IN** telah resmi aktif dan ter-deploy pada infrastruktur cloud p
 
 ## 2. Kredensial Akun Pengujian Tim (Demo Milestone 2)
 
-Seluruh anggota tim dapat menguji coba fitur masing-masing langsung di server production menggunakan akun berikut (semua kata sandi: **`password`**):
+Seluruh kata sandi akun server **production** bersifat privat (tidak memakai default seeder) dan didistribusikan hanya kepada PIC terkait. Daftar peran & rute utama aplikasi:
 
 | Role / Peran | Alamat Email | Nama Pengguna | Akses Halaman Utama |
 | :--- | :--- | :--- | :--- |

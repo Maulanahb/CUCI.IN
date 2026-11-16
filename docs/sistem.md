@@ -79,16 +79,16 @@ flowchart TD
 
 ### C. Basis Data (PostgreSQL)
 - **Engine:** PostgreSQL 16+
-- **Host:** `127.0.0.1` | **Port:** `5432`
+- **Host:** `127.0.0.1` | **Port:** `5432` | **Akses `pg_hba.conf`:** dibatasi loopback (`127.0.0.1/32` & `::1/128`, `scram-sha-256`)
 - **Nama Database:** `cuci_in`
 - **Pengguna:** `postgres`
-- **Password:** `postgres`
+- **Password:** *(Secret acak entropi tinggi di `/var/www/cuci-in/.env`, tidak pernah disimpan di repositori)*
 
 ---
 
-## 5. Kredensial Akun Pengujian (Demo M2)
+## 5. Matriks Peran Akun Operasional
 
-Semua akun menggunakan kata sandi standar pengujian: **`password`**.
+Kata sandi akun **production** bersifat rahasia, terrotasi di server, dan tidak memakai nilai default seeder. Kata sandi default `UserSeeder` (`APP_ENV=local` saja) hanya berlaku di laptop pengembang lokal.
 
 | Role | Email | Nama Pengguna | Akses Antarmuka |
 | :--- | :--- | :--- | :--- |
@@ -136,26 +136,24 @@ sudo chown -R www-data:www-data storage bootstrap/cache
 
 ---
 
-## 7. Pemeliharaan Antrean Background Job, Scheduler & Checklist Server Pending
+## 7. Pemeliharaan Antrean Background Job, Scheduler & Keamanan Server
 
 Untuk memproses kompresi foto noda komplain, optimasi berkas bukti transfer, notifikasi status cucian, serta pembersihan harian `idempotency_keys` (`Schedule::command('model:prune')->daily()` di `routes/console.php`):
 
 ```bash
-# Menjalankan worker di latar belakang (background)
-nohup php /var/www/cuci-in/artisan queue:work --tries=3 --timeout=60 > /dev/null 2>&1 &
+# 1. Status systemd queue worker (user: www-data, batas --memory=128)
+sudo systemctl status cuciin-queue --no-pager
+sudo journalctl -u cuciin-queue -n 50 --no-pager
 
-# Memeriksa apakah proses queue worker sedang aktif
-ps aux | grep "queue:work"
-
-# Memeriksa & mengaktifkan cron scheduler Laravel untuk model:prune harian
-crontab -l
-# * * * * * cd /var/www/cuci-in && php artisan schedule:run >> /dev/null 2>&1
+# 2. Scheduler Laravel (/etc/cron.d/cuciin-scheduler sebagai www-data)
+# * * * * * www-data cd /var/www/cuci-in && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
+sudo -u www-data php /var/www/cuci-in/artisan schedule:list
 ```
 
-### Checklist Verifikasi Server EC2 (Tindak Lanjut Audit Keamanan)
-- Konfirmasi mode SSL/TLS pada Dashboard Cloudflare sudah berada di **Full (strict)** dan tambahkan header `Strict-Transport-Security` (HSTS) bila diperlukan.
-- Ambil SSH host key fingerprint EC2 (`ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`), simpan sebagai GitHub Secret `SERVER_SSH_FINGERPRINT`, dan tambahkan `fingerprint: ${{ secrets.SERVER_SSH_FINGERPRINT }}` pada `.github/workflows/ci-cd.yml`.
-- Verifikasi password akun aplikasi maupun `DB_PASSWORD` di `/var/www/cuci-in/.env` tidak menggunakan nilai default (`password` / `postgres`), serta cek `php -i | grep memory_limit` untuk worker PHP-FPM dan CLI.
+### Checklist Keamanan & Infrastruktur EC2
+- **TLS Cloudflare & Nginx:** Mode SSL/TLS Cloudflare **Full (strict)** + Origin CA port 443; pertimbangkan header `Strict-Transport-Security` (HSTS) setelah verifikasi TLS stabil.
+- **CI/CD SSH Pinning:** `.github/workflows/ci-cd.yml` menyertakan `fingerprint: ${{ secrets.SERVER_SSH_FINGERPRINT }}` untuk `appleboy/ssh-action@v1.0.3`.
+- **PHP Memory Budget:** `/etc/php/8.5/fpm/php.ini` (`128M`) dan `/etc/php/8.5/cli/php.ini` (`256M`) dibatasi agar aman dalam anggaran 1 GB RAM + 2 GB swap EC2.
 
 ---
 
