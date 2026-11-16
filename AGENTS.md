@@ -291,18 +291,18 @@ Aplikasi CUCI.IN telah ter-deploy langsung pada lingkungan cloud publik dan teri
      ```bash
      cd /var/www/cuci-in && git pull origin develop && composer install --no-dev --optimize-autoloader && php artisan migrate --force && npm install && npm run build && php artisan optimize && sudo chown -R www-data:www-data storage bootstrap/cache
      ```
-   - Worker background job dan scheduler harian (`model:prune` di `routes/console.php`) dijalankan di server:
+   - Worker background job (`cuciin-queue.service`) dan scheduler harian (`model:prune` di `routes/console.php`) berjalan sebagai `www-data` di server:
      ```bash
-     nohup php /var/www/cuci-in/artisan queue:work --tries=3 --timeout=60 > /dev/null 2>&1 &
-     # Pastikan crontab aktif untuk scheduler:
-     # * * * * * cd /var/www/cuci-in && php artisan schedule:run >> /dev/null 2>&1
+     sudo systemctl status cuciin-queue --no-pager
+     # Cron aktif di /etc/cron.d/cuciin-scheduler:
+     # * * * * * www-data cd /var/www/cuci-in && /usr/bin/php artisan schedule:run >> /dev/null 2>&1
      ```
 
 ---
 
 ## 6. Deteksi Otomatis Sprint Remediasi Audit Keamanan & Bug Log
 
-Sebagai lanjutan evaluasi keamanan aplikasi, asisten AI di IDE AGY juga **wajib mengenali tugas perbaikan bug keamanan** masing-masing anggota tim (detail lokasi baris, target uji, dan status mitigasi `Lead 1/2/4/5` yang sudah di-merge ke `develop` tercatat di [rules_milestone_2.md](file:///c:/laragon/www/cuci-in/docs/rules_milestone_2.md) Seksi 6):
+Sebagai lanjutan evaluasi keamanan aplikasi, asisten AI di IDE AGY juga **wajib mengenali tugas perbaikan bug keamanan** masing-masing anggota tim (detail lokasi baris, target uji, dan status mitigasi `Lead 1–5` yang sudah terintegrasi tercatat di [rules_milestone_2.md](file:///c:/laragon/www/cuci-in/docs/rules_milestone_2.md) Seksi 6):
 
 * **Deteksi Ayin (`ayinanda`) / Bug Keamanan API Resource & Ekspor:**
   * Cabang: `fix/api-resource-and-export-sanitization`
@@ -316,9 +316,9 @@ Sebagai lanjutan evaluasi keamanan aplikasi, asisten AI di IDE AGY juga **wajib 
 * **Deteksi Zaky (`Zakydawamul`) / Bug Keamanan TrustProxies, Auth Throttle, & Sesi Reset:**
   * Cabang: `fix/proxy-trust-and-auth-hardening`
   * Fokus: Ganti `$middleware->trustProxies(at: '*')` di `bootstrap/app.php` agar membatasi proxy tepercaya (`TRUSTED_PROXIES`) & mengecualikan `HEADER_X_FORWARDED_HOST`, paksa `URL::forceRootUrl`/`forceScheme('https')` di `AppServiceProvider`, pasang regex telepon di `RegisterRequest`/`CustomerRequest`, hapus `sessions` di `ResetPasswordController`, dan tambah `throttle:6,1` pada auth routes tamu di `routes/web.php`.
-* **Deteksi Maulana (`Maulanahb`) / Bug Idempotency Scoping, RBAC Laporan, POS, & EC2:**
+* **Deteksi Maulana (`Maulanahb`) / Bug Idempotency Scoping, RBAC Laporan, & POS:**
   * Cabang: `fix/idempotency-scoping-and-role-reports`
-  * Fokus: Migrasi composite `unique(['user_id', 'route', 'key'])` pada `idempotency_keys`, filter lookup & `computePayloadHash()` (`$request->path()`) di `EnsureIdempotency`, pindahkan `/admin/reports*` ke grup `role:admin` (sinkron dengan `docs/prd.md` & `ReportExportTest.php`), ganti `.innerHTML` menjadi `.textContent` di `create.blade.php`, dan finalisasi verifikasi server EC2 (`Full (strict)`, `SERVER_SSH_FINGERPRINT`, audit kredensial, `memory_limit`, `crontab`).
+  * Fokus: Migrasi composite `unique(['user_id', 'route', 'key'])` pada `idempotency_keys`, filter lookup & `computePayloadHash()` (`$request->path()`) di `EnsureIdempotency`, pindahkan `/admin/reports*` ke grup `role:admin` (sinkron dengan `docs/prd.md` & `ReportExportTest.php`), serta ganti `.innerHTML` menjadi `.textContent` di `create.blade.php`. *(Cek & hardening EC2 Lead 1–5 sudah selesai; tersisa cek UI opsional Cloudflare `Full (strict)` + HSTS).*
 
 
 

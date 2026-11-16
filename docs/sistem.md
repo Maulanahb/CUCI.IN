@@ -131,7 +131,9 @@ php artisan migrate --force && \
 npm install && \
 npm run build && \
 php artisan optimize && \
-sudo chown -R www-data:www-data storage bootstrap/cache
+php artisan queue:restart || true && \
+sudo chown -R www-data:www-data storage bootstrap/cache && \
+sudo systemctl reload nginx
 ```
 
 ---
