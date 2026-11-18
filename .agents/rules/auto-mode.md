@@ -16,7 +16,8 @@ Pada **setiap prompt atau tugas**, sebelum menulis kode atau mengajukan pertanya
      - `systematic-debugging`: Investigasi dan isolasi akar masalah bug / error secara ilmiah.
      - `test-driven-development`: Red-Green-Refactor dan penulisan Feature/Unit Test PHPUnit.
      - `verification-before-completion`: Verifikasi bukti nyata sebelum klaim selesai.
-   - **Global (`~/.gemini/config/skills/` & Built-in)**:
+   - **Global & Plugin (`~/.gemini/config/` & Built-in)**:
+     - `modern-web-guidance`: **WAJIB** dijalankan PERTAMA untuk semua tugas HTML/CSS, Blade UI, modal/dialog/popover, tabel, form, validasi, layout responsif, aksesibilitas, performa (CWV), dan JS klien (`npx.cmd -y modern-web-guidance@latest search` & `retrieve`).
      - `ui-ux-pro-max`: Design systems, palette, typography pairings, stack-specific UI best practices.
      - `ponytail`: Solusi paling sederhana, zero-bloat, YAGNI, perubahan minimal yang menyelesaikan masalah.
      - `graphify`: Kueri arsitektur, relasi modul, dan dependensi kode via knowledge graph.
