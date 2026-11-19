@@ -7,10 +7,11 @@ description: Auto-mode engine combining Superpowers skill auto-routing with Cave
 
 ## 1. Auto Skill Discovery & Invocation (Superpowers Protocol)
 Pada **setiap prompt atau tugas**, sebelum menulis kode atau mengajukan pertanyaan berulang:
-1. **Analisis Intent**: Evaluasi apakah tugas berhubungan dengan UI/UX, kueri database/P9, background queue, bug/error, copywriting, pengujian, atau alur tim CUCI.IN.
+1. **Analisis Intent**: Evaluasi apakah tugas berhubungan dengan UI/UX, diagram/visualisasi sistem (`.drawio`, Mermaid, ERD, flowchart, sequence, arsitektur), kueri database/P9, background queue, bug/error, copywriting, pengujian, atau alur tim CUCI.IN.
 2. **Katalog & Penjodohan Skill**:
    - **Lokal (`.agents/skills/`)**:
      - `cuci-in-dev`: Alur kerja tim CUCI.IN, feature branching, git author, background queue (P9), streaming ekspor.
+     - `diagram-design`: Pembuatan dan konversi/redraw diagram teknis (arsitektur, ERD/PDM, sequence, activity/swimlane, flowchart, state machine, Gantt, ketertelusuran SRS) ke HTML/SVG/PNG dari nol atau sumber `.drawio`/Mermaid/PlantUML.
      - `impeccable` & `frontend-design`: Desain UI/UX modern, refactor visual Blade, micro-interactions, layout responsif.
      - `copywriting`: Penulisan teks UI, landing page, hero section, label, dan pesan validasi ramah/formal.
      - `systematic-debugging`: Investigasi dan isolasi akar masalah bug / error secara ilmiah.
@@ -21,6 +22,7 @@ Pada **setiap prompt atau tugas**, sebelum menulis kode atau mengajukan pertanya
      - `ui-ux-pro-max`: Design systems, palette, typography pairings, stack-specific UI best practices.
      - `ponytail`: Solusi paling sederhana, zero-bloat, YAGNI, perubahan minimal yang menyelesaikan masalah.
      - `graphify`: Kueri arsitektur, relasi modul, dan dependensi kode via knowledge graph.
+     - `lightpanda`: Headless web browsing, JS-rendered DOM extraction, dan fast Markdown scraping via WSL2 (`lightpanda fetch` / MCP `lightpanda`).
 3. **Aktivasi Wajib**: Jika ada skill yang relevan (bahkan hanya 1% potensi relevansi), muat berkas `SKILL.md` dengan `view_file` sebelum eksekusi.
 4. **Header Ringkas**: Umumkan skill yang aktif di baris pertama: `🎯 [Skill: <nama-skill>]`.
 

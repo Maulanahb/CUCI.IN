@@ -1,12 +1,13 @@
 # Pemodelan Diagram Rekayasa Sistem CUCI.IN (Milestone 2)
 
 **Sistem Informasi Manajemen Operasional Laundry Berbasis Web (Full Laravel MPA)**  
-*D4 Sistem Informasi Bisnis — Politeknik Negeri Malang*  
-*Penyusun: Gargarina Nanda Iswati / Ayin (`ayinanda`)*
+*D4 Sistem Informasi Bisnis - Politeknik Negeri Malang*  
+*Penyusun: Gargarina Nanda Iswati / Ayin (`ayinanda`)*  
+*Tautan Master Draw.io Terintegrasi:* [Draw.io Master Diagram CUCI.IN](https://app.diagrams.net/#G137nS6VY0wup3dgUuvhl3XlTU6_MzBA7V) (Memuat Use Case, ERD/PDM, Site Map / SSMap, Activity Diagram Admin, Staff, dan Customer).
 
 ---
 
-Dokumen ini memuat rekonstruksi diagram alur rekayasa perangkat lunak (*Activity Diagram* dan *Sequence Diagram*) yang selaras dengan arsitektur kode program aktual (*reverse engineering*) sistem **CUCI.IN** untuk pemenuhan deliverable Milestone 2 (Minggu 9–12) dan materi Pertemuan 9–10 Pemrograman Web Lanjut (PWL).
+Dokumen ini memuat rekonstruksi diagram alur rekayasa perangkat lunak (*Activity Diagram* dan *Sequence Diagram*) yang selaras dengan arsitektur kode program aktual (*reverse engineering*) sistem **CUCI.IN** untuk pemenuhan deliverable Milestone 2 (Minggu 9-12) dan materi Pertemuan 9-10 Pemrograman Web Lanjut (PWL). Seluruh diagram visual dapat diakses langsung pada berkas master Draw.io di atas.
 
 ---
 

@@ -43,6 +43,29 @@ Catatan: Mitigasi `Lead 1–5` (`b719351`, `dcd6f20`, `d2c829c`, `c3285ed`, plus
 - **Zaky (`fix/proxy-trust-and-auth-hardening`):** Ganti wildcard `trustProxies(at: '*')` di `bootstrap/app.php` (whitelist proxy + kecualikan `HEADER_X_FORWARDED_HOST`) + `URL::forceRootUrl`/`forceScheme` di `AppServiceProvider` (`HIGH #2`); tambah regex telepon di `RegisterRequest`/`CustomerRequest`, hapus `sessions` di `ResetPasswordController`, & pasang `throttle:6,1` pada auth tamu di `routes/web.php`.
 - **Maulana (`fix/idempotency-scoping-and-role-reports`):** Migrasi composite unique `idempotency_keys` (`user_id`, `route`, `key`) + scoping & `$request->path()` di `EnsureIdempotency` (`LOW #4`); pindahkan `/admin/reports*` ke `role:admin` + update `docs/prd.md` & `ReportExportTest` (`LOW #6`); ganti `.innerHTML` -> `.textContent` di `create.blade.php`. *(Cek EC2 & `SERVER_SSH_FINGERPRINT` Lead 1–5 sudah beres).*
 
+### 1B. Sprint Stabilisasi & Remediasi Bug Minggu 13 (docs/qa_bug_tracker_minggu_13.md)
+Saat memasuki fase QA Minggu 13, jika anggota tim menyebut nama mereka atau tugas defect baru dari penemuan Esha/Ayin, asisten AI di AGY wajib langsung memandu ke cabang dan file berikut:
+- **Nora (`fix/tracking-lookup-security` & `fix/password-reveal-edge` | `git config user.name "annora1304"` & `naylaannora@gmail.com`):**
+  - **Tugas 1:** BUG-09 — Sinkronisasi parameter kode nota landing page (`name="code"`) ke `TransactionLookupController.php` agar pencarian langsung tampil otomatis di `/lookup` tanpa ketik ulang. Berkas: `resources/views/welcome.blade.php`, `app/Http/Controllers/TransactionLookupController.php`.
+  - **Tugas 2:** BUG-10 — Duplikasi ikon mata show/hide password pada input kata sandi di Microsoft Edge/Chromium. Berkas: `resources/css/app.css`.
+  - **Tugas 3:** BUG-11 — Alur verifikasi pembayaran kasir POS agar bukti transfer/QRIS dapat masuk antrean 'Menunggu Verifikasi' dan memunculkan tombol 'Setujui / Approve' di `/admin/payments`. Berkas: `app/Services/RecordPayment.php`, `resources/views/staff/transactions/create.blade.php`, `resources/views/staff/payments/index.blade.php`.
+  - **Tugas 4:** BUG-12 — Sinkronisasi tarif kalkulator landing page `#estimasi` dari database `Service::where('is_active', true)->get()` pada `routes/web.php` dan `welcome.blade.php`.
+- **Dawamul / Zaky (`fix/workflow-status-and-minimum-order` | `git config user.name "Zakydawamul"` & `zakydb091005@gmail.com`):**
+  - **Tugas 1:** BUG-05 — Perbaiki urutan tombol aksi header `show.blade.php` agar status pengerjaan cucian (`received` -> `processing` -> `completed`) diproses tuntas sebelum tombol `picked_up` ('Tandai Diambil') muncul pada transaksi lunas.
+  - **Tugas 2:** BUG-08 — Terapkan perhitungan ambang batas `minimum_order` (`max($weight, $minimumOrder)`) pada kalkulasi subtotal POS `create.blade.php` & service `TransactionCalculator.php`.
+  - **Berkas:** `resources/views/staff/transactions/show.blade.php`, `app/Http/Controllers/Staff/TransactionController.php`, `app/Services/TransactionCalculator.php`, `resources/views/staff/transactions/create.blade.php`.
+- **Ayin (`fix/service-modal-step-validation` | `git config user.name "ayinanda"` & `ayiniswati22@gmail.com`):**
+  - **Tugas:** BUG-07 — Perbaiki step mismatch HTML5 modal ubah layanan di `/admin/services` agar angka nominal bulat seperti Rp 10.000 (`min="0" step="1"`) dan order minimum bulat 26 (`min="0.1" step="any"`) tidak diblokir validasi native browser.
+  - **Berkas:** `resources/views/services/index.blade.php`, `app/Http/Requests/ServiceRequest.php`.
+- **Esha (`fix/customer-phone-validation` | `fix/mobile-hamburger-navigation`):**
+  - **Tugas 1:** BUG-04 — Hamburger menu mobile view landing page (Status: *Fixed* di `welcome.blade.php`).
+  - **Tugas 2:** BUG-06 — Validasi panjang (min 10-13 digit) & regex nomor HP seluler Indonesia pada pendaftaran akun customer (cegah `0681` lolos). Berkas: `app/Http/Requests/Auth/RegisterRequest.php`, `app/Http/Requests/CustomerRequest.php`, `resources/views/auth/register.blade.php`.
+  - **Tugas 3:** Pengujian responsif tampilan mobile peramban seluler dan pelaporan defect baru di `docs/qa_bug_tracker_minggu_13.md`.
+- **Daysyani (`daysyani` | `syaniday@gmail.com`):**
+  - **Tugas:** Lead QA Regression Testing, validasi pengujian alur tiket komplain anti-IDOR, dan verifikasi status kelulusan bug fix yang diajukan anggota tim di `docs/qa_bug_tracker_minggu_13.md` & Notion QA.
+- **Maulana (`Maulanahb` | `maulanahmad2287@gmail.com`):**
+  - **Tugas:** BUG-02 — Rate limiting endpoint `/lookup` & upload bukti bayar (*Status: Fixed* via PR #27 di `fix/tracking-lookup-security`), Project Manager, Code Review Pull Request, fasilitasi merge cabang perbaikan ke `develop`, pemantauan status deployment cloud AWS EC2, dan koordinasi dokumen QA Minggu 13.
+
 ---
 
 ## 2. Alur Kerja Standar Pengembangan Fitur (Feature Lifecycle)
