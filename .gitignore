@@ -91,3 +91,7 @@ docs/screenshot_trace_viewer_asli.jpg
 /findings.md
 /.security-audit/
 
+# Local Diagram Design Skill
+.agents/skills/diagram-design/
+/.diagram-design
+

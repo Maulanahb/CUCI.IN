@@ -320,6 +320,59 @@ Sebagai lanjutan evaluasi keamanan aplikasi, asisten AI di IDE AGY juga **wajib 
   * Cabang: `fix/idempotency-scoping-and-role-reports`
   * Fokus: Migrasi composite `unique(['user_id', 'route', 'key'])` pada `idempotency_keys`, filter lookup & `computePayloadHash()` (`$request->path()`) di `EnsureIdempotency`, pindahkan `/admin/reports*` ke grup `role:admin` (sinkron dengan `docs/prd.md` & `ReportExportTest.php`), serta ganti `.innerHTML` menjadi `.textContent` di `create.blade.php`. *(Cek & hardening EC2 Lead 1–5 sudah selesai; tersisa cek UI opsional Cloudflare `Full (strict)` + HSTS).*
 
+---
+
+## 7. Deteksi Otomatis Sprint Stabilisasi & Remediasi Bug Minggu 13 (docs/qa_bug_tracker_minggu_13.md)
+
+Memasuki **Minggu 13 (Fase QA, Stabilisasi, & Hardening Pasca-Milestone 2)**, asisten AI di IDE AGY **wajib mengenali secara otomatis** anggota tim yang sedang aktif ketika mereka menyebutkan nama, panggilan, atau kata kunci tugasnya, lalu langsung memandu ke cabang Git, konfigurasi `git config user.*`, dan berkas target sesuai dokumen [qa_bug_tracker_minggu_13.md](file:///c:/laragon/www/cuci-in/docs/qa_bug_tracker_minggu_13.md):
+
+* **Deteksi Nora (`annora1304` | `nayla annora nobel widyonarko` | `naylaannora@gmail.com` | "Nora" | "saya nora"):**
+  * **Tugas M13:** 
+    1. **BUG-09 — Sinkronisasi Parameter Kode Nota Landing Page ke /lookup** (Ubah `name="transaction_code"` jadi `name="code"` di hero form landing page & pasang fallback parameter di controller agar hasil pencarian langsung muncul tanpa ketik ulang). Cabang: `fix/tracking-lookup-security`. Berkas: [resources/views/welcome.blade.php](file:///c:/laragon/www/cuci-in/resources/views/welcome.blade.php), [app/Http/Controllers/TransactionLookupController.php](file:///c:/laragon/www/cuci-in/app/Http/Controllers/TransactionLookupController.php).
+    2. **BUG-10 — Duplikasi Ikon Mata Input Password di Edge/Chromium** (Reset CSS `input[type="password"]::-ms-reveal, ::-ms-clear { display: none; }` agar tidak bentrok dengan tombol kustom Alpine.js). Cabang: `fix/password-reveal-edge` atau `fix/tracking-lookup-security`. Berkas: [resources/css/app.css](file:///c:/laragon/www/cuci-in/resources/css/app.css).
+    3. **BUG-11 — Alur Persetujuan Verifikasi Pembayaran Kasir POS** (Sediakan opsi verifikasi mutasi non-tunai di POS kasir agar bukti masuk antrean 'Menunggu Verifikasi' dan memunculkan tombol 'Setujui / Approve' di `/admin/payments`). Cabang: `fix/cashier-payment-verification-flow`. Berkas: [app/Services/RecordPayment.php](file:///c:/laragon/www/cuci-in/app/Services/RecordPayment.php), [resources/views/staff/transactions/create.blade.php](file:///c:/laragon/www/cuci-in/resources/views/staff/transactions/create.blade.php), [resources/views/staff/payments/index.blade.php](file:///c:/laragon/www/cuci-in/resources/views/staff/payments/index.blade.php).
+    4. **BUG-12 — Tarif Kalkulator Landing Page Hardcoded Statis** (Sinkronkan data paket & tarif kalkulator `#estimasi` dari model `Service::where('is_active', true)->get()` pada `routes/web.php` dan binding dinamis `@json($services)` di `welcome.blade.php`). Cabang: `fix/landing-calculator-pricing-sync`. Berkas: [routes/web.php](file:///c:/laragon/www/cuci-in/routes/web.php), [resources/views/welcome.blade.php](file:///c:/laragon/www/cuci-in/resources/views/welcome.blade.php).
+  * **Setup Git:** `git config user.name "annora1304" && git config user.email "naylaannora@gmail.com"`
+
+* **Deteksi Dawamul / Zaky (`Zakydawamul` | `muh. zaky dawamul busro` | `zakydb091005@gmail.com` | "Dawamul" | "Zaky" | "saya dawamul" | "saya zaky"):**
+  * **Tugas M13:** 
+    1. **BUG-05 — Alur Status Pengerjaan Cucian & Koreksi Tombol Aksi Header** (Prioritaskan status pengerjaan 'Mulai Cuci' & 'Selesai Cuci' sebelum 'Tandai Diambil' pada transaksi lunas).
+    2. **BUG-08 — Kalkulasi Ambang Batas Minimum Order POS & Engine** (Terapkan `max($weight, $minimumOrder)` agar pesanan di bawah batas tidak lolos tanpa batas minimum).
+  * **Cabang Git:** `fix/workflow-status-and-minimum-order`
+  * **Setup Git:** `git config user.name "Zakydawamul" && git config user.email "zakydb091005@gmail.com"`
+  * **Berkas Target:** [resources/views/staff/transactions/show.blade.php](file:///c:/laragon/www/cuci-in/resources/views/staff/transactions/show.blade.php), [app/Http/Controllers/Staff/TransactionController.php](file:///c:/laragon/www/cuci-in/app/Http/Controllers/Staff/TransactionController.php), [app/Services/TransactionCalculator.php](file:///c:/laragon/www/cuci-in/app/Services/TransactionCalculator.php), [resources/views/staff/transactions/create.blade.php](file:///c:/laragon/www/cuci-in/resources/views/staff/transactions/create.blade.php), dan `tests/Feature/TransactionCalculatorTest.php`.
+
+* **Deteksi Ayin (`ayinanda` | `gargarina nanda iswati` | `ayiniswati22@gmail.com` | "Ayin" | "saya ayin"):**
+  * **Tugas M13:** **BUG-07 — Perbaikan Step Mismatch & Validasi Input Modal Edit Layanan** (Koreksi `min` & `step` HTML5 agar angka nominal bulat seperti Rp 10.000 dan order minimum bulat 26 tidak ditolak browser native validation).
+  * **Cabang Git:** `fix/service-modal-step-validation`
+  * **Setup Git:** `git config user.name "ayinanda" && git config user.email "ayiniswati22@gmail.com"`
+  * **Berkas Target:** [resources/views/services/index.blade.php](file:///c:/laragon/www/cuci-in/resources/views/services/index.blade.php), [app/Http/Requests/ServiceRequest.php](file:///c:/laragon/www/cuci-in/app/Http/Requests/ServiceRequest.php).
+
+* **Deteksi Esha (`Esha` | `Esa` | "Esha" | "Esa" | "saya esha"):**
+  * **Tugas M13:** 
+    1. **BUG-04 — Hamburger Menu Mobile View Landing Page** (*Status: Telah Selesai / Fixed*).
+    2. **BUG-06 — Validasi Panjang & Format Nomor Telepon Pelanggan** (Nomor seluler min 10–13 digit regex Indonesia, cegah nomor pendek 4 digit seperti `0681`). Cabang: `fix/customer-phone-validation`. Berkas: [app/Http/Requests/Auth/RegisterRequest.php](file:///c:/laragon/www/cuci-in/app/Http/Requests/Auth/RegisterRequest.php), [app/Http/Requests/CustomerRequest.php](file:///c:/laragon/www/cuci-in/app/Http/Requests/CustomerRequest.php), [resources/views/auth/register.blade.php](file:///c:/laragon/www/cuci-in/resources/views/auth/register.blade.php), dan `tests/Feature/Auth/RegistrationTest.php`.
+    3. **Pengujian Responsif Mobile:** Pengujian tampilan mobile peramban seluler (viewport 360px–430px) dan pelaporan temuan defect baru ke [docs/qa_bug_tracker_minggu_13.md](file:///c:/laragon/www/cuci-in/docs/qa_bug_tracker_minggu_13.md).
+
+* **Deteksi Daysyani (`daysyani` | `daysyani sophi masayu` | `syaniday@gmail.com` | "Daysyani" | "saya daysyani"):**
+  * **Tugas M13:** Lead QA Regression Testing, validasi pengujian alur tiket komplain anti-IDOR, dan verifikasi status kelulusan bug fix yang diajukan anggota tim di [docs/qa_bug_tracker_minggu_13.md](file:///c:/laragon/www/cuci-in/docs/qa_bug_tracker_minggu_13.md) & Notion QA.
+  * **Setup Git:** `git config user.name "daysyani" && git config user.email "syaniday@gmail.com"`
+
+* **Deteksi Maulana (`Maulanahb` | `maulana ahmad bukhori` | `maulanahmad2287@gmail.com` | "Maulana" | "saya maulana"):**
+  * **Tugas M13:** 
+    1. **BUG-02 — Rate Limiting Endpoint /lookup & Upload Bukti Bayar** (*Status: Telah Selesai / Fixed* via PR #27 di `fix/tracking-lookup-security`).
+    2. Project Manager, Code Review Pull Request, fasilitasi merge cabang perbaikan ke `develop`, pemantauan status deployment cloud AWS EC2, dan koordinasi dokumen QA Minggu 13.
+  * **Setup Git:** `git config user.name "Maulanahb" && git config user.email "maulanahmad2287@gmail.com"`
+
+---
+
+## 8. Perkakas Headless Scraping & Web Automation (Lightpanda)
+
+Lightpanda Browser (`~/.local/bin/lightpanda` di WSL2 Ubuntu) terdaftar sebagai MCP server `lightpanda` untuk agen AI:
+- Gunakan saat membaca halaman dokumentasi JS-heavy, scraping konten web modern, atau ekstraksi markdown tanpa beban Chromium berat (~30–50 MB RAM vs 1–2 GB).
+- Perintah CLI cepat: `wsl -d Ubuntu -- bash -lc 'lightpanda fetch "<URL>" --dump markdown'`.
+- Jangan gunakan untuk screenshot visual pixel-perfect (tetap gunakan Playwright/Chromium).
+
 
 
 
