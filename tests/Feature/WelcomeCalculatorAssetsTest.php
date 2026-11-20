@@ -19,6 +19,6 @@ class WelcomeCalculatorAssetsTest extends TestCase
         $response->assertOk();
         $response->assertSee('id="estimasi"', false);
         $response->assertSee('livewire.js', false);
-        $response->assertSee('data-livewire-style', false);
+        $response->assertSee('<!-- Livewire Styles -->', false);
     }
 }

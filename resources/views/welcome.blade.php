@@ -227,7 +227,8 @@
                         class="mx-auto mt-10 max-w-3xl rounded-2xl border border-slate-200/90 bg-slate-50/40 p-5 shadow-xs sm:p-8"
                         x-data="{
                             selectedService: 'reguler',
-                            weightIndex: 1,
+
+                            weight: 1,
                             weightValues: [1, 5, 10, 20],
 
                             services: {
@@ -256,15 +257,19 @@
                                     note: 'Khusus pakaian yang sudah Anda cuci sendiri di rumah.'
                                 }
                             },
+
                             get current() {
                                 return this.services[this.selectedService];
                             },
-                            get weight() {
-                                return this.weightValues[this.weightIndex];
+
+                            get selectedWeight() {
+                                return this.weightValues[this.weight];
                             },
+
                             get total() {
-                                return this.weight * this.current.price;
+                                return this.selectedWeight * this.current.price;
                             },
+
                             formatMoney(val) {
                                 return 'Rp ' + Number(val).toLocaleString('id-ID');
                             }
@@ -330,30 +335,29 @@
                             </div>
                         </div>
 
-                        {{-- Step 2: Slider Berat Cucian (Kg) --}}
+                        {{-- Step 2: Slider Berat Cucian --}}
                         <div class="mt-6 border-t border-slate-200/80 pt-6">
                             <div class="flex items-center justify-between">
                                 <label class="text-xs font-bold text-slate-900 uppercase tracking-wider">
                                     2. Perkiraan Berat Pakaian
                                 </label>
 
-                                <span class="font-mono text-base font-extrabold text-brand-700">
-                                    <span x-text="weight"></span> Kg
+                                <span class="text-xs font-mono text-slate-500"
+                                    x-text="'(' + selectedWeight + ' kg × ' + formatMoney(current.price) + ')'">
                                 </span>
                             </div>
 
-                            <div class="mt-4">
+                            <div class="mt-3">
                                 <input
                                     type="range"
                                     min="0"
                                     max="3"
                                     step="1"
-                                    x-model.number="weightIndex"
+                                    x-model="weight"
                                     class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-brand-600 focus:outline-none"
                                 >
 
-                                {{-- Label pilihan berat --}}
-                                <div class="mt-3 flex justify-between text-xs font-mono text-slate-600">
+                                <div class="mt-1 flex justify-between text-2xs font-mono text-slate-600">
                                     <span>1 Kg</span>
                                     <span>5 Kg</span>
                                     <span>10 Kg</span>
@@ -361,7 +365,6 @@
                                 </div>
                             </div>
                         </div>
-
                         {{-- Output Panel: Estimasi Biaya & Waktu --}}
                         <div class="mt-6 rounded-xl border border-brand-200/80 bg-brand-50/60 p-5">
                             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
