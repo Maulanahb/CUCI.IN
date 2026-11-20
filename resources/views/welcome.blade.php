@@ -15,7 +15,7 @@
         @endif
         @livewireStyles
     </head>
-    <body class="bg-slate-50/60 font-sans text-slate-800 antialiased selection:bg-brand-500 selection:text-white" x-data="{ mobileMenuOpen: false }" @keydown.escape.window="mobileMenuOpen = false">
+    <body class="bg-slate-50/60 font-sans text-slate-800 antialiased selection:bg-brand-500 selection:text-white" x-data="{ mobileMenuOpen: false }">
         {{-- Sticky Glassmorphism Header --}}
         <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 backdrop-blur-md transition-all">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -76,10 +76,8 @@
                 {{-- Mobile Hamburger Button --}}
                 <button
                     type="button"
-                    class="flex size-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 md:hidden"
+                    class="flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 md:hidden"
                     @click="mobileMenuOpen = !mobileMenuOpen"
-                    :aria-expanded="mobileMenuOpen ? 'true' : 'false'"
-                    aria-controls="mobile-nav"
                     aria-label="Toggle Navigation Menu"
                 >
                     <x-lucide-menu class="size-5" x-show="!mobileMenuOpen" />
@@ -89,9 +87,7 @@
 
             {{-- Mobile Dropdown Menu --}}
             <div
-                id="mobile-nav"
                 x-show="mobileMenuOpen"
-                @click.outside="mobileMenuOpen = false"
                 x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 -translate-y-2"
                 x-transition:enter-end="opacity-100 translate-y-0"
@@ -231,16 +227,47 @@
                         class="mx-auto mt-10 max-w-3xl rounded-2xl border border-slate-200/90 bg-slate-50/40 p-5 shadow-xs sm:p-8"
                         x-data="{
                             selectedService: 'reguler',
-                            weight: 3.0,
+                            weightIndex: 1,
+                            weightValues: [1, 5, 10, 20],
+
                             services: {
-                                reguler: { name: 'Cuci Kering Setrika Reguler', price: 6000, duration: 48, note: 'Pakaian dicuci wangi, disetrika uap rapi, dan dikemas plastik higienis.' },
-                                express: { name: 'Cuci Kilat Express 24 Jam', price: 10000, duration: 24, note: 'Prioritas pengerjaan 1 hari, cocok untuk pakaian darurat bepergian.' },
-                                super: { name: 'Super Express 8 Jam (Same Day)', price: 15000, duration: 8, note: 'Masuk pagi, sore hari siap diambil dalam kondisi rapi.' },
-                                setrika: { name: 'Setrika Rapi Saja', price: 4000, duration: 24, note: 'Khusus pakaian yang sudah Anda cuci sendiri di rumah.' }
+                                reguler: {
+                                    name: 'Cuci Kering Setrika Reguler',
+                                    price: 6000,
+                                    duration: 48,
+                                    note: 'Pakaian dicuci wangi, disetrika uap rapi, dan dikemas plastik higienis.'
+                                },
+                                express: {
+                                    name: 'Cuci Kilat Express 24 Jam',
+                                    price: 10000,
+                                    duration: 24,
+                                    note: 'Prioritas pengerjaan 1 hari, cocok untuk pakaian darurat bepergian.'
+                                },
+                                super: {
+                                    name: 'Super Express 8 Jam (Same Day)',
+                                    price: 15000,
+                                    duration: 8,
+                                    note: 'Masuk pagi, sore hari siap diambil dalam kondisi rapi.'
+                                },
+                                setrika: {
+                                    name: 'Setrika Rapi Saja',
+                                    price: 4000,
+                                    duration: 24,
+                                    note: 'Khusus pakaian yang sudah Anda cuci sendiri di rumah.'
+                                }
                             },
-                            get current() { return this.services[this.selectedService]; },
-                            get total() { return Math.round(this.weight * this.current.price); },
-                            formatMoney(val) { return 'Rp ' + Number(val).toLocaleString('id-ID'); }
+                            get current() {
+                                return this.services[this.selectedService];
+                            },
+                            get weight() {
+                                return this.weightValues[this.weightIndex];
+                            },
+                            get total() {
+                                return this.weight * this.current.price;
+                            },
+                            formatMoney(val) {
+                                return 'Rp ' + Number(val).toLocaleString('id-ID');
+                            }
                         }"
                     >
                         {{-- Step 1: Pilih Paket Layanan --}}
@@ -309,22 +336,26 @@
                                 <label class="text-xs font-bold text-slate-900 uppercase tracking-wider">
                                     2. Perkiraan Berat Pakaian
                                 </label>
+
                                 <span class="font-mono text-base font-extrabold text-brand-700">
-                                    <span x-text="Number(weight).toFixed(1)"></span> Kg
+                                    <span x-text="weight"></span> Kg
                                 </span>
                             </div>
-                            <div class="mt-3">
+
+                            <div class="mt-4">
                                 <input
                                     type="range"
-                                    min="1"
-                                    max="20"
-                                    step="0.5"
-                                    x-model="weight"
+                                    min="0"
+                                    max="3"
+                                    step="1"
+                                    x-model.number="weightIndex"
                                     class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-brand-600 focus:outline-none"
                                 >
-                                <div class="mt-1 flex justify-between text-2xs font-mono text-slate-600">
-                                    <span>1 Kg (3-4 potong)</span>
-                                    <span>5 Kg (1 minggu)</span>
+
+                                {{-- Label pilihan berat --}}
+                                <div class="mt-3 flex justify-between text-xs font-mono text-slate-600">
+                                    <span>1 Kg</span>
+                                    <span>5 Kg</span>
                                     <span>10 Kg</span>
                                     <span>20 Kg</span>
                                 </div>
@@ -564,6 +595,7 @@
             </div>
         </footer>
 
+        {{-- Memuat Alpine.js (dibundel Livewire) agar kalkulator & menu mobile interaktif --}}
         @livewireScripts
     </body>
 </html>
