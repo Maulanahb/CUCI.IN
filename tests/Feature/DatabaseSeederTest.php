@@ -57,4 +57,20 @@ class DatabaseSeederTest extends TestCase
         $this->assertSame(5, Service::count());
         $this->assertSame(4, Customer::count());
     }
+
+    public function test_it_skips_default_users_and_customers_when_seeding_in_production(): void
+    {
+        $originalEnv = $this->app['env'];
+        $this->app['env'] = 'production';
+
+        try {
+            $this->artisan('db:seed', ['--force' => true]);
+        } finally {
+            $this->app['env'] = $originalEnv;
+        }
+
+        $this->assertSame(0, User::count());
+        $this->assertSame(0, Customer::count());
+        $this->assertSame(5, Service::count());
+    }
 }

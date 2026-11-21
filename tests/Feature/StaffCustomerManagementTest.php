@@ -74,32 +74,27 @@ class StaffCustomerManagementTest extends TestCase
             'created_by' => $staff->id,
         ]);
 
-        // Saat pertama dibuka tanpa memilih customer, detail belum muncul
+        // Halaman index pelanggan berhasil dimuat dan menampilkan daftar pelanggan beserta payload riwayat
         $response = $this->actingAs($staff)->get(route('staff.customers.index'));
         $response->assertOk();
         $response->assertSee('Data Pelanggan');
         $response->assertSee('Hendra Wijaya');
         $response->assertSee('0812-9842-1102');
-        $response->assertDontSee('TRK-20261025-046');
+        // Kode transaksi tersedia di payload drawer untuk instant slide-over tanpa latency
+        $response->assertSee('TRK-20261025-046');
 
-        // Saat customer dipilih, kartu profil dan tabel riwayat muncul tapi kartu detail transaksi belum muncul sebelum baris diklik
+        // Saat customer_id diberikan (direct link), halaman memuat dan auto-open drawer pelanggan tersebut
         $responseSelected = $this->actingAs($staff)->get(route('staff.customers.index', ['customer_id' => $customer->id]));
         $responseSelected->assertOk();
         $responseSelected->assertSee('Hendra Wijaya');
-        $responseSelected->assertSee('Riwayat Transaksi Cucian Sebelumnya');
         $responseSelected->assertSee('TRK-20261025-046');
-        $responseSelected->assertDontSee('Estimasi Pengambilan');
 
-        // Saat baris riwayat transaksi diklik (dengan transaction_id), kartu detail riwayat order baru muncul
-        $responseTransaction = $this->actingAs($staff)->get(route('staff.customers.index', [
-            'customer_id' => $customer->id,
-            'transaction_id' => $transaction->id,
-        ]));
+        // Saat transaksi diklik dari drawer pelanggan, diarahkan ke halaman detail transaksi terpusat
+        $responseTransaction = $this->actingAs($staff)->get(route('staff.transactions.show', $transaction));
         $responseTransaction->assertOk();
         $responseTransaction->assertSee('Detail Transaksi');
-        $responseTransaction->assertSee('Estimasi Pengambilan');
         $responseTransaction->assertSee('Cuci Komplit Reguler');
-        $responseTransaction->assertSee('52.000');
+        $responseTransaction->assertSee('Rp 52.000');
         $responseTransaction->assertSee('Lunas');
     }
 
@@ -340,4 +335,58 @@ class StaffCustomerManagementTest extends TestCase
 
         $this->assertSame('https://wa.me/6281234567890', $customer->whatsapp_url);
     }
+
+    
+    public function test_staff_cannot_create_customer_with_duplicate_phone_number(): void
+    {
+        $staff = User::factory()->staff()->create();
+
+        Customer::create([
+            'name' => 'Pelanggan Pertama',
+            'phone' => '082233334444',
+        ]);
+
+        $response = $this->actingAs($staff)->post(
+            route('staff.customers.store'),
+            [
+                'name' => 'Pelanggan Kedua',
+                'phone' => '082233334444',
+            ]
+        );
+
+        $response->assertSessionHasErrors([
+            'phone' => 'Nomor telepon sudah terdaftar. Gunakan nomor telepon lain.',
+        ]);
+
+        $this->assertDatabaseMissing('customers', [
+            'name' => 'Pelanggan Kedua',
+            'phone' => '082233334444',
+        ]);
+    }
+
+    public function test_duplicate_phone_is_rejected_after_phone_normalization(): void
+    {
+        $staff = User::factory()->staff()->create();
+
+        Customer::create([
+            'name' => 'Pelanggan Pertama',
+            'phone' => '081234567890',
+        ]);
+
+        $response = $this->actingAs($staff)->post(
+            route('staff.customers.store'),
+            [
+                'name' => 'Pelanggan Kedua',
+                'phone' => '+6281234567890',
+            ]
+        );
+
+        $response->assertSessionHasErrors('phone');
+
+        $this->assertDatabaseMissing('customers', [
+            'name' => 'Pelanggan Kedua',
+            'phone' => '081234567890',
+        ]);
+    }
+
 }

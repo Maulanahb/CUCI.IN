@@ -57,10 +57,24 @@ class StoreTransactionRequest extends FormRequest
                 'string',
                 'in:Tunai,Transfer,QRIS',
             ],
+            'payment_choice' => [
+                'nullable',
+                'string',
+                'in:unpaid,full,dp',
+            ],
             'payment_amount' => [
                 'nullable',
+                'required_if:payment_choice,dp',
                 'numeric',
-                'min:0',
+                'min:1',
+            ],
+            'payment_proof' => [
+                'nullable',
+                'file',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+                Rule::dimensions()->maxWidth(4096)->maxHeight(4096),
             ],
         ];
     }
@@ -85,6 +99,11 @@ class StoreTransactionRequest extends FormRequest
             'items.*.weight.required' => 'Berat cucian wajib diisi.',
             'items.*.weight.numeric' => 'Berat cucian harus berupa angka.',
             'items.*.weight.gt' => 'Berat cucian harus lebih besar dari 0.',
+            'payment_proof.file' => 'Bukti pembayaran harus berupa berkas.',
+            'payment_proof.image' => 'Bukti pembayaran harus berupa gambar.',
+            'payment_proof.mimes' => 'Bukti pembayaran harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'payment_proof.max' => 'Ukuran bukti pembayaran maksimal 5 MB.',
+            'payment_proof.dimensions' => 'Dimensi gambar bukti pembayaran maksimal 4096×4096 piksel.',
         ];
     }
 
@@ -100,6 +119,7 @@ class StoreTransactionRequest extends FormRequest
             'items' => 'item transaksi',
             'items.*.service_id' => 'layanan',
             'items.*.weight' => 'berat cucian',
+            'payment_proof' => 'bukti pembayaran',
         ];
     }
 }

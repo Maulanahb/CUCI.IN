@@ -29,6 +29,25 @@ class ServiceRequest extends FormRequest
             $this->merge(['price' => $cleanedPrice]);
         }
 
+        if ($this->has('minimum_order')) {
+            $rawMin = (string) $this->input('minimum_order');
+            $cleanedMin = str_replace(',', '.', str_replace([' ', '.'], '', $rawMin));
+            $this->merge(['minimum_order' => is_numeric($cleanedMin) ? $cleanedMin : 1.00]);
+        } else {
+            $this->merge(['minimum_order' => 1.00]);
+        }
+
+        $serviceType = $this->input('service_type', 'reguler');
+        $isExpressInput = $this->has('is_express')
+            ? filter_var($this->input('is_express'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false
+            : ($serviceType === 'express');
+
+        $this->merge([
+            'unit' => $this->input('unit', 'kg') ?: 'kg',
+            'service_type' => $serviceType ?: 'reguler',
+            'is_express' => $isExpressInput,
+        ]);
+
         if ($this->has('is_active')) {
             $this->merge([
                 'is_active' => filter_var($this->input('is_active'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true,
@@ -54,6 +73,25 @@ class ServiceRequest extends FormRequest
             ],
             'price' => [
                 'required',
+                'numeric',
+                'gt:0',
+            ],
+            'unit' => [
+                'sometimes',
+                'string',
+                Rule::in(['kg', 'pcs', 'meter']),
+            ],
+            'service_type' => [
+                'sometimes',
+                'string',
+                Rule::in(['reguler', 'express', 'khusus']),
+            ],
+            'is_express' => [
+                'sometimes',
+                'boolean',
+            ],
+            'minimum_order' => [
+                'sometimes',
                 'numeric',
                 'gt:0',
             ],

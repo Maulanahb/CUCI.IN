@@ -17,9 +17,7 @@ class StoreComplaintRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $user = $this->user();
-
-        return $user !== null && $user->role === 'customer' && $user->customer !== null;
+        return (bool) $this->user()?->can('create', Complaint::class);
     }
 
     /**
@@ -68,6 +66,14 @@ class StoreComplaintRequest extends FormRequest
             ],
             'subject' => ['required', 'string', 'min:5', 'max:150'],
             'description' => ['required', 'string', 'min:10', 'max:2000'],
+            'photo' => [
+                'nullable',
+                'file',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+                Rule::dimensions()->maxWidth(4096)->maxHeight(4096),
+            ],
         ];
     }
 
@@ -87,6 +93,10 @@ class StoreComplaintRequest extends FormRequest
             'description.required' => 'Rincian kendala pengaduan wajib diisi.',
             'description.min' => 'Rincian kendala minimal 10 karakter.',
             'description.max' => 'Rincian kendala maksimal 2.000 karakter.',
+            'photo.image' => 'Berkas bukti kendala harus berupa gambar.',
+            'photo.mimes' => 'Format foto yang didukung hanya JPG, JPEG, PNG, atau WEBP.',
+            'photo.max' => 'Ukuran berkas foto maksimal 5 MB.',
+            'photo.dimensions' => 'Dimensi foto kendala maksimal 4096×4096 piksel.',
         ];
     }
 }

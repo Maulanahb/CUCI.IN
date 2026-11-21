@@ -1,13 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Customer\ComplaintController as CustomerComplaintController;
+use App\Http\Controllers\Customer\PaymentProofController as CustomerPaymentProofController;
 use App\Http\Controllers\Customer\TransactionController as CustomerTransactionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\Staff\ComplaintController as StaffComplaintController;
 use App\Http\Controllers\Staff\CustomerController;
 use App\Http\Controllers\Staff\PaymentController;
 use App\Http\Controllers\Staff\TransactionController as StaffTransactionController;
@@ -17,8 +21,12 @@ use Illuminate\Support\Facades\Route;
 
 // Rute Publik: Lacak Cucian / Cek Transaksi Menggunakan Kode Nota (Tanpa Login)
 Route::get('/lookup', [TransactionLookupController::class, 'index'])
+    ->middleware('throttle:20,1')
     ->name('transactions.lookup');
-
+Route::post('/lookup/payment-proof', [TransactionLookupController::class, 'storePaymentProof'])
+    ->middleware('throttle:10,1')
+    ->name('transactions.lookup.payment-proof');
+    
 // Rute Home / Root: Mengarahkan pengguna sesuai status login & role
 Route::get('/', function () {
     if (Auth::check()) {
@@ -37,7 +45,7 @@ Route::get('/', function () {
         }
     }
 
-    return redirect()->route('login');
+    return view('welcome');
 })->name('home');
 
 // Rute Autentikasi Pengguna Tamu (Guest)
@@ -46,6 +54,7 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('/login', [LoginController::class, 'store'])
+        ->middleware('throttle:login')
         ->name('login.store');
 
     Route::get('/register', [RegisterController::class, 'create'])
@@ -93,6 +102,13 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'admin'])
                 ->name('dashboard');
+
+            // Pengelolaan Pengguna & Hak Akses (Milestone 2 Maulana)
+            Route::patch('/users/{user}/toggle-status', [AdminUserController::class, 'toggleStatus'])
+                ->name('users.toggle-status');
+
+            Route::resource('users', AdminUserController::class)
+                ->except(['show']);
         });
 
     // =========================================================
@@ -138,6 +154,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('transactions.index');
 
                 Route::post('/transactions', [StaffTransactionController::class, 'store'])
+                    ->middleware('idempotent')
                     ->name('transactions.store');
 
                 Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
@@ -150,11 +167,35 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('transactions.status');
 
                 Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
+                    ->middleware('idempotent')
                     ->name('transactions.payments.store');
+
+                // Verifikasi Bukti Pembayaran Transfer/QRIS
+                Route::get('/payments', [PaymentController::class, 'index'])
+                    ->name('payments.index');
+
+                Route::get('/payments/{payment}', [PaymentController::class, 'show'])
+                    ->name('payments.show');
+
+                Route::get('/payments/{payment}/proof', [PaymentController::class, 'proof'])
+                    ->name('payments.proof');
+
+                Route::patch('/payments/{payment}/verify', [PaymentController::class, 'verify'])
+                    ->name('payments.verify');
 
                 // Layanan (Katalog untuk Staff)
                 Route::get('/services', [ServiceController::class, 'index'])
                     ->name('services.index');
+
+                // Pengelolaan Pengaduan Pelanggan
+                Route::get('/complaints', [StaffComplaintController::class, 'index'])
+                    ->name('complaints.index');
+
+                Route::get('/complaints/{complaint}', [StaffComplaintController::class, 'show'])
+                    ->name('complaints.show');
+
+                Route::patch('/complaints/{complaint}', [StaffComplaintController::class, 'update'])
+                    ->name('complaints.update');
             });
 
         // -------------------------------------------------
@@ -184,6 +225,7 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('transactions.create');
 
                 Route::post('/transactions', [StaffTransactionController::class, 'store'])
+                    ->middleware('idempotent')
                     ->name('transactions.store');
 
                 Route::get('/transactions/{transaction}', [StaffTransactionController::class, 'show'])
@@ -196,7 +238,21 @@ Route::middleware(['auth', 'active'])->group(function () {
                     ->name('transactions.status');
 
                 Route::post('/transactions/{transaction}/payments', [PaymentController::class, 'store'])
+                    ->middleware('idempotent')
                     ->name('transactions.payments.store');
+
+                // Verifikasi Bukti Pembayaran Transfer/QRIS
+                Route::get('/payments', [PaymentController::class, 'index'])
+                    ->name('payments.index');
+
+                Route::get('/payments/{payment}', [PaymentController::class, 'show'])
+                    ->name('payments.show');
+
+                Route::get('/payments/{payment}/proof', [PaymentController::class, 'proof'])
+                    ->name('payments.proof');
+
+                Route::patch('/payments/{payment}/verify', [PaymentController::class, 'verify'])
+                    ->name('payments.verify');
 
                 // Layanan (CRUD Master Layanan untuk Admin)
                 Route::get('/services', [ServiceController::class, 'index'])
@@ -213,6 +269,29 @@ Route::middleware(['auth', 'active'])->group(function () {
 
                 Route::delete('/services/{service}', [ServiceController::class, 'destroy'])
                     ->name('services.destroy');
+
+                // Pengelolaan Pengaduan Pelanggan untuk Admin
+                Route::get('/complaints', [StaffComplaintController::class, 'index'])
+                    ->name('complaints.index');
+
+                Route::get('/complaints/{complaint}', [StaffComplaintController::class, 'show'])
+                    ->name('complaints.show');
+
+                Route::patch('/complaints/{complaint}', [StaffComplaintController::class, 'update'])
+                    ->name('complaints.update');
+
+                // Laporan Operasional & Keuangan (Ekspor PDF, Excel, CSV Streaming - Ayin M2)
+                Route::get('/reports', [ReportController::class, 'index'])
+                    ->name('reports.index');
+
+                Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])
+                    ->name('reports.export.pdf');
+
+                Route::get('/reports/export/excel', [ReportController::class, 'exportExcel'])
+                    ->name('reports.export.excel');
+
+                Route::get('/reports/export/csv', [ReportController::class, 'exportCsv'])
+                    ->name('reports.export.csv');
             });
     });
 
@@ -228,6 +307,14 @@ Route::middleware(['auth', 'active'])->group(function () {
 
             Route::get('/transactions', [CustomerTransactionController::class, 'index'])
                 ->name('transactions.index');
+
+            // Unggah & lihat bukti pembayaran Transfer/QRIS
+            Route::post('/transactions/{transaction}/payment-proofs', [CustomerPaymentProofController::class, 'store'])
+                ->middleware('throttle:10,1')
+                ->name('transactions.payment-proofs.store');
+
+            Route::get('/payments/{payment}/proof', [CustomerPaymentProofController::class, 'show'])
+                ->name('payments.proof');
 
             Route::get('/complaints', [CustomerComplaintController::class, 'index'])
                 ->name('complaints.index');

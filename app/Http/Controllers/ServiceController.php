@@ -18,12 +18,14 @@ class ServiceController extends Controller
     {
         $search = trim((string) $request->input('q', ''));
         $statusFilter = (string) $request->input('status', 'all');
+        $typeFilter = (string) $request->input('type', 'all');
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';
 
         // Hitung statistik ringkas untuk KPI card
         $totalCount = Service::count();
         $activeCount = Service::where('is_active', true)->count();
         $inactiveCount = Service::where('is_active', false)->count();
+        $expressCount = Service::where('is_active', true)->where('is_express', true)->count();
         $avgPrice = (float) Service::where('is_active', true)->avg('price');
         $minDuration = (int) Service::where('is_active', true)->min('estimated_duration');
 
@@ -31,6 +33,7 @@ class ServiceController extends Controller
             'total' => $totalCount,
             'active' => $activeCount,
             'inactive' => $inactiveCount,
+            'express' => $expressCount,
             'avg_price' => $avgPrice,
             'min_duration' => $minDuration,
         ];
@@ -55,6 +58,17 @@ class ServiceController extends Controller
             $servicesQuery->where('is_active', false);
         }
 
+        // Filter kategori / paket layanan
+        if ($typeFilter === 'express') {
+            $servicesQuery->where('is_express', true);
+        } elseif ($typeFilter === 'kiloan') {
+            $servicesQuery->where('unit', 'kg');
+        } elseif ($typeFilter === 'satuan') {
+            $servicesQuery->where('unit', 'pcs');
+        } elseif ($typeFilter === 'khusus') {
+            $servicesQuery->where('service_type', 'khusus');
+        }
+
         // Urutan: Layanan aktif di atas, lalu urut abjad nama layanan
         $services = $servicesQuery
             ->orderByDesc('is_active')
@@ -67,6 +81,7 @@ class ServiceController extends Controller
             'stats',
             'search',
             'statusFilter',
+            'typeFilter',
             'routePrefix'
         ));
     }
@@ -96,6 +111,7 @@ class ServiceController extends Controller
     {
         $validated = $request->validated();
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['is_express'] = $request->boolean('is_express') || ($validated['service_type'] ?? '') === 'express';
 
         $service->update($validated);
         $routePrefix = $request->routeIs('admin.*') ? 'admin' : 'staff';

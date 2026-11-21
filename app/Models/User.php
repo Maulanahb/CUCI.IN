@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -89,5 +90,13 @@ class User extends Authenticatable
     public function handledComplaints(): HasMany
     {
         return $this->hasMany(Complaint::class, 'handled_by');
+    }
+
+    /**
+     * Relasi ke riwayat kunci idempotensi yang dibuat oleh user ini.
+     */
+    public function idempotencyKeys(): HasMany
+    {
+        return $this->hasMany(IdempotencyKey::class, 'user_id');
     }
 }

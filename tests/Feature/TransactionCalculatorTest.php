@@ -285,4 +285,54 @@ class TransactionCalculatorTest extends TestCase
         $this->assertEquals('12000.00', $result1['total_amount']);
         $this->assertEquals('12000.00', $result2['total_amount']);
     }
+
+    /**
+     * Test kalkulator menyertakan metadata unit dan mendeteksi paket kilat (express).
+     */
+    public function test_calculate_with_advanced_service_catalog_and_express_metadata(): void
+    {
+        $serviceReguler = Service::create([
+            'name' => 'Cuci Kering Standar',
+            'price' => 7000.00,
+            'unit' => 'kg',
+            'service_type' => 'reguler',
+            'is_express' => false,
+            'estimated_duration' => 24,
+            'is_active' => true,
+        ]);
+
+        $serviceExpress = Service::create([
+            'name' => 'Cuci Kilat Express 4 Jam',
+            'price' => 18000.00,
+            'unit' => 'kg',
+            'service_type' => 'express',
+            'is_express' => true,
+            'estimated_duration' => 4,
+            'is_active' => true,
+        ]);
+
+        $servicePcs = Service::create([
+            'name' => 'Cuci Sepatu Sneaker',
+            'price' => 25000.00,
+            'unit' => 'pcs',
+            'service_type' => 'khusus',
+            'is_express' => false,
+            'estimated_duration' => 48,
+            'is_active' => true,
+        ]);
+
+        $result = TransactionCalculator::calculate([
+            ['service_id' => $serviceExpress->id, 'weight' => 2],
+            ['service_id' => $servicePcs->id, 'weight' => 1],
+        ]);
+
+        $this->assertTrue($result['has_express']);
+        $this->assertEquals('61000.00', $result['total_amount']);
+        $this->assertEquals(48, $result['estimated_duration']);
+
+        $this->assertTrue($result['items'][0]['is_express']);
+        $this->assertEquals('Kg', $result['items'][0]['unit_label']);
+        $this->assertFalse($result['items'][1]['is_express']);
+        $this->assertEquals('Pcs', $result['items'][1]['unit_label']);
+    }
 }

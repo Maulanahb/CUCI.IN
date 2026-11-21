@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Customer\StoreComplaintRequest;
+use App\Jobs\CompressComplaintPhoto;
 use App\Models\Complaint;
 use App\Models\Customer;
 use App\Models\Transaction;
@@ -12,6 +13,7 @@ use App\Services\ComplaintCodeGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class ComplaintController extends Controller
@@ -90,6 +92,8 @@ class ComplaintController extends Controller
      */
     public function create(Request $request): View
     {
+        Gate::authorize('create', Complaint::class);
+
         /** @var User $user */
         $user = auth()->user();
         /** @var Customer|null $customer */
@@ -133,14 +137,24 @@ class ComplaintController extends Controller
     {
         $validated = $request->validated();
 
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('complaints', 'public');
+        }
+
         $complaint = Complaint::create([
             'complaint_code' => ComplaintCodeGenerator::generate(),
             'transaction_id' => $validated['transaction_id'],
             'subject' => $validated['subject'],
             'description' => $validated['description'],
+            'photo_path' => $photoPath,
             'status' => 'Menunggu',
             'deadline_at' => now()->addDays(2),
         ]);
+
+        if ($photoPath) {
+            CompressComplaintPhoto::dispatch($complaint->id)->afterCommit();
+        }
 
         return redirect()
             ->route('customer.complaints.show', $complaint)
@@ -152,15 +166,7 @@ class ComplaintController extends Controller
      */
     public function show(Complaint $complaint): View
     {
-        /** @var User $user */
-        $user = auth()->user();
-        /** @var Customer|null $customer */
-        $customer = $user->customer;
-
-        // Otorisasi: pengaduan harus terkait dengan transaksi milik customer yang login
-        if (! $customer || $complaint->transaction?->customer_id !== $customer->id) {
-            abort(403, 'Anda tidak memiliki hak akses untuk melihat pengaduan ini.');
-        }
+        Gate::authorize('view', $complaint);
 
         $complaint->load([
             'transaction.details.service',

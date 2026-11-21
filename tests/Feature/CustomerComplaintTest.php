@@ -3,12 +3,16 @@
 namespace Tests\Feature;
 
 use App\Enums\TransactionStatus;
+use App\Jobs\CompressComplaintPhoto;
 use App\Models\Complaint;
 use App\Models\Customer;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\ComplaintCodeGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class CustomerComplaintTest extends TestCase
@@ -200,5 +204,122 @@ class CustomerComplaintTest extends TestCase
         $response->assertOk();
         $response->assertSee(route('customer.complaints.index'));
         $response->assertSee('Pengaduan');
+    }
+
+    public function test_customer_can_upload_complaint_photo_and_dispatches_compress_job(): void
+    {
+        Storage::fake('public');
+        Queue::fake();
+
+        $user = User::factory()->create(['role' => 'customer']);
+        $customer = Customer::factory()->create(['user_id' => $user->id]);
+        $transaction = Transaction::factory()->create([
+            'customer_id' => $customer->id,
+            'status' => TransactionStatus::Diproses,
+        ]);
+
+        // Buat file gambar fake dengan header JPEG valid (16x16) tanpa tergantung ekstensi PHP-GD
+        $fakeJpgContent = "\xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`\x00\x00\xFF\xDB\x00C\x00".str_repeat("\x10", 64)."\xFF\xC0\x00\x11\x08\x00\x10\x00\x10\x03\x01\x22\x00\x02\x11\x01\x03\x11\x01\xFF\xC4\x00\x1F\x00\x00\x01\x05\x01\x01\x01\x01\x01\x01\x00\x00\x00\x00\x00\x00\x00\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\xFF\xDA\x00\x0C\x03\x01\x00\x02\x11\x03\x11\x00?\x00\xBF\x00\xFF\xD9";
+        $fakePhoto = UploadedFile::fake()->createWithContent('baju_noda.jpg', $fakeJpgContent);
+
+        $response = $this->actingAs($user)->post(route('customer.complaints.store'), [
+            'transaction_id' => $transaction->id,
+            'subject' => 'Noda oli di kemeja putih',
+            'description' => 'Ada noda hitam pekat di bagian dada baju setelah dicuci.',
+            'photo' => $fakePhoto,
+        ]);
+
+        $complaint = Complaint::where('transaction_id', $transaction->id)->first();
+        $this->assertNotNull($complaint);
+        $this->assertNotNull($complaint->photo_path);
+
+        Storage::disk('public')->assertExists($complaint->photo_path);
+        Queue::assertPushed(CompressComplaintPhoto::class, function (CompressComplaintPhoto $job) use ($complaint) {
+            return $job->complaintId === $complaint->id;
+        });
+
+        $response->assertRedirect(route('customer.complaints.show', $complaint));
+    }
+
+    public function test_customer_cannot_upload_invalid_file_for_complaint_photo(): void
+    {
+        $user = User::factory()->create(['role' => 'customer']);
+        $customer = Customer::factory()->create(['user_id' => $user->id]);
+        $transaction = Transaction::factory()->create([
+            'customer_id' => $customer->id,
+            'status' => TransactionStatus::Diproses,
+        ]);
+
+        $invalidFile = UploadedFile::fake()->create('dokumen.pdf', 1000, 'application/pdf');
+
+        $response = $this->actingAs($user)->post(route('customer.complaints.store'), [
+            'transaction_id' => $transaction->id,
+            'subject' => 'Noda oli di kemeja putih',
+            'description' => 'Ada noda hitam pekat di bagian dada baju setelah dicuci.',
+            'photo' => $invalidFile,
+        ]);
+
+        $response->assertSessionHasErrors('photo');
+    }
+
+    public function test_complaint_policy_authorizes_owner_and_forbids_other_customer(): void
+    {
+        $userA = User::factory()->create(['role' => 'customer']);
+        $customerA = Customer::factory()->create(['user_id' => $userA->id]);
+        $transactionA = Transaction::factory()->create([
+            'customer_id' => $customerA->id,
+            'status' => TransactionStatus::Diproses,
+        ]);
+
+        $complaintA = Complaint::create([
+            'complaint_code' => ComplaintCodeGenerator::generate(),
+            'transaction_id' => $transactionA->id,
+            'subject' => 'Komplain kepemilikan A',
+            'description' => 'Milik user A.',
+            'status' => 'Menunggu',
+            'deadline_at' => now()->addDays(2),
+        ]);
+
+        $userB = User::factory()->create(['role' => 'customer']);
+        Customer::factory()->create(['user_id' => $userB->id]);
+
+        $staff = User::factory()->create(['role' => 'staff']);
+
+        // User A (pemilik) boleh melihat komplainnya sendiri
+        $this->actingAs($userA)->get(route('customer.complaints.show', $complaintA))->assertOk();
+
+        // User B (bukan pemilik) ditolak dengan 403 Forbidden oleh ComplaintPolicy
+        $this->actingAs($userB)->get(route('customer.complaints.show', $complaintA))->assertForbidden();
+
+        // Staf boleh melihat komplain milik siapa pun
+        $this->actingAs($staff)->get(route('staff.complaints.show', $complaintA))->assertOk();
+
+        // Pengguna role customer tanpa profil customer dilarang membuat komplain (Policy create)
+        $userWithoutProfile = User::factory()->create(['role' => 'customer']);
+        $this->actingAs($userWithoutProfile)->get(route('customer.complaints.create'))->assertForbidden();
+    }
+
+    public function test_customer_cannot_upload_complaint_photo_exceeding_max_dimensions(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create(['role' => 'customer']);
+        $customer = Customer::factory()->create(['user_id' => $user->id]);
+        $transaction = Transaction::factory()->create([
+            'customer_id' => $customer->id,
+            'status' => TransactionStatus::Diproses,
+        ]);
+
+        $oversizedPhoto = UploadedFile::fake()->image('oversized.jpg', 4097, 1);
+
+        $response = $this->actingAs($user)->post(route('customer.complaints.store'), [
+            'transaction_id' => $transaction->id,
+            'subject' => 'Noda oli di kemeja putih',
+            'description' => 'Ada noda hitam pekat di bagian dada baju setelah dicuci.',
+            'photo' => $oversizedPhoto,
+        ]);
+
+        $response->assertSessionHasErrors('photo');
+        $this->assertDatabaseCount('complaints', 0);
     }
 }

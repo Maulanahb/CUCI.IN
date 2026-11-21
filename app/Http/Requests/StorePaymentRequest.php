@@ -2,46 +2,88 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StorePaymentRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return auth()->check();
+        return $this->user() !== null;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'amount' => ['required', 'numeric', 'min:100'],
-            'method' => ['required', 'string', 'in:Tunai,Transfer,QRIS'],
-            'payment_type' => ['nullable', 'string', 'in:Pembayaran Penuh,DP,Pelunasan'],
+            'amount' => [
+                'required',
+                'numeric',
+                'min:100',
+            ],
+
+            'method' => [
+                'required',
+                'string',
+                Rule::in(['Tunai', 'Transfer', 'QRIS']),
+            ],
+
+            'payment_type' => [
+                'nullable',
+                'string',
+                Rule::in([
+                    'Pembayaran Penuh',
+                    'DP',
+                    'Pelunasan',
+                ]),
+            ],
+
+            'cash_received' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                'gte:amount',
+                'exclude_unless:method,Tunai',
+            ],
+
+            'proof_file' => [
+                'required_if:method,Transfer,QRIS',
+                'nullable',
+                'file',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:5120',
+                Rule::dimensions()->maxWidth(4096)->maxHeight(4096),
+            ],
+
+            'is_confirmed' => [
+                'nullable',
+                'boolean',
+            ],
         ];
     }
 
-    /**
-     * Get custom error messages.
-     *
-     * @return array<string, string>
-     */
     public function messages(): array
     {
         return [
             'amount.required' => 'Nominal pembayaran wajib diisi.',
             'amount.numeric' => 'Nominal pembayaran harus berupa angka.',
             'amount.min' => 'Nominal pembayaran minimal Rp 100.',
+
             'method.required' => 'Metode pembayaran wajib dipilih.',
             'method.in' => 'Metode pembayaran harus berupa Tunai, Transfer, atau QRIS.',
+
+            'payment_type.in' => 'Jenis pembayaran tidak valid.',
+
+            'cash_received.numeric' => 'Uang diterima harus berupa angka.',
+            'cash_received.min' => 'Uang diterima tidak boleh negatif.',
+            'cash_received.gte' => 'Uang diterima tidak boleh kurang dari nominal pembayaran.',
+
+            'proof_file.required_if' => 'Bukti pembayaran wajib diunggah untuk metode Transfer atau QRIS.',
+            'proof_file.file' => 'Bukti pembayaran harus berupa berkas.',
+            'proof_file.image' => 'Bukti pembayaran harus berupa gambar.',
+            'proof_file.mimes' => 'Bukti pembayaran harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'proof_file.max' => 'Ukuran bukti pembayaran maksimal 5 MB.',
+            'proof_file.dimensions' => 'Dimensi gambar bukti pembayaran maksimal 4096×4096 piksel.',
         ];
     }
 }

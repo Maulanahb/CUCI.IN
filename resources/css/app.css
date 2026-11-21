@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 
+@source '../../resources/views/**/*.blade.php';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../vendor/livewire/livewire/src/**/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -7,6 +8,10 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Micro-typography token untuk badge & label ringkas (11px / 14px) */
+    --text-2xs: 0.6875rem;
+    --text-2xs--line-height: 0.875rem;
 
     /* Warna brand CUCI.IN (Aqua Teal — Air, Kebersihan & Kesegaran Laundry) */
     --color-brand-50: #ecfeff;
@@ -22,6 +27,50 @@
     --color-brand-950: #083344;
 }
 
+
+@utility text-2xs {
+    font-size: 0.6875rem;
+    line-height: 0.875rem;
+}
+
 [x-cloak] {
     display: none !important;
+}
+
+/* Fokus keyboard yang konsisten untuk seluruh elemen interaktif. */
+@layer base {
+    ::selection {
+        background: var(--color-brand-100);
+        color: var(--color-brand-950);
+    }
+
+    :where(a, button, [role='button'], summary):focus-visible {
+        outline: 2px solid var(--color-brand-600);
+        outline-offset: 2px;
+    }
+}
+
+/*
+ * Hormati preferensi gerak berkurang: gerakan spasial (geser sidebar, pulsa, skala)
+ * dimatikan, tetapi transisi warna tetap hidup sebagai umpan balik status, dan
+ * .animate-spin tetap berputar karena itu satu-satunya sinyal "sedang memproses".
+ */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto !important;
+    }
+
+    *,
+    ::before,
+    ::after {
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow !important;
+    }
+
+    .animate-pulse {
+        animation: none !important;
+    }
+
+    .animate-spin {
+        animation-duration: 1.5s !important;
+    }
 }

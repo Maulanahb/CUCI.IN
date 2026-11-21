@@ -90,4 +90,30 @@ class TransactionPaymentTest extends TestCase
         $this->assertEquals('Belum Bayar', $transaction->payment_status);
         $this->assertFalse($transaction->isPaidOff());
     }
+
+    public function test_ignores_payments_awaiting_verification_in_calculation(): void
+    {
+        $user = User::factory()->create();
+        $customer = Customer::factory()->create();
+        $transaction = Transaction::factory()->create([
+            'customer_id' => $customer->id,
+            'created_by' => $user->id,
+            'total_amount' => 50000,
+        ]);
+
+        Payment::create([
+            'transaction_id' => $transaction->id,
+            'amount' => 50000,
+            'payment_type' => 'Pembayaran Penuh',
+            'method' => 'Transfer',
+            'verification_status' => 'Menunggu Verifikasi',
+            'paid_at' => now(),
+            'created_by' => $user->id,
+        ]);
+
+        $transaction->refresh();
+        $this->assertEquals(0, $transaction->total_paid);
+        $this->assertEquals(50000, $transaction->remaining_amount);
+        $this->assertEquals('Belum Bayar', $transaction->payment_status);
+    }
 }

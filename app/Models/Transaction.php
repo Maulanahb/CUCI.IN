@@ -135,8 +135,8 @@ class Transaction extends Model
     public function getTotalPaidAttribute(): float
     {
         $validPayments = $this->relationLoaded('payments')
-            ? $this->payments->filter(fn (Payment $p): bool => in_array($p->verification_status, ['Tidak Diperlukan', 'Terverifikasi'], true))
-            : $this->payments()->whereIn('verification_status', ['Tidak Diperlukan', 'Terverifikasi'])->get();
+            ? $this->payments->filter(fn (Payment $p): bool => in_array($p->verification_status, Payment::PAID_STATUSES, true))
+            : $this->payments()->paid()->get();
 
         return (float) $validPayments->sum('amount');
     }
@@ -147,6 +147,26 @@ class Transaction extends Model
     public function getRemainingAmountAttribute(): float
     {
         return max(0.0, (float) $this->total_amount - $this->total_paid);
+    }
+
+    /**
+     * Hitung nominal bukti pembayaran yang masih menunggu verifikasi kasir.
+     */
+    public function getPendingVerificationAmountAttribute(): float
+    {
+        $pendingPayments = $this->relationLoaded('payments')
+            ? $this->payments->filter(fn (Payment $p): bool => $p->verification_status === Payment::PENDING_STATUS)
+            : $this->payments()->pendingVerification()->get();
+
+        return (float) $pendingPayments->sum('amount');
+    }
+
+    /**
+     * Sisa tagihan yang masih dapat diajukan bukti pembayarannya oleh pelanggan.
+     */
+    public function getSubmittableAmountAttribute(): float
+    {
+        return max(0.0, $this->remaining_amount - $this->pending_verification_amount);
     }
 
     /**
@@ -174,5 +194,86 @@ class Transaction extends Model
     public function isPaidOff(): bool
     {
         return $this->payment_status === 'Lunas';
+    }
+
+    /**
+     * URL tautan WhatsApp untuk mengirimkan nota dan link pelacakan online ke pelanggan.
+     */
+    public function getWhatsappShareUrlAttribute(): ?string
+    {
+        $rawPhone = $this->customer?->phone;
+        if (! $rawPhone) {
+            return null;
+        }
+
+        $cleanPhone = preg_replace('/[^0-9]/', '', (string) $rawPhone);
+        if ($cleanPhone === '') {
+            return null;
+        }
+
+        if (str_starts_with($cleanPhone, '620')) {
+            $cleanPhone = '62'.substr($cleanPhone, 3);
+        } elseif (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62'.substr($cleanPhone, 1);
+        } elseif (str_starts_with($cleanPhone, '8')) {
+            $cleanPhone = '62'.$cleanPhone;
+        }
+
+        $phoneLen = strlen($cleanPhone);
+        if ($phoneLen < 9 || $phoneLen > 15) {
+            return null;
+        }
+
+        $customerName = $this->customer?->name ?? 'Pelanggan';
+        $statusLabel = $this->status instanceof TransactionStatus ? $this->status->value : (string) $this->status;
+        $paymentStatus = $this->payment_status;
+        $totalAmount = number_format((float) $this->total_amount, 0, ',', '.');
+        $remainingAmount = (float) $this->remaining_amount;
+        $lookupUrl = route('transactions.lookup', ['code' => $this->transaction_code]);
+
+        $lines = [
+            '*CUCI.IN - NOTIFIKASI LAUNDRY*',
+            '',
+            "Halo Kak {$customerName},",
+            'Berikut rincian status pesanan laundry Anda:',
+            '',
+            "- No. Nota: *{$this->transaction_code}*",
+            "- Status Cucian: *{$statusLabel}*",
+            "- Status Pembayaran: *{$paymentStatus}*",
+            "- Total Tagihan: *Rp {$totalAmount}*",
+        ];
+
+        if ($remainingAmount > 0) {
+            $lines[] = '- Sisa Tagihan: Rp '.number_format($remainingAmount, 0, ',', '.');
+        }
+
+        $lines[] = '';
+        $lines[] = 'Lacak progres cucian Anda secara real-time melalui tautan resmi:';
+        $lines[] = $lookupUrl;
+        $lines[] = '';
+        $lines[] = 'Terima kasih telah mempercayakan cucian Anda kepada CUCI.IN.';
+
+        $message = implode("\n", $lines);
+
+        return "https://wa.me/{$cleanPhone}?text=".rawurlencode($message);
+    }
+
+    /**
+     * Scope untuk menyaring cucian yang selesai namun belum diambil melebihi ambang hari.
+     */
+    public function scopeUnclaimedStorage($query, int $days = 14)
+    {
+        return $query->where('status', TransactionStatus::Selesai)
+            ->where('updated_at', '<=', now()->subDays($days));
+    }
+
+    /**
+     * Cek apakah cucian selesai disimpan melebihi ambang batas hari.
+     */
+    public function isStorageOverdue(int $days = 14): bool
+    {
+        return $this->status === TransactionStatus::Selesai
+            && $this->updated_at !== null
+            && $this->updated_at <= now()->subDays($days);
     }
 }

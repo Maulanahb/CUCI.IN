@@ -41,6 +41,7 @@ class TransactionCalculator
         $calculatedItems = [];
         $totalAmount = '0.00';
         $maxDurationHours = 0;
+        $hasExpress = false;
         $serviceCache = [];
 
         foreach ($items as $index => $item) {
@@ -95,8 +96,17 @@ class TransactionCalculator
                 $maxDurationHours = $duration;
             }
 
+            if ($service->is_express) {
+                $hasExpress = true;
+            }
+
             $calculatedItems[] = [
                 'service_id' => (int) $service->id,
+                'service_name' => (string) $service->name,
+                'unit' => (string) ($service->unit ?? 'kg'),
+                'unit_label' => (string) ($service->unit_label ?? 'Kg'),
+                'service_type' => (string) ($service->service_type ?? 'reguler'),
+                'is_express' => (bool) $service->is_express,
                 'weight' => $weightFormatted,
                 'unit_price' => $unitPrice,
                 'subtotal' => $subtotal,
@@ -111,6 +121,7 @@ class TransactionCalculator
             'total_amount' => $totalAmount,
             'estimated_completed_at' => $estimatedCompletedAt,
             'estimated_duration' => $maxDurationHours,
+            'has_express' => $hasExpress,
         ];
     }
 

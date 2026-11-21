@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TransactionStatus;
 use App\Models\Customer;
 use App\Models\Service;
 use App\Models\Transaction;
@@ -155,7 +156,7 @@ class StaffTransactionPageTest extends TestCase
     }
 
     /**
-     * Link "Transaksi Baru" tampil di sidebar navigasi untuk Staff dan Admin.
+     * Link "Kasir POS" tampil di sidebar navigasi untuk Staff dan Admin.
      */
     public function test_transaksi_baru_sidebar_link_is_visible_for_staff_and_admin(): void
     {
@@ -164,16 +165,16 @@ class StaffTransactionPageTest extends TestCase
         $staff = User::factory()->staff()->create();
         $admin = User::factory()->admin()->create();
 
-        // Staff melihat link Transaksi Baru di sidebar mengarah ke staff.transactions.create
+        // Staff melihat link Kasir POS di sidebar mengarah ke staff.transactions.create
         $responseStaff = $this->actingAs($staff)->get(route('staff.dashboard'));
         $responseStaff->assertOk();
-        $responseStaff->assertSee('Transaksi Baru');
+        $responseStaff->assertSee('Kasir POS');
         $responseStaff->assertSee(route('staff.transactions.create'));
 
-        // Admin melihat link Transaksi Baru di sidebar mengarah ke admin.transactions.create
+        // Admin melihat link Kasir POS di sidebar mengarah ke admin.transactions.create
         $responseAdmin = $this->actingAs($admin)->get(route('admin.dashboard'));
         $responseAdmin->assertOk();
-        $responseAdmin->assertSee('Transaksi Baru');
+        $responseAdmin->assertSee('Kasir POS');
         $responseAdmin->assertSee(route('admin.transactions.create'));
     }
 
@@ -229,5 +230,196 @@ class StaffTransactionPageTest extends TestCase
         $response->assertSee('modal-quick-customer');
         $response->assertSee('quick_customer_name');
         $response->assertSee('quick_customer_phone');
+    }
+
+    /**
+     * Memperbarui status via AJAX (sheet drawer) mengembalikan respons JSON 200 dengan struktur valid.
+     */
+    public function test_staff_can_update_status_via_ajax_json_response(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $transaction = Transaction::create([
+            'customer_id' => $customer->id,
+            'created_by' => $staff->id,
+            'transaction_code' => 'TRK-20261014-099',
+            'total_amount' => 50000,
+            'status' => TransactionStatus::Diterima,
+        ]);
+
+        $response = $this->actingAs($staff)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->patch(route('staff.transactions.status', $transaction), [
+                'status' => 'Diproses',
+                'notes' => 'Mulai cuci mesin 1',
+            ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'success' => true,
+            'message' => 'Status transaksi berhasil diperbarui.',
+            'transaction' => [
+                'id' => $transaction->id,
+                'status' => 'Diproses',
+                'notes' => 'Mulai cuci mesin 1',
+            ],
+        ]);
+
+        $this->assertSame(TransactionStatus::Diproses, $transaction->fresh()->status);
+    }
+
+    /**
+     * Menyimpan memo catatan tanpa mengubah status via AJAX berhasil mencatat ke riwayat status.
+     */
+    public function test_staff_can_save_memo_via_ajax_without_changing_status(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $transaction = Transaction::create([
+            'customer_id' => $customer->id,
+            'created_by' => $staff->id,
+            'transaction_code' => 'TRK-20261014-098',
+            'total_amount' => 30000,
+            'status' => TransactionStatus::Diproses,
+        ]);
+
+        $response = $this->actingAs($staff)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->patch(route('staff.transactions.status', $transaction), [
+                'status' => 'Diproses',
+                'notes' => 'Catatan khusus pakaian luntur dipisah',
+            ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'success' => true,
+            'transaction' => [
+                'id' => $transaction->id,
+                'status' => 'Diproses',
+                'notes' => 'Catatan khusus pakaian luntur dipisah',
+            ],
+        ]);
+
+        $this->assertDatabaseHas('laundry_status_histories', [
+            'transaction_id' => $transaction->id,
+            'status' => 'Diproses',
+            'notes' => 'Catatan khusus pakaian luntur dipisah',
+        ]);
+    }
+
+    /**
+     * Transisi status tidak valid via AJAX mengembalikan respons 422 JSON dengan pesan kesalahan.
+     */
+    public function test_staff_gets_json_validation_error_on_invalid_status_transition(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+        $transaction = Transaction::create([
+            'customer_id' => $customer->id,
+            'created_by' => $staff->id,
+            'transaction_code' => 'TRK-20261014-097',
+            'total_amount' => 45000,
+            'status' => TransactionStatus::Selesai,
+        ]);
+
+        // Rollback dari Selesai ke Diproses tanpa catatan alasan
+        $response = $this->actingAs($staff)
+            ->withHeaders(['Accept' => 'application/json'])
+            ->patch(route('staff.transactions.status', $transaction), [
+                'status' => 'Diproses',
+                'notes' => '',
+            ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('notes');
+    }
+
+    /**
+     * Staf dapat memfilter cucian yang lewat batas simpan 14 hari via filter status=unclaimed.
+     */
+    public function test_can_filter_unclaimed_storage_transactions(): void
+    {
+        $this->withoutVite();
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+
+        // 1. Cucian lewat batas simpan (selesai 16 hari yang lalu)
+        $overdueTrx = Transaction::create([
+            'customer_id' => $customer->id,
+            'created_by' => $staff->id,
+            'transaction_code' => 'TRK-20261014-OVERDUE',
+            'total_amount' => 50000,
+            'status' => TransactionStatus::Selesai,
+        ]);
+        $overdueTrx->updated_at = now()->subDays(16);
+        $overdueTrx->saveQuietly();
+
+        // 2. Cucian baru selesai (selesai 2 hari yang lalu)
+        $freshTrx = Transaction::create([
+            'customer_id' => $customer->id,
+            'created_by' => $staff->id,
+            'transaction_code' => 'TRK-20261014-FRESH',
+            'total_amount' => 35000,
+            'status' => TransactionStatus::Selesai,
+        ]);
+        $freshTrx->updated_at = now()->subDays(2);
+        $freshTrx->saveQuietly();
+
+        $response = $this->actingAs($staff)->get(route('staff.transactions.index', ['status' => 'unclaimed']));
+
+        $response->assertOk();
+        $response->assertSee('TRK-20261014-OVERDUE');
+        $response->assertDontSee('TRK-20261014-FRESH');
+    }
+
+    /**
+     * Model Transaction mengidentifikasi kondisi lewat batas simpan dengan benar.
+     */
+    public function test_is_storage_overdue_helper_on_transaction_model(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create();
+
+        $trx = Transaction::create([
+            'customer_id' => $customer->id,
+            'created_by' => $staff->id,
+            'transaction_code' => 'TRK-TEST-OVERDUE-1',
+            'total_amount' => 20000,
+            'status' => TransactionStatus::Selesai,
+        ]);
+        $trx->updated_at = now()->subDays(15);
+        $trx->saveQuietly();
+
+        $this->assertTrue($trx->isStorageOverdue(14));
+        $this->assertFalse($trx->isStorageOverdue(20));
+
+        // Jika status Diproses, tidak pernah dianggap storage overdue
+        $trx->status = TransactionStatus::Diproses;
+        $trx->saveQuietly();
+        $this->assertFalse($trx->isStorageOverdue(14));
+    }
+
+    /**
+     * Artisan command laundry:check-unclaimed berjalan dengan benar.
+     */
+    public function test_unclaimed_laundry_artisan_command(): void
+    {
+        $staff = User::factory()->staff()->create();
+        $customer = Customer::factory()->create(['name' => 'Budi Santoso']);
+
+        $trx = Transaction::create([
+            'customer_id' => $customer->id,
+            'created_by' => $staff->id,
+            'transaction_code' => 'TRK-UNCLAIMED-CLI',
+            'total_amount' => 40000,
+            'status' => TransactionStatus::Selesai,
+        ]);
+        $trx->updated_at = now()->subDays(15);
+        $trx->saveQuietly();
+
+        $this->artisan('laundry:check-unclaimed', ['--days' => 14])
+            ->expectsOutputToContain('Ditemukan 1 cucian')
+            ->expectsOutputToContain('TRK-UNCLAIMED-CLI')
+            ->assertExitCode(0);
     }
 }
