@@ -37,6 +37,11 @@
     display: none !important;
 }
 
+input[\:type]::-ms-reveal,
+input[\:type]::-ms-clear {
+    display: none;
+}
+
 /* Fokus keyboard yang konsisten untuk seluruh elemen interaktif. */
 @layer base {
     ::selection {
@@ -50,11 +55,6 @@
     }
 }
 
-/*
- * Hormati preferensi gerak berkurang: gerakan spasial (geser sidebar, pulsa, skala)
- * dimatikan, tetapi transisi warna tetap hidup sebagai umpan balik status, dan
- * .animate-spin tetap berputar karena itu satu-satunya sinyal "sedang memproses".
- */
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto !important;
