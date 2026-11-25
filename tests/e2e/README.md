@@ -34,7 +34,7 @@ Suite pengujian End-to-End (E2E) berbasis `pytest-playwright` yang menguji selur
 | `test_pembatalan_transaksi_cuciin.py` | Siklus status `Diterima -> Diproses -> Selesai -> Diambil`, rollback wajib alasan, pembatalan beralasan, imutabilitas terminal (`TC-STS-001..005`) | `smoke`, `lifecycle` |
 | `test_complaint_cuciin.py` | Pengaduan Customer + unggah foto, penanganan & tanggapan Staf, proteksi nota batal, Anti-IDOR 403 Customer B (`TC-CMP-001..002`, `TC-SEC-001`) | `smoke`, `complaint` |
 | `test_admin_operations_cuciin.py` | Admin Users CRUD + toggle nonaktif, Master Layanan + toggle, Direktori Pelanggan, filter & ekspor PDF/Excel/CSV (`TC-ADM-001..003`, `TC-RPT-001..002`) | `admin` |
-| `test_known_bugs_m3_cuciin.py` | Regresi `@pytest.mark.xfail` untuk defect aktif M3 (`BUG-03`, `BUG-05..09`, `BUG-11..12`) agar otomatis terdeteksi saat fixed (`XPASS`) | `bug_open` |
+| `test_known_bugs_m3_cuciin.py` | Regresi `@pytest.mark.xfail` untuk defect terbuka M3 (`BUG-03`, `BUG-05..08`, `BUG-11..12`) agar otomatis terdeteksi saat fixed (`XPASS`) | `bug_open` |
 
 ---
 

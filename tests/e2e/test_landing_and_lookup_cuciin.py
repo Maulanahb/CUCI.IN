@@ -122,3 +122,19 @@ def test_guest_upload_bukti_pembayaran_validasi_4_digit_dan_persisten(
 
     guest_page.reload()
     expect(guest_page.locator("body")).to_contain_text("Bukti Pembayaran Sedang Diverifikasi")
+
+
+@pytest.mark.smoke
+def test_hero_landing_lacak_sekarang_otomatis_tampil_di_lookup(
+    guest_page: Page,
+    e2e_db: E2eDbFactory,
+):
+    """Submit kode nota dari form hero '/' langsung menampilkan detail transaksi di '/lookup' (BUG-09 fixed)."""
+    trx = e2e_db.create_transaction(weight=2.0, total_amount=20000.0, status="Diproses")
+
+    guest_page.goto(f"{BASE_URL}/")
+    guest_page.locator('form[action$="/lookup"] input[name="code"]').fill(trx["transaction_code"])
+    guest_page.get_by_role("button", name="Lacak Sekarang").click()
+
+    expect(guest_page.locator("#code")).to_have_value(trx["transaction_code"])
+    expect(guest_page.locator("body")).to_contain_text("Status Cucian")

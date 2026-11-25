@@ -8,8 +8,8 @@ import pytest
 from tests.e2e.conftest import BASE_URL, E2eDbFactory
 
 """
-REGRESI BUG TERBUKA M3 (xfail Guard): BUG-03, BUG-05, BUG-06, BUG-07, BUG-08, BUG-09, BUG-11, BUG-12
-Sumber: docs/qa_bug_tracker_minggu_13.md (baseline develop 22f0c97)
+REGRESI BUG TERBUKA M3 (xfail Guard): BUG-03, BUG-05, BUG-06, BUG-07, BUG-08, BUG-11, BUG-12
+Sumber: docs/qa_bug_tracker_minggu_13.md (BUG-09 sudah fixed & dipromosikan ke test_landing_and_lookup_cuciin.py)
 
 Seluruh test di berkas ini bertanda @pytest.mark.bug_open dan @pytest.mark.xfail(strict=False).
 Selama bug belum diperbaiki hasilnya XFAIL; saat PR perbaikan di-merge, test otomatis naik ke XPASS
@@ -146,26 +146,6 @@ def test_bug08_pos_menerapkan_batas_minimum_order_saat_berat_di_bawah_minimum(
     staff_page.locator("#btn-submit-transaction").click()
 
     expect(staff_page.locator("body")).to_contain_text("Rp 30.000")
-
-
-@pytest.mark.bug_open
-@pytest.mark.xfail(
-    strict=False,
-    reason="BUG-09: Hero form welcome.blade.php memakai name='transaction_code' sedangkan /lookup membaca 'code'.",
-)
-def test_bug09_hero_landing_lacak_sekarang_otomatis_tampil_di_lookup(
-    guest_page: Page,
-    e2e_db: E2eDbFactory,
-):
-    """BUG-09: Submit kode nota dari form hero '/' harus langsung menampilkan detail transaksi di '/lookup'."""
-    trx = e2e_db.create_transaction(weight=2.0, total_amount=20000.0, status="Diproses")
-
-    guest_page.goto(f"{BASE_URL}/")
-    guest_page.locator('form[action$="/lookup"] input[type="text"]').fill(trx["transaction_code"])
-    guest_page.get_by_role("button", name="Lacak Sekarang").click()
-
-    expect(guest_page.locator("#code")).to_have_value(trx["transaction_code"])
-    expect(guest_page.locator("body")).to_contain_text("Status Cucian")
 
 
 @pytest.mark.bug_open
