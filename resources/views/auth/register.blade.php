@@ -73,6 +73,9 @@
                         type="tel"
                         value="{{ old('phone') }}"
                         required
+                        minlength="10"
+                        maxlength="15"
+                        inputmode="tel"
                         placeholder="Contoh: 081234567890"
                         @class([
                             'w-full rounded-xl border py-2.5 pl-10 pr-4 text-sm font-mono text-slate-900 placeholder-slate-400 placeholder:font-sans transition focus:outline-none focus:ring-2',

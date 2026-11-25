@@ -72,7 +72,7 @@ class CustomerRequest extends FormRequest
             'phone' => [
                 'required',
                 'string',
-                'max:20',
+                'regex:/^(?:\+62|62|0)8[1-9][0-9]{7,11}$/',
 
                 // Nomor telepon tidak boleh digunakan pelanggan lain.
                 Rule::unique('customers', 'phone')
@@ -94,7 +94,7 @@ class CustomerRequest extends FormRequest
             'name.max' => 'Nama pelanggan maksimal 100 karakter.',
 
             'phone.required' => 'Nomor telepon wajib diisi.',
-            'phone.max' => 'Nomor telepon maksimal 20 karakter.',
+            'phone.regex' => 'Nomor telepon harus berupa nomor seluler Indonesia yang valid (contoh: 081234567890).',
             'phone.unique' => 'Nomor telepon sudah terdaftar. Gunakan nomor telepon lain.',
 
             'address.max' => 'Alamat maksimal 500 karakter.',
