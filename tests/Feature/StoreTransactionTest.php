@@ -465,6 +465,7 @@ class StoreTransactionTest extends TestCase
             'pay_now' => true,
             'payment_method' => 'QRIS',
             'payment_amount' => 10000,
+            'is_confirmed' => true,
         ]);
 
         $response->assertRedirect();
@@ -561,6 +562,7 @@ class StoreTransactionTest extends TestCase
             'payment_choice' => 'full',
             'payment_method' => 'QRIS',
             'payment_proof' => $file,
+            'is_confirmed' => true,
         ]);
 
         $response->assertRedirect();

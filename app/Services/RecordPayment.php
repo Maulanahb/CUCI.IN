@@ -13,6 +13,10 @@ class RecordPayment
     /**
      * Catat pembayaran transaksi secara atomik dan tentukan tipe pembayaran otomatis jika tidak diberikan.
      *
+     * Untuk Transfer/QRIS, $isConfirmed = true berarti kasir sudah memastikan dana masuk sehingga status
+     * langsung "Terverifikasi"; $isConfirmed = false menaruh bukti di antrean "Menunggu Verifikasi"
+     * agar dicek mutasinya oleh Owner/kasir lewat panel verifikasi.
+     *
      * @throws InvalidArgumentException
      */
     public static function execute(
@@ -21,7 +25,8 @@ class RecordPayment
         string $method,
         int $userId,
         ?string $proofFile = null,
-        ?float $cashReceived = null
+        ?float $cashReceived = null,
+        bool $isConfirmed = true
     ): Payment {
         if ($amount <= 0) {
             throw new InvalidArgumentException('Nominal pembayaran harus lebih besar dari 0.');
@@ -42,7 +47,7 @@ class RecordPayment
             $changeAmount = round($cashReceived - $amount, 2);
         }
 
-        return DB::transaction(function () use ($transaction, $amount, $method, $userId, $proofFile, $cashReceived, $changeAmount): Payment {
+        return DB::transaction(function () use ($transaction, $amount, $method, $userId, $proofFile, $cashReceived, $changeAmount, $isConfirmed): Payment {
             $lockedTransaction = Transaction::query()
                 ->whereKey($transaction->id)
                 ->lockForUpdate()
@@ -69,8 +74,13 @@ class RecordPayment
 
             $paymentType = self::determinePaymentType($lockedTransaction, $amount);
 
-            // Kasir mencatat pembayaran setelah uang diterima, jadi transfer/QRIS langsung dianggap terverifikasi.
-            $verificationStatus = $method === 'Tunai' ? 'Tidak Diperlukan' : 'Terverifikasi';
+            // Tunai tidak perlu verifikasi. Transfer/QRIS hanya langsung "Terverifikasi" jika kasir
+            // secara eksplisit mengonfirmasi dana masuk; selain itu masuk antrean verifikasi.
+            $verificationStatus = match (true) {
+                $method === 'Tunai' => 'Tidak Diperlukan',
+                $isConfirmed => 'Terverifikasi',
+                default => Payment::PENDING_STATUS,
+            };
 
             $payment = Payment::create([
                 'transaction_id' => $lockedTransaction->id,

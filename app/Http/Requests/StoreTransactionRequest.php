@@ -68,6 +68,10 @@ class StoreTransactionRequest extends FormRequest
                 'numeric',
                 'min:1',
             ],
+            'is_confirmed' => [
+                'nullable',
+                'boolean',
+            ],
             'payment_proof' => [
                 'nullable',
                 'file',

@@ -657,10 +657,30 @@
                                                 Hapus
                                             </button>
                                         </div>
-                                    </template>
+                                    </div>
                                     <p class="text-xs text-slate-500">
                                         Format JPG, JPEG, PNG, WEBP. Maksimal 5 MB.
                                     </p>
+
+                                    {{-- Konfirmasi kasir: tanpa centang, bukti masuk antrean verifikasi mutasi Owner --}}
+                                    <div class="pt-2 border-t border-brand-200/70">
+                                        <label class="flex items-start gap-2.5 cursor-pointer select-none">
+                                            <input
+                                                type="checkbox"
+                                                name="is_confirmed"
+                                                value="1"
+                                                x-model="isConfirmed"
+                                                class="mt-0.5 size-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer"
+                                            />
+                                            <span class="text-xs font-medium text-slate-700 leading-snug">
+                                                <strong class="font-bold text-slate-900">Dana sudah masuk ke rekening outlet.</strong>
+                                                <span class="block text-slate-500 mt-0.5">
+                                                    Centang agar status langsung <em>Terverifikasi</em>.
+                                                    Biarkan kosong jika mutasi perlu diverifikasi Owner (masuk antrean "Menunggu").
+                                                </span>
+                                            </span>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
 
@@ -874,6 +894,7 @@
                 servicesMap: @json($services->keyBy('id')),
                 paymentChoice: @js(old('payment_choice', old('pay_now') ? (old('payment_amount') ? 'dp' : 'full') : 'unpaid')),
                 paymentMethod: @js(old('payment_method', 'Tunai')),
+                isConfirmed: @js((bool) old('is_confirmed', false)),
                 proofPreviewUrl: null,
                 proofFileName: '',  
                 dpAmount: @js(old('payment_amount', '')),
