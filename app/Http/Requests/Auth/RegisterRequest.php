@@ -25,7 +25,11 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100'],
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => [
+                'required',
+                'string',
+                'regex:/^(?:\+62|62|0)8[1-9][0-9]{7,11}$/',
+            ],
             'email' => ['required', 'string', 'email', 'max:150', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             // Honeypot fields:
@@ -45,6 +49,7 @@ class RegisterRequest extends FormRequest
             'name.required' => 'Nama lengkap wajib diisi.',
             'name.max' => 'Nama maksimal 100 karakter.',
             'phone.required' => 'Nomor WhatsApp / telepon wajib diisi.',
+            'phone.regex' => 'Nomor WhatsApp / HP harus berupa nomor seluler Indonesia yang valid (contoh: 081234567890).',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email ini sudah terdaftar.',

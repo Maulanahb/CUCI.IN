@@ -166,4 +166,82 @@ class RegisterTest extends TestCase
         $response->assertSee(route('register'));
         $response->assertSee('Daftar Pelanggan');
     }
+
+    public function test_registration_fails_if_phone_number_is_too_short_or_invalid(): void
+    {
+        // 1. Uji nomor pendek 4 digit (kasus BUG-06: 0681)
+        $responseShort = $this->post('/register', [
+            'name' => 'Pelanggan Uji',
+            'phone' => '0681',
+            'email' => 'short@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            '_hp_website' => '',
+            '_hp_timestamp' => time() - 5,
+        ]);
+
+        $responseShort->assertSessionHasErrors('phone');
+        $this->assertGuest();
+        $this->assertDatabaseMissing('users', ['email' => 'short@example.com']);
+
+        // 2. Uji nomor telepon rumah / bukan seluler (021...)
+        $responseLandline = $this->post('/register', [
+            'name' => 'Pelanggan Rumah',
+            'phone' => '0217654321',
+            'email' => 'landline@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            '_hp_website' => '',
+            '_hp_timestamp' => time() - 5,
+        ]);
+
+        $responseLandline->assertSessionHasErrors('phone');
+        $this->assertGuest();
+
+        // 3. Uji nomor mengandung karakter non-angka
+        $responseLetters = $this->post('/register', [
+            'name' => 'Pelanggan Karakter',
+            'phone' => '0812abcd1234',
+            'email' => 'letters@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            '_hp_website' => '',
+            '_hp_timestamp' => time() - 5,
+        ]);
+
+        $responseLetters->assertSessionHasErrors('phone');
+        $this->assertGuest();
+    }
+
+    public function test_registration_succeeds_with_various_valid_indonesian_phone_formats(): void
+    {
+        $validPhones = [
+            'format_lokal' => '081234567890',
+            'format_plus_62' => '+6281234567891',
+            'format_62' => '6281234567892',
+        ];
+
+        foreach ($validPhones as $key => $phone) {
+            $email = "user_{$key}@example.com";
+
+            $response = $this->post('/register', [
+                'name' => "User {$key}",
+                'phone' => $phone,
+                'email' => $email,
+                'password' => 'password123',
+                'password_confirmation' => 'password123',
+                '_hp_website' => '',
+                '_hp_timestamp' => time() - 5,
+            ]);
+
+            $response->assertSessionHasNoErrors();
+            $response->assertRedirect(route('customer.dashboard'));
+
+            $this->assertDatabaseHas('users', ['email' => $email]);
+            $this->assertDatabaseHas('customers', ['phone' => $phone]);
+
+            // Logout untuk iterasi pengujian berikutnya
+            auth()->logout();
+        }
+    }
 }
