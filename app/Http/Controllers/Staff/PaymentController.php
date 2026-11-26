@@ -152,17 +152,9 @@ class PaymentController extends Controller
                 proofFile: $proofPath,
                 cashReceived: isset($validated['cash_received'])
                     ? (float) $validated['cash_received']
-                    : null
+                    : null,
+                isConfirmed: $request->boolean('is_confirmed')
             );
-
-            if (
-                in_array($validated['method'], ['Transfer', 'QRIS'], true)
-                && ! $request->boolean('is_confirmed')
-            ) {
-                $payment->update([
-                    'verification_status' => 'Menunggu Verifikasi',
-                ]);
-            }
 
         } catch (InvalidArgumentException $e) {
             if ($proofPath) {
