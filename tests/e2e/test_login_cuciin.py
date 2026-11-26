@@ -1,43 +1,71 @@
+import pytest
 from playwright.sync_api import Page, expect
 
+from tests.e2e.conftest import BASE_URL, login_as
+
 """
-LAB 1: Test End-to-End Pertama pada CUCI.IN
+LAB 1 + ALUR 3: Pengujian Autentikasi Login & Logout CUCI.IN
 Anggota Bertanggung Jawab: Daysyani Sophi Masayu
 
-Menguji alur otentikasi staf/admin pada portal operasional laundry:
-1. Alur Positif: Login dengan kredensial staff valid -> redirect ke /staff/dashboard
-2. Alur Negatif: Login dengan kata sandi salah -> muncul pesan error validasi Laravel
-   dan browser tetap berada di halaman /login.
+Menguji alur otentikasi seluruh peran dan penolakan kredensial/status akun:
+1. Login Staff valid -> /staff/dashboard, lalu Logout -> /login
+2. Login gagal karena kata sandi salah -> pesan error validasi tampil & URL tetap /login
+3. Login Admin valid -> /admin/dashboard
+4. Login Customer valid -> /customer/dashboard
+5. Login akun nonaktif (nonaktif@cuci.in) -> ditolak masuk
 """
 
-def test_login_staff_berhasil(page: Page):
-    """
-    Uji Positif: Staf login berhasil dan masuk ke portal dashboard operasional.
-    """
-    page.goto("http://localhost:8000/login")
 
-    page.get_by_label("Email").fill("staff@cuci.in")
-    # Gunakan selector spesifik role textbox agar tidak bentrok dengan tombol toggle mata password
-    page.get_by_role("textbox", name="Password").fill("password")
-    page.get_by_role("button", name="Masuk").click()
+@pytest.mark.smoke
+@pytest.mark.auth
+def test_login_staff_berhasil(guest_page: Page):
+    """Uji Positif: Staf login berhasil ke /staff/dashboard dan dapat logout dengan bersih."""
+    login_as(guest_page, "staff@cuci.in", "password")
+    expect(guest_page).to_have_url(f"{BASE_URL}/staff/dashboard")
 
-    # Assert: Berhasil redirect ke dashboard staff
-    expect(page).to_have_url("http://localhost:8000/staff/dashboard")
+    # Logout via sidebar/form POST /logout
+    guest_page.locator("#logout-button").click()
+    expect(guest_page).to_have_url(f"{BASE_URL}/login")
+    expect(guest_page.locator("body")).to_contain_text("keluar dari sistem")
 
 
-def test_login_gagal_kata_sandi_salah(page: Page):
-    """
-    Uji Negatif Lab 1: Kata sandi salah harus menampilkan error dan URL tetap di /login.
-    """
-    page.goto("http://localhost:8000/login")
+@pytest.mark.auth
+def test_login_gagal_kata_sandi_salah(guest_page: Page):
+    """Uji Negatif Lab 1: Kata sandi salah harus menampilkan error validasi dan tetap di /login."""
+    guest_page.goto(f"{BASE_URL}/login")
 
-    page.get_by_label("Email").fill("staff@cuci.in")
-    page.get_by_role("textbox", name="Password").fill("PasswordSalah123!")
-    page.get_by_role("button", name="Masuk").click()
+    guest_page.get_by_label("Email").fill("staff@cuci.in")
+    guest_page.locator("#password").fill("PasswordSalah123!")
+    guest_page.locator("#login-submit-button").click()
 
-    # Assert Lapisan 1: Pesan galat validasi Laravel tampil
-    pesan_error = page.locator("p.text-red-600")
+    pesan_error = guest_page.locator("p.text-rose-600")
     expect(pesan_error.first).to_be_visible()
+    expect(pesan_error.first).to_contain_text("Email atau password yang Anda masukkan salah.")
+    expect(guest_page).to_have_url(f"{BASE_URL}/login")
 
-    # Assert Lapisan 2: Halaman browser tidak berpindah
-    expect(page).to_have_url("http://localhost:8000/login")
+
+@pytest.mark.auth
+def test_login_admin_berhasil(guest_page: Page):
+    """Uji Positif: Administrator login berhasil ke /admin/dashboard."""
+    login_as(guest_page, "admin@cuci.in", "password")
+    expect(guest_page).to_have_url(f"{BASE_URL}/admin/dashboard")
+
+
+@pytest.mark.auth
+def test_login_customer_berhasil(guest_page: Page):
+    """Uji Positif: Customer terdaftar login berhasil ke /customer/dashboard."""
+    login_as(guest_page, "customer@cuci.in", "password")
+    expect(guest_page).to_have_url(f"{BASE_URL}/customer/dashboard")
+
+
+@pytest.mark.auth
+def test_login_akun_nonaktif_ditolak(guest_page: Page):
+    """Uji Negatif: Akun staf nonaktif tidak diizinkan masuk ke aplikasi."""
+    guest_page.goto(f"{BASE_URL}/login")
+
+    guest_page.get_by_label("Email").fill("nonaktif@cuci.in")
+    guest_page.locator("#password").fill("password")
+    guest_page.locator("#login-submit-button").click()
+
+    expect(guest_page).to_have_url(f"{BASE_URL}/login")
+    expect(guest_page.locator("p.text-rose-600").first).to_contain_text("dinonaktifkan")

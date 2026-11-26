@@ -78,8 +78,13 @@ desktop.ini
 docs/pines_ui_guidelines.md
 
 # Python & Playwright Testing Artefacts
+__pycache__/
+*.py[cod]
 /.pytest_cache/
+/tests/e2e/.pytest_cache/
+/.venv-e2e/
 /test-results/
+/playwright-report/
 docs/generate_humanized_docx.php
 docs/screenshot_terminal_asli.jpg
 docs/screenshot_trace_viewer_asli.jpg

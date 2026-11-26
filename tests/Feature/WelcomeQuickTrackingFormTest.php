@@ -2,10 +2,13 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class WelcomeQuickTrackingFormTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * BUG-09: kotak pencarian cepat di landing page harus mengirim parameter "code"
      * karena TransactionLookupController hanya membaca $request->input('code').
