@@ -164,7 +164,7 @@
                                     </div>
                                     <input
                                         type="text"
-                                        name="transaction_code"
+                                        name="code"
                                         placeholder="Masukkan kode nota (contoh: TRX-20261024-0001)..."
                                         required
                                         class="w-full rounded-xl border border-transparent bg-slate-50/70 py-3 pl-10 pr-4 text-sm font-mono text-slate-900 placeholder:text-slate-400 placeholder:font-sans focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
