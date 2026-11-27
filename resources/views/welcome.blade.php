@@ -318,12 +318,13 @@
                                     x-model="weight"
                                     class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-slate-200 accent-brand-600 focus:outline-none"
                                 >
-                                <div class="mt-1 flex justify-between text-2xs font-mono text-slate-600">
-                                    <span>1 Kg (3-4 potong)</span>
-                                    <span>5 Kg (1 minggu)</span>
-                                    <span>10 Kg</span>
-                                    <span>20 Kg</span>
-                                </div>
+                                <div class="relative mt-2 h-5 text-2xs font-mono text-slate-600">
+                                <span class="absolute left-0">1 Kg</span>
+                                <span class="absolute -translate-x-1/2" style="left: 21%">5 Kg</span>
+                                <span class="absolute -translate-x-1/2" style="left: 47%">10 Kg</span>
+                                <span class="absolute -translate-x-1/2" style="left: 74%">15 Kg</span>
+                                <span class="absolute right-0">20 Kg</span>
+                            </div>
                             </div>
                         </div>
 
