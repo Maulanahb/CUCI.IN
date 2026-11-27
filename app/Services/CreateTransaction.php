@@ -31,6 +31,7 @@ class CreateTransaction
         $paymentAmount = null;
         $paymentChoice = null;
         $proofFile = null;
+        $isConfirmed = false;
 
         if (is_array($customerOrData)) {
             $customerId = $customerOrData['customer_id'] ?? null;
@@ -43,6 +44,8 @@ class CreateTransaction
                 : null;
             $paymentChoice = $customerOrData['payment_choice'] ?? null;
             $proofFile = $customerOrData['proof_file'] ?? null;
+            // Default false: Transfer/QRIS dari POS tidak boleh otomatis "Terverifikasi" tanpa konfirmasi kasir.
+            $isConfirmed = (bool) ($customerOrData['is_confirmed'] ?? false);
         } else {
             $customerId = $customerOrData;
         }
@@ -55,7 +58,7 @@ class CreateTransaction
             throw new InvalidArgumentException('Created by (user ID Staff) harus diisi.');
         }
 
-        return DB::transaction(function () use ($customerId, $createdBy, $items, $payNow, $paymentMethod, $paymentAmount, $paymentChoice, $proofFile): Transaction {
+        return DB::transaction(function () use ($customerId, $createdBy, $items, $payNow, $paymentMethod, $paymentAmount, $paymentChoice, $proofFile, $isConfirmed): Transaction {
             // 1. Pastikan customer ada di database
             $customer = Customer::find($customerId);
             if ($customer === null) {
@@ -118,7 +121,8 @@ class CreateTransaction
                     amount: $payAmount,
                     method: $paymentMethod,
                     userId: (int) $createdBy,
-                    proofFile: $proofFile
+                    proofFile: $proofFile,
+                    isConfirmed: $isConfirmed
                 );
             }
 

@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use App\Services\SubmitPaymentProof;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
@@ -49,10 +50,10 @@ class PaymentProofController extends Controller
     /**
      * Tampilkan berkas bukti pembayaran milik pelanggan yang sedang login.
      */
-    public function show(Payment $payment): StreamedResponse
+    public function show(Request $request, Payment $payment): StreamedResponse
     {
         /** @var User $user */
-        $user = auth()->user();
+        $user = $request->user();
         $customerId = $user->customer?->id;
 
         if ($customerId === null || $payment->transaction?->customer_id !== $customerId) {

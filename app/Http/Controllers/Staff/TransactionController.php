@@ -14,6 +14,7 @@ use App\Services\CreateTransaction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -154,7 +155,7 @@ class TransactionController extends Controller
                         'transaction_id' => $current->id,
                         'status' => $currentStatus,
                         'notes' => $notes,
-                        'changed_by' => auth()->id(),
+                        'changed_by' => Auth::id(),
                         'changed_at' => now(),
                     ]);
 
@@ -195,7 +196,7 @@ class TransactionController extends Controller
                 'transaction_id' => $current->id,
                 'status' => $newStatus,
                 'notes' => $notes,
-                'changed_by' => auth()->id(),
+                'changed_by' => Auth::id(),
                 'changed_at' => now(),
             ]);
         });
@@ -231,7 +232,7 @@ class TransactionController extends Controller
 
         $customerId = (int) $validated['customer_id'];
         $items = $validated['items'];
-        $createdBy = (int) auth()->id();
+        $createdBy = (int) Auth::id();
         $proofPath = null;
 
         try {
@@ -259,6 +260,7 @@ class TransactionController extends Controller
                 'payment_amount' => $validated['payment_amount'] ?? null,
                 'payment_choice' => $validated['payment_choice'] ?? null,
                 'proof_file' => $proofPath,
+                'is_confirmed' => $request->boolean('is_confirmed'),
             ]);
         } catch (InvalidArgumentException $e) {
             if ($proofPath) {
