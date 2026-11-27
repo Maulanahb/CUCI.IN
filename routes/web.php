@@ -93,6 +93,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         };
     })->name('dashboard');
 
+    // Akses Berkas Foto Komplain Privat (Otorisasi Anti-IDOR via ComplaintPolicy)
+    Route::get('/complaints/{complaint}/photo', [CustomerComplaintController::class, 'photo'])
+        ->name('complaints.photo');
+
     // =========================================================
     // AREA ADMINISTRATOR
     // =========================================================

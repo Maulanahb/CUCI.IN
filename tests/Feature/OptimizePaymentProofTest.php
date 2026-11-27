@@ -90,7 +90,7 @@ class OptimizePaymentProofTest extends TestCase
 
     public function test_compress_complaint_photo_resizes_valid_image_and_skips_pixel_flood(): void
     {
-        Storage::fake('public');
+        Storage::fake(Complaint::PHOTO_DISK);
 
         $staff = User::factory()->create(['role' => 'staff']);
         $customer = Customer::factory()->create();
@@ -100,7 +100,7 @@ class OptimizePaymentProofTest extends TestCase
             'status' => TransactionStatus::Diproses,
         ]);
 
-        $validPath = UploadedFile::fake()->image('keluhan.jpg', 2400, 1800)->store('complaints', 'public');
+        $validPath = UploadedFile::fake()->image('keluhan.jpg', 2400, 1800)->store(Complaint::PHOTO_DIRECTORY, Complaint::PHOTO_DISK);
         $complaint = Complaint::create([
             'complaint_code' => ComplaintCodeGenerator::generate(),
             'transaction_id' => $transaction->id,
@@ -113,17 +113,17 @@ class OptimizePaymentProofTest extends TestCase
 
         (new CompressComplaintPhoto($complaint->id))->handle();
 
-        [$width, $height] = getimagesize(Storage::disk('public')->path($validPath));
+        [$width, $height] = getimagesize(Storage::disk(Complaint::PHOTO_DISK)->path($validPath));
         $this->assertSame(1280, $width);
         $this->assertSame(960, $height);
 
-        $bombPath = 'complaints/bomb-keluhan.png';
-        Storage::disk('public')->put($bombPath, $this->syntheticPngHeader(6000, 6000));
+        $bombPath = Complaint::PHOTO_DIRECTORY.'/bomb-keluhan.png';
+        Storage::disk(Complaint::PHOTO_DISK)->put($bombPath, $this->syntheticPngHeader(6000, 6000));
         $complaint->update(['photo_path' => $bombPath]);
 
         (new CompressComplaintPhoto($complaint->id))->handle();
 
-        [$bombWidth, $bombHeight] = getimagesize(Storage::disk('public')->path($bombPath));
+        [$bombWidth, $bombHeight] = getimagesize(Storage::disk(Complaint::PHOTO_DISK)->path($bombPath));
         $this->assertSame(6000, $bombWidth);
         $this->assertSame(6000, $bombHeight);
     }

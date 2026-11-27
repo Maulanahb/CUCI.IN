@@ -50,7 +50,7 @@ class CompressComplaintPhoto implements ShouldQueue
 
         $photoPath = $complaint->photo_path;
 
-        if (! $photoPath || ! Storage::disk('public')->exists($photoPath)) {
+        if (! $photoPath || ! Storage::disk(Complaint::PHOTO_DISK)->exists($photoPath)) {
             return;
         }
 
@@ -65,7 +65,7 @@ class CompressComplaintPhoto implements ShouldQueue
         }
 
         try {
-            $dimensions = ImageOptimizer::optimize('public', $photoPath);
+            $dimensions = ImageOptimizer::optimize(Complaint::PHOTO_DISK, $photoPath);
 
             if ($dimensions === null) {
                 Log::info('Foto komplain dilewati saat optimasi (dimensi melebihi batas piksel atau format tidak didukung).', [

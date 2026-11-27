@@ -11,6 +11,16 @@ class Complaint extends Model
     use HasFactory;
 
     /**
+     * Disk penyimpanan foto bukti komplain (privat).
+     */
+    public const PHOTO_DISK = 'local';
+
+    /**
+     * Folder penyimpanan foto bukti komplain di dalam disk.
+     */
+    public const PHOTO_DIRECTORY = 'complaints';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -58,7 +68,7 @@ class Complaint extends Model
     }
 
     /**
-     * URL publik untuk foto bukti kendala.
+     * URL berotorisasi untuk foto bukti kendala (Anti-IDOR).
      */
     public function getPhotoUrlAttribute(): ?string
     {
@@ -66,6 +76,6 @@ class Complaint extends Model
             return null;
         }
 
-        return asset('storage/'.$this->photo_path);
+        return route('complaints.photo', $this, false);
     }
 }
