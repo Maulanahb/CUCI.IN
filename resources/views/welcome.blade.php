@@ -15,7 +15,7 @@
         @endif
         @livewireStyles
     </head>
-    <body class="bg-slate-50/60 font-sans text-slate-800 antialiased selection:bg-brand-500 selection:text-white" x-data="{ mobileMenuOpen: false }">
+    <body class="bg-slate-50/60 font-sans text-slate-800 antialiased selection:bg-brand-500 selection:text-white" x-data="{ mobileMenuOpen: false }" @keydown.escape.window="mobileMenuOpen = false">
         {{-- Sticky Glassmorphism Header --}}
         <header class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/85 backdrop-blur-md transition-all">
             <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -76,8 +76,10 @@
                 {{-- Mobile Hamburger Button --}}
                 <button
                     type="button"
-                    class="flex size-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 md:hidden"
+                    class="flex size-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 md:hidden"
                     @click="mobileMenuOpen = !mobileMenuOpen"
+                    :aria-expanded="mobileMenuOpen ? 'true' : 'false'"
+                    aria-controls="mobile-nav"
                     aria-label="Toggle Navigation Menu"
                 >
                     <x-lucide-menu class="size-5" x-show="!mobileMenuOpen" />
@@ -87,7 +89,9 @@
 
             {{-- Mobile Dropdown Menu --}}
             <div
+                id="mobile-nav"
                 x-show="mobileMenuOpen"
+                @click.outside="mobileMenuOpen = false"
                 x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 -translate-y-2"
                 x-transition:enter-end="opacity-100 translate-y-0"
