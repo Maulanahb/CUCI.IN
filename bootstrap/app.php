@@ -20,7 +20,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->trustProxies(at: '*');
+        $trustedProxies = env('TRUSTED_PROXIES');
+        $proxies = $trustedProxies === '*'
+            ? '*'
+            : ($trustedProxies !== null && $trustedProxies !== ''
+                ? array_filter(array_map('trim', explode(',', (string) $trustedProxies)))
+                : ['127.0.0.1', '::1']);
+
+        $middleware->trustProxies(
+            at: $proxies,
+            headers: Request::HEADER_X_FORWARDED_FOR |
+                Request::HEADER_X_FORWARDED_PORT |
+                Request::HEADER_X_FORWARDED_PROTO |
+                Request::HEADER_X_FORWARDED_AWS_ELB
+        );
 
         $middleware->throttleApi();
 
