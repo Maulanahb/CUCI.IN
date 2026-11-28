@@ -275,6 +275,69 @@
             </form>
         </div>
 
+        {{-- Evaluasi Durasi Operasional Laundry per Jenis Layanan (FR-31) --}}
+        <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4 mb-4">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">
+                        Evaluasi Durasi Operasional per Layanan (FR-31)
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-0.5">
+                        Rerata durasi penyelesaian aktual dibandingkan estimasi durasi (Reguler vs Kilat).
+                    </p>
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 font-semibold text-slate-700">
+                        Rerata Durasi: <strong class="text-brand-700">{{ $summary['overall_avg_duration_hours'] }} Jam</strong>
+                    </span>
+                    <span class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 font-semibold text-emerald-700 border border-emerald-200">
+                        Ketepatan Waktu: <strong>{{ $summary['overall_on_time_percentage'] }}%</strong>
+                    </span>
+                </div>
+            </div>
+
+            @if (! empty($summary['service_durations']))
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-100 text-slate-500 uppercase tracking-wider font-semibold">
+                                <th scope="col" class="pb-2.5">Layanan</th>
+                                <th scope="col" class="pb-2.5">Tipe Paket</th>
+                                <th scope="col" class="pb-2.5 text-center">Target Estimasi</th>
+                                <th scope="col" class="pb-2.5 text-center">Pesanan Selesai</th>
+                                <th scope="col" class="pb-2.5 text-center">Rerata Selesai</th>
+                                <th scope="col" class="pb-2.5 text-right">Ketepatan Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50 text-slate-700">
+                            @foreach ($summary['service_durations'] as $duration)
+                                <tr class="hover:bg-slate-50/80 transition">
+                                    <td class="py-2.5 font-medium text-slate-900">{{ $duration['service_name'] }}</td>
+                                    <td class="py-2.5">
+                                        @if ($duration['is_express'])
+                                            <span class="inline-flex items-center rounded-md bg-amber-50 px-2 py-0.5 text-2xs font-bold text-amber-700 border border-amber-200">Kilat / Express</span>
+                                        @else
+                                            <span class="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-2xs font-medium text-slate-600">Reguler</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2.5 text-center font-semibold text-slate-800">{{ $duration['target_hours'] }} Jam</td>
+                                    <td class="py-2.5 text-center text-slate-600">{{ $duration['completed_count'] }} pesanan</td>
+                                    <td class="py-2.5 text-center font-bold {{ $duration['avg_duration_hours'] <= $duration['target_hours'] ? 'text-emerald-600' : 'text-rose-600' }}">
+                                        {{ $duration['avg_duration_hours'] }} Jam
+                                    </td>
+                                    <td class="py-2.5 text-right font-bold {{ $duration['on_time_percentage'] >= 80 ? 'text-emerald-700' : 'text-amber-700' }}">
+                                        {{ $duration['on_time_percentage'] }}%
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-xs text-slate-500 italic text-center py-4">Belum ada data cucian selesai pada rentang tanggal ini.</p>
+            @endif
+        </div>
+
         {{-- Tabel Pratinjau Transaksi Operasional --}}
         <div class="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
             <div class="flex flex-col gap-2 border-b border-slate-100 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">

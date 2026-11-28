@@ -31,7 +31,7 @@ class AuthRateLimitTest extends TestCase
     protected function clearAllTestRateLimits(): void
     {
         $emails = ['staff@cuci.in', 'target@cuci.in', 'other@cuci.in'];
-        $ips = ['127.0.0.1', '192.168.1.100'];
+        $ips = ['127.0.0.1', '192.168.1.100', '203.0.113.195'];
 
         foreach ($emails as $email) {
             foreach ($ips as $ip) {
@@ -151,5 +151,34 @@ class AuthRateLimitTest extends TestCase
 
         $responseAfterWindow->assertStatus(302);
         $responseAfterWindow->assertSessionHasErrors('email');
+    }
+
+    /**
+     * Verifikasi bahwa penyerang dari IP untrusted tidak dapat mem-bypass pembatasan
+     * rate limiter login dengan memalsukan header X-Forwarded-For.
+     */
+    public function test_rate_limiter_cannot_be_bypassed_using_spoofed_forwarded_for_from_untrusted_client(): void
+    {
+        $untrustedClientIp = '203.0.113.195';
+
+        for ($attempt = 1; $attempt <= 5; $attempt++) {
+            $this->withServerVariables(['REMOTE_ADDR' => $untrustedClientIp])
+                ->withHeaders(['X-Forwarded-For' => '198.51.100.'.$attempt])
+                ->post('/login', [
+                    'email' => 'target@cuci.in',
+                    'password' => 'wrong-password',
+                ])->assertStatus(302);
+        }
+
+        // Percobaan ke-6 dengan header X-Forwarded-For baru harus tetap diblokir HTTP 429
+        $response = $this->withServerVariables(['REMOTE_ADDR' => $untrustedClientIp])
+            ->withHeaders(['X-Forwarded-For' => '198.51.100.6'])
+            ->post('/login', [
+                'email' => 'target@cuci.in',
+                'password' => 'wrong-password',
+            ]);
+
+        $response->assertStatus(429);
+        $response->assertHeader('Retry-After');
     }
 }
