@@ -6,6 +6,7 @@ use App\Enums\TransactionStatus;
 use App\Models\Payment;
 use App\Models\Service;
 use App\Models\Transaction;
+use App\Services\Reports\ServiceTurnaroundEvaluation;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -322,6 +323,9 @@ class ReportController extends Controller
 
         $receivables = max(0.0, $totalBilled - $totalPaidRevenue);
 
+        $turnaroundEvaluator = app(ServiceTurnaroundEvaluation::class);
+        $turnaround = $turnaroundEvaluator->evaluate($filters['start_date'], $filters['end_date']);
+
         return [
             'total_transactions' => $totalTransactions,
             'total_billed' => $totalBilled,
@@ -334,6 +338,9 @@ class ReportController extends Controller
                 'QRIS' => (float) ($paymentMethods['QRIS'] ?? 0),
             ],
             'status_breakdown' => $statusBreakdown,
+            'service_durations' => $turnaround['evaluations'],
+            'overall_avg_duration_hours' => $turnaround['overall_avg_hours'],
+            'overall_on_time_percentage' => $turnaround['overall_on_time_percentage'],
         ];
     }
 }
