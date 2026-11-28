@@ -29,12 +29,13 @@ class ServiceRequest extends FormRequest
             $this->merge(['price' => $cleanedPrice]);
         }
 
-        if ($this->has('minimum_order')) {
-            $rawMin = (string) $this->input('minimum_order');
-            $cleanedMin = str_replace(',', '.', str_replace([' ', '.'], '', $rawMin));
-            $this->merge(['minimum_order' => is_numeric($cleanedMin) ? $cleanedMin : 1.00]);
-        } else {
+        $rawMin = $this->input('minimum_order');
+        if ($rawMin === null || trim((string) $rawMin) === '') {
             $this->merge(['minimum_order' => 1.00]);
+        } else {
+            // Pertahankan titik desimal dari <input type="number"> sekaligus dukung koma desimal
+            $cleanedMin = str_replace(',', '.', str_replace(' ', '', trim((string) $rawMin)));
+            $this->merge(['minimum_order' => $cleanedMin]);
         }
 
         $serviceType = $this->input('service_type', 'reguler');
@@ -128,6 +129,8 @@ class ServiceRequest extends FormRequest
             'price.required' => 'Harga layanan wajib diisi.',
             'price.numeric' => 'Harga layanan harus berupa angka valid.',
             'price.gt' => 'Harga layanan harus lebih besar dari 0.',
+            'minimum_order.numeric' => 'Order minimum harus berupa angka valid.',
+            'minimum_order.gt' => 'Order minimum harus lebih besar dari 0.',
             'estimated_duration.required' => 'Estimasi durasi pengerjaan wajib diisi.',
             'estimated_duration.integer' => 'Estimasi durasi pengerjaan harus berupa angka bulat dalam jam.',
             'estimated_duration.min' => 'Estimasi durasi pengerjaan minimal 1 jam.',
@@ -146,6 +149,7 @@ class ServiceRequest extends FormRequest
         return [
             'name' => 'nama layanan',
             'price' => 'harga layanan',
+            'minimum_order' => 'order minimum',
             'estimated_duration' => 'estimasi durasi',
             'description' => 'deskripsi layanan',
             'is_active' => 'status aktif',

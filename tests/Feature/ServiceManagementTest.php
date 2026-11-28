@@ -497,4 +497,92 @@ class ServiceManagementTest extends TestCase
         $responseKhusus->assertOk();
         $responseKhusus->assertSee('Cuci Karpet Masjid');
     }
+
+    /**
+     * BUG-07: Input tarif & order minimum pada modal Tambah/Ubah tidak mengalami HTML5 step mismatch.
+     */
+    public function test_service_modals_do_not_have_html5_step_mismatch_attributes(): void
+    {
+        $this->withoutVite();
+
+        $admin = User::factory()->admin()->create();
+
+        $response = $this->actingAs($admin)->get(route('admin.services.index'));
+        $response->assertOk();
+
+        $html = $response->getContent();
+
+        $this->assertMatchesRegularExpression('/id="create_price"[^>]*\bmin="1"[^>]*\bstep="1"/s', $html);
+        $this->assertMatchesRegularExpression('/id="edit_price"[^>]*\bmin="1"[^>]*\bstep="1"/s', $html);
+        $this->assertMatchesRegularExpression('/id="create_minimum_order"[^>]*\bmin="0\.1"[^>]*\bstep="any"/s', $html);
+        $this->assertMatchesRegularExpression('/id="edit_minimum_order"[^>]*\bmin="0\.1"[^>]*\bstep="any"/s', $html);
+
+        $this->assertDoesNotMatchRegularExpression('/id="(?:create|edit)_price"[^>]*\bstep="100"/s', $html);
+        $this->assertDoesNotMatchRegularExpression('/id="(?:create|edit)_minimum_order"[^>]*\bstep="0\.5"/s', $html);
+    }
+
+    /**
+     * BUG-07: Admin dapat menyimpan tarif bulat 10000 dan order minimum bulat (26) maupun desimal (2.5 / 1,5).
+     */
+    public function test_admin_can_update_service_with_round_price_and_decimal_minimum_order(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $service = Service::create([
+            'name' => 'Cuci Kiloan Reguler',
+            'price' => 7000.00,
+            'unit' => 'kg',
+            'service_type' => 'reguler',
+            'is_express' => false,
+            'minimum_order' => 1.00,
+            'estimated_duration' => 24,
+            'is_active' => true,
+        ]);
+
+        // 1. Update dengan tarif 10000 dan minimum order 26
+        $responseRound = $this->actingAs($admin)->put(route('admin.services.update', $service), [
+            'name' => 'Cuci Kiloan Reguler',
+            'price' => '10000',
+            'unit' => 'kg',
+            'service_type' => 'reguler',
+            'minimum_order' => '26',
+            'estimated_duration' => 24,
+            'is_active' => '1',
+        ]);
+
+        $responseRound->assertRedirect(route('admin.services.index'));
+        $service->refresh();
+        $this->assertEquals('10000.00', $service->price);
+        $this->assertEquals('26.00', $service->minimum_order);
+
+        // 2. Update dengan minimum order desimal bertitik (2.5) dari <input type="number">
+        $responseDecimalDot = $this->actingAs($admin)->put(route('admin.services.update', $service), [
+            'name' => 'Cuci Kiloan Reguler',
+            'price' => '10000',
+            'unit' => 'kg',
+            'service_type' => 'reguler',
+            'minimum_order' => '2.5',
+            'estimated_duration' => 24,
+            'is_active' => '1',
+        ]);
+
+        $responseDecimalDot->assertRedirect(route('admin.services.index'));
+        $service->refresh();
+        $this->assertEquals('2.50', $service->minimum_order);
+
+        // 3. Update dengan minimum order desimal berkoma (1,5)
+        $responseDecimalComma = $this->actingAs($admin)->put(route('admin.services.update', $service), [
+            'name' => 'Cuci Kiloan Reguler',
+            'price' => '10000',
+            'unit' => 'kg',
+            'service_type' => 'reguler',
+            'minimum_order' => '1,5',
+            'estimated_duration' => 24,
+            'is_active' => '1',
+        ]);
+
+        $responseDecimalComma->assertRedirect(route('admin.services.index'));
+        $service->refresh();
+        $this->assertEquals('1.50', $service->minimum_order);
+    }
 }
