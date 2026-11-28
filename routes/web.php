@@ -26,7 +26,7 @@ Route::get('/lookup', [TransactionLookupController::class, 'index'])
 Route::post('/lookup/payment-proof', [TransactionLookupController::class, 'storePaymentProof'])
     ->middleware('throttle:10,1')
     ->name('transactions.lookup.payment-proof');
-    
+
 // Rute Home / Root: Mengarahkan pengguna sesuai status login & role
 Route::get('/', function () {
     if (Auth::check()) {
@@ -61,18 +61,21 @@ Route::middleware('guest')->group(function () {
         ->name('register');
 
     Route::post('/register', [RegisterController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('register.store');
 
     Route::get('/forgot-password', [ForgotPasswordController::class, 'create'])
         ->name('password.request');
 
     Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('password.email');
 
     Route::get('/reset-password/{token}', [ResetPasswordController::class, 'create'])
         ->name('password.reset');
 
     Route::post('/reset-password', [ResetPasswordController::class, 'store'])
+        ->middleware('throttle:6,1')
         ->name('password.update');
 });
 

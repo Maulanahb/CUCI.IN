@@ -11,6 +11,8 @@
             editModalOpen: false,
             deleteModalOpen: false,
             detailModalOpen: false,
+            createSubmitting: false,
+            editSubmitting: false,
             activeService: null,
             createForm: {
                 unit: 'kg',
@@ -51,6 +53,7 @@
                 calcQty: 3
             },
             openCreateModal() {
+                this.createSubmitting = false;
                 this.createForm = {
                     unit: 'kg',
                     service_type: 'reguler',
@@ -60,6 +63,7 @@
                 this.createModalOpen = true;
             },
             openEditModal(service) {
+                this.editSubmitting = false;
                 this.editForm = {
                     id: service.id,
                     name: service.name,
@@ -544,7 +548,7 @@
                 description="Daftarkan paket layanan laundry baru ke dalam sistem."
                 maxWidth="lg"
             >
-                <form method="POST" action="{{ route('admin.services.store') }}" class="space-y-4">
+                <form method="POST" action="{{ route('admin.services.store') }}" @submit="createSubmitting = true" class="space-y-4">
                     @csrf
 
                     {{-- Nama Layanan --}}
@@ -616,7 +620,8 @@
                                     name="price"
                                     required
                                     min="1"
-                                    step="100"
+                                    step="1"
+                                    inputmode="numeric"
                                     placeholder="8000"
                                     prefix="Rp"
                                     class="tabular-nums"
@@ -657,7 +662,8 @@
                                     name="minimum_order"
                                     x-model="createForm.minimum_order"
                                     min="0.1"
-                                    step="0.5"
+                                    step="any"
+                                    inputmode="decimal"
                                     placeholder="1.00"
                                     class="tabular-nums"
                                 />
@@ -721,6 +727,7 @@
                         <x-ui.button
                             type="submit"
                             size="sm"
+                            x-bind:disabled="createSubmitting"
                             class="shadow-xs"
                         >
                             <x-lucide-plus class="size-4" />
@@ -742,6 +749,7 @@
                 <form
                     method="POST"
                     :action="'{{ url('admin/services') }}/' + editForm.id"
+                    @submit="editSubmitting = true"
                     class="space-y-4"
                 >
                     @csrf
@@ -817,7 +825,8 @@
                                     x-model="editForm.price"
                                     required
                                     min="1"
-                                    step="100"
+                                    step="1"
+                                    inputmode="numeric"
                                     prefix="Rp"
                                     class="tabular-nums"
                                 />
@@ -857,7 +866,8 @@
                                     name="minimum_order"
                                     x-model="editForm.minimum_order"
                                     min="0.1"
-                                    step="0.5"
+                                    step="any"
+                                    inputmode="decimal"
                                     class="tabular-nums"
                                 />
                             </div>
@@ -928,6 +938,7 @@
                         <x-ui.button
                             type="submit"
                             size="sm"
+                            x-bind:disabled="editSubmitting"
                             class="shadow-xs"
                         >
                             <x-lucide-check class="size-4" />
@@ -1072,7 +1083,8 @@
                             <input
                                 type="number"
                                 min="0.1"
-                                step="0.5"
+                                step="any"
+                                inputmode="decimal"
                                 x-model.number="detailData.calcQty"
                                 aria-label="Kuantitas simulasi layanan"
                                 class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm tabular-nums text-slate-800 focus:border-brand-500 focus:ring-1 focus:ring-brand-200"

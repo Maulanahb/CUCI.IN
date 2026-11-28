@@ -5,6 +5,7 @@ namespace Tests\Feature\Auth;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
@@ -124,5 +125,42 @@ class PasswordResetTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors('password');
+    }
+
+    public function test_active_sessions_are_deleted_when_password_is_reset(): void
+    {
+        $user = User::factory()->customer()->create([
+            'email' => 'customer@cuci.in',
+            'password' => 'oldpassword123',
+        ]);
+
+        DB::table('sessions')->insert([
+            'id' => 'session_12345',
+            'user_id' => $user->id,
+            'ip_address' => '127.0.0.1',
+            'user_agent' => 'Mozilla/5.0',
+            'payload' => 'payload-data',
+            'last_activity' => time(),
+        ]);
+
+        $this->assertDatabaseHas('sessions', [
+            'id' => 'session_12345',
+            'user_id' => $user->id,
+        ]);
+
+        $token = Password::createToken($user);
+
+        $response = $this->post('/reset-password', [
+            'token' => $token,
+            'email' => 'customer@cuci.in',
+            'password' => 'newpassword123',
+            'password_confirmation' => 'newpassword123',
+        ]);
+
+        $response->assertRedirect(route('login'));
+        $this->assertDatabaseMissing('sessions', [
+            'id' => 'session_12345',
+            'user_id' => $user->id,
+        ]);
     }
 }
