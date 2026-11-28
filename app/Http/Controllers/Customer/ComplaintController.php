@@ -14,7 +14,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Http\Response;
 
 class ComplaintController extends Controller
 {
@@ -139,7 +141,7 @@ class ComplaintController extends Controller
 
         $photoPath = null;
         if ($request->hasFile('photo')) {
-            $photoPath = $request->file('photo')->store('complaints', 'public');
+            $photoPath = $request->file('photo')->store(Complaint::PHOTO_DIRECTORY, Complaint::PHOTO_DISK);
         }
 
         $complaint = Complaint::create([
@@ -176,6 +178,39 @@ class ComplaintController extends Controller
 
         return view('customer.complaints.show', [
             'complaint' => $complaint,
+        ]);
+    }
+
+    /**
+     * Sajikan berkas foto komplain dengan otorisasi Gate::authorize('view', $complaint).
+     * Mencegah kebocoran privasi foto komplain (Anti-IDOR).
+     */
+    public function photo(Complaint $complaint): Response
+    {
+        Gate::authorize('view', $complaint);
+
+        if (! $complaint->photo_path) {
+            abort(404, 'Berkas foto pengaduan tidak ditemukan.');
+        }
+
+        $disk = Complaint::PHOTO_DISK;
+        if (! Storage::disk($disk)->exists($complaint->photo_path)) {
+            // Fallback transisional untuk berkas foto yang diunggah sebelum migrasi disk privat
+            if (Storage::disk('public')->exists($complaint->photo_path)) {
+                $disk = 'public';
+            } else {
+                abort(404, 'Berkas foto pengaduan tidak ditemukan.');
+            }
+        }
+
+        $filename = basename($complaint->photo_path);
+        $file = Storage::disk($disk)->get($complaint->photo_path);
+        $mimeType = Storage::disk($disk)->mimeType($complaint->photo_path) ?: 'application/octet-stream';
+
+        return response($file, 200, [
+            'Content-Type' => $mimeType,
+            'Content-Length' => (string) strlen($file),
+            'Content-Disposition' => 'inline; filename="'.$filename.'"',
         ]);
     }
 }

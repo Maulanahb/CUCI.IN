@@ -31,14 +31,18 @@ class StoreComplaintRequest extends FormRequest
 
         return [
             'transaction_id' => [
+                'bail',
                 'required',
                 'integer',
                 Rule::exists('transactions', 'id')->where(function ($query) use ($customerId) {
                     $query->where('customer_id', $customerId);
                 }),
-                function (string $attribute, mixed $value, Closure $fail): void {
+                function (string $attribute, mixed $value, Closure $fail) use ($customerId): void {
                     /** @var Transaction|null $transaction */
-                    $transaction = Transaction::find($value);
+                    $transaction = Transaction::where('id', $value)
+                        ->where('customer_id', $customerId)
+                        ->first();
+
                     if (! $transaction) {
                         return;
                     }
